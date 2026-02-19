@@ -779,19 +779,43 @@ class Weapon {
     }
 }
 
-// 敌人配置
+// 敌人配置（第3次迭代：10→22种）
 const ENEMY_TYPES = {
-    chick: { name: '变异小鸡', hp: 10, speed: 80, dmg: 1, exp: 2, gold: 5, color: '#ff6', sprite: 'chick' },
-    pig: { name: '变异小猪', hp: 20, speed: 50, dmg: 2, exp: 4, gold: 8, color: '#f9c', sprite: 'pig' },
-    sheep: { name: '变异小羊', hp: 15, speed: 60, dmg: 1, exp: 3, gold: 6, color: '#eee', sprite: 'sheep' },
-    dog: { name: '疯狗', hp: 18, speed: 100, dmg: 2, exp: 5, gold: 7, color: '#963', sprite: 'dog' },
-    cat: { name: '变异猫', hp: 12, speed: 90, dmg: 1, exp: 3, gold: 6, color: '#fa3', sprite: 'cat' },
-    bear: { name: '巨熊', hp: 35, speed: 40, dmg: 3, exp: 8, gold: 15, color: '#630', sprite: 'bear' },
+    // === Tier 1: 弱小敌人 ===
+    chick: { name: '变异小鸡', hp: 8, speed: 80, dmg: 1, exp: 2, gold: 3, color: '#ff6', sprite: 'chick' },
+    mouse: { name: '感染老鼠', hp: 6, speed: 100, dmg: 1, exp: 2, gold: 2, color: '#888', sprite: 'mouse' },
+    snail: { name: '寄生蜗牛', hp: 15, speed: 20, dmg: 1, exp: 1, gold: 2, color: '#8a8', sprite: 'snail' },
     
-    tiaotiao: { name: '跳跳', hp: 25, speed: 120, dmg: 2, exp: 6, gold: 12, color: '#c85', sprite: 'rabbit', special: 'jump' },
-    tiezhua: { name: '铁爪', hp: 22, speed: 150, dmg: 3, exp: 7, gold: 14, color: '#a52', sprite: 'bird', special: 'dive' },
-    nibei: { name: '泥背', hp: 50, speed: 30, dmg: 2, exp: 8, gold: 20, color: '#6a5', sprite: 'turtle', special: 'tank', armor: 2 },
-    yinya: { name: '银牙', hp: 30, speed: 90, dmg: 2, exp: 10, gold: 18, color: '#789', sprite: 'dog2', special: 'summon' }
+    // === Tier 2: 普通敌人 ===
+    rabbit: { name: '狂暴兔子', hp: 12, speed: 90, dmg: 2, exp: 3, gold: 4, color: '#f99', sprite: 'rabbit' },
+    bird: { name: '感染小鸟', hp: 10, speed: 120, dmg: 1, exp: 3, gold: 4, color: '#9cf', sprite: 'bird' },
+    pigeon: { name: '变异鸽子', hp: 14, speed: 70, dmg: 2, exp: 3, gold: 5, color: '#ccc', sprite: 'pigeon' },
+    
+    // === Tier 3: 标准敌人 ===
+    cat: { name: '变异猫', hp: 18, speed: 95, dmg: 2, exp: 4, gold: 6, color: '#fa3', sprite: 'cat' },
+    duck: { name: '感染鸭子', hp: 16, speed: 60, dmg: 2, exp: 4, gold: 5, color: '#ff0', sprite: 'duck' },
+    squirrel: { name: '疯狂松鼠', hp: 14, speed: 110, dmg: 2, exp: 4, gold: 6, color: '#963', sprite: 'squirrel' },
+    
+    // === Tier 4: 较强敌人 ===
+    dog: { name: '疯狗', hp: 22, speed: 105, dmg: 3, exp: 6, gold: 8, color: '#963', sprite: 'dog' },
+    pig: { name: '变异小猪', hp: 28, speed: 45, dmg: 3, exp: 6, gold: 9, color: '#f9c', sprite: 'pig' },
+    sheep: { name: '变异小羊', hp: 24, speed: 55, dmg: 2, exp: 5, gold: 7, color: '#eee', sprite: 'sheep' },
+    goose: { name: '守卫鹅', hp: 30, speed: 80, dmg: 3, exp: 7, gold: 10, color: '#fff', sprite: 'goose', special: 'charge' },
+    
+    // === Tier 5: 精英敌人 ===
+    bear: { name: '巨熊', hp: 45, speed: 40, dmg: 4, exp: 10, gold: 15, color: '#630', sprite: 'bear' },
+    snake: { name: '毒蛇', hp: 20, speed: 100, dmg: 3, exp: 8, gold: 12, color: '#4a4', sprite: 'snake', special: 'poison' },
+    crab: { name: '铁甲蟹', hp: 55, speed: 35, dmg: 3, exp: 12, gold: 18, color: '#f44', sprite: 'crab', armor: 3 },
+    
+    // === Tier 6: Boss级 ===
+    turtle: { name: '玄龟', hp: 80, speed: 25, dmg: 5, exp: 20, gold: 30, color: '#2a2', sprite: 'turtle', armor: 5 },
+    boss_dog: { name: '狼王', hp: 65, speed: 85, dmg: 4, exp: 18, gold: 25, color: '#444', sprite: 'dog2', special: 'howl' },
+    
+    // === 特殊敌人（剧情相关） ===
+    tiaotiao: { name: '跳跳', hp: 30, speed: 130, dmg: 3, exp: 15, gold: 20, color: '#c85', sprite: 'rabbit', special: 'jump' },
+    tiezhua: { name: '铁爪', hp: 28, speed: 160, dmg: 4, exp: 18, gold: 22, color: '#a52', sprite: 'bird', special: 'dive' },
+    nibei: { name: '泥背', hp: 70, speed: 30, dmg: 3, exp: 20, gold: 35, color: '#6a5', sprite: 'turtle', special: 'tank', armor: 4 },
+    yinya: { name: '银牙', hp: 45, speed: 100, dmg: 4, exp: 25, gold: 30, color: '#789', sprite: 'dog2', special: 'summon' }
 };
 
 // BOSS配置
