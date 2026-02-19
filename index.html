@@ -1109,6 +1109,24 @@ class ItemManager {
 
     has(id) { return (this.owned[id] || 0) > 0; }
     count(id) { return this.owned[id] || 0; }
+    
+    // 获取拥有的道具列表（用于UI显示）
+    getOwnedItems() {
+        const items = [];
+        for (const [id, count] of Object.entries(this.owned)) {
+            const item = ITEMS[id];
+            if (item && count > 0) {
+                items.push({
+                    id: id,
+                    name: item.name,
+                    icon: item.icon,
+                    count: count,
+                    desc: item.desc
+                });
+            }
+        }
+        return items;
+    }
 }
 
 // 武器系统 - 支持进化
@@ -1117,7 +1135,7 @@ const WEAPONS = {
     whip: { key: 'whip', name: '鞭子', icon: '🪄', dmg: 20, cd: 1.0, range: 100, type: 'melee', color: '#f60' },
     wand: { key: 'wand', name: '魔杖', icon: '🔮', dmg: 15, cd: 0.6, speed: 300, type: 'proj', color: '#48f' },
     knife: { key: 'knife', name: '飞刀', icon: '🗡️', dmg: 12, cd: 0.4, speed: 400, pierce: 3, type: 'proj', color: '#ccc' },
-    axe: { key: 'axe', name: '斧头', dmg: 25, cd: 1.2, speed: 250, type: 'proj', color: '#8b4513' },
+    axe: { key: 'axe', name: '斧头', icon: '🪓', dmg: 25, cd: 1.2, speed: 250, type: 'proj', color: '#8b4513' },
     // 新增4种武器（第2次迭代）
     bible: { key: 'bible', name: '圣经', icon: '📖', dmg: 10, cd: 0.8, range: 80, type: 'orbit', color: '#ffd700' },
     fireball: { key: 'fireball', name: '火球', icon: '🔥', dmg: 30, cd: 1.5, speed: 200, type: 'proj', color: '#ff4500' },
@@ -1387,8 +1405,12 @@ class Enemy {
         this.x += this.vx * dt;
         this.y += this.vy * dt;
         
-        this.x = clamp(this.x, 50, 850);
-        this.y = clamp(this.y, 50, 550);
+        // 使用房间实际尺寸限制敌人移动
+        const wallT = 60;
+        const maxX = room ? room.width - wallT : 1140;
+        const maxY = room ? room.height - wallT : 740;
+        this.x = clamp(this.x, wallT, maxX);
+        this.y = clamp(this.y, wallT, maxY);
         
         // 更新动画状态
         const speed = Math.sqrt(this.vx * this.vx + this.vy * this.vy);
@@ -2867,15 +2889,15 @@ class Game {
             roomsEl.textContent = this.scoreManager.stats.roomsExplored;
         }
         
-        // 道具格子（20格）
-        const items = this.items?.items || [];
+        // 道具格子（20格）- 从owned对象获取道具列表
+        const ownedItems = this.items ? this.items.getOwnedItems() : [];
         for (let i = 0; i < 20; i++) {
             const slot = document.getElementById(`sidebarItem${i}`);
             if (slot) {
-                if (items[i]) {
-                    slot.textContent = items[i].icon;
+                if (ownedItems[i]) {
+                    slot.textContent = ownedItems[i].icon;
                     slot.classList.add('filled');
-                    slot.title = items[i].name;
+                    slot.title = ownedItems[i].name + (ownedItems[i].count > 1 ? ` x${ownedItems[i].count}` : '');
                 } else {
                     slot.textContent = '';
                     slot.classList.remove('filled');
@@ -3057,6 +3079,90 @@ class Game {
         });
         
         window.addEventListener('keyup', e => this.keys[e.key] = false);
+        
+        // 鼠标点击支持
+        const canvas = document.getElementById('gameCanvas');
+        if (canvas) {
+            canvas.addEventListener('mousedown', e => {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                this.mouseX = (e.clientX - rect.left) * scaleX;
+                this.mouseY = (e.clientY - rect.top) * scaleY;
+                this.mouseDown = true;
+                this.handleClick(this.mouseX, this.mouseY);
+            });
+            
+            canvas.addEventListener('mouseup', () => {
+                this.mouseDown = false;
+            });
+            
+            canvas.addEventListener('mousemove', e => {
+                const rect = canvas.getBoundingClientRect();
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                this.mouseX = (e.clientX - rect.left) * scaleX;
+                this.mouseY = (e.clientY - rect.top) * scaleY;
+            });
+        }
+    }
+    
+    // 处理点击事件
+    handleClick(x, y) {
+        // 武器选择界面点击处理
+        if (this.weaponSelectOpen) {
+            const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            const cw = canvas.width;
+            const ch = canvas.height;
+            
+            // 计算三个选项的位置（与绘制代码一致）
+            const boxWidth = 500;
+            const boxHeight = 320;
+            const boxX = (cw - boxWidth) / 2;
+            const boxY = (ch - boxHeight) / 2;
+            const cardWidth = 140;
+            const cardHeight = 200;
+            const startX = boxX + (boxWidth - 3 * cardWidth) / 2 + cardWidth / 2;
+            const cardY = boxY + 140;
+            
+            for (let i = 0; i < 3; i++) {
+                const cx = startX + i * (cardWidth + 20);
+                if (x > cx - cardWidth/2 && x < cx + cardWidth/2 &&
+                    y > cardY - cardHeight/2 && y < cardY + cardHeight/2) {
+                    this.selectWeapon(i);
+                    return;
+                }
+            }
+            return;
+        }
+        
+        // 商店界面点击处理
+        if (this.shopOpen) {
+            const canvas = document.getElementById('gameCanvas');
+            if (!canvas) return;
+            const cw = canvas.width;
+            const ch = canvas.height;
+            
+            const boxWidth = 480;
+            const boxHeight = 360;
+            const boxX = (cw - boxWidth) / 2;
+            const boxY = (ch - boxHeight) / 2;
+            const itemWidth = 130;
+            const itemHeight = 160;
+            const startX = (cw - this.shopItems.length * itemWidth) / 2 + itemWidth / 2;
+            const itemY = boxY + 160;
+            
+            for (let i = 0; i < this.shopItems.length; i++) {
+                const ix = startX + i * (itemWidth + 20);
+                if (x > ix - itemWidth/2 && x < ix + itemWidth/2 &&
+                    y > itemY - itemHeight/2 && y < itemY + itemHeight/2) {
+                    this.buyItem(i);
+                    return;
+                }
+            }
+            return;
+        }
     }
     
     openEvolution() {
@@ -3660,11 +3766,13 @@ class Game {
             if (!this.camera.isVisible(item.x, item.y, 30)) continue;
             const pos = this.camera.worldToScreen(item.x, item.y);
             
-            // 获取物品描述
+            // 获取物品描述和图标
             let desc = '';
+            let icon = item.icon;
             if (item.type === 'weapon') {
-                const w = WEAPONS[item.weaponKey];
-                desc = w ? `${w.name}|伤害${w.dmg}|冷却${w.cd}s` : '武器';
+                // 武器箱显示问号，不透露具体武器
+                icon = '❓';
+                desc = '神秘武器|拾取后三选一';
             } else if (item.type === 'totem') {
                 const t = TOTEMS[item.totemId];
                 desc = t ? `${t.name}|${t.desc}` : '图腾';
@@ -3682,9 +3790,9 @@ class Game {
             this.ctx.fillText(desc.substring(0, 20), pos.x, pos.y - 25);
             
             // 绘制物品图标
-            this.ctx.fillStyle = '#ff0';
+            this.ctx.fillStyle = item.type === 'weapon' ? '#f80' : '#ff0';
             this.ctx.font = '20px Arial';
-            this.ctx.fillText(item.icon, pos.x, pos.y + 5);
+            this.ctx.fillText(icon, pos.x, pos.y + 5);
             
             this.ctx.strokeStyle = 'rgba(255, 255, 0, 0.3)';
             this.ctx.lineWidth = 2;
@@ -4178,12 +4286,10 @@ class Game {
     }
     
     spawnWeaponPickup() {
-        const wKeys = Object.keys(WEAPONS);
-        const randKey = wKeys[Math.floor(Math.random() * wKeys.length)];
+        // 武器箱不显示具体武器，用问号表示
         this.curRoom.items.push({
             x: this.curRoom.centerX, y: this.curRoom.centerY,
-            type: 'weapon', weaponKey: randKey,
-            icon: WEAPONS[randKey].icon, name: WEAPONS[randKey].name
+            type: 'weapon', icon: '❓', name: '神秘武器'
         });
     }
     
