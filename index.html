@@ -3417,7 +3417,7 @@ class Game {
             if (e.hp <= 0) continue;
             e.update(dt, this.player, this.curRoom);
             const d = dist(e.x, e.y, this.player.x, this.player.y);
-            if (d < 25 && e.attackCd <= 0) {
+            if (d < 35 && e.attackCd <= 0) {
                 if (!this.godMode && !this.player.isDashing) {
                     const actualDmg = Math.max(0, e.dmg - stats.armor);
                     this.player.hp -= actualDmg;
@@ -3765,18 +3765,18 @@ class Game {
         if (!this.player.facingRight) this.ctx.scale(-1, 1);
         
         if (playerSprite) {
-            // 使用精灵图绘制角色（角色本身包含脚）
-            this.ctx.drawImage(playerSprite, -16, -16, 32, 32);
+            // 使用精灵图绘制角色（放大一倍以匹配敌人尺寸）
+            this.ctx.drawImage(playerSprite, -32, -32, 64, 64);
         } else {
-            // 程序化绘制牛牛（简化版，不额外绘制脚）
+            // 程序化绘制牛牛（放大版备用方案）
             this.ctx.fillStyle = '#e8e8e8';
             this.ctx.beginPath();
-            this.ctx.ellipse(0, breathY, 13, 10, 0, 0, Math.PI * 2);
+            this.ctx.ellipse(0, breathY, 26, 20, 0, 0, Math.PI * 2);
             this.ctx.fill();
             // 眼睛
             this.ctx.fillStyle = '#333';
             this.ctx.beginPath();
-            this.ctx.arc(12, -6 + breathY, 1.2, 0, Math.PI * 2);
+            this.ctx.arc(24, -12 + breathY, 2.4, 0, Math.PI * 2);
             this.ctx.fill();
         }
         
