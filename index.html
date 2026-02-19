@@ -353,13 +353,23 @@
             <!-- 角色状态 -->
             <div class="sidebar-section">
                 <div class="section-title">🐮 角色状态</div>
+                <!-- 生命值（心形） -->
+                <div style="margin-bottom:8px;">
+                    <div id="playerHearts" style="font-size:18px; letter-spacing:2px;">❤️❤️❤️</div>
+                </div>
+                <!-- 经验条 -->
+                <div style="margin-bottom:8px;">
+                    <div style="display:flex; justify-content:space-between; font-size:11px; color:#8cf; margin-bottom:2px;">
+                        <span>LV.<span id="levelDisplay">1</span></span>
+                        <span id="expText">0/100</span>
+                    </div>
+                    <div style="width:100%; height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden; border:1px solid #333;">
+                        <div id="expBar" style="width:0%; height:100%; background:linear-gradient(90deg, #48f, #8cf); transition:width 0.3s;"></div>
+                    </div>
+                </div>
                 <div class="stat-row">
                     <span class="stat-label">❤️ 生命</span>
                     <span class="stat-value hp" id="sidebarHp">6/6</span>
-                </div>
-                <div class="stat-row">
-                    <span class="stat-label">⭐ 等级</span>
-                    <span class="stat-value lv" id="sidebarLv">Lv.1</span>
                 </div>
                 <div class="stat-row">
                     <span class="stat-label">💰 金币</span>
@@ -472,16 +482,6 @@
     
     <!-- 顶部信息栏 -->
     <div id="topScoreBar">
-        <!-- 左侧：玩家生命值（心形）+ 经验条 -->
-        <div style="position:absolute; left:280px; top:8px;">
-            <div id="playerHearts" style="font-size:20px;">❤️❤️❤️❤️❤️❤️</div>
-            <!-- 经验条 -->
-            <div style="margin-top:4px; width:120px; height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden; border:1px solid #444;">
-                <div id="expBar" style="width:0%; height:100%; background:linear-gradient(90deg, #48f, #8cf); transition:width 0.3s;"></div>
-            </div>
-            <div style="font-size:10px; color:#8cf; margin-top:1px;">LV.<span id="levelDisplay">1</span> <span id="expText">0/100</span></div>
-        </div>
-        
         <!-- 中间：层数——地形名称 -->
         <div id="floorInfo" style="position:absolute; left:50%; transform:translateX(-50%); top:10px; text-align:center;">
             <div style="font-size:18px; font-weight:bold; color:#fff;">第 <span id="currentFloorDisplay">1</span> 层</div>
@@ -489,7 +489,7 @@
         </div>
         
         <!-- 右侧：波次 | 敌人 | 连杀 -->
-        <div style="position:absolute; right:280px; top:10px; text-align:right;">
+        <div style="position:absolute; right:10px; top:10px; text-align:right;">
             <div id="waveInfo" style="font-size:14px; color:#aaa;">波次: <span id="waveNum">0</span> | 敌人: <span id="enemyNum">0</span></div>
             <div id="killStreak" style="display:none; font-size:14px; color:#f80;">🔥 连杀 x<span id="streakCount">0</span></div>
         </div>
@@ -3309,7 +3309,7 @@ class Game {
             }
         }
         
-        // 顶部信息栏更新
+        // 左侧边栏 - 角色状态更新
         // 1. 玩家生命值（心形）
         const heartsEl = document.getElementById('playerHearts');
         if (heartsEl && this.player) {
@@ -3341,13 +3341,14 @@ class Game {
             if (expText) expText.textContent = `${this.player.exp}/${expNeeded}`;
         }
         
+        // 顶部信息栏更新
         // 3. 层数——地形名称
         const floorDisplay = document.getElementById('currentFloorDisplay');
         const floorName = document.getElementById('floorName');
         if (floorDisplay) floorDisplay.textContent = this.currentFloor;
         if (floorName) floorName.textContent = this.floorNames[this.currentFloor - 1] || '未知';
         
-        // 3. 波次 | 敌人 | 连杀
+        // 4. 波次 | 敌人 | 连杀
         const waveNum = document.getElementById('waveNum');
         const enemyNum = document.getElementById('enemyNum');
         if (waveNum) {
