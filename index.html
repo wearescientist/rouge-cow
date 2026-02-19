@@ -910,13 +910,6 @@ class Room {
         
         console.log(`Total enemies: ${this.enemies.length}`);
     }
-            const typeKey = randChoice(types);
-            console.log(`  Spawning ${typeKey} at (${x.toFixed(0)}, ${y.toFixed(0)})`);
-            this.enemies.push(new Enemy(x, y, typeKey));
-        }
-        
-        console.log(`Total enemies: ${this.enemies.length}`);
-    }
 
     draw(ctx) {
         // 地板
