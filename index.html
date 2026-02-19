@@ -2010,8 +2010,9 @@ class Game {
             if (canMoveY) this.player.y = newY;
         }
         
-        this.player.x = clamp(this.player.x, wallThickness, SURVIVOR_CONFIG.ROOM_WIDTH - wallThickness);
-        this.player.y = clamp(this.player.y, wallThickness, SURVIVOR_CONFIG.ROOM_HEIGHT - wallThickness);
+        const wallT = 100; // 墙壁厚度
+        this.player.x = clamp(this.player.x, wallT, SURVIVOR_CONFIG.ROOM_WIDTH - wallT);
+        this.player.y = clamp(this.player.y, wallT, SURVIVOR_CONFIG.ROOM_HEIGHT - wallT);
         
         if (this.curRoom.cleared) {
             const roomW = SURVIVOR_CONFIG.ROOM_WIDTH;
