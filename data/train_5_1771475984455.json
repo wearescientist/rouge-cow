@@ -1,0 +1,50 @@
+{
+  "version": "v0.9.0",
+  "trainCount": "5",
+  "timestamp": "2026-02-19T04:39:44.455Z",
+  "config": {
+    "speed": 2,
+    "mode": "clear",
+    "maxTime": 5000,
+    "forceVideo": false,
+    "headless": true
+  },
+  "result": "timeout",
+  "summary": {
+    "totalTime": 5010,
+    "finalRoom": 1,
+    "playerLevel": 1,
+    "enemiesKilled": 0,
+    "goldCollected": 100,
+    "weapons": 0,
+    "items": 0
+  },
+  "events": [
+    {
+      "time": 0,
+      "gameState": {
+        "playerHp": 6,
+        "playerMaxHp": 6,
+        "playerLv": 1,
+        "playerGold": 100,
+        "roomNumber": 1,
+        "totalRooms": 8,
+        "enemyCount": 0,
+        "enemiesKilled": 0,
+        "wave": 0,
+        "waveActive": false,
+        "isGameOver": false,
+        "isPaused": false,
+        "inShop": false,
+        "weaponCount": 0,
+        "itemCount": 0,
+        "isVictory": false,
+        "bossDefeated": false,
+        "timestamp": 1771475989310,
+        "isCleared": false,
+        "isDead": false,
+        "isFinished": false
+      }
+    }
+  ]
+}

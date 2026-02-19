@@ -1,0 +1,2007 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>肉鸽牛牛 - v5.6 地脉共鸣</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            background: #0a0a14; 
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #gameContainer {
+            position: relative;
+            width: 900px;
+            height: 600px;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+        #gameCanvas { 
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #0d0d1a;
+            border: 3px solid #333;
+            border-radius: 8px;
+        }
+        #loading { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #0a0a14; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 1000;
+            transition: opacity 0.5s;
+        }
+        #loading.hidden { opacity: 0; pointer-events: none; }
+        .cow { font-size: 100px; animation: bounce 0.6s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0) scale(1); } to { transform: translateY(-30px) scale(1.1); } }
+        .loading-text { color: #4488ff; margin-top: 30px; font-size: 24px; font-family: Arial; }
+        .loading-bar { width: 300px; height: 10px; background: #333; border-radius: 5px; margin-top: 20px; overflow: hidden; }
+        .loading-progress { width: 0%; height: 100%; background: #4488ff; transition: width 0.3s; }
+        .controls-hint { 
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            color: #666; font-family: Arial; font-size: 14px; text-align: center;
+            background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 20px;
+            z-index: 100;
+        }
+        
+        /* 移动端虚拟按钮 */
+        .mobile-controls {
+            display: none;
+            position: fixed;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            padding: 0 20px;
+            z-index: 50;
+            pointer-events: none;
+        }
+        
+        @media (max-width: 768px) {
+            .mobile-controls {
+                display: flex;
+                justify-content: space-between;
+                align-items: flex-end;
+            }
+            .controls-hint {
+                display: none;
+            }
+        }
+        
+        .d-pad {
+            position: relative;
+            width: 120px;
+            height: 120px;
+            pointer-events: auto;
+        }
+        
+        .d-btn {
+            position: absolute;
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.2);
+            border: 2px solid rgba(255,255,255,0.4);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            color: rgba(255,255,255,0.8);
+            touch-action: manipulation;
+        }
+        
+        .d-btn:active {
+            background: rgba(255,255,255,0.4);
+        }
+        
+        .d-btn.up { top: 0; left: 40px; }
+        .d-btn.down { bottom: 0; left: 40px; }
+        .d-btn.left { top: 40px; left: 0; }
+        .d-btn.right { top: 40px; right: 0; }
+        
+        .action-btns {
+            display: flex;
+            gap: 15px;
+            pointer-events: auto;
+        }
+        
+        .action-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(255,100,100,0.3);
+            border: 2px solid rgba(255,100,100,0.5);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: rgba(255,255,255,0.9);
+            touch-action: manipulation;
+        }
+        
+        .action-btn:active {
+            background: rgba(255,100,100,0.5);
+        }
+        
+        .action-btn.weapon {
+            background: rgba(100,150,255,0.3);
+            border-color: rgba(100,150,255,0.5);
+        }
+        
+        .action-btn.weapon:active {
+            background: rgba(100,150,255,0.5);
+        }
+        .key { background: #333; color: #fff; padding: 2px 8px; border-radius: 4px; margin: 0 2px; }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="cow">🐮</div>
+        <div class="loading-text" id="loadingText">正在加载精灵图资源...</div>
+        <div class="loading-bar">
+            <div class="loading-progress" id="loadingProgress"></div>
+        </div>
+    </div>
+    
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="900" height="600"></canvas>
+    </div>
+    
+    <div class="controls-hint">
+        <span class="key">WASD</span>移动 
+        <span class="key">1-9</span>道具 
+        <span class="key">W</span>武器 
+        <span class="key">F</span>全屏
+    </div>
+    
+    <!-- 移动端虚拟按钮 -->
+    <div class="mobile-controls" id="mobileControls">
+        <div class="d-pad">
+            <div class="d-btn up" data-key="w">▲</div>
+            <div class="d-btn down" data-key="s">▼</div>
+            <div class="d-btn left" data-key="a">◀</div>
+            <div class="d-btn right" data-key="d">▶</div>
+        </div>
+        <div class="action-btns">
+            <div class="action-btn weapon" id="btnWeapon">⚔️</div>
+        </div>
+    </div>
+
+<script>
+// ============================================================================
+// 肉鸽牛牛 v2.0 - 精灵图版本
+// 修复画面显示，添加精灵图支持
+// ============================================================================
+
+const $ = (fn) => fn();
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+const dist = (x1, y1, x2, y2) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+const rand = (min, max) => Math.random() * (max - min) + min;
+const randInt = (min, max) => Math.floor(rand(min, max));
+const randChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// 精灵图加载器 - v3.1 改进版
+class SpriteLoader {
+    constructor() {
+        this.sprites = {};
+        this.loaded = 0;
+        this.total = 0;
+        this.errors = [];
+    }
+    
+    load(name, src) {
+        this.total++;
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            
+            img.onload = () => {
+                this.sprites[name] = img;
+                this.loaded++;
+                console.log(`✓ Loaded: ${name}`);
+                resolve(img);
+            };
+            
+            img.onerror = () => {
+                console.warn(`✗ Failed to load: ${src}`);
+                this.errors.push({ name, src });
+                this.loaded++; // 仍然计数为已处理
+                resolve(null);
+            };
+            
+            // 添加超时处理
+            setTimeout(() => {
+                if (!img.complete) {
+                    console.warn(`⏱ Timeout: ${src}`);
+                    this.errors.push({ name, src, timeout: true });
+                    resolve(null);
+                }
+            }, 5000);
+            
+            img.src = src;
+        });
+    }
+    
+    get(name) {
+        return this.sprites[name];
+    }
+    
+    has(name) {
+        return name in this.sprites;
+    }
+    
+    isReady() {
+        return this.loaded >= this.total;
+    }
+    
+    getProgress() {
+        return this.total > 0 ? this.loaded / this.total : 1;
+    }
+    
+    getErrorCount() {
+        return this.errors.length;
+    }
+}
+
+// 粒子系统
+class ParticleSystem {
+    constructor(max = 200) {
+        this.pool = Array(max).fill(null).map(() => ({
+            x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 1,
+            color: '#fff', size: 4, active: false
+        }));
+        this.active = [];
+    }
+
+    emit(x, y, color, opts = {}) {
+        const p = this.pool.find(p => !p.active) || this.pool[0];
+        p.x = x; p.y = y; p.color = color; p.active = true;
+        p.life = opts.life || 1; p.maxLife = p.life;
+        p.size = opts.size || 4;
+        const speed = opts.speed || 100;
+        const angle = opts.angle != null ? opts.angle : Math.random() * Math.PI * 2;
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+        if (!this.active.includes(p)) this.active.push(p);
+    }
+
+    burst(x, y, color, count = 10) {
+        for (let i = 0; i < count; i++) {
+            this.emit(x, y, color, { 
+                speed: rand(50, 150), 
+                life: rand(0.3, 0.8),
+                size: rand(2, 5)
+            });
+        }
+    }
+
+    update(dt) {
+        for (let i = this.active.length - 1; i >= 0; i--) {
+            const p = this.active[i];
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.life -= dt;
+            if (p.life <= 0) {
+                p.active = false;
+                this.active.splice(i, 1);
+            }
+        }
+    }
+
+    draw(ctx) {
+        for (const p of this.active) {
+            const alpha = p.life / p.maxLife;
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+        }
+        ctx.globalAlpha = 1;
+    }
+}
+
+// 音效系统 - 使用 Web Audio API
+class SoundManager {
+    constructor() {
+        this.ctx = null;
+        this.enabled = true;
+        this.sounds = {};
+    }
+    
+    init() {
+        try {
+            this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+        } catch (e) {
+            console.warn('Web Audio API not supported');
+            this.enabled = false;
+        }
+    }
+    
+    play(type) {
+        if (!this.enabled || !this.ctx) return;
+        
+        // 避免音频上下文被暂停
+        if (this.ctx.state === 'suspended') {
+            this.ctx.resume();
+        }
+        
+        const osc = this.ctx.createOscillator();
+        const gain = this.ctx.createGain();
+        osc.connect(gain);
+        gain.connect(this.ctx.destination);
+        
+        switch(type) {
+            case 'shoot':
+                osc.frequency.value = 800;
+                gain.gain.value = 0.1;
+                osc.start();
+                osc.frequency.exponentialRampToValueAtTime(400, this.ctx.currentTime + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.1);
+                osc.stop(this.ctx.currentTime + 0.1);
+                break;
+            case 'hit':
+                osc.frequency.value = 200;
+                osc.type = 'square';
+                gain.gain.value = 0.15;
+                osc.start();
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+                osc.stop(this.ctx.currentTime + 0.15);
+                break;
+            case 'kill':
+                osc.frequency.value = 600;
+                gain.gain.value = 0.2;
+                osc.start();
+                osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime + 0.1);
+                osc.frequency.setValueAtTime(1000, this.ctx.currentTime + 0.2);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                osc.stop(this.ctx.currentTime + 0.3);
+                break;
+            case 'levelup':
+                osc.frequency.value = 400;
+                gain.gain.value = 0.25;
+                osc.start();
+                for (let i = 0; i < 5; i++) {
+                    osc.frequency.setValueAtTime(400 + i * 100, this.ctx.currentTime + i * 0.05);
+                }
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.5);
+                osc.stop(this.ctx.currentTime + 0.5);
+                break;
+            case 'door':
+                osc.frequency.value = 300;
+                gain.gain.value = 0.2;
+                osc.start();
+                osc.frequency.exponentialRampToValueAtTime(600, this.ctx.currentTime + 0.3);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.3);
+                osc.stop(this.ctx.currentTime + 0.3);
+                break;
+            case 'damage':
+                osc.frequency.value = 150;
+                osc.type = 'sawtooth';
+                gain.gain.value = 0.2;
+                osc.start();
+                osc.frequency.exponentialRampToValueAtTime(50, this.ctx.currentTime + 0.2);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                osc.stop(this.ctx.currentTime + 0.2);
+                break;
+            case 'item':
+                osc.frequency.value = 600;
+                gain.gain.value = 0.15;
+                osc.start();
+                osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+                osc.frequency.setValueAtTime(800, this.ctx.currentTime + 0.1);
+                gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.2);
+                osc.stop(this.ctx.currentTime + 0.2);
+                break;
+        }
+    }
+    
+    toggle() {
+        this.enabled = !this.enabled;
+        return this.enabled;
+    }
+}
+
+// 道具数据库
+const ITEMS = {
+    1: { id: 1, name: '多重射击', icon: '🎯', rarity: 'common', effect: 'projCount', value: 1, desc: '子弹+1' },
+    2: { id: 2, name: '巨大化', icon: '📏', rarity: 'common', effect: 'projSize', value: 0.3, desc: '子弹变大' },
+    3: { id: 3, name: '快速射击', icon: '⚡', rarity: 'common', effect: 'fireRate', value: 0.15, desc: '射速+15%' },
+    4: { id: 4, name: '穿甲弹', icon: '🔩', rarity: 'rare', effect: 'pierce', value: 1, desc: '穿透+1' },
+    5: { id: 5, name: '暴击镜片', icon: '🔍', rarity: 'rare', effect: 'crit', value: 0.1, desc: '暴击+10%' },
+    6: { id: 6, name: '心之容器', icon: '❤️', rarity: 'common', effect: 'maxHp', value: 2, desc: '生命+2' },
+    7: { id: 7, name: '钢铁护甲', icon: '🛡️', rarity: 'rare', effect: 'armor', value: 1, desc: '护甲+1' },
+    8: { id: 8, name: '吸血獠牙', icon: '🦷', rarity: 'rare', effect: 'lifeSteal', value: 0.05, desc: '吸血5%' },
+    9: { id: 9, name: '加速靴', icon: '👟', rarity: 'common', effect: 'speed', value: 0.2, desc: '移速+20%' },
+    10: { id: 10, name: '飞行翅膀', icon: '🦅', rarity: 'epic', effect: 'fly', value: 1, desc: '可以飞行' },
+    11: { id: 11, name: '磁铁', icon: '🧲', rarity: 'rare', effect: 'magnet', value: 50, desc: '吸范围+50' },
+    12: { id: 12, name: '金蛋', icon: '🥚', rarity: 'epic', effect: 'goldBonus', value: 0.5, desc: '金币+50%' },
+    // v3.4 新增
+    13: { id: 13, name: '火焰附魔', icon: '🔥', rarity: 'rare', effect: 'fireDmg', value: 5, desc: '火焰伤害+5' },
+    14: { id: 14, name: '冰冻核心', icon: '❄️', rarity: 'rare', effect: 'slow', value: 0.2, desc: '减速敌人20%' },
+    15: { id: 15, name: '雷电宝珠', icon: '⚡', rarity: 'epic', effect: 'chain', value: 1, desc: '连锁攻击+1' }
+};
+
+class ItemManager {
+    constructor(player) {
+        this.player = player;
+        this.owned = {};
+        this.cache = null;
+        this.dirty = true;
+    }
+
+    add(id) {
+        const item = ITEMS[id];
+        if (!item) return false;
+        this.owned[id] = (this.owned[id] || 0) + 1;
+        this.dirty = true;
+        
+        if (item.effect === 'maxHp') {
+            this.player.maxHp += item.value;
+            this.player.hp += item.value;
+        }
+        return true;
+    }
+
+    getStats() {
+        if (!this.dirty) return this.cache;
+        
+        const s = {
+            projCount: 1, projSize: 1, fireRate: 1, pierce: 0,
+            crit: 0, maxHp: 0, armor: 0, lifeSteal: 0,
+            speed: 1, fly: false, magnet: 100, goldBonus: 1
+        };
+        
+        for (const [id, count] of Object.entries(this.owned)) {
+            const item = ITEMS[id];
+            if (!item) continue;
+            const v = item.value * count;
+            
+            switch (item.effect) {
+                case 'projCount': s.projCount += v; break;
+                case 'projSize': s.projSize += v; break;
+                case 'fireRate': s.fireRate *= (1 + v); break;
+                case 'pierce': s.pierce += v; break;
+                case 'crit': s.crit = Math.min(1, s.crit + v); break;
+                case 'maxHp': s.maxHp += v; break;
+                case 'armor': s.armor += v; break;
+                case 'lifeSteal': s.lifeSteal += v; break;
+                case 'speed': s.speed += v; break;
+                case 'fly': s.fly = true; break;
+                case 'magnet': s.magnet += v; break;
+                case 'goldBonus': s.goldBonus += v; break;
+            }
+        }
+        
+        this.cache = s;
+        this.dirty = false;
+        return s;
+    }
+
+    has(id) { return (this.owned[id] || 0) > 0; }
+    count(id) { return this.owned[id] || 0; }
+    getList() { return Object.entries(this.owned).map(([id, c]) => ({ ...ITEMS[id], count: c })).filter(x => x.name); }
+}
+
+// 武器系统
+const WEAPONS = {
+    whip: { key: 'whip', name: '鞭子', icon: '🪄', dmg: 12, cd: 1.2, range: 80, type: 'melee', color: '#f60' },
+    wand: { key: 'wand', name: '魔杖', icon: '🔮', dmg: 8, cd: 0.8, speed: 250, type: 'proj', color: '#48f' },
+    knife: { key: 'knife', name: '飞刀', icon: '🗡️', dmg: 6, cd: 0.5, speed: 350, pierce: 2, type: 'proj', color: '#ccc' },
+    axe: { key: 'axe', name: '斧头', dmg: 15, cd: 1.5, speed: 200, type: 'proj', color: '#8b4513' }
+};
+
+class Weapon {
+    constructor(key, level = 1) {
+        this.cfg = WEAPONS[key];
+        this.level = level;
+        this.cd = 0;
+        this.xp = 0;
+        this.xpToNext = 100;
+    }
+    
+    getDamage(stats) { return this.cfg.dmg * (1 + (this.level - 1) * 0.15) * stats.projSize; }
+    
+    update(dt) { this.cd -= dt; }
+    canFire() { return this.cd <= 0; }
+    
+    addXp(amount) {
+        this.xp += amount;
+        if (this.xp >= this.xpToNext) {
+            this.xp -= this.xpToNext;
+            this.level++;
+            this.xpToNext = Math.floor(this.xpToNext * 1.5);
+            return true; // 升级了
+        }
+        return false;
+    }
+    
+    getLevelColor() {
+        if (this.level >= 5) return '#f0f'; // 紫色
+        if (this.level >= 3) return '#fa0'; // 橙色
+        if (this.level >= 2) return '#0ff'; // 青色
+        return '#fff'; // 白色
+    }
+    
+    fire(player, target, stats) {
+        this.cd = this.cfg.cd / stats.fireRate;
+        const bullets = [];
+        const count = Math.floor(stats.projCount);
+        
+        // 近战武器特殊处理
+        if (this.cfg.type === 'melee') {
+            // 近战武器创建一个立即生效的弧形攻击
+            const range = this.cfg.range || 80;
+            const angle = target ? Math.atan2(target.y - player.y, target.x - player.x) : 0;
+            
+            bullets.push({
+                x: player.x, y: player.y,
+                vx: 0, vy: 0, // 近战子弹不移动
+                dmg: this.getDamage(stats),
+                color: this.cfg.color,
+                life: 0.1, // 很短的存在时间
+                pierce: 99, // 无限穿透
+                type: 'melee',
+                range: range,
+                angle: angle,
+                hits: new Set(),
+                isMelee: true
+            });
+            return bullets;
+        }
+        
+        // 远程武器发射子弹
+        for (let i = 0; i < count; i++) {
+            let angle = 0;
+            if (target) {
+                angle = Math.atan2(target.y - player.y, target.x - player.x);
+                if (count > 1) angle += (i - (count - 1) / 2) * 0.15;
+            } else {
+                angle = Math.random() * Math.PI * 2;
+            }
+            
+            bullets.push({
+                x: player.x, y: player.y,
+                vx: Math.cos(angle) * (this.cfg.speed || 200),
+                vy: Math.sin(angle) * (this.cfg.speed || 200),
+                dmg: this.getDamage(stats),
+                color: this.cfg.color,
+                life: 3,
+                pierce: (this.cfg.pierce || 0) + stats.pierce,
+                type: this.cfg.type,
+                range: this.cfg.range,
+                hits: new Set()
+            });
+        }
+        return bullets;
+    }
+}
+
+// 敌人配置 - 使用精灵图/emoji
+const ENEMY_TYPES = {
+    // 基础敌人
+    chick: { name: '变异小鸡', hp: 15, speed: 80, dmg: 1, exp: 2, color: '#ff6', sprite: 'chick', emoji: '🐤' },
+    pig: { name: '变异小猪', hp: 30, speed: 50, dmg: 2, exp: 4, color: '#f9c', sprite: 'pig', emoji: '🐷' },
+    sheep: { name: '变异小羊', hp: 20, speed: 60, dmg: 1, exp: 3, color: '#eee', sprite: 'sheep', emoji: '🐑' },
+    dog: { name: '疯狗', hp: 25, speed: 100, dmg: 2, exp: 5, color: '#963', sprite: 'dog', emoji: '🐕' },
+    cat: { name: '变异猫', hp: 18, speed: 90, dmg: 1, exp: 3, color: '#fa3', sprite: 'cat', emoji: '🐱' },
+    bear: { name: '巨熊', hp: 50, speed: 40, dmg: 3, exp: 8, color: '#630', sprite: 'bear', emoji: '🐻' },
+    
+    // 故事中的特殊敌人 (v5.4新增)
+    tiaotiao: { 
+        name: '跳跳', hp: 40, speed: 120, dmg: 2, exp: 6, color: '#c85', sprite: 'rabbit', emoji: '🦘',
+        special: 'jump', // 跳跃攻击
+        desc: '被寄生的袋鼠，以不可能的角度跳跃攻击'
+    },
+    tiezhua: { 
+        name: '铁爪', hp: 35, speed: 150, dmg: 3, exp: 7, color: '#a52', sprite: 'bird', emoji: '🦅',
+        special: 'dive', // 俯冲攻击
+        desc: '翅膀长满菌丝的金雕，高速俯冲'
+    },
+    nibei: { 
+        name: '泥背', hp: 80, speed: 30, dmg: 2, exp: 8, color: '#6a5', sprite: 'turtle', emoji: '🐢',
+        special: 'tank', // 高护甲
+        armor: 2,
+        desc: '背甲变成孵化场的老象龟'
+    },
+    yinya: { 
+        name: '银牙', hp: 45, speed: 90, dmg: 2, exp: 10, color: '#789', sprite: 'dog2', emoji: '🐺',
+        special: 'summon', // 召唤小弟
+        desc: '狼群首领，能召唤共生狼群'
+    }
+};
+
+// BOSS配置
+const BOSS_TYPES = {
+    mother: {
+        name: '母体',
+        hp: 500,
+        speed: 30,
+        dmg: 5,
+        exp: 100,
+        color: '#f0f',
+        sprite: 'bear',
+        scale: 2,
+        phases: [
+            { hpPercent: 100, behavior: 'normal' },
+            { hpPercent: 70, behavior: 'enrage' },
+            { hpPercent: 30, behavior: 'desperate' }
+        ]
+    }
+};
+
+class Enemy {
+    constructor(x, y, typeKey) {
+        const cfg = ENEMY_TYPES[typeKey] || ENEMY_TYPES.chick;
+        this.x = x; this.y = y;
+        this.typeKey = typeKey;
+        this.cfg = cfg; // 保存配置
+        this.hp = cfg.hp + (cfg.armor || 0) * 10; // 护甲转化为额外生命
+        this.maxHp = this.hp;
+        this.speed = cfg.speed;
+        this.dmg = cfg.dmg;
+        this.exp = cfg.exp;
+        this.color = cfg.color;
+        this.sprite = cfg.sprite;
+        this.emoji = cfg.emoji;
+        this.special = cfg.special;
+        this.armor = cfg.armor || 0;
+        this.vx = 0; this.vy = 0;
+        this.hitTimer = 0;
+        this.attackCd = 0;
+        this.specialCd = 0;
+        this.isBoss = false;
+    }
+
+    update(dt, player, room) {
+        const cfg = this.cfg;
+        
+        // 特殊行为
+        if (this.special === 'jump' && this.specialCd <= 0) {
+            // 跳跳：周期性跳跃
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            if (d > 0 && d < 200) {
+                // 向玩家跳跃
+                this.vx = (dx / d) * this.speed * 2;
+                this.vy = (dy / d) * this.speed * 2;
+                this.specialCd = 2; // 2秒冷却
+            }
+        } else if (this.special === 'dive' && this.specialCd <= 0) {
+            // 铁爪：俯冲攻击
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            if (d > 100 && d < 400) {
+                // 高速俯冲
+                this.vx = (dx / d) * this.speed * 3;
+                this.vy = (dy / d) * this.speed * 3;
+                this.specialCd = 3;
+            }
+        } else {
+            // 普通移动
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            
+            if (d > 0) {
+                this.vx = (dx / d) * this.speed;
+                this.vy = (dy / d) * this.speed;
+            }
+        }
+        
+        // 泥背：高护甲减伤
+        if (this.special === 'tank') {
+            // 移动更慢但更稳定
+            this.vx *= 0.8;
+            this.vy *= 0.8;
+        }
+        
+        // 银牙：召唤小弟
+        if (this.special === 'summon' && this.specialCd <= 0 && room.enemies.length < 10) {
+            this.specialCd = 5;
+            // 在周围生成一个小狼
+            const angle = Math.random() * Math.PI * 2;
+            const r = 30;
+            room.enemies.push(new Enemy(
+                this.x + Math.cos(angle) * r,
+                this.y + Math.sin(angle) * r,
+                'dog' // 召唤普通狗
+            ));
+        }
+        
+        // 简单分离
+        for (const other of room.enemies) {
+            if (other === this) continue;
+            const odx = this.x - other.x;
+            const ody = this.y - other.y;
+            const od = Math.sqrt(odx*odx + ody*ody);
+            if (od < 30 && od > 0) {
+                this.vx += (odx / od) * 50;
+                this.vy += (ody / od) * 50;
+            }
+        }
+        
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        
+        // 边界
+        this.x = clamp(this.x, 50, 850);
+        this.y = clamp(this.y, 50, 550);
+        
+        if (this.hitTimer > 0) this.hitTimer -= dt;
+        if (this.attackCd > 0) this.attackCd -= dt;
+        if (this.specialCd > 0) this.specialCd -= dt;
+    }
+
+    takeDamage(dmg) {
+        // 护甲减伤
+        const actualDmg = Math.max(1, dmg - this.armor);
+        this.hp -= actualDmg;
+        this.hitTimer = 0.1;
+        return this.hp <= 0;
+    }
+
+    draw(ctx, sprites) {
+        const size = this.isBoss ? 48 : 28; // 稍微大一点显示emoji
+        
+        // 受击闪烁
+        if (this.hitTimer > 0 && Math.floor(Date.now() / 50) % 2) {
+            ctx.globalAlpha = 0.5;
+        }
+        
+        // 特殊敌人光晕
+        if (this.special) {
+            ctx.strokeStyle = `rgba(255, 100, 100, ${0.3 + Math.sin(Date.now() / 300) * 0.2})`;
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size + 8, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        // BOSS光晕
+        if (this.isBoss) {
+            ctx.strokeStyle = `rgba(255, 0, 255, ${0.3 + Math.sin(Date.now() / 200) * 0.2})`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size + 10, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        // 优先使用emoji显示
+        if (this.emoji) {
+            ctx.font = `${size}px Arial`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(this.emoji, this.x, this.y);
+        } else {
+            // 尝试使用精灵图
+            const sprite = sprites.get(this.sprite);
+            if (sprite) {
+                ctx.drawImage(sprite, this.x - size, this.y - size, size * 2, size * 2);
+            } else {
+                // 备用：使用emoji
+                const emojiMap = {
+                    chick: '🐤', pig: '🐷', sheep: '🐑', dog: '🐕',
+                    cat: '🐱', bear: '🐻'
+                };
+                ctx.font = `${size}px Arial`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText(emojiMap[this.sprite] || '👾', this.x, this.y);
+            }
+        }
+        
+        ctx.globalAlpha = 1;
+        
+        // 血条
+        if (this.hp < this.maxHp) {
+            const barWidth = this.isBoss ? 100 : 28;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(this.x - barWidth/2, this.y - size - 12, barWidth, 6);
+            ctx.fillStyle = this.isBoss ? '#f0f' : '#f00';
+            ctx.fillRect(this.x - barWidth/2, this.y - size - 12, barWidth * (this.hp / this.maxHp), 6);
+        }
+        
+        // 护甲显示
+        if (this.armor > 0) {
+            ctx.fillStyle = '#48f';
+            ctx.font = '10px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`+${this.armor}🛡️`, this.x, this.y - size - 18);
+        }
+        
+        // 名字显示（特殊敌人）
+        if (this.special) {
+            ctx.fillStyle = '#f88';
+            ctx.font = 'bold 11px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(this.cfg.name, this.x, this.y + size + 12);
+        }
+        
+        // BOSS名字
+        if (this.isBoss) {
+            ctx.fillStyle = '#f0f';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(this.cfg.name, this.x, this.y - size - 25);
+        }
+    }
+}
+
+// 房间类
+class Room {
+    constructor(gx, gy, type = 'normal') {
+        this.gx = gx; this.gy = gy;
+        this.id = `${gx},${gy}`;
+        this.type = type;
+        this.doors = { up: null, down: null, left: null, right: null };
+        this.enemies = [];
+        this.cleared = type === 'start'; // 起点房间默认已清理
+        this.visited = false;
+        this.items = [];
+        
+        this.spawnEnemies();
+    }
+
+    spawnEnemies() {
+        if (this.type === 'start') {
+            console.log('Start room - no enemies');
+            return;
+        }
+        
+        if (this.type === 'boss') {
+            // 生成BOSS
+            console.log('Spawning BOSS');
+            const bossCfg = BOSS_TYPES.mother;
+            const boss = new Enemy(450, 200, 'bear'); // 使用bear作为基础
+            boss.name = bossCfg.name;
+            boss.hp = bossCfg.hp;
+            boss.maxHp = bossCfg.hp;
+            boss.speed = bossCfg.speed;
+            boss.dmg = bossCfg.dmg;
+            boss.exp = bossCfg.exp;
+            boss.color = bossCfg.color;
+            boss.isBoss = true;
+            boss.phase = 0;
+            this.enemies.push(boss);
+            return;
+        }
+        
+        // 特殊房间生成特殊敌人
+        if (this.type === 'treasure') {
+            // 宝箱房有30%几率出现特殊敌人守护
+            if (Math.random() < 0.3) {
+                const specialTypes = ['tiaotiao', 'tiezhua', 'nibei', 'yinya'];
+                const type = randChoice(specialTypes);
+                this.enemies.push(new Enemy(450, 300, type));
+                console.log(`守护宝箱: ${ENEMY_TYPES[type].name}`);
+                return; // 只有一个守护者
+            }
+        }
+        
+        const count = randInt(3, 7);
+        const types = Object.keys(ENEMY_TYPES).filter(k => !ENEMY_TYPES[k].special); // 基础敌人
+        
+        console.log(`Spawning ${count} enemies in ${this.type} room`);
+        
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * Math.PI * 2;
+            const r = 150 + Math.random() * 100;
+            const x = 450 + Math.cos(angle) * r;
+            const y = 300 + Math.sin(angle) * r;
+            
+            // 10%几率生成特殊敌人（在深层）
+            if (Math.random() < 0.1 && (this.gx + this.gy) > 2) {
+                const specialTypes = ['tiaotiao', 'tiezhua', 'nibei', 'yinya'];
+                const type = randChoice(specialTypes);
+                console.log(`  Spawning special ${type} at (${x.toFixed(0)}, ${y.toFixed(0)})`);
+                this.enemies.push(new Enemy(x, y, type));
+            } else {
+                const typeKey = randChoice(types);
+                console.log(`  Spawning ${typeKey} at (${x.toFixed(0)}, ${y.toFixed(0)})`);
+                this.enemies.push(new Enemy(x, y, typeKey));
+            }
+        }
+        
+        console.log(`Total enemies: ${this.enemies.length}`);
+    }
+            const typeKey = randChoice(types);
+            console.log(`  Spawning ${typeKey} at (${x.toFixed(0)}, ${y.toFixed(0)})`);
+            this.enemies.push(new Enemy(x, y, typeKey));
+        }
+        
+        console.log(`Total enemies: ${this.enemies.length}`);
+    }
+
+    draw(ctx) {
+        // 地板
+        const floorColors = { start: '#1a1a2e', normal: '#16213e', boss: '#2d1b2e', treasure: '#1b2d1b' };
+        ctx.fillStyle = floorColors[this.type] || '#16213e';
+        ctx.fillRect(0, 0, 900, 600);
+        
+        // 网格装饰
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= 900; x += 50) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 600); ctx.stroke();
+        }
+        for (let y = 0; y <= 600; y += 50) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(900, y); ctx.stroke();
+        }
+        
+        // 墙壁
+        ctx.fillStyle = '#0f0f1a';
+        ctx.fillRect(0, 0, 900, 40);
+        ctx.fillRect(0, 560, 900, 40);
+        ctx.fillRect(0, 0, 40, 600);
+        ctx.fillRect(860, 0, 40, 600);
+        
+        // 门
+        for (const [dir, door] of Object.entries(this.doors)) {
+            if (!door) continue;
+            ctx.fillStyle = door.open ? '#4a4' : '#a44';
+            const pos = { up: [420, 0, 60, 40], down: [420, 560, 60, 40], left: [0, 260, 40, 80], right: [860, 260, 40, 80] }[dir];
+            ctx.fillRect(...pos);
+        }
+    }
+}
+
+// 图腾系统 - 永久升级
+const TOTEMS = {
+    1: { id: 1, name: '先祖之力', icon: '🦴', desc: '攻击力+10%', effect: 'dmg', value: 0.1 },
+    2: { id: 2, name: '地脉守护', icon: '🛡️', desc: '最大生命+1', effect: 'maxHp', value: 1 },
+    3: { id: 3, name: '疾风步', icon: '👟', desc: '移动速度+10%', effect: 'speed', value: 0.1 },
+    4: { id: 4, name: '智慧之眼', icon: '👁️', desc: '经验获取+20%', effect: 'exp', value: 0.2 },
+    5: { id: 5, name: '贪婪之手', icon: '💰', desc: '金币获取+25%', effect: 'gold', value: 0.25 },
+    6: { id: 6, name: '再生之血', icon: '❤️', desc: '生命恢复+0.1/秒', effect: 'regen', value: 0.1 },
+    7: { id: 7, name: '幸运星', icon: '⭐', desc: '暴击率+5%', effect: 'crit', value: 0.05 }
+};
+
+class TotemManager {
+    constructor() {
+        this.owned = new Set();
+        this.load();
+    }
+    
+    load() {
+        // 从本地存储加载
+        try {
+            const saved = localStorage.getItem('rougecow_totems');
+            if (saved) {
+                this.owned = new Set(JSON.parse(saved));
+            }
+        } catch (e) {
+            console.log('No saved totems');
+        }
+    }
+    
+    save() {
+        try {
+            localStorage.setItem('rougecow_totems', JSON.stringify([...this.owned]));
+        } catch (e) {
+            console.log('Failed to save totems');
+        }
+    }
+    
+    collect(id) {
+        if (this.owned.has(id)) return false;
+        this.owned.add(id);
+        this.save();
+        return true;
+    }
+    
+    has(id) {
+        return this.owned.has(id);
+    }
+    
+    getCount() {
+        return this.owned.size;
+    }
+    
+    getBonus(effect) {
+        let bonus = 0;
+        for (const id of this.owned) {
+            const totem = TOTEMS[id];
+            if (totem && totem.effect === effect) {
+                bonus += totem.value;
+            }
+        }
+        return bonus;
+    }
+    
+    getAllBonuses() {
+        const bonuses = { dmg: 0, maxHp: 0, speed: 0, exp: 0, gold: 0, regen: 0, crit: 0 };
+        for (const id of this.owned) {
+            const totem = TOTEMS[id];
+            if (totem) {
+                bonuses[totem.effect] += totem.value;
+            }
+        }
+        return bonuses;
+    }
+}
+
+// 牛牛特殊能力 - 地脉共鸣
+class GeoResonance {
+    constructor() {
+        this.cd = 0;
+        this.maxCd = 30; // 30秒冷却
+        this.duration = 0;
+        this.maxDuration = 3; // 3秒持续
+        this.active = false;
+    }
+    
+    activate() {
+        if (this.cd > 0) return false;
+        this.active = true;
+        this.duration = this.maxDuration;
+        this.cd = this.maxCd;
+        return true;
+    }
+    
+    update(dt) {
+        if (this.cd > 0) this.cd -= dt;
+        if (this.duration > 0) {
+            this.duration -= dt;
+            if (this.duration <= 0) {
+                this.active = false;
+            }
+        }
+    }
+    
+    getCdPercent() {
+        return Math.max(0, 1 - this.cd / this.maxCd);
+    }
+    
+    getDurationPercent() {
+        return this.active ? this.duration / this.maxDuration : 0;
+    }
+}
+
+// 图腾管理器类
+class TotemManager {
+    constructor() {
+        this.owned = new Set();
+        this.load();
+    }
+    
+    load() {
+        // 从本地存储加载
+        try {
+            const saved = localStorage.getItem('rougecow_totems');
+            if (saved) {
+                this.owned = new Set(JSON.parse(saved));
+            }
+        } catch (e) {
+            console.log('No saved totems');
+        }
+    }
+    
+    save() {
+        try {
+            localStorage.setItem('rougecow_totems', JSON.stringify([...this.owned]));
+        } catch (e) {
+            console.log('Failed to save totems');
+        }
+    }
+    
+    collect(id) {
+        if (this.owned.has(id)) return false;
+        this.owned.add(id);
+        this.save();
+        return true;
+    }
+    
+    has(id) {
+        return this.owned.has(id);
+    }
+    
+    getCount() {
+        return this.owned.size;
+    }
+    
+    getBonus(effect) {
+        let bonus = 0;
+        for (const id of this.owned) {
+            const totem = TOTEMS[id];
+            if (totem && totem.effect === effect) {
+                bonus += totem.value;
+            }
+        }
+        return bonus;
+    }
+    
+    getAllBonuses() {
+        const bonuses = { dmg: 0, maxHp: 0, speed: 0, exp: 0, gold: 0, regen: 0, crit: 0 };
+        for (const id of this.owned) {
+            const totem = TOTEMS[id];
+            if (totem) {
+                bonuses[totem.effect] += totem.value;
+            }
+        }
+        return bonuses;
+    }
+}
+
+class MapGenerator {
+    generate() {
+        const rooms = new Map();
+        const start = new Room(0, 0, 'start');
+        rooms.set(start.id, start);
+        
+        const queue = [start];
+        const dirs = [
+            { dx: 0, dy: -1, name: 'up', opp: 'down' },
+            { dx: 1, dy: 0, name: 'right', opp: 'left' },
+            { dx: 0, dy: 1, name: 'down', opp: 'up' },
+            { dx: -1, dy: 0, name: 'left', opp: 'right' }
+        ];
+        
+        let count = 1;
+        while (queue.length && count < 12) {
+            const cur = queue.shift();
+            for (const dir of dirs.sort(() => Math.random() - 0.5)) {
+                const nx = cur.gx + dir.dx, ny = cur.gy + dir.dy;
+                const id = `${nx},${ny}`;
+                
+                if (rooms.has(id)) {
+                    const ex = rooms.get(id);
+                    if (!cur.doors[dir.name]) {
+                        cur.doors[dir.name] = { open: cur.cleared, target: ex };
+                        ex.doors[dir.opp] = { open: ex.cleared, target: cur };
+                    }
+                    continue;
+                }
+                
+                if (Math.random() > 0.4 || count < 5) {
+                    const type = count === 11 ? 'boss' : Math.random() < 0.2 ? 'treasure' : 'normal';
+                    const nr = new Room(nx, ny, type);
+                    cur.doors[dir.name] = { open: cur.cleared, target: nr };
+                    nr.doors[dir.opp] = { open: nr.cleared, target: cur };
+                    rooms.set(id, nr);
+                    queue.push(nr);
+                    count++;
+                }
+            }
+        }
+        
+        return { start, rooms };
+    }
+}
+
+// ============================================================================
+// 主游戏类 v2.0
+// ============================================================================
+class Game {
+    constructor() {
+        this.canvas = document.getElementById('gameCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        
+        // 固定画布大小，使用CSS缩放
+        this.canvas.width = 900;
+        this.canvas.height = 600;
+        
+        // 精灵图加载器
+        this.sprites = new SpriteLoader();
+        
+        // 游戏状态
+        this.state = 'loading';
+        this.player = { x: 450, y: 300, hp: 6, maxHp: 6, exp: 0, lv: 1, gold: 0 };
+        this.items = new ItemManager(this.player);
+        this.totems = new TotemManager(); // 图腾系统
+        this.weapons = [new Weapon('whip', 1)];
+        this.activeWeapon = 0; // 当前激活的武器索引
+        this.bullets = [];
+        this.particles = new ParticleSystem();
+        this.gems = [];
+        
+        // 地图
+        const gen = new MapGenerator();
+        const map = gen.generate();
+        this.curRoom = map.start;
+        this.allRooms = map.rooms;
+        this.curRoom.visited = true;
+        
+        // 系统
+        this.keys = {};
+        this.transition = { active: false, timer: 0, dir: null, target: null };
+        this.rafId = null;
+        
+        // 地脉共鸣能力
+        this.resonance = new GeoResonance();
+        
+        // 动画系统
+        this.animations = {
+            player: { frame: 0, timer: 0, speed: 0.15 },
+            enemies: new Map()
+        };
+        
+        // 音效系统
+        this.sounds = new SoundManager();
+        
+        this.setupInput();
+    }
+
+    async loadSprites() {
+        // 使用绝对路径
+        const basePath = 'https://wearescientist.github.io/rouge-cow/assets/sprites/';
+        
+        // 加载主角精灵图
+        await this.sprites.load('player', basePath + 'player_cow.png');
+        
+        // 加载敌人精灵图
+        const enemies = ['chick', 'pig', 'sheep', 'dog', 'cat', 'bear'];
+        for (const name of enemies) {
+            await this.sprites.load(name, basePath + name + '.png');
+            this.updateLoadingProgress();
+        }
+        
+        // 加载特殊敌人精灵图 (v5.5)
+        const specialEnemies = ['bird', 'turtle', 'rabbit', 'dog2'];
+        for (const name of specialEnemies) {
+            await this.sprites.load(name, basePath + name + '.png');
+            this.updateLoadingProgress();
+        }
+        
+        console.log(`✓ Loaded ${this.sprites.loaded}/${this.sprites.total} sprites`);
+        if (this.sprites.getErrorCount() > 0) {
+            console.warn(`⚠ ${this.sprites.getErrorCount()} sprites failed to load`);
+        }
+    }
+    
+    updateLoadingProgress() {
+        const progress = this.sprites.getProgress() * 100;
+        const progressBar = document.getElementById('loadingProgress');
+        const loadingText = document.getElementById('loadingText');
+        if (progressBar) progressBar.style.width = `${progress}%`;
+        if (loadingText) loadingText.textContent = `正在加载... ${Math.floor(progress)}%`;
+    }
+
+    setupInput() {
+        window.addEventListener('keydown', e => {
+            this.keys[e.key] = true;
+            
+            if (e.key >= '1' && e.key <= '9') {
+                const id = parseInt(e.key);
+                if (this.items.add(id)) {
+                    this.particles.burst(this.player.x, this.player.y, '#ff0', 15);
+                }
+            }
+            
+            if (e.key === 'f' || e.key === 'F') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+            
+            // 武器切换
+            if (e.key === 'q' || e.key === 'Q') {
+                this.activeWeapon = (this.activeWeapon - 1 + this.weapons.length) % this.weapons.length;
+                console.log(`切换武器: ${this.weapons[this.activeWeapon].cfg.name}`);
+            }
+            if (e.key === 'e' || e.key === 'E') {
+                this.activeWeapon = (this.activeWeapon + 1) % this.weapons.length;
+                console.log(`切换武器: ${this.weapons[this.activeWeapon].cfg.name}`);
+            }
+            
+            // 地脉共鸣 - 空格键
+            if (e.key === ' ' || e.key === 'Spacebar') {
+                if (this.resonance.activate()) {
+                    console.log('地脉共鸣激活！');
+                    this.particles.burst(this.player.x, this.player.y, '#ff0', 30);
+                }
+            }
+        });
+        
+        window.addEventListener('keyup', e => this.keys[e.key] = false);
+        
+        // 触摸控制
+        this.setupTouchControls();
+    }
+    
+    setupTouchControls() {
+        const canvas = this.canvas;
+        let touchStartX = 0;
+        let touchStartY = 0;
+        let touchId = null;
+        
+        canvas.addEventListener('touchstart', e => {
+            e.preventDefault();
+            if (touchId !== null) return;
+            const touch = e.touches[0];
+            touchId = touch.identifier;
+            touchStartX = touch.clientX;
+            touchStartY = touch.clientY;
+        }, { passive: false });
+        
+        canvas.addEventListener('touchmove', e => {
+            e.preventDefault();
+            if (touchId === null) return;
+            
+            const touch = Array.from(e.touches).find(t => t.identifier === touchId);
+            if (!touch) return;
+            
+            const dx = touch.clientX - touchStartX;
+            const dy = touch.clientY - touchStartY;
+            const threshold = 20;
+            
+            this.keys['w'] = dy < -threshold;
+            this.keys['s'] = dy > threshold;
+            this.keys['a'] = dx < -threshold;
+            this.keys['d'] = dx > threshold;
+        }, { passive: false });
+        
+        canvas.addEventListener('touchend', e => {
+            e.preventDefault();
+            const touch = Array.from(e.changedTouches).find(t => t.identifier === touchId);
+            if (!touch) return;
+            
+            touchId = null;
+            this.keys['w'] = false;
+            this.keys['s'] = false;
+            this.keys['a'] = false;
+            this.keys['d'] = false;
+        }, { passive: false });
+        
+        canvas.addEventListener('touchcancel', e => {
+            e.preventDefault();
+            touchId = null;
+            this.keys['w'] = false;
+            this.keys['s'] = false;
+            this.keys['a'] = false;
+            this.keys['d'] = false;
+        }, { passive: false });
+        
+        // 虚拟按钮控制
+        const dBtns = document.querySelectorAll('.d-btn');
+        dBtns.forEach(btn => {
+            const key = btn.dataset.key;
+            
+            btn.addEventListener('touchstart', e => {
+                e.preventDefault();
+                this.keys[key] = true;
+                btn.style.background = 'rgba(255,255,255,0.4)';
+            }, { passive: false });
+            
+            btn.addEventListener('touchend', e => {
+                e.preventDefault();
+                this.keys[key] = false;
+                btn.style.background = '';
+            }, { passive: false });
+            
+            btn.addEventListener('touchcancel', e => {
+                e.preventDefault();
+                this.keys[key] = false;
+                btn.style.background = '';
+            }, { passive: false });
+        });
+        
+        // 武器切换按钮
+        const weaponBtn = document.getElementById('btnWeapon');
+        if (weaponBtn) {
+            weaponBtn.addEventListener('touchstart', e => {
+                e.preventDefault();
+                this.activeWeapon = (this.activeWeapon + 1) % this.weapons.length;
+                console.log(`切换武器: ${this.weapons[this.activeWeapon].cfg.name}`);
+                weaponBtn.style.background = 'rgba(100,150,255,0.5)';
+                setTimeout(() => {
+                    weaponBtn.style.background = '';
+                }, 200);
+            }, { passive: false });
+        }
+    }
+
+    async start() {
+        await this.loadSprites();
+        this.sounds.init(); // 初始化音效
+        document.getElementById('loading').classList.add('hidden');
+        this.state = 'playing';
+        this.loop(0);
+    }
+
+    update(dt) {
+        if (this.transition.active) {
+            this.transition.timer -= dt;
+            if (this.transition.timer <= 0) {
+                this.curRoom = this.transition.target;
+                this.curRoom.visited = true;
+                this.player.x = 450 + (this.transition.dir === 'left' ? 400 : this.transition.dir === 'right' ? -400 : 0);
+                this.player.y = 300 + (this.transition.dir === 'up' ? 250 : this.transition.dir === 'down' ? -250 : 0);
+                this.transition.active = false;
+            }
+            return;
+        }
+
+        const stats = this.items.getStats();
+        
+        // 应用图腾永久加成
+        const totemBonuses = this.totems.getAllBonuses();
+        stats.dmg = (stats.dmg || 1) * (1 + totemBonuses.dmg);
+        stats.maxHp += totemBonuses.maxHp;
+        stats.speed *= (1 + totemBonuses.speed);
+        stats.crit = Math.min(1, stats.crit + totemBonuses.crit);
+        
+        const speed = 150 * stats.speed;
+        
+        // 更新地脉共鸣
+        this.resonance.update(dt);
+        
+        // 玩家移动
+        let dx = 0, dy = 0;
+        if (this.keys['w'] || this.keys['W'] || this.keys['ArrowUp']) dy -= 1;
+        if (this.keys['s'] || this.keys['S'] || this.keys['ArrowDown']) dy += 1;
+        if (this.keys['a'] || this.keys['A'] || this.keys['ArrowLeft']) dx -= 1;
+        if (this.keys['d'] || this.keys['D'] || this.keys['ArrowRight']) dx += 1;
+        
+        if (dx !== 0 || dy !== 0) {
+            const len = Math.sqrt(dx*dx + dy*dy);
+            this.player.x += (dx / len) * speed * dt;
+            this.player.y += (dy / len) * speed * dt;
+        }
+        
+        // 边界
+        this.player.x = clamp(this.player.x, 20, 880);
+        this.player.y = clamp(this.player.y, 20, 580);
+        
+        // 门检测
+        if (this.curRoom.cleared) {
+            for (const [dir, door] of Object.entries(this.curRoom.doors)) {
+                if (!door || !door.open) continue;
+                const pos = { up: [420, 0, 60, 40], down: [420, 560, 60, 40], left: [0, 260, 40, 80], right: [860, 260, 40, 80] }[dir];
+                if (this.player.x > pos[0] && this.player.x < pos[0] + pos[2] &&
+                    this.player.y > pos[1] && this.player.y < pos[1] + pos[3]) {
+                    this.transition = { active: true, timer: 0.3, dir, target: door.target };
+                    break;
+                }
+            }
+        }
+        
+        // 敌人
+        for (const e of this.curRoom.enemies) {
+            e.update(dt, this.player, this.curRoom);
+            const d = dist(e.x, e.y, this.player.x, this.player.y);
+            if (d < 25 && e.attackCd <= 0) {
+                this.player.hp -= Math.max(0, e.dmg - stats.armor);
+                e.attackCd = 0.5;
+                this.sounds.play('damage');
+                if (this.player.hp <= 0) this.state = 'gameover';
+            }
+        }
+        
+        if (this.curRoom.enemies.length === 0 && !this.curRoom.cleared) {
+            this.curRoom.cleared = true;
+            for (const door of Object.values(this.curRoom.doors)) {
+                if (door) door.open = true;
+            }
+            this.particles.burst(450, 300, '#4f4', 30);
+            this.sounds.play('door');
+            
+            // 检查是否击败了BOSS
+            if (this.curRoom.type === 'boss') {
+                this.state = 'victory';
+                this.sounds.play('levelup');
+                return;
+            }
+            
+            // 房间清理后掉落道具
+            this.spawnRoomReward();
+        }
+        
+        // 武器 - 只使用当前激活的武器
+        let target = null, minD = 9999;
+        for (const e of this.curRoom.enemies) {
+            const d = dist(e.x, e.y, this.player.x, this.player.y);
+            if (d < minD) { minD = d; target = e; }
+        }
+        
+        // 更新所有武器CD
+        for (const w of this.weapons) {
+            w.update(dt);
+        }
+        
+        // 只发射当前激活的武器
+        const activeW = this.weapons[this.activeWeapon];
+        if (activeW && activeW.canFire() && target) {
+            this.bullets.push(...activeW.fire(this.player, target, stats));
+            this.sounds.play('shoot');
+        }
+        
+        // 子弹
+        for (let i = this.bullets.length - 1; i >= 0; i--) {
+            const b = this.bullets[i];
+            
+            // 近战子弹不移动，但检查范围内的敌人
+            if (b.isMelee) {
+                b.life -= dt;
+                if (b.life <= 0) { this.bullets.splice(i, 1); continue; }
+                
+                // 对范围内的所有敌人造成伤害
+                for (let j = this.curRoom.enemies.length - 1; j >= 0; j--) {
+                    const e = this.curRoom.enemies[j];
+                    const d = dist(b.x, b.y, e.x, e.y);
+                    // 检查角度范围（弧形攻击）
+                    const angleToEnemy = Math.atan2(e.y - b.y, e.x - b.x);
+                    const angleDiff = Math.abs(angleToEnemy - b.angle);
+                    const normalizedDiff = Math.min(angleDiff, Math.PI * 2 - angleDiff);
+                    
+                    if (d < b.range && normalizedDiff < Math.PI / 3 && !b.hits.has(e)) {
+                        b.hits.add(e);
+                        if (e.takeDamage(b.dmg)) {
+                            this.curRoom.enemies.splice(j, 1);
+                            this.gems.push({ x: e.x, y: e.y, v: e.exp, life: 30 });
+                            this.particles.burst(e.x, e.y, e.color, 8);
+                            this.sounds.play('kill');
+                        } else {
+                            this.sounds.play('hit');
+                        }
+                    }
+                }
+                continue;
+            }
+            
+            // 远程子弹正常移动
+            b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
+            
+            if (b.life <= 0) { this.bullets.splice(i, 1); continue; }
+            
+            let hit = false;
+            for (let j = this.curRoom.enemies.length - 1; j >= 0; j--) {
+                const e = this.curRoom.enemies[j];
+                if (dist(b.x, b.y, e.x, e.y) < 20 && !b.hits.has(e)) {
+                    b.hits.add(e);
+                    if (e.takeDamage(b.dmg)) {
+                        this.curRoom.enemies.splice(j, 1);
+                        this.gems.push({ x: e.x, y: e.y, v: e.exp, life: 30 });
+                        this.particles.burst(e.x, e.y, e.color, 8);
+                        this.sounds.play('kill');
+                    } else {
+                        this.sounds.play('hit');
+                    }
+                    if (b.pierce-- <= 0) { hit = true; break; }
+                }
+            }
+            if (hit) this.bullets.splice(i, 1);
+        }
+        
+        // 经验宝石
+        for (let i = this.gems.length - 1; i >= 0; i--) {
+            const g = this.gems[i];
+            const d = dist(g.x, g.y, this.player.x, this.player.y);
+            if (d < stats.magnet) {
+                g.x += (this.player.x - g.x) * 5 * dt;
+                g.y += (this.player.y - g.y) * 5 * dt;
+            }
+            if (d < 20) {
+                this.player.exp += g.v;
+                this.gems.splice(i, 1);
+                if (this.player.exp >= this.player.lv * 100) {
+                    this.player.exp -= this.player.lv * 100;
+                    this.player.lv++;
+                    this.player.maxHp++;
+                    this.player.hp++;
+                    this.particles.burst(this.player.x, this.player.y, '#ff0', 20);
+                    this.sounds.play('levelup');
+                }
+            }
+        }
+        
+        // 拾取道具
+        for (let i = this.curRoom.items.length - 1; i >= 0; i--) {
+            const item = this.curRoom.items[i];
+            const d = dist(item.x, item.y, this.player.x, this.player.y);
+            
+            if (d < 30) {
+                if (item.type === 'weapon') {
+                    // 检查是否已有同类型武器
+                    const existingIdx = this.weapons.findIndex(w => w.cfg.key === item.weaponKey);
+                    if (existingIdx >= 0) {
+                        // 升级现有武器
+                        const leveledUp = this.weapons[existingIdx].addXp(100);
+                        if (leveledUp) {
+                            console.log(`武器升级: ${item.name} Lv.${this.weapons[existingIdx].level}`);
+                            this.particles.burst(item.x, item.y, '#f0f', 20);
+                        } else {
+                            console.log(`武器经验增加: ${item.name}`);
+                        }
+                    } else if (this.weapons.length < 5) {
+                        // 添加新武器
+                        this.weapons.push(new Weapon(item.weaponKey, 1));
+                        console.log(`拾取武器: ${item.name}`);
+                    }
+                } else if (item.type === 'totem') {
+                    // 拾取图腾
+                    if (this.totems.collect(item.totemId)) {
+                        console.log(`收集图腾: ${item.name}`);
+                        this.particles.burst(item.x, item.y, '#ff0', 30);
+                        // 应用图腾效果
+                        const totem = TOTEMS[item.totemId];
+                        if (totem.effect === 'maxHp') {
+                            this.player.maxHp += totem.value;
+                            this.player.hp += totem.value;
+                        }
+                    } else {
+                        console.log(`已拥有图腾: ${item.name}`);
+                    }
+                } else {
+                    // 拾取道具
+                    if (this.items.add(item.id)) {
+                        console.log(`拾取道具: ${item.name}`);
+                    }
+                }
+                this.curRoom.items.splice(i, 1);
+                this.particles.burst(item.x, item.y, '#ff0', 10);
+                this.sounds.play('item');
+            }
+        }
+        
+        this.particles.update(dt);
+    }
+
+    draw() {
+        // 清空
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, 900, 600);
+        
+        // 房间
+        this.curRoom.draw(this.ctx);
+        
+        // 宝石
+        for (const g of this.gems) {
+            this.ctx.fillStyle = '#48f';
+            this.ctx.beginPath();
+            this.ctx.moveTo(g.x, g.y - 5);
+            this.ctx.lineTo(g.x + 4, g.y);
+            this.ctx.lineTo(g.x, g.y + 5);
+            this.ctx.lineTo(g.x - 4, g.y);
+            this.ctx.fill();
+        }
+        
+        // 子弹
+        for (const b of this.bullets) {
+            this.ctx.fillStyle = b.color;
+            this.ctx.beginPath();
+            this.ctx.arc(b.x, b.y, 4, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        
+        // 房间道具
+        for (const item of this.curRoom.items) {
+            this.ctx.fillStyle = '#ff0';
+            this.ctx.font = '20px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(item.icon, item.x, item.y + 5);
+            
+            // 光晕效果
+            this.ctx.strokeStyle = 'rgba(255, 255, 0, 0.3)';
+            this.ctx.lineWidth = 2;
+            this.ctx.beginPath();
+            this.ctx.arc(item.x, item.y, 15 + Math.sin(Date.now() / 200) * 3, 0, Math.PI * 2);
+            this.ctx.stroke();
+        }
+        
+        // 敌人
+        for (const e of this.curRoom.enemies) {
+            e.draw(this.ctx, this.sprites);
+        }
+        
+        // 地脉共鸣效果 - 显示全图敌人位置
+        if (this.resonance.active) {
+            const ctx = this.ctx;
+            
+            // 屏幕边缘脉动效果
+            const pulse = Math.sin(Date.now() / 100) * 0.3 + 0.7;
+            ctx.strokeStyle = `rgba(255, 215, 0, ${pulse})`;
+            ctx.lineWidth = 4;
+            ctx.strokeRect(0, 0, 900, 600);
+            
+            // 牛牛双角发光
+            ctx.fillStyle = `rgba(255, 215, 0, ${pulse})`;
+            ctx.beginPath();
+            ctx.arc(this.player.x - 8, this.player.y - 12, 6, 0, Math.PI * 2);
+            ctx.arc(this.player.x + 8, this.player.y - 12, 6, 0, Math.PI * 2);
+            ctx.fill();
+            
+            // 显示所有房间敌人位置（小地图放大效果）
+            for (const [, room] of this.allRooms) {
+                if (!room.visited || room === this.curRoom) continue;
+                
+                // 计算相对位置
+                const dx = room.gx - this.curRoom.gx;
+                const dy = room.gy - this.curRoom.gy;
+                
+                // 在屏幕边缘显示方向提示
+                if (room.enemies.length > 0) {
+                    const indicatorX = 450 + dx * 100;
+                    const indicatorY = 300 + dy * 80;
+                    
+                    // 限制在屏幕内
+                    const clampedX = clamp(indicatorX, 50, 850);
+                    const clampedY = clamp(indicatorY, 50, 550);
+                    
+                    ctx.fillStyle = 'rgba(255, 0, 0, 0.5)';
+                    ctx.beginPath();
+                    ctx.arc(clampedX, clampedY, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    ctx.fillStyle = '#f88';
+                    ctx.font = '10px Arial';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(`${room.enemies.length}👾`, clampedX, clampedY - 8);
+                }
+            }
+        }
+        
+        // 玩家 - 使用精灵图
+        const playerSprite = this.sprites.get('player');
+        if (playerSprite) {
+            this.ctx.drawImage(playerSprite, this.player.x - 16, this.player.y - 16, 32, 32);
+        } else {
+            // 备用emoji
+            this.ctx.font = '24px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('🐮', this.player.x, this.player.y + 8);
+        }
+        
+        // 粒子
+        this.particles.draw(this.ctx);
+        
+        // 转场遮罩
+        if (this.transition.active) {
+            const alpha = Math.sin(this.transition.timer / 0.3 * Math.PI);
+            this.ctx.fillStyle = `rgba(0,0,0,${alpha})`;
+            this.ctx.fillRect(0, 0, 900, 600);
+        }
+        
+        // UI
+        this.drawUI();
+    }
+
+    drawUI() {
+        const ctx = this.ctx;
+        const pad = 20;
+        
+        // 状态面板
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(pad, pad, 180, 100);
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText('❤️'.repeat(Math.max(0, Math.ceil(this.player.hp))), pad + 10, pad + 35);
+        
+        ctx.fillStyle = '#48f';
+        ctx.fillText(`Lv.${this.player.lv} EXP:${Math.floor(this.player.exp)}/${this.player.lv*100}`, pad + 10, pad + 60);
+        
+        ctx.fillStyle = '#fc0';
+        ctx.fillText(`💰 ${this.player.gold}`, pad + 10, pad + 85);
+        
+        // 房间信息
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#fff';
+        const names = { start: '起点', normal: '战斗', boss: 'BOSS', treasure: '宝箱' };
+        ctx.fillText(`${names[this.curRoom.type]}房间`, 880, pad + 35);
+        ctx.fillText(`敌人:${this.curRoom.enemies.length}`, 880, pad + 60);
+        
+        if (!this.curRoom.cleared) {
+            ctx.fillStyle = '#f44';
+            ctx.fillText('🔒 锁定', 880, pad + 85);
+        } else {
+            ctx.fillStyle = '#4f4';
+            ctx.fillText('✓ 已清理', 880, pad + 85);
+        }
+        
+        // 小地图
+        const mx = 750, my = 120;
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(mx, my, 130, 130);
+        
+        for (const [, r] of this.allRooms) {
+            if (!r.visited) continue;
+            const rx = mx + 10 + (r.gx + 5) * 10;
+            const ry = my + 10 + (r.gy + 5) * 10;
+            ctx.fillStyle = r === this.curRoom ? '#ff0' : { normal: '#666', boss: '#f00', treasure: '#0f0', start: '#66f' }[r.type];
+            ctx.fillRect(rx, ry, 8, 8);
+        }
+        
+        // 武器栏
+        const by = 530;
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(pad, by, 300, 50);
+        
+        let wx = pad + 10;
+        for (let i = 0; i < this.weapons.length; i++) {
+            const w = this.weapons[i];
+            // 背景框
+            ctx.fillStyle = i === this.activeWeapon ? '#444' : '#333';
+            ctx.fillRect(wx, by + 5, 40, 40);
+            
+            // 武器图标
+            ctx.fillStyle = w.getLevelColor();
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(w.cfg.icon, wx + 20, by + 32);
+            
+            // 等级显示
+            if (w.level > 1) {
+                ctx.fillStyle = '#ff0';
+                ctx.font = '10px Arial';
+                ctx.fillText('+' + (w.level - 1), wx + 35, by + 15);
+            }
+            
+            wx += 50;
+        }
+        
+        // 图腾收集进度
+        const totemCount = this.totems.getCount();
+        if (totemCount > 0) {
+            ctx.fillStyle = 'rgba(0,0,0,0.7)';
+            ctx.fillRect(320, by, 120, 50);
+            ctx.fillStyle = '#fc0';
+            ctx.font = '14px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(`图腾: ${totemCount}/7`, 380, by + 20);
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#aaa';
+            ctx.fillText('永久加成', 380, by + 40);
+        }
+        
+        // 地脉共鸣冷却条
+        const resCd = this.resonance.getCdPercent();
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(450, by, 150, 50);
+        ctx.fillStyle = '#333';
+        ctx.fillRect(460, by + 30, 130, 10);
+        if (resCd >= 1) {
+            ctx.fillStyle = '#fd0'; // 金色 - 准备就绪
+        } else if (this.resonance.active) {
+            ctx.fillStyle = '#0f0'; // 绿色 - 激活中
+        } else {
+            ctx.fillStyle = '#666'; // 灰色 - 冷却中
+        }
+        ctx.fillRect(460, by + 30, 130 * resCd, 10);
+        ctx.fillStyle = '#fff';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('地脉共鸣 [空格]', 525, by + 20);
+        if (this.resonance.active) {
+            ctx.fillStyle = '#0f0';
+            ctx.fillText('激活中!', 525, by + 48);
+        } else if (resCd < 1) {
+            ctx.fillStyle = '#888';
+            ctx.fillText(`冷却: ${Math.ceil(this.resonance.cd)}s`, 525, by + 48);
+        }
+        
+        // 游戏结束
+        if (this.state === 'gameover') {
+            ctx.fillStyle = 'rgba(0,0,0,0.8)';
+            ctx.fillRect(0, 0, 900, 600);
+            ctx.fillStyle = '#f44';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('游戏结束', 450, 280);
+            ctx.font = '24px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(`到达层数: ${this.player.lv} | 击杀: ${Array.from(this.allRooms.values()).reduce((a,r) => a + (r.cleared ? 1 : 0), 0)}`, 450, 340);
+            ctx.fillText('按 F5 重新开始', 450, 380);
+        }
+        
+        // 胜利画面
+        if (this.state === 'victory') {
+            ctx.fillStyle = 'rgba(0,0,0,0.8)';
+            ctx.fillRect(0, 0, 900, 600);
+            ctx.fillStyle = '#4f4';
+            ctx.font = 'bold 56px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('🎉 胜利! 🎉', 450, 260);
+            ctx.font = '24px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.fillText('你击败了母体，拯救了农场!', 450, 320);
+            ctx.fillText(`最终等级: ${this.player.lv} | 武器数: ${this.weapons.length}`, 450, 360);
+            ctx.fillText('按 F5 再次挑战', 450, 420);
+        }
+    }
+
+    loop(t) {
+        const dt = Math.min((t - (this.lastT || t)) / 1000, 0.1);
+        this.lastT = t;
+        
+        if (this.state === 'playing' || this.transition.active) {
+            this.update(dt);
+        }
+        this.draw();
+        
+        this.rafId = requestAnimationFrame(t => this.loop(t));
+    }
+    
+    spawnRoomReward() {
+        // 根据房间类型决定奖励
+        const roll = Math.random();
+        
+        if (this.curRoom.type === 'boss') {
+            // Boss房必掉图腾
+            this.spawnTotemPickup();
+            this.spawnWeaponPickup();
+        } else if (this.curRoom.type === 'treasure') {
+            // 宝箱房50%掉图腾
+            if (Math.random() < 0.5) {
+                this.spawnTotemPickup();
+            } else {
+                this.spawnItemPickup();
+            }
+        } else if (roll < 0.15) {
+            // 普通房15%掉图腾
+            this.spawnTotemPickup();
+        } else if (roll < 0.4) {
+            // 25%掉道具
+            this.spawnItemPickup();
+        } else if (roll < 0.6) {
+            // 20%掉武器
+            this.spawnWeaponPickup();
+        }
+    }
+    
+    spawnTotemPickup() {
+        const totemId = randInt(1, 8); // 1-7 图腾ID
+        const totem = TOTEMS[totemId];
+        if (!totem) return;
+        
+        this.curRoom.items.push({
+            x: 450,
+            y: 300,
+            type: 'totem',
+            totemId: totemId,
+            icon: totem.icon,
+            name: totem.name
+        });
+        
+        console.log(`掉落图腾: ${totem.name}`);
+    }
+    
+    spawnItemPickup() {
+        const itemId = randInt(1, 16); // 1-15 道具ID
+        const item = ITEMS[itemId];
+        if (!item) return;
+        
+        this.curRoom.items.push({
+            x: 450,
+            y: 300,
+            id: itemId,
+            icon: item.icon,
+            name: item.name
+        });
+        
+        console.log(`掉落道具: ${item.name}`);
+    }
+    
+    spawnWeaponPickup() {
+        const wKeys = Object.keys(WEAPONS);
+        const randKey = wKeys[Math.floor(Math.random() * wKeys.length)];
+        
+        this.curRoom.items.push({
+            x: 450,
+            y: 300,
+            type: 'weapon',
+            weaponKey: randKey,
+            icon: WEAPONS[randKey].icon,
+            name: WEAPONS[randKey].name
+        });
+        
+        console.log(`掉落武器: ${WEAPONS[randKey].name}`);
+    }
+}
+
+// 启动
+window.onload = () => {
+    const game = new Game();
+    setTimeout(() => game.start(), 500);
+};
+</script>
+</body>
+</html>

@@ -1,0 +1,29 @@
+const { chromium } = require('playwright');
+
+(async () => {
+    const browser = await chromium.launch();
+    const page = await browser.newPage({ viewport: { width: 1200, height: 800 } });
+    
+    await page.goto('https://wearescientist.github.io/rouge-cow/', { waitUntil: 'networkidle' });
+    await page.waitForTimeout(8000); // 等待加载完成
+    
+    // 进入战斗房间
+    await page.keyboard.down('d');
+    await page.waitForTimeout(3000);
+    await page.keyboard.up('d');
+    await page.waitForTimeout(1000);
+    
+    // 截图 - 普通状态
+    await page.screenshot({ path: '/root/.openclaw/workspace/rougelike-cow/test_before.png' });
+    
+    // 按空格激活地脉共鸣
+    await page.keyboard.press(' ');
+    await page.waitForTimeout(500);
+    
+    // 截图 - 激活状态
+    await page.screenshot({ path: '/root/.openclaw/workspace/rougelike-cow/test_active.png' });
+    
+    console.log('Test completed');
+    
+    await browser.close();
+})();

@@ -1,0 +1,487 @@
+{
+  "version": "0.8.0",
+  "trainCount": "6",
+  "timestamp": "2026-02-18T20:42:56.409Z",
+  "events": [
+    {
+      "time": 0.002,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 0.505,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 1.008,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 1.511,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 2.014,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 2.518,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 3.022,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 3.526,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 4.03,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 4.534,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 5.036,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 5.54,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 6.042,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 6.547,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 7.05,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 7.553,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 8.055,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 8.56,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 9.063,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 9.565,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 10.067,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 10.57,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 11.074,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 11.576,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 12.078,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 12.58,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 13.081,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 13.584,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 14.087,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 14.59,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 15.092,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 15.596,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 16.099,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 16.601,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 17.102,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 17.606,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 18.108,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 18.612,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 19.116,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 19.619,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 20.121,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 20.623,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 21.127,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 21.629,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 22.131,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 22.634,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 23.137,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 23.639,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 24.143,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 24.646,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 25.149,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 25.652,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 26.155,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 26.658,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 27.16,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 27.664,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 28.165,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 28.67,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 29.171,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    },
+    {
+      "time": 29.675,
+      "source": "canvas",
+      "canvasExists": true,
+      "uiVisible": false,
+      "width": 900,
+      "height": 600
+    }
+  ]
+}

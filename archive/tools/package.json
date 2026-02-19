@@ -1,0 +1,6 @@
+{
+  "name": "rougelike-cow",
+  "version": "0.8.0",
+  "description": "A roguelike game featuring a cow",
+  "main": "index.html"
+}

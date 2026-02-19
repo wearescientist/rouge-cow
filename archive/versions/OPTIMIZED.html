@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>肉鸽牛牛 v2.0 - 优化版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+        #gameContainer {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        canvas { background: #0d0d1a; box-shadow: 0 0 50px rgba(68,136,255,0.3); }
+        #ui { position: fixed; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; }
+        #fsBtn {
+            position: fixed; top: 20px; right: 20px;
+            width: 50px; height: 50px;
+            background: rgba(0,0,0,0.7);
+            border: 2px solid #4488ff;
+            border-radius: 8px;
+            color: #fff; font-size: 24px;
+            cursor: pointer; pointer-events: auto;
+            z-index: 100;
+        }
+        #fsBtn:hover { background: #4488ff; }
+        #stats {
+            position: fixed; top: 20px; left: 20px;
+            color: #888; font-family: monospace; font-size: 12px;
+            background: rgba(0,0,0,0.7); padding: 10px;
+            border-radius: 4px;
+        }
+        #controls {
+            position: fixed; bottom: 20px; left: 50%;
+            transform: translateX(-50%);
+            display: flex; gap: 20px;
+            color: #888; font-size: 13px;
+            background: rgba(0,0,0,0.7); padding: 10px 20px;
+            border-radius: 20px; pointer-events: auto;
+        }
+        .key { background: #333; padding: 2px 6px; border-radius: 3px; color: #fff; }
+        #loading {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: #0a0a14; display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 1000;
+        }
+        #loading.hidden { display: none; }
+        .cow { font-size: 80px; animation: bounce 0.5s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="cow">🐮</div>
+        <p style="color:#888;margin-top:20px">加载游戏资源...</p>
+    </div>
+    <div id="gameContainer"><canvas id="c"></canvas></div>
+    <div id="ui">
+        <button id="fsBtn" title="全屏">⛶</button>
+        <div id="stats">FPS: --<br>Entities: --</div>
+        <div id="controls">
+            <span><span class="key">WASD</span> 移动</span>
+            <span><span class="key">1-9</span> 道具</span>
+            <span><span class="key">W</span> 武器</span>
+            <span><span class="key">ESC</span> 暂停</span>
+        </div>
+    </div>
+
+<script>
+// ==================== 优化的核心引擎 ====================
+class Vec2 {
+    constructor(x=0,y=0){this.x=x;this.y=y}
+    add(v){return new Vec2(this.x+v.x,this.y+v.y)}
+    sub(v){return new Vec2(this.x-v.x,this.y-v.y)}
+    mul(s){return new Vec2(this.x*s,this.y*s)}
+    len(){return Math.sqrt(this.x*this.x+this.y*this.y)}
+    norm(){const l=this.len();return l>0?new Vec2(this.x/l,this.y/l):new Vec2(0,0)}
+    dist(v){return this.sub(v).len()}
+}
+
+class Entity {
+    constructor(x,y,w,h){
+        this.pos=new Vec2(x,y);this.vel=new Vec2(0,0);
+        this.width=w;this.height=h;this.alive=true;
+        this._b={l:0,r:0,t:0,b:0};
+    }
+    get x(){return this.pos.x}get y(){return this.pos.y}
+    set x(v){this.pos.x=v}set y(v){this.pos.y=v}
+    get bounds(){this._b.l=this.x-this.width/2;this._b.r=this.x+this.width/2;this._b.t=this.y-this.height/2;this._b.b=this.y+this.height/2;return this._b}
+    update(dt){this.pos.x+=this.vel.x*dt;this.pos.y+=this.vel.y*dt}
+    collides(o){const a=this.bounds,b=o.bounds;return a.l<b.r&&a.r>b.l&&a.t<b.b&&a.b>b.t}
+    distTo(o){return this.pos.dist(o.pos)}
+}
+
+// ==================== 优化的粒子系统（带对象池） ====================
+class ParticleSys {
+    constructor(n=300){
+        this.pool=[];this.active=[];
+        for(let i=0;i<n;i++)this.pool.push({x:0,y:0,vx:0,vy:0,life:0,max:0,color:'#fff',size:4,dec:0.02,grav:0,alive:false});
+    }
+    emit(x,y,c,o={}){
+        let p=this.pool.find(p=>!p.alive)||this.pool[0];
+        p.x=x;p.y=y;p.life=o.life||1;p.max=p.life;p.color=o.color||c||'#fff';p.size=o.size||4;p.dec=o.decay||0.02;p.grav=o.gravity||0;p.alive=true;
+        p.vx=(Math.random()-0.5)*(o.speed||100);p.vy=(Math.random()-0.5)*(o.speed||100);
+        if(!this.active.includes(p))this.active.push(p);
+    }
+    burst(x,y,rarity){
+        const cols={common:['#fff','#ccc'],rare:['#4488ff'],epic:['#a4f'],legendary:['#fc0'],cursed:['#f44']};
+        const cs=cols[rarity]||cols.common,cnt=rarity==='legendary'?40:rarity==='epic'?25:15;
+        for(let i=0;i<cnt;i++){
+            const a=(Math.PI*2*i)/cnt,s=100+Math.random()*100;
+            this.emit(x,y,cs[0],{life:1,size:3+Math.random()*4,speed:0});
+            const p=this.active[this.active.length-1];
+            p.vx=Math.cos(a)*s;p.vy=Math.sin(a)*s;p.grav=50;
+        }
+    }
+    update(dt){
+        for(let i=this.active.length-1;i>=0;i--){
+            const p=this.active[i];
+            p.x+=p.vx*dt;p.y+=p.vy*dt;p.vy+=p.grav*dt;
+            p.life-=p.dec;
+            if(p.life<=0){p.alive=false;this.active.splice(i,1)}
+        }
+    }
+    draw(ctx){
+        for(const p of this.active){
+            ctx.globalAlpha=p.life/p.max;ctx.fillStyle=p.color;
+            ctx.fillRect(p.x-p.size/2,p.y-p.size/2,p.size,p.size);
+        }ctx.globalAlpha=1;
+    }
+}
+
+// ==================== 空间哈希优化碰撞 ====================
+class SpatialHash {
+    constructor(cs=80){this.cs=cs;this.grid=new Map()}
+    clear(){this.grid.clear()}
+    insert(e){
+        const k=`${Math.floor(e.x/this.cs)},${Math.floor(e.y/this.cs)}`;
+        if(!this.grid.has(k))this.grid.set(k,[]);this.grid.get(k).push(e);
+    }
+    query(x,y,r){
+        const rc=Math.ceil(r/this.cs),cx=Math.floor(x/this.cs),cy=Math.floor(y/this.cs),res=[];
+        for(let dx=-rc;dx<=rc;dx++)for(let dy=-rc;dy<=rc;dy++){const c=this.grid.get(`${cx+dx},${cy+dy}`);if(c)res.push(...c)}
+        return res;
+    }
+}
+
+// ==================== 道具系统（核心100道具） ====================
+const ITEMS={
+    1:{id:1,name:"多重射击",icon:"🎯",r:"common",ef:"pCnt",v:1,st:"lin",d:"发射物+1",m:10},
+    2:{id:2,name:"巨大化",icon:"📏",r:"common",ef:"pSize",v:0.5,st:"lin",d:"尺寸+50%",m:8},
+    3:{id:3,name:"快速射击",icon:"⚡",r:"common",ef:"fRate",v:-0.15,st:"hyp",d:"射速+15%",m:10},
+    26:{id:26,name:"心之容器",icon:"❤️",r:"common",ef:"maxHP",v:2,st:"lin",d:"生命+2",m:10},
+    51:{id:51,name:"加速靴",icon:"👟",r:"common",ef:"spd",v:0.2,st:"lin",d:"移速+20%",m:5},
+};
+
+class ItemMgr {
+    constructor(p){this.p=p;this.items={};this.cache={};this.dirty=true}
+    acquire(id){
+        const it=ITEMS[id];if(!it)return false;
+        const c=this.items[id]||0;if(it.m&&c>=it.m)return false;
+        this.items[id]=c+1;this.dirty=true;
+        if(it.ef==="maxHP"){this.p.maxHP+=it.v;this.p.hp+=it.v}
+        return true;
+    }
+    calc(){
+        if(!this.dirty)return this.cache;
+        const s={pCnt:0,pSize:1,fRate:1,spd:1,maxHP:0};
+        for(const[id,c]of Object.entries(this.items)){
+            const it=ITEMS[id];if(!it)continue;
+            let v=it.v*c;
+            if(it.st==="hyp")v=1-Math.pow(1-it.v,c);
+            switch(it.ef){case"pCnt":s.pCnt+=v;break;case"pSize":s.pSize+=v;break;case"fRate":s.fRate*=1+v;break;case"spd":s.spd+=v;break;case"maxHP":s.maxHP+=v;break}
+        }
+        this.cache=s;this.dirty=false;return s;
+    }
+}
+
+// ==================== 武器系统 ====================
+const WEAPONS={
+    whip:{n:"鞭子",icon:"🪄",d:15,cd:1.5,rng:80,arc:Math.PI*0.8,col:"#f60",type:"melee"},
+    wand:{n:"魔杖",icon:"🔮",d:10,cd:1.2,spd:200,homing:true,col:"#48f",type:"proj"},
+    knife:{n:"飞刀",icon:"🗡️",d:8,cd:0.8,spd:350,pierce:3,col:"#ccc",type:"proj"},
+    fireball:{n:"火球",icon:"🔥",d:25,cd:2.5,spd:150,expl:60,col:"#f40",type:"proj"}
+};
+
+class Weapon {
+    constructor(k,lv=1){this.key=k;this.cfg=WEAPONS[k];this.lv=lv;this.cd=0}
+    get dmg(){return this.cfg.d*(1+(this.lv-1)*0.2)}
+    update(dt){if(this.cd>0)this.cd-=dt}
+    fire(p,tgt,stats){
+        this.cd=this.cfg.cd*stats.fRate;
+        const b=[];
+        for(let i=0;i<stats.pCnt+1;i++){
+            let a=tgt?Math.atan2(tgt.y-p.y,tgt.x-p.x):0;
+            if(stats.pCnt>0)a+=(i-stats.pCnt/2)*0.1;
+            b.push({x:p.x,y:p.y,vx:Math.cos(a)*this.cfg.spd,vy:Math.sin(a)*this.cfg.spd,dmg:this.dmg*stats.pSize,col:this.cfg.col,life:3,pierce:this.cfg.pierce||0,expl:this.cfg.expl||0});
+        }
+        return b;
+    }
+}
+
+// ==================== 敌人系统 ====================
+class Enemy extends Entity {
+    constructor(x,y,cfg){
+        super(x,y,24,24);this.cfg=cfg;this.hp=cfg.hp;this.maxHp=cfg.hp;this.dmg=cfg.dmg;this.exp=cfg.exp;
+        this.facing=true;this.hit=0;this.animOff=Math.random()*1000;
+    }
+    update(dt,p,enemies,obs){
+        const dx=p.x-this.x,dy=p.y-this.y,d=Math.sqrt(dx*dx+dy*dy);
+        if(d>0){this.vel.x=(dx/d)*this.cfg.spd;this.vel.y=(dy/d)*this.cfg.spd;this.facing=dx>0}
+        super.update(dt);
+        // 障碍物碰撞
+        for(const o of obs){
+            const dx=this.x-o.x,dy=this.y-o.y,ox=o.w/2+14,oy=o.h/2+14;
+            if(Math.abs(dx)<ox&&Math.abs(dy)<oy){
+                if(Math.abs(dx)/ox>Math.abs(dy)/oy)this.x+=dx>0?2:-2;else this.y+=dy>0?2:-2;
+            }
+        }
+        if(this.hit>0)this.hit-=dt;
+    }
+    takeDmg(amt){
+        this.hp-=amt;this.hit=0.2;return this.hp<=0;
+    }
+    draw(ctx,sp){
+        if(this.hit>0)ctx.fillStyle='rgba(255,0,0,0.3)';
+        ctx.fillRect(this.x-12,this.y-12,24,24);
+        ctx.fillStyle='#fff';ctx.font='20px Arial';ctx.textAlign='center';
+        ctx.fillText('👾',this.x,this.y+5);
+        if(this.hp<this.maxHp){ctx.fillStyle='#333';ctx.fillRect(this.x-12,this.y-20,24,4);ctx.fillStyle=this.hp/this.maxHp>0.5?'#4f4':'#f44';ctx.fillRect(this.x-12,this.y-20,24*(this.hp/this.maxHp),4)}
+    }
+}
+
+// ==================== 房间系统（以撒风格） ====================
+class Room {
+    constructor(x,y,type='normal'){
+        this.gx=x;this.gy=y;this.type=type;this.id=`${x},${y}`;
+        this.w=900;this.h=600;this.wt=40;
+        this.doors={0:null,1:null,2:null,3:null};
+        this.visited=false;this.cleared=false;
+        this.enemies=[];this.obs=[];
+        // 生成障碍物
+        const n=type==='boss'?4:type==='treasure'?2:Math.floor(Math.random()*3)+2;
+        for(let i=0;i<n;i++)this.obs.push({x:100+Math.random()*(this.w-200),y:100+Math.random()*(this.h-200),w:40+Math.random()*30,h:40+Math.random()*30});
+    }
+    update(dt,p,sp){
+        if(!this.visited||this.cleared)return false;
+        for(let i=this.enemies.length-1;i>=0;i--){
+            const e=this.enemies[i];e.update(dt,p,this.enemies,this.obs);
+            if(e.distTo(p)<20)p.hp-=e.dmg*dt;
+            if(e.hp<=0){this.enemies.splice(i,1);return {type:'kill',x:e.x,y:e.y,exp:e.exp}}
+        }
+        // 刷怪
+        if(this.enemies.length<5&&Math.random()<0.01){
+            const cfg={hp:10+Math.random()*20,spd:30+Math.random()*40,dmg:1,exp:2};
+            this.enemies.push(new Enemy(this.wt+20+Math.random()*(this.w-this.wt*2-40),this.wt+20+Math.random()*(this.h-this.wt*2-40),cfg));
+        }
+        if(this.enemies.length===0&&!this.cleared){this.cleared=true;this.open();return{type:'clear'}}
+        return null;
+    }
+    open(){for(const d in this.doors)if(this.doors[d])this.doors[d].open=true}
+    checkDoor(p){
+        const cx=this.w/2,cy=this.h/2;
+        if(this.doors[0]&&this.doors[0].open&&p.y<this.wt+20&&Math.abs(p.x-cx)<35)return 0;
+        if(this.doors[2]&&this.doors[2].open&&p.y>this.h-this.wt-20&&Math.abs(p.x-cx)<35)return 2;
+        if(this.doors[3]&&this.doors[3].open&&p.x<this.wt+20&&Math.abs(p.y-cy)<35)return 3;
+        if(this.doors[1]&&this.doors[1].open&&p.x>this.w-this.wt-20&&Math.abs(p.y-cy)<35)return 1;
+        return null;
+    }
+    draw(ctx){
+        ctx.fillStyle={normal:'#2a2a3e',boss:'#3e1a1a',treasure:'#1a3e1a',start:'#2a3e2a'}[this.type];
+        ctx.fillRect(0,0,this.w,this.h);
+        // 墙壁
+        ctx.fillStyle=this.cleared?'#3a3a4e':'#1a1a2e';
+        const d=40,cx=this.w/2,cy=this.h/2;
+        // 上
+        if(!this.doors[0]||!this.doors[0].open){ctx.fillRect(0,0,cx-d,d);ctx.fillRect(cx+d,0,cx-d,d)}
+        else ctx.fillRect(0,0,this.w,d);
+        // 下
+        if(!this.doors[2]||!this.doors[2].open){ctx.fillRect(0,this.h-d,cx-d,d);ctx.fillRect(cx+d,this.h-d,cx-d,d)}
+        else ctx.fillRect(0,this.h-d,this.w,d);
+        // 左
+        if(!this.doors[3]||!this.doors[3].open){ctx.fillRect(0,0,d,cy-d);ctx.fillRect(0,cy+d,d,cy-d)}
+        else ctx.fillRect(0,0,d,this.h);
+        // 右
+        if(!this.doors[1]||!this.doors[1].open){ctx.fillRect(this.w-d,0,d,cy-d);ctx.fillRect(this.w-d,cy+d,d,cy-d)}
+        else ctx.fillRect(this.w-d,0,d,this.h);
+        // 门
+        ctx.fillStyle='#4a2a2a';
+        if(this.doors[0])ctx.fillRect(cx-35,0,70,d);
+        if(this.doors[2])ctx.fillRect(cx-35,this.h-d,70,d);
+        if(this.doors[3])ctx.fillRect(0,cy-35,d,70);
+        if(this.doors[1])ctx.fillRect(this.w-d,cy-35,d,70);
+        // 障碍物
+        for(const o of this.obs){ctx.fillStyle='#444';ctx.fillRect(o.x-o.w/2,o.y-o.h/2,o.w,o.h)}
+        // 敌人
+        for(const e of this.enemies)e.draw(ctx);
+        if(!this.cleared&&this.enemies.length>0){ctx.fillStyle='#f44';ctx.font='20px Arial';ctx.fillText('🔒',cx,this.wt+30)}
+    }
+}
+
+class MapGen {
+    generate(){
+        const rooms=new Map();
+        const start=new Room(0,0,'start');
+        rooms.set(start.id,start);
+        const q=[start];const dirs=[{dx:0,dy:-1,d:0,od:2},{dx:1,dy:0,d:1,od:3},{dx:0,dy:1,d:2,od:0},{dx:-1,dy:0,d:3,od:1}];
+        let cnt=1;
+        while(q.length&&cnt<10){
+            const cur=q.shift();
+            for(const{dx,dy,d,od}of dirs.sort(()=>Math.random()-0.5)){
+                const nx=cur.gx+dx,ny=cur.gy+dy,id=`${nx},${ny}`;
+                if(rooms.has(id)){
+                    const ex=rooms.get(id);
+                    if(!cur.doors[d]){cur.doors[d]={open:false,target:ex};ex.doors[od]={open:false,target:cur}}
+                    continue;
+                }
+                if(Math.random()>0.4||cnt<5){
+                    const type=cnt===9?'boss':Math.random()<0.2?'treasure':'normal';
+                    const nr=new Room(nx,ny,type);
+                    cur.doors[d]={open:false,target:nr};nr.doors[od]={open:false,target:cur};
+                    rooms.set(id,nr);q.push(nr);cnt++;
+                }
+            }
+        }
+        return {start,rooms};
+    }
+}
+
+// ==================== 主游戏 ====================
+class Game {
+    constructor(cvs){
+        this.cvs=cvs;this.ctx=cvs.getContext('2d');
+        this.resize();window.addEventListener('resize',()=>this.resize());
+        this.keys={};window.addEventListener('keydown',e=>{this.keys[e.key]=true;if(e.key>='1'&&e.key<='9')this.items.acquire(parseInt(e.key));if(e.key==='w'||e.key==='W')this.addWep()});
+        window.addEventListener('keyup',e=>this.keys[e.key]=false);
+        this.particles=new ParticleSys();
+        this.spatial=new SpatialHash();
+        this.map=new MapGen();
+    }
+    resize(){
+        const r=window.innerWidth/window.innerHeight>16/9;
+        if(r){this.cvs.height=window.innerHeight;this.cvs.width=this.cvs.height*16/9}
+        else{this.cvs.width=window.innerWidth;this.cvs.height=this.cvs.width/16*9}
+    }
+    addWep(){
+        const k=Object.keys(WEAPONS)[Math.floor(Math.random()*4)];
+        const ex=this.weps.find(w=>w.key===k);
+        if(ex)ex.lv++;else this.weps.push(new Weapon(k,1));
+    }
+    init(){
+        const{start,rooms}=this.map.generate();
+        this.cur=start;this.rooms=rooms;this.cur.visited=true;
+        this.p={x:450,y:300,hp:6,maxHP:6,spd:150,exp:0,lv:1};
+        this.items=new ItemMgr(this.p);
+        this.weps=[new Weapon('whip',1)];
+        this.bullets=[];this.gems=[];
+        this.trans=false;this.tt=0;
+        requestAnimationFrame(t=>this.loop(t));
+        document.getElementById('loading').classList.add('hidden');
+    }
+    update(dt){
+        if(this.trans){this.tt+=dt;if(this.tt>0.3){this.trans=false;this.tt=0}return}
+        const stats=this.items.calc();
+        // 移动
+        let vx=0,vy=0;
+        if(this.keys['w']||this.keys['ArrowUp'])vy=-1;if(this.keys['s']||this.keys['ArrowDown'])vy=1;
+        if(this.keys['a']||this.keys['ArrowLeft'])vx=-1;if(this.keys['d']||this.keys['ArrowRight'])vx=1;
+        if(vx||vy){const l=Math.sqrt(vx*vx+vy*vy);vx/=l;vy/=l}
+        this.p.x+=vx*this.p.spd*stats.spd*dt;this.p.y+=vy*this.p.spd*stats.spd*dt;
+        // 边界
+        this.p.x=Math.max(50,Math.min(850,this.p.x));this.p.y=Math.max(50,Math.min(550,this.p.y));
+        // 房间更新
+        const evt=this.cur.update(dt,this.p);
+        if(evt){
+            if(evt.type==='kill'){this.gems.push({x:evt.x,y:evt.y,v:evt.exp,life:30})}
+            if(evt.type==='clear'){this.cur.open()}
+        }
+        // 门传送
+        const dr=this.cur.checkDoor(this.p);
+        if(dr!==null&&!this.trans){this.trans=true;const nr=this.cur.doors[dr].target;this.cur=nr;this.cur.visited=true;const od=(dr+2)%4;this.p.x=[450,860,450,40][od];this.p.y=[40,300,560,300][od]}
+        // 武器
+        let tgt=null,md=999;
+        for(const e of this.cur.enemies){const d=Math.sqrt((e.x-this.p.x)**2+(e.y-this.p.y)**2);if(d<md){md=d;tgt=e}}
+        for(const w of this.weps){w.update(dt);if(w.cd<=0&&tgt){this.bullets.push(...w.fire(this.p,tgt,stats))}}
+        // 子弹
+        this.spatial.clear();
+        for(const b of this.bullets)this.spatial.insert({x:b.x,y:b.y,r:10,obj:b});
+        for(let i=this.bullets.length-1;i>=0;i--){
+            const b=this.bullets[i];b.x+=b.vx*dt;b.y+=b.vy*dt;b.life-=dt;
+            if(b.life<=0){this.bullets.splice(i,1);continue}
+            const nearby=this.spatial.query(b.x,b.y,50);
+            for(const n of nearby){const e=n.obj;if(e&&e.hp&&this.cur.enemies.includes(e)){const d=Math.sqrt((e.x-b.x)**2+(e.y-b.y)**2);if(d<20){e.hp-=b.dmg;if(e.hp<=0){e.hp=0;this.cur.enemies.splice(this.cur.enemies.indexOf(e),1);this.gems.push({x:e.x,y:e.y,v:2,life:30})}this.bullets.splice(i,1);break}}}
+        }
+        // 经验
+        for(let i=this.gems.length-1;i>=0;i--){
+            const g=this.gems[i];const d=Math.sqrt((g.x-this.p.x)**2+(g.y-this.p.y)**2);
+            if(d<150){g.x+=(this.p.x-g.x)*5*dt;g.y+=(this.p.y-g.y)*5*dt}
+            if(d<20){this.p.exp+=g.v;this.gems.splice(i,1)}
+        }
+        this.particles.update(dt);
+    }
+    draw(){
+        this.ctx.fillStyle='#000';this.ctx.fillRect(0,0,this.cvs.width,this.cvs.height);
+        this.ctx.save();this.ctx.scale(this.cvs.width/900,this.cvs.height/600);
+        this.cur.draw(this.ctx);
+        for(const g of this.gems){this.ctx.fillStyle='#48f';this.ctx.beginPath();this.ctx.moveTo(g.x,g.y-5);this.ctx.lineTo(g.x+4,g.y);this.ctx.lineTo(g.x,g.y+5);this.ctx.lineTo(g.x-4,g.y);this.ctx.fill()}
+        for(const b of this.bullets){this.ctx.fillStyle=b.col;this.ctx.beginPath();this.ctx.arc(b.x,b.y,4,0,Math.PI*2);this.ctx.fill()}
+        this.ctx.fillStyle='#fff';this.ctx.font='20px Arial';this.ctx.fillText('🐮',this.p.x-10,this.p.y+5);
+        this.particles.draw(this.ctx);
+        if(this.trans){this.ctx.fillStyle=`rgba(0,0,0,${Math.abs(Math.sin(this.tt*10))})`;this.ctx.fillRect(0,0,900,600)}
+        this.ctx.restore();
+        // UI
+        this.ctx.fillStyle='rgba(0,0,0,0.5)';this.ctx.fillRect(10,10,150,80);
+        this.ctx.fillStyle='#fff';this.ctx.font='16px Arial';this.ctx.fillText('❤️'.repeat(Math.ceil(this.p.hp)),20,35);
+        this.ctx.fillStyle='#48f';this.ctx.fillText(`Lv.${this.p.lv} EXP:${Math.floor(this.p.exp)}`,20,60);
+        this.ctx.fillStyle='#fff';this.ctx.fillText(`房间:${this.cur.type}`,20,80);
+    }
+    loop(t){
+        const dt=Math.min((t-(this.lt||t))/1000,0.1);this.lt=t;
+        this.update(dt);this.draw();
+        document.getElementById('stats').innerHTML=`FPS:${Math.round(1/dt)}<br>Entities:${this.cur.enemies.length+this.bullets.length}`;
+        requestAnimationFrame(t=>this.loop(t));
+    }
+}
+
+// 启动
+const g=new Game(document.getElementById('c'));
+g.init();
+
+// 全屏
+document.getElementById('fsBtn').onclick=()=>{
+    if(!document.fullscreenElement)document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+};
+</script>
+</body>
+</html>

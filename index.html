@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>肉鸽牛牛 - v0.8.1 全屏适配+冲刺</title>
+    <title>肉鸽牛牛 - v0.9.0 幸存者模式重构</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
         html, body { 
@@ -50,6 +50,277 @@
             z-index: 100;
         }
         .key { background: #333; color: #fff; padding: 2px 8px; border-radius: 4px; margin: 0 2px; }
+        
+        /* 速度控制按钮 */
+        #speedControl {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            gap: 5px;
+            z-index: 200;
+            background: rgba(0,0,0,0.7);
+            padding: 5px 10px;
+            border-radius: 20px;
+            border: 1px solid #444;
+        }
+        .speed-btn {
+            padding: 5px 12px;
+            font-size: 12px;
+            background: #333;
+            color: #888;
+            border: 1px solid #555;
+            border-radius: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: Arial, sans-serif;
+        }
+        .speed-btn:hover {
+            background: #444;
+            color: #fff;
+        }
+        .speed-btn.active {
+            background: #4488ff;
+            color: #fff;
+            border-color: #4488ff;
+            box-shadow: 0 0 10px rgba(68,136,255,0.5);
+        }
+        #speedLabel {
+            position: fixed;
+            top: 45px;
+            right: 10px;
+            color: #4488ff;
+            font-size: 11px;
+            font-family: Arial, sans-serif;
+            z-index: 200;
+        }
+        
+        /* 主游戏布局 - 三栏铺满屏幕 */
+        #mainLayout {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            display: none;
+            background: #0a0a14;
+        }
+        
+        #mainLayout.active {
+            display: flex;
+            flex-direction: row;
+        }
+        
+        #leftSidebar {
+            width: 260px;
+            height: 100%;
+            background: rgba(10,10,20,0.95);
+            border-right: 1px solid #222;
+            padding: 15px 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        
+        #centerGame {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #050508;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        #gameCanvas {
+            display: block;
+            background: #0d0d1a;
+            /* 填满容器 */
+            width: 100%;
+            height: 100%;
+        }
+        
+        #rightSidebar {
+            width: 260px;
+            height: 100%;
+            background: rgba(10,10,20,0.95);
+            border-left: 1px solid #222;
+            padding: 15px 12px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-shrink: 0;
+        }
+        
+        /* 侧边栏区块 */
+        .sidebar-section {
+            background: rgba(255,255,255,0.03);
+            border-radius: 8px;
+            padding: 12px;
+            border: 1px solid #222;
+        }
+        
+        .section-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            padding-bottom: 6px;
+            border-bottom: 1px solid #333;
+            color: #4f4;
+        }
+        
+        #rightSidebar .section-title {
+            color: #48f;
+        }
+        
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 6px 0;
+            font-size: 13px;
+        }
+        
+        .stat-label { 
+            color: #888; 
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .stat-value { 
+            color: #fff; 
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .stat-value.hp { color: #f44; }
+        .stat-value.lv { color: #48f; }
+        .stat-value.gold { color: #fc0; }
+        
+        /* 武器列表 */
+        .weapon-list {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        
+        .weapon-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            font-size: 12px;
+            border: 1px solid transparent;
+        }
+        
+        .weapon-item.active {
+            border-color: #4f4;
+            background: rgba(100,255,100,0.1);
+        }
+        
+        .weapon-icon { font-size: 16px; }
+        .weapon-name { flex: 1; }
+        .weapon-lv {
+            font-size: 10px;
+            color: #888;
+        }
+        
+        /* 小地图 */
+        .mini-map-wrapper {
+            width: 100%;
+            aspect-ratio: 1;
+            background: rgba(0,0,0,0.5);
+            border-radius: 6px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+        
+        #miniMapCanvas {
+            width: 100%;
+            height: 100%;
+        }
+        
+        /* 道具格子 */
+        .item-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 4px;
+        }
+        
+        .item-cell {
+            aspect-ratio: 1;
+            background: rgba(255,255,255,0.05);
+            border-radius: 3px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            border: 1px solid #222;
+        }
+        
+        .item-cell.filled {
+            background: rgba(100,100,100,0.2);
+            border-color: #444;
+        }
+        
+        /* 顶部中央分数 */
+        #topScoreBar {
+            position: fixed;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            padding: 10px 30px;
+            border-radius: 10px;
+            border: 2px solid #fa0;
+            z-index: 300;
+            text-align: center;
+            display: none;
+        }
+        
+        #scoreValue {
+            color: #ff0;
+            font-size: 28px;
+            font-weight: bold;
+            font-family: 'Courier New', monospace;
+            text-shadow: 0 0 10px rgba(255,255,0,0.5);
+        }
+        
+        #killStreak {
+            color: #f44;
+            font-size: 12px;
+            margin-top: 2px;
+        }
+        
+        /* 底部状态条 */
+        #bottomStatusBar {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 300;
+            display: none;
+        }
+        
+        .status-pill {
+            background: rgba(0,0,0,0.8);
+            padding: 6px 15px;
+            border-radius: 15px;
+            font-size: 12px;
+            color: #aaa;
+            border: 1px solid #333;
+        }
+        
+        .status-pill span { color: #fff; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -78,22 +349,170 @@
         </div>
     </div>
     
-    <div id="gameContainer">
-        <canvas id="gameCanvas" width="900" height="600"></canvas>
+    <!-- 主游戏布局（三栏） -->
+    <div id="mainLayout">
+        <!-- 左侧边栏 -->
+        <div id="leftSidebar">
+            <!-- 角色状态 -->
+            <div class="sidebar-section">
+                <div class="section-title">🐮 角色状态</div>
+                <div class="stat-row">
+                    <span class="stat-label">❤️ 生命</span>
+                    <span class="stat-value hp" id="sidebarHp">6/6</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">⭐ 等级</span>
+                    <span class="stat-value lv" id="sidebarLv">Lv.1</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">💰 金币</span>
+                    <span class="stat-value gold" id="sidebarGold">100</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">📍 层数</span>
+                    <span class="stat-value" id="sidebarFloor">1/6</span>
+                </div>
+            </div>
+            
+            <!-- 战斗属性 -->
+            <div class="sidebar-section">
+                <div class="section-title">⚔️ 战斗属性</div>
+                <div class="stat-row">
+                    <span class="stat-label">🗡️ 攻击力</span>
+                    <span class="stat-value" id="sidebarDmg">15</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">💨 移速</span>
+                    <span class="stat-value" id="sidebarSpeed">100%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">⚡ 攻速</span>
+                    <span class="stat-value" id="sidebarFireRate">100%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🎯 暴击</span>
+                    <span class="stat-value" id="sidebarCrit">0%</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🛡️ 护甲</span>
+                    <span class="stat-value" id="sidebarArmor">0</span>
+                </div>
+            </div>
+            
+            <!-- 武器列表 -->
+            <div class="sidebar-section">
+                <div class="section-title">🔫 武器装备</div>
+                <div class="weapon-list" id="sidebarWeapons">
+                    <!-- 动态生成 -->
+                </div>
+            </div>
+            
+            <!-- 材料 -->
+            <div class="sidebar-section">
+                <div class="section-title">💎 材料</div>
+                <div id="sidebarMaterials">暂无</div>
+            </div>
+        </div>
+        
+        <!-- 中间游戏区域 -->
+        <div id="centerGame">
+            <canvas id="gameCanvas"></canvas>
+        </div>
+        
+        <!-- 右侧边栏 -->
+        <div id="rightSidebar">
+            <!-- 以撒风格小地图 -->
+            <div class="sidebar-section">
+                <div class="section-title">🗺️ 地图</div>
+                <div class="mini-map-wrapper">
+                    <canvas id="miniMapCanvas" width="220" height="220"></canvas>
+                </div>
+                <div class="stat-row" style="margin-top:8px;">
+                    <span class="stat-label">当前房间</span>
+                    <span class="stat-value" id="sidebarRoomType">起点</span>
+                </div>
+            </div>
+            
+            <!-- 道具背包 -->
+            <div class="sidebar-section">
+                <div class="section-title">🎒 道具</div>
+                <div class="item-grid" id="sidebarItems">
+                    <!-- 动态生成20格 -->
+                </div>
+            </div>
+            
+            <!-- 本局统计 -->
+            <div class="sidebar-section">
+                <div class="section-title">📊 本局统计</div>
+                <div class="stat-row">
+                    <span class="stat-label">💯 分数</span>
+                    <span class="stat-value gold" id="sidebarScore">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">⚔️ 击杀</span>
+                    <span class="stat-value" id="sidebarKills">0</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">🚪 探索</span>
+                    <span class="stat-value" id="sidebarRooms">0</span>
+                </div>
+            </div>
+            
+            <!-- 操作提示 -->
+            <div class="sidebar-section controls-hint-section">
+                <div class="section-title">⌨️ 操作</div>
+                <div class="controls-hint">
+                    <div><span class="key">WASD</span> 移动</div>
+                    <div><span class="key">空格</span> 冲刺</div>
+                    <div><span class="key">1-3</span> 选择</div>
+                    <div><span class="key">E</span> 商店</div>
+                    <div><span class="key">V</span> 进化</div>
+                    <div><span class="key">F</span> 全屏</div>
+                </div>
+            </div>
+        </div>
     </div>
     
-    <div class="controls-hint">
-        <span class="key">WASD</span>移动 
-        <span class="key">空格</span>冲刺 
-        <span class="key">1-9</span>道具 
-        <span class="key">E</span>交互/商店 
-        <span class="key">V</span>武器进化 
-        <span class="key">F</span>全屏
+    <!-- 顶部分数条 -->
+    <div id="topScoreBar">
+        <div id="scoreValue">0</div>
+        <div id="killStreak" style="display:none">🔥 连杀 x<span id="streakCount">0</span></div>
+    </div>
+    
+    <!-- 底部状态条 -->
+    <div id="bottomStatusBar">
+        <div class="status-pill">第 <span id="bottomFloor">1</span> / <span id="bottomMaxFloor">6</span> 层</div>
+        <div class="status-pill">敌人: <span id="bottomEnemies">0</span></div>
+        <div class="status-pill" id="bottomRoomStatus">✓ 已清理</div>
+    </div>
+    
+    <!-- 速度控制 -->
+    <div id="speedControl">
+        <button class="speed-btn" data-speed="1" onclick="window.game.setSpeed(1)">1x</button>
+        <button class="speed-btn" data-speed="2" onclick="window.game.setSpeed(2)">2x</button>
+        <button class="speed-btn" data-speed="5" onclick="window.game.setSpeed(5)">5x</button>
+        <button class="speed-btn" data-speed="10" onclick="window.game.setSpeed(10)">10x</button>
+    </div>
+    
+
+        <div class="stat-row">
+            <span class="stat-label">击杀</span>
+            <span class="stat-value" id="panelKills">0</span>
+        </div>
+        <div class="stat-row">
+            <span class="stat-label">探索</span>
+            <span class="stat-value" id="panelRooms">0</span>
+        </div>
+    </div>
+    
+    <!-- 层数指示器 -->
+    <div class="floor-indicator" id="floorIndicator" style="display:none;">
+        第 <span id="currentFloor">1</span> / <span id="maxFloors">6</span> 层
     </div>
 
 <script>
 // ============================================================================
-// 肉鸽牛牛 v0.8.0 完整版 - 武器进化系统
+// 肉鸽牛牛 v0.9.0 幸存者模式重构 - 全武器同时攻击+3选1+刷怪重做
 // ============================================================================
 
 const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
@@ -765,6 +1184,7 @@ class Weapon {
                 vy: Math.sin(angle) * (this.cfg.speed || 200),
                 dmg: this.getDamage(stats),
                 color: this.cfg.color,
+                icon: this.cfg.icon,  // 添加武器图标
                 life: this.cfg.type === 'melee' ? 0.3 : 3,
                 pierce: (this.cfg.pierce || 0) + stats.pierce,
                 type: this.cfg.type,
@@ -782,40 +1202,40 @@ class Weapon {
 // 敌人配置（第3次迭代：10→22种）
 const ENEMY_TYPES = {
     // === Tier 1: 弱小敌人 ===
-    chick: { name: '变异小鸡', hp: 8, speed: 80, dmg: 1, exp: 2, gold: 3, color: '#ff6', sprite: 'chick' },
-    mouse: { name: '感染老鼠', hp: 6, speed: 100, dmg: 1, exp: 2, gold: 2, color: '#888', sprite: 'mouse' },
-    snail: { name: '寄生蜗牛', hp: 15, speed: 20, dmg: 1, exp: 1, gold: 2, color: '#8a8', sprite: 'snail' },
+    chick: { name: '变异小鸡', hp: 8, speed: 160, dmg: 1, exp: 2, gold: 3, color: '#ff6', sprite: 'chick' },
+    mouse: { name: '感染老鼠', hp: 6, speed: 200, dmg: 1, exp: 2, gold: 2, color: '#888', sprite: 'mouse' },
+    snail: { name: '寄生蜗牛', hp: 15, speed: 40, dmg: 1, exp: 1, gold: 2, color: '#8a8', sprite: 'snail' },
     
     // === Tier 2: 普通敌人 ===
-    rabbit: { name: '狂暴兔子', hp: 12, speed: 90, dmg: 2, exp: 3, gold: 4, color: '#f99', sprite: 'rabbit' },
-    bird: { name: '感染小鸟', hp: 10, speed: 120, dmg: 1, exp: 3, gold: 4, color: '#9cf', sprite: 'bird' },
-    pigeon: { name: '变异鸽子', hp: 14, speed: 70, dmg: 2, exp: 3, gold: 5, color: '#ccc', sprite: 'pigeon' },
+    rabbit: { name: '狂暴兔子', hp: 12, speed: 180, dmg: 2, exp: 3, gold: 4, color: '#f99', sprite: 'rabbit' },
+    bird: { name: '感染小鸟', hp: 10, speed: 240, dmg: 1, exp: 3, gold: 4, color: '#9cf', sprite: 'bird' },
+    pigeon: { name: '变异鸽子', hp: 14, speed: 140, dmg: 2, exp: 3, gold: 5, color: '#ccc', sprite: 'pigeon' },
     
     // === Tier 3: 标准敌人 ===
-    cat: { name: '变异猫', hp: 18, speed: 95, dmg: 2, exp: 4, gold: 6, color: '#fa3', sprite: 'cat' },
-    duck: { name: '感染鸭子', hp: 16, speed: 60, dmg: 2, exp: 4, gold: 5, color: '#ff0', sprite: 'duck' },
-    squirrel: { name: '疯狂松鼠', hp: 14, speed: 110, dmg: 2, exp: 4, gold: 6, color: '#963', sprite: 'squirrel' },
+    cat: { name: '变异猫', hp: 18, speed: 190, dmg: 2, exp: 4, gold: 6, color: '#fa3', sprite: 'cat' },
+    duck: { name: '感染鸭子', hp: 16, speed: 120, dmg: 2, exp: 4, gold: 5, color: '#ff0', sprite: 'duck' },
+    squirrel: { name: '疯狂松鼠', hp: 14, speed: 220, dmg: 2, exp: 4, gold: 6, color: '#963', sprite: 'squirrel' },
     
     // === Tier 4: 较强敌人 ===
-    dog: { name: '疯狗', hp: 22, speed: 105, dmg: 3, exp: 6, gold: 8, color: '#963', sprite: 'dog' },
-    pig: { name: '变异小猪', hp: 28, speed: 45, dmg: 3, exp: 6, gold: 9, color: '#f9c', sprite: 'pig' },
-    sheep: { name: '变异小羊', hp: 24, speed: 55, dmg: 2, exp: 5, gold: 7, color: '#eee', sprite: 'sheep' },
-    goose: { name: '守卫鹅', hp: 30, speed: 80, dmg: 3, exp: 7, gold: 10, color: '#fff', sprite: 'goose', special: 'charge' },
+    dog: { name: '疯狗', hp: 22, speed: 210, dmg: 3, exp: 6, gold: 8, color: '#963', sprite: 'dog' },
+    pig: { name: '变异小猪', hp: 28, speed: 90, dmg: 3, exp: 6, gold: 9, color: '#f9c', sprite: 'pig' },
+    sheep: { name: '变异小羊', hp: 24, speed: 110, dmg: 2, exp: 5, gold: 7, color: '#eee', sprite: 'sheep' },
+    goose: { name: '守卫鹅', hp: 30, speed: 160, dmg: 3, exp: 7, gold: 10, color: '#fff', sprite: 'goose', special: 'charge' },
     
     // === Tier 5: 精英敌人 ===
-    bear: { name: '巨熊', hp: 45, speed: 40, dmg: 4, exp: 10, gold: 15, color: '#630', sprite: 'bear' },
-    snake: { name: '毒蛇', hp: 20, speed: 100, dmg: 3, exp: 8, gold: 12, color: '#4a4', sprite: 'snake', special: 'poison' },
-    crab: { name: '铁甲蟹', hp: 55, speed: 35, dmg: 3, exp: 12, gold: 18, color: '#f44', sprite: 'crab', armor: 3 },
+    bear: { name: '巨熊', hp: 45, speed: 80, dmg: 4, exp: 10, gold: 15, color: '#630', sprite: 'bear' },
+    snake: { name: '毒蛇', hp: 20, speed: 200, dmg: 3, exp: 8, gold: 12, color: '#4a4', sprite: 'snake', special: 'poison' },
+    crab: { name: '铁甲蟹', hp: 55, speed: 70, dmg: 3, exp: 12, gold: 18, color: '#f44', sprite: 'crab', armor: 3 },
     
     // === Tier 6: Boss级 ===
-    turtle: { name: '玄龟', hp: 80, speed: 25, dmg: 5, exp: 20, gold: 30, color: '#2a2', sprite: 'turtle', armor: 5 },
-    boss_dog: { name: '狼王', hp: 65, speed: 85, dmg: 4, exp: 18, gold: 25, color: '#444', sprite: 'dog2', special: 'howl' },
+    turtle: { name: '玄龟', hp: 80, speed: 50, dmg: 5, exp: 20, gold: 30, color: '#2a2', sprite: 'turtle', armor: 5 },
+    boss_dog: { name: '狼王', hp: 65, speed: 170, dmg: 4, exp: 18, gold: 25, color: '#444', sprite: 'dog2', special: 'howl' },
     
     // === 特殊敌人（剧情相关） ===
-    tiaotiao: { name: '跳跳', hp: 30, speed: 130, dmg: 3, exp: 15, gold: 20, color: '#c85', sprite: 'rabbit', special: 'jump' },
-    tiezhua: { name: '铁爪', hp: 28, speed: 160, dmg: 4, exp: 18, gold: 22, color: '#a52', sprite: 'bird', special: 'dive' },
-    nibei: { name: '泥背', hp: 70, speed: 30, dmg: 3, exp: 20, gold: 35, color: '#6a5', sprite: 'turtle', special: 'tank', armor: 4 },
-    yinya: { name: '银牙', hp: 45, speed: 100, dmg: 4, exp: 25, gold: 30, color: '#789', sprite: 'dog2', special: 'summon' }
+    tiaotiao: { name: '跳跳', hp: 30, speed: 260, dmg: 3, exp: 15, gold: 20, color: '#c85', sprite: 'rabbit', special: 'jump' },
+    tiezhua: { name: '铁爪', hp: 28, speed: 320, dmg: 4, exp: 18, gold: 22, color: '#a52', sprite: 'bird', special: 'dive' },
+    nibei: { name: '泥背', hp: 70, speed: 60, dmg: 3, exp: 20, gold: 35, color: '#6a5', sprite: 'turtle', special: 'tank', armor: 4 },
+    yinya: { name: '银牙', hp: 45, speed: 200, dmg: 4, exp: 25, gold: 30, color: '#789', sprite: 'dog2', special: 'summon' }
 };
 
 // BOSS配置
@@ -1141,8 +1561,11 @@ class Room {
         const keys = Object.keys(ROOM_TEMPLATES);
         this.templateKey = templateKey || keys[Math.floor(Math.random() * keys.length)];
         this.template = ROOM_TEMPLATES[this.templateKey];
-        this.obstacles = this.template.obstacles.map(o => ({...o}));
-        this.spawnPoints = this.template.spawnPoints.map(p => ({...p}));
+        // 将相对坐标（0-1）转换为绝对坐标
+        this.spawnPoints = this.template.spawnPoints.map(p => ({
+            x: p.x < 1 ? p.x * this.width : p.x,
+            y: p.y < 1 ? p.y * this.height : p.y
+        }));
         
         // 波次管理器
         this.hordeManager = null;
@@ -1151,7 +1574,7 @@ class Room {
         }
         
         if (type === 'shop') {
-            this.npc = new ShopNPC(200, this.centerY);
+            this.npc = new ShopNPC(this.width * 0.15, this.centerY);
         }
         
         this.spawnRoomItems();
@@ -1160,9 +1583,9 @@ class Room {
     spawnRoomItems() {
         if (this.type === 'treasure') {
             const count = randInt(2, 4);
+            const r = Math.min(this.width, this.height) * 0.15; // 相对半径
             for (let i = 0; i < count; i++) {
                 const angle = (i / count) * Math.PI * 2;
-                const r = 200;
                 const x = this.centerX + Math.cos(angle) * r;
                 const y = this.centerY + Math.sin(angle) * r;
                 const itemId = randInt(1, 16);
@@ -1208,7 +1631,7 @@ class Room {
         if (this.type === 'hidden') {
             const eliteTypes = ['bear', 'yinya'];
             const typeKey = randChoice(eliteTypes);
-            const elite = new Enemy(450, 300, typeKey);
+            const elite = new Enemy(this.centerX, this.centerY, typeKey);
             elite.hp *= 2;
             elite.maxHp *= 2;
             elite.dmg *= 1.5;
@@ -1219,7 +1642,7 @@ class Room {
         
         if (this.type === 'boss') {
             const bossCfg = BOSS_TYPES.mother;
-            const boss = new Enemy(450, 200, 'bear');
+            const boss = new Enemy(this.centerX, this.centerY - 100, 'bear');
             boss.name = bossCfg.name;
             boss.hp = bossCfg.hp;
             boss.maxHp = bossCfg.hp;
@@ -1258,101 +1681,140 @@ class Room {
             treasure: '#2d2d1b', shop: '#1b1b2d', hidden: '#2d1b2d'
         };
         
-        // 只绘制视野内的地板
+        // 计算视野范围（世界坐标）
         const viewLeft = camera.x - camera.viewWidth / 2;
         const viewTop = camera.y - camera.viewHeight / 2;
         const viewRight = viewLeft + camera.viewWidth;
         const viewBottom = viewTop + camera.viewHeight;
         
+        // 地板使用世界坐标绘制，和墙、门保持一致
         ctx.fillStyle = floorColors[this.type] || '#16213e';
-        ctx.fillRect(0, 0, camera.viewWidth, camera.viewHeight);
+        const floorTopLeft = camera.worldToScreen(viewLeft, viewTop);
+        const floorBottomRight = camera.worldToScreen(viewRight, viewBottom);
+        ctx.fillRect(floorTopLeft.x, floorTopLeft.y, floorBottomRight.x - floorTopLeft.x, floorBottomRight.y - floorTopLeft.y);
         
         // 绘制网格（装饰）
         ctx.strokeStyle = 'rgba(255,255,255,0.03)';
         ctx.lineWidth = 1;
-        const gridOffsetX = -viewLeft % 50;
-        const gridOffsetY = -viewTop % 50;
-        for (let x = gridOffsetX; x < camera.viewWidth; x += 50) {
-            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, camera.viewHeight); ctx.stroke();
+        const gridStartX = Math.floor(viewLeft / 50) * 50;
+        const gridStartY = Math.floor(viewTop / 50) * 50;
+        for (let wx = gridStartX; wx < viewRight; wx += 50) {
+            const top = camera.worldToScreen(wx, viewTop);
+            const bottom = camera.worldToScreen(wx, viewBottom);
+            ctx.beginPath(); ctx.moveTo(top.x, top.y); ctx.lineTo(bottom.x, bottom.y); ctx.stroke();
         }
-        for (let y = gridOffsetY; y < camera.viewHeight; y += 50) {
-            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(camera.viewWidth, y); ctx.stroke();
-        }
-        
-        // 绘制障碍物（只绘制视野内的）
-        ctx.fillStyle = '#2a2a3a';
-        for (const obs of this.obstacles) {
-            if (obs.x + obs.w > viewLeft && obs.x < viewRight &&
-                obs.y + obs.h > viewTop && obs.y < viewBottom) {
-                const screenPos = camera.worldToScreen(obs.x, obs.y);
-                ctx.fillRect(screenPos.x, screenPos.y, obs.w, obs.h);
-                // 障碍物边框
-                ctx.strokeStyle = '#3a3a4a';
-                ctx.strokeRect(screenPos.x, screenPos.y, obs.w, obs.h);
-            }
+        for (let wy = gridStartY; wy < viewBottom; wy += 50) {
+            const left = camera.worldToScreen(viewLeft, wy);
+            const right = camera.worldToScreen(viewRight, wy);
+            ctx.beginPath(); ctx.moveTo(left.x, left.y); ctx.lineTo(right.x, right.y); ctx.stroke();
         }
         
-        // 绘制房间边界（厚墙）
+        // 绘制房间边界（厚墙）- 使用世界坐标转换，和门保持一致
         ctx.fillStyle = '#0f0f1a';
-        const wallThickness = 100;
-        // 只绘制视野内的墙
+        const wallThickness = 60;
+        // 左墙
         if (viewLeft < wallThickness) {
-            const screenX = camera.worldToScreen(0, 0).x;
-            ctx.fillRect(screenX, 0, wallThickness - viewLeft, camera.viewHeight);
+            const topLeft = camera.worldToScreen(0, viewTop);
+            const bottomRight = camera.worldToScreen(wallThickness, viewBottom);
+            ctx.fillRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
         }
+        // 右墙
         if (viewRight > this.width - wallThickness) {
-            const screenX = camera.worldToScreen(this.width - wallThickness, 0).x;
-            ctx.fillRect(screenX, 0, viewRight - (this.width - wallThickness), camera.viewHeight);
+            const topLeft = camera.worldToScreen(this.width - wallThickness, viewTop);
+            const bottomRight = camera.worldToScreen(this.width, viewBottom);
+            ctx.fillRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
         }
+        // 上墙
         if (viewTop < wallThickness) {
-            const screenY = camera.worldToScreen(0, 0).y;
-            ctx.fillRect(0, screenY, camera.viewWidth, wallThickness - viewTop);
+            const topLeft = camera.worldToScreen(viewLeft, 0);
+            const bottomRight = camera.worldToScreen(viewRight, wallThickness);
+            ctx.fillRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
         }
+        // 下墙
         if (viewBottom > this.height - wallThickness) {
-            const screenY = camera.worldToScreen(0, this.height - wallThickness).y;
-            ctx.fillRect(0, screenY, camera.viewWidth, viewBottom - (this.height - wallThickness));
+            const topLeft = camera.worldToScreen(viewLeft, this.height - wallThickness);
+            const bottomRight = camera.worldToScreen(viewRight, this.height);
+            ctx.fillRect(topLeft.x, topLeft.y, bottomRight.x - topLeft.x, bottomRight.y - topLeft.y);
         }
         
-        // 绘制门（只在靠近边界时）
+        // 绘制门（门向内凹进房间，避免被墙包围）
+        const doorPositions = {};
+        const wallT = 60; // 墙厚度
+        
         for (const [dir, door] of Object.entries(this.doors)) {
             if (!door) continue;
-            ctx.fillStyle = door.open ? '#4a4' : '#a44';
             let doorX, doorY, doorW, doorH;
             switch(dir) {
-                case 'up': doorX = this.centerX - 30; doorY = 0; doorW = 60; doorH = 40; break;
-                case 'down': doorX = this.centerX - 30; doorY = this.height - 40; doorW = 60; doorH = 40; break;
-                case 'left': doorX = 0; doorY = this.centerY - 40; doorW = 40; doorH = 80; break;
-                case 'right': doorX = this.width - 40; doorY = this.centerY - 40; doorW = 40; doorH = 80; break;
+                // 门和墙平齐，不凹陷不突出
+                case 'up': doorX = this.centerX - 40; doorY = 0; doorW = 80; doorH = wallT; break;
+                case 'down': doorX = this.centerX - 40; doorY = this.height - wallT; doorW = 80; doorH = wallT; break;
+                case 'left': doorX = 0; doorY = this.centerY - 50; doorW = wallT; doorH = 100; break;
+                case 'right': doorX = this.width - wallT; doorY = this.centerY - 50; doorW = wallT; doorH = 100; break;
             }
+            doorPositions[dir] = { x: doorX, y: doorY, w: doorW, h: doorH };
+            
+            // 在墙上挖洞（用地板颜色覆盖门区域）
             if (doorX < viewRight && doorX + doorW > viewLeft &&
                 doorY < viewBottom && doorY + doorH > viewTop) {
                 const screenPos = camera.worldToScreen(doorX, doorY);
-                ctx.fillRect(screenPos.x, screenPos.y, doorW, doorH);
+                const screenEnd = camera.worldToScreen(doorX + doorW, doorY + doorH);
+                ctx.fillStyle = floorColors[this.type] || '#16213e';
+                ctx.fillRect(screenPos.x, screenPos.y, screenEnd.x - screenPos.x, screenEnd.y - screenPos.y);
             }
         }
         
-        // 显示房间名称
+        // 绘制门
+        for (const [dir, door] of Object.entries(this.doors)) {
+            if (!door) continue;
+            const pos = doorPositions[dir];
+            if (!pos) continue;
+            
+            if (pos.x < viewRight && pos.x + pos.w > viewLeft &&
+                pos.y < viewBottom && pos.y + pos.h > viewTop) {
+                const screenPos = camera.worldToScreen(pos.x, pos.y);
+                const screenEnd = camera.worldToScreen(pos.x + pos.w, pos.y + pos.h);
+                const screenW = screenEnd.x - screenPos.x;
+                const screenH = screenEnd.y - screenPos.y;
+                // 门边框
+                ctx.fillStyle = '#555';
+                ctx.fillRect(screenPos.x - 2, screenPos.y - 2, screenW + 4, screenH + 4);
+                // 门本体
+                ctx.fillStyle = door.open ? '#4a4' : '#a44';
+                ctx.fillRect(screenPos.x, screenPos.y, screenW, screenH);
+                // 门把手/装饰
+                ctx.fillStyle = '#222';
+                ctx.fillRect(screenPos.x + screenW/2 - 3, screenPos.y + screenH/2 - 3, 6, 6);
+            }
+        }
+        
+        // 显示房间类型（不再显示地形名称）
         const roomLabels = {
-            start: '起点', normal: this.template.name, boss: 'BOSS',
+            start: '起点', normal: '战斗', boss: 'BOSS',
             treasure: '💎 宝箱房', shop: '🏪 商店', hidden: '👁️ 隐藏房'
         };
+        // 房间标签（根据视野大小调整位置）
         ctx.fillStyle = '#fff';
         ctx.font = 'bold 16px Arial';
         ctx.textAlign = 'left';
-        ctx.fillText(roomLabels[this.type] || this.template.name, 20, 30);
+        const labelX = Math.max(20, camera.viewWidth * 0.02);
+        const labelY = Math.max(30, camera.viewHeight * 0.05);
+        ctx.fillText(roomLabels[this.type] || '未知', labelX, labelY);
         
         // 波次信息
         if (this.hordeManager && this.type === 'normal') {
             ctx.fillStyle = '#aaa';
             ctx.font = '14px Arial';
             ctx.textAlign = 'right';
-            ctx.fillText(`波次: ${this.hordeManager.wave}`, camera.viewWidth - 20, 30);
-            ctx.fillText(`敌人: ${this.hordeManager.getActiveEnemies().length}`, camera.viewWidth - 20, 50);
+            const infoX = camera.viewWidth - labelX;
+            ctx.fillText(`波次: ${this.hordeManager.wave}`, infoX, labelY);
+            ctx.fillText(`敌人: ${this.hordeManager.getActiveEnemies().length}`, infoX, labelY + 20);
         }
     }
 }
 
-// 波次管理器
+// ============================================================================
+// 吸血鬼幸存者风格刷怪系统 v2.0
+// ============================================================================
 class HordeManager {
     constructor(room) {
         this.room = room;
@@ -1361,50 +1823,187 @@ class HordeManager {
         this.spawnedThisWave = 0;
         this.targetCount = 0;
         this.enemies = [];
-        this.maxActiveEnemies = 100;
-        this.spawnPoints = room.spawnPoints || [{ x: 300, y: 300 }];
+        this.maxActiveEnemies = 80;
+        
+        // 根据房间类型设置刷怪策略
+        this.setupRoomType();
+        
+        // 生成边缘刷怪点（避免在玩家脸上刷怪）
+        this.spawnPoints = this.generateSpawnPoints();
+        
+        // 进房间立即开始第一波
+        if (this.totalWaves > 0) {
+            this.startNewWave();
+        }
+    }
+    
+    // 根据房间类型配置
+    setupRoomType() {
+        const type = this.room.type;
+        
+        switch(type) {
+            case 'normal':
+                this.waveCount = 3 + Math.floor(Math.random() * 3); // 3-5波
+                this.baseEnemyCount = 10; // 敌人数量翻倍
+                this.bossRoom = false;
+                break;
+            case 'boss':
+                this.waveCount = 1;
+                this.baseEnemyCount = 0;
+                this.bossRoom = true;
+                break;
+            case 'hidden':
+                this.waveCount = 1;
+                this.baseEnemyCount = 6; // 敌人数量翻倍
+                this.bossRoom = false;
+                this.eliteOnly = true;
+                break;
+            default:
+                this.waveCount = 0; // 起点/商店/宝箱不刷怪
+                this.baseEnemyCount = 0;
+        }
+        
+        this.totalWaves = this.waveCount;
+    }
+    
+    // 生成边缘刷怪点（房间四边，距离墙一定距离）
+    generateSpawnPoints() {
+        const points = [];
+        const w = this.room.width;
+        const h = this.room.height;
+        const margin = 120; // 距离墙的距离
+        
+        // 上下两边
+        for (let x = margin; x < w - margin; x += 150) {
+            points.push({x, y: margin});
+            points.push({x, y: h - margin});
+        }
+        // 左右两边
+        for (let y = margin; y < h - margin; y += 150) {
+            points.push({x: margin, y});
+            points.push({x: w - margin, y});
+        }
+        
+        return points;
     }
     
     update(dt) {
-        this.timer += dt;
-        if (this.timer >= SURVIVOR_CONFIG.WAVE_INTERVAL) {
+        // 已完成所有波次
+        if (this.wave >= this.totalWaves && this.enemies.filter(e => e.hp > 0).length === 0) {
+            if (!this.room.cleared) {
+                this.room.cleared = true;
+                this.openDoors();
+            }
+            return;
+        }
+        
+        // 当前波次敌人死完，立即开始下一波
+        const activeCount = this.enemies.filter(e => e.hp > 0).length;
+        if (activeCount === 0 && this.spawnedThisWave >= this.targetCount && this.wave < this.totalWaves) {
             this.startNewWave();
         }
+        
+        // 持续刷怪直到达到本波目标
+        if (this.spawnedThisWave < this.targetCount && activeCount < this.maxActiveEnemies) {
+            this.spawnBatch();
+        }
+        
         this.enemies = this.enemies.filter(e => e.hp > 0);
     }
     
     startNewWave() {
         this.wave++;
         this.timer = 0;
-        this.targetCount = SURVIVOR_CONFIG.WAVE_BASE_COUNT + this.wave * SURVIVOR_CONFIG.WAVE_INCREMENT;
+        
+        // 难度公式：基础数量 × (1 + 波数 × 0.2)
+        const difficultyMultiplier = 1 + (this.wave - 1) * 0.2;
+        this.targetCount = Math.floor(this.baseEnemyCount * difficultyMultiplier);
         this.spawnedThisWave = 0;
-        console.log(`🌊 第 ${this.wave} 波！目标：${this.targetCount} 只`);
-        this.spawnBatch();
+        
+        console.log(`🌊 第 ${this.wave}/${this.totalWaves} 波！目标：${this.targetCount} 只`);
     }
     
     spawnBatch() {
-        const batchSize = Math.min(10, this.targetCount - this.spawnedThisWave);
+        const batchSize = Math.min(3, this.targetCount - this.spawnedThisWave);
         const activeCount = this.enemies.filter(e => e.hp > 0).length;
         if (activeCount >= this.maxActiveEnemies) return;
         
         for (let i = 0; i < batchSize; i++) {
+            if (this.spawnedThisWave >= this.targetCount) break;
+            
+            // 随机选择刷怪点
             const point = this.spawnPoints[Math.floor(Math.random() * this.spawnPoints.length)];
-            const enemy = this.createEnemy(point.x + (Math.random()-0.5)*100, point.y + (Math.random()-0.5)*100);
+            // 添加随机偏移
+            const x = point.x + (Math.random() - 0.5) * 60;
+            const y = point.y + (Math.random() - 0.5) * 60;
+            
+            const enemy = this.createEnemy(x, y);
             this.enemies.push(enemy);
             this.spawnedThisWave++;
         }
     }
     
     createEnemy(x, y) {
-        const types = Object.keys(ENEMY_TYPES).filter(k => !ENEMY_TYPES[k].special);
-        const typeKey = types[Math.floor(Math.random() * types.length)];
+        // 根据波数选择敌人等级
+        const typeKey = this.selectEnemyType();
         const enemy = new Enemy(x, y, typeKey);
-        // 根据波数增强
-        const multiplier = 1 + this.wave * 0.1;
-        enemy.hp *= multiplier;
+        
+        // 应用难度缩放
+        const waveMultiplier = 1 + (this.wave - 1) * 0.15; // HP每波+15%
+        const dmgMultiplier = 1 + (this.wave - 1) * 0.08;  // 伤害每波+8%
+        const spdMultiplier = 1 + (this.wave - 1) * 0.03;  // 速度每波+3%
+        
+        enemy.hp = Math.floor(enemy.hp * waveMultiplier);
         enemy.maxHp = enemy.hp;
-        enemy.dmg *= multiplier;
+        enemy.dmg = Math.floor(enemy.dmg * dmgMultiplier);
+        enemy.speed = Math.floor(enemy.speed * spdMultiplier);
+        
         return enemy;
+    }
+    
+    // 根据波数选择敌人类型
+    selectEnemyType() {
+        const tierKeys = {
+            1: ['chick', 'mouse', 'snail'],
+            2: ['rabbit', 'bird', 'pigeon'],
+            3: ['cat', 'duck', 'squirrel'],
+            4: ['dog', 'pig', 'sheep', 'goose'],
+            5: ['bear', 'snake', 'crab'],
+            6: ['turtle', 'boss_dog']
+        };
+        
+        let tier;
+        
+        if (this.eliteOnly) {
+            // 隐藏房只出精英
+            tier = Math.random() < 0.5 ? 4 : 5;
+        } else if (this.bossRoom && this.wave === 1) {
+            // Boss房第一波出Boss
+            return Math.random() < 0.5 ? 'turtle' : 'boss_dog';
+        } else {
+            // 普通房间根据波数选择
+            const roll = Math.random();
+            if (this.wave === 1) {
+                tier = roll < 0.7 ? 1 : 2;
+            } else if (this.wave === 2) {
+                tier = roll < 0.4 ? 1 : (roll < 0.8 ? 2 : 3);
+            } else {
+                tier = roll < 0.2 ? 2 : (roll < 0.5 ? 3 : (roll < 0.8 ? 4 : 5));
+            }
+        }
+        
+        const types = tierKeys[tier];
+        return types[Math.floor(Math.random() * types.length)];
+    }
+    
+    openDoors() {
+        Object.values(this.room.doors).forEach(door => {
+            if (door) {
+                door.open = true;
+                door.locked = false;
+            }
+        });
+        console.log('🚪 房间清理完成，门已开启');
     }
     
     getActiveEnemies() {
@@ -1475,11 +2074,15 @@ class MapGenerator {
 // ============================================================================
 // ==================== 吸血鬼幸存者风格重构 ====================
 const SURVIVOR_CONFIG = {
-    ROOM_WIDTH: 2700, ROOM_HEIGHT: 1800,
     VIEW_WIDTH: 900, VIEW_HEIGHT: 600,
     CAMERA_SMOOTH: 0.1,
     WAVE_INTERVAL: 30, WAVE_BASE_COUNT: 20, WAVE_INCREMENT: 5,
-    GRID_CELL_SIZE: 150
+    GRID_CELL_SIZE: 150,
+    // 自适应视野：如果屏幕够大就显示完整房间
+    ADAPTIVE_VIEW: true,
+    // 房间尺寸会在运行时根据canvas动态计算
+    ROOM_WIDTH: 1200,
+    ROOM_HEIGHT: 800
 };
 
 class SurvivorCamera {
@@ -1489,9 +2092,53 @@ class SurvivorCamera {
         this.target = null;
         this.viewWidth = SURVIVOR_CONFIG.VIEW_WIDTH;
         this.viewHeight = SURVIVOR_CONFIG.VIEW_HEIGHT;
+        this.showFullRoom = false;
+        this.zoom = 1;
+        this.updateViewport();
     }
+    
+    // 根据窗口尺寸设置房间大小，确保房间完整显示并填满游戏区域
+    updateViewport() {
+        // 使用窗口尺寸减去两侧边栏
+        const sidebarWidth = 260 * 2; // 左右边栏
+        const canvasW = Math.max(800, window.innerWidth - sidebarWidth - 40);
+        const canvasH = Math.max(600, window.innerHeight - 100);
+        
+        const canvas = document.getElementById('gameCanvas');
+        if (canvas) {
+            canvas.width = canvasW;
+            canvas.height = canvasH;
+        }
+        
+        // 房间尺寸 = canvas 尺寸减去墙边距
+        const wallMargin = 60;
+        SURVIVOR_CONFIG.ROOM_WIDTH = Math.floor(canvasW - wallMargin * 2);
+        SURVIVOR_CONFIG.ROOM_HEIGHT = Math.floor(canvasH - wallMargin * 2);
+        
+        const roomW = SURVIVOR_CONFIG.ROOM_WIDTH;
+        const roomH = SURVIVOR_CONFIG.ROOM_HEIGHT;
+        
+        // 始终显示完整房间
+        this.showFullRoom = true;
+        this.viewWidth = roomW;
+        this.viewHeight = roomH;
+        this.x = roomW / 2;
+        this.y = roomH / 2;
+        this.zoom = 1;
+        
+        console.log(`📐 房间尺寸: ${roomW}x${roomH}, Canvas: ${canvasW}x${canvasH}`);
+    }
+    
     follow(target) { this.target = target; }
+    
     update() {
+        if (this.showFullRoom) {
+            // 显示完整房间时，相机固定在中心
+            this.x = SURVIVOR_CONFIG.ROOM_WIDTH / 2;
+            this.y = SURVIVOR_CONFIG.ROOM_HEIGHT / 2;
+            return;
+        }
+        
         if (!this.target) return;
         this.x += (this.target.x - this.x) * SURVIVOR_CONFIG.CAMERA_SMOOTH;
         this.y += (this.target.y - this.y) * SURVIVOR_CONFIG.CAMERA_SMOOTH;
@@ -1500,10 +2147,33 @@ class SurvivorCamera {
         this.x = Math.max(minX, Math.min(maxX, this.x));
         this.y = Math.max(minY, Math.min(maxY, this.y));
     }
+    
     worldToScreen(wx, wy) {
+        if (this.showFullRoom) {
+            // 完整房间模式：房间填满 canvas，计算居中偏移
+            const canvas = document.getElementById('gameCanvas');
+            const canvasW = canvas ? canvas.clientWidth : 900;
+            const canvasH = canvas ? canvas.clientHeight : 600;
+            const roomW = SURVIVOR_CONFIG.ROOM_WIDTH;
+            const roomH = SURVIVOR_CONFIG.ROOM_HEIGHT;
+            
+            // 计算居中偏移（房间尺寸已经根据 canvas 调整过）
+            const offsetX = (canvasW - roomW) / 2;
+            const offsetY = (canvasH - roomH) / 2;
+            
+            return { 
+                x: wx + offsetX, 
+                y: wy + offsetY 
+            };
+        }
         return { x: wx - this.x + this.viewWidth / 2, y: wy - this.y + this.viewHeight / 2 };
     }
+    
     isVisible(wx, wy, radius = 50) {
+        if (this.showFullRoom) {
+            return wx >= -radius && wx <= SURVIVOR_CONFIG.ROOM_WIDTH + radius 
+                && wy >= -radius && wy <= SURVIVOR_CONFIG.ROOM_HEIGHT + radius;
+        }
         return Math.abs(wx - this.x) < this.viewWidth / 2 + radius && Math.abs(wy - this.y) < this.viewHeight / 2 + radius;
     }
 }
@@ -1538,56 +2208,250 @@ class SpatialGrid {
     }
 }
 
-// 8个房间模板
+// 8个房间模板 - 使用相对坐标 (0-1)，在 Room 构造函数中转换为绝对坐标
 const ROOM_TEMPLATES = {
-    maze: { name: '回字形迷宫', obstacles: [{x:200,y:100,w:2300,h:100},{x:200,y:1600,w:2300,h:100},{x:100,y:200,w:100,h:1400},{x:2500,y:200,w:100,h:1400},{x:800,y:500,w:1100,h:80},{x:800,y:1200,w:1100,h:80},{x:800,y:580,w:80,h:620},{x:1820,y:580,w:80,h:620}], spawnPoints: [{x:500,y:300},{x:2200,y:300},{x:500,y:1500},{x:2200,y:1500}] },
-    cross: { name: '十字河流', obstacles: [{x:1300,y:0,w:100,h:700},{x:1300,y:1100,w:100,h:700},{x:0,y:850,w:1000,h:100},{x:1700,y:850,w:1000,h:100}], spawnPoints: [{x:500,y:400},{x:2200,y:400},{x:500,y:1400},{x:2200,y:1400}] },
-    spiral: { name: '螺旋死亡', obstacles: [{x:400,y:400,w:1900,h:100},{x:2200,y:400,w:100,h:500},{x:600,y:800,w:1700,h:100},{x:600,y:900,w:100,h:500},{x:700,y:1300,w:1300,h:100},{x:1900,y:1000,w:100,h:300}], spawnPoints: [{x:300,y:300},{x:2400,y:300},{x:300,y:1500},{x:2400,y:1500}] },
-    islands: { name: '岛屿群', obstacles: [{x:300,y:300,w:200,h:200},{x:800,y:200,w:250,h:150},{x:1500,y:300,w:200,h:200},{x:2100,y:250,w:250,h:200},{x:400,y:800,w:300,h:200},{x:1200,y:750,w:300,h:300},{x:2000,y:800,w:250,h:200},{x:300,y:1300,w:250,h:200},{x:900,y:1400,w:200,h:200},{x:1600,y:1350,w:250,h:200},{x:2200,y:1300,w:200,h:200}], spawnPoints: [{x:200,y:600},{x:2500,y:600},{x:200,y:1200},{x:2500,y:1200}] },
-    arena: { name: '竞技场', obstacles: [{x:0,y:0,w:800,h:300},{x:1900,y:0,w:800,h:300},{x:0,y:1500,w:800,h:300},{x:1900,y:1500,w:800,h:300},{x:0,y:300,w:300,h:1200},{x:2400,y:300,w:300,h:1200}], spawnPoints: [{x:400,y:400},{x:2300,y:400},{x:400,y:1400},{x:2300,y:1400}] },
-    dual: { name: '双通道', obstacles: [{x:0,y:550,w:1000,h:100},{x:1700,y:550,w:1000,h:100},{x:0,y:1150,w:1000,h:100},{x:1700,y:1150,w:1000,h:100},{x:1200,y:850,w:300,h:100}], spawnPoints: [{x:200,y:300},{x:2500,y:300},{x:200,y:1500},{x:2500,y:1500}] },
-    ruins: { name: '废墟迷宫', obstacles: [{x:400,y:300,w:150,h:400},{x:800,y:600,w:200,h:100},{x:1200,y:200,w:100,h:300},{x:1600,y:500,w:150,h:250},{x:2000,y:300,w:100,h:400},{x:300,y:900,w:200,h:100},{x:700,y:1100,w:150,h:200},{x:1100,y:900,w:200,h:150},{x:1500,y:1200,w:100,h:300},{x:1900,y:1000,w:250,h:100},{x:2300,y:1300,w:100,h:200},{x:500,y:1400,w:300,h:100},{x:1000,y:1500,w:150,h:200},{x:1800,y:1500,w:200,h:150}], spawnPoints: [{x:200,y:200},{x:2500,y:200},{x:200,y:1600},{x:2500,y:1600}] },
-    corridor: { name: '无尽长廊', obstacles: [{x:0,y:0,w:200,h:1800},{x:2500,y:0,w:200,h:1800},{x:600,y:400,w:100,h:200},{x:1300,y:800,w:100,h:200},{x:2000,y:1200,w:100,h:200}], spawnPoints: [{x:300,y:200},{x:300,y:600},{x:300,y:1000},{x:300,y:1400},{x:2400,y:300},{x:2400,y:900},{x:2400,y:1500}] }
+    empty: { name: '空旷大厅', spawnPoints: [{x:0.5,y:0.5}] },
+    pillars: { name: '柱廊', spawnPoints: [{x:0.5,y:0.5}] },
+    corners: { name: '广场', spawnPoints: [{x:0.5,y:0.5}] },
+    cross: { name: '十字厅', spawnPoints: [{x:0.5,y:0.5}] },
+    sides: { name: '回廊', spawnPoints: [{x:0.5,y:0.5}] },
+    grid: { name: '大厅', spawnPoints: [{x:0.5,y:0.5}] },
+    ring: { name: '竞技场', spawnPoints: [{x:0.5,y:0.5}] },
+    maze: { name: '迷宫', spawnPoints: [{x:0.5,y:0.5}] }
 };
 
-// 全屏适配器
+// 全屏适配器 - 3栏布局模式下不干预canvas样式
 class FullscreenAdapter {
     constructor(canvas, gameWidth = 900, gameHeight = 600) {
         this.canvas = canvas;
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
         this.scale = 1;
-        this.setup();
-        window.addEventListener('resize', () => this.resize());
+        // 3栏布局模式下不自动调整canvas样式
+        // this.setup();
+        // window.addEventListener('resize', () => this.resize());
     }
     setup() {
-        document.body.style.margin = '0';
-        document.body.style.padding = '0';
-        document.body.style.overflow = 'hidden';
-        this.resize();
+        // 已禁用 - 3栏布局由CSS控制
     }
     resize() {
-        const windowWidth = window.innerWidth;
-        const windowHeight = window.innerHeight;
-        const scaleX = windowWidth / this.gameWidth;
-        const scaleY = windowHeight / this.gameHeight;
-        this.scale = Math.min(scaleX, scaleY, 2);
-        const displayWidth = this.gameWidth * this.scale;
-        const displayHeight = this.gameHeight * this.scale;
-        this.canvas.style.width = displayWidth + 'px';
-        this.canvas.style.height = displayHeight + 'px';
-        this.canvas.style.position = 'absolute';
-        this.canvas.style.left = ((windowWidth - displayWidth) / 2) + 'px';
-        this.canvas.style.top = ((windowHeight - displayHeight) / 2) + 'px';
-        this.canvas.width = this.gameWidth;
-        this.canvas.height = this.gameHeight;
+        // 已禁用 - 3栏布局由CSS控制
+        // 只更新相机视野
+        if (window.game?.camera) {
+            window.game.camera.updateViewport();
+        }
     }
 }
+
+// ============================================================================
+// 分数系统 - ScoreManager
+// ============================================================================
+
+class ScoreManager {
+    constructor() {
+        this.score = 0;
+        this.startTime = 0;
+        this.endTime = 0;
+        this.isPlaying = false;
+        
+        // 统计
+        this.stats = {
+            enemiesKilled: 0,
+            elitesKilled: 0,
+            bossesKilled: 0,
+            roomsExplored: 0,
+            itemsCollected: 0,
+            goldCollected: 0,
+            damageTaken: 0,
+            floorsCleared: 0
+        };
+        
+        // 连杀系统
+        this.killStreak = 0;
+        this.lastKillTime = 0;
+        this.streakMultiplier = 1;
+        
+        // 最低分保护
+        this.MIN_SCORE = 100;
+    }
+    
+    start() {
+        this.score = 0;
+        this.startTime = Date.now();
+        this.isPlaying = true;
+        this.stats = {
+            enemiesKilled: 0,
+            elitesKilled: 0,
+            bossesKilled: 0,
+            roomsExplored: 0,
+            itemsCollected: 0,
+            goldCollected: 0,
+            damageTaken: 0,
+            floorsCleared: 0
+        };
+        this.killStreak = 0;
+        this.streakMultiplier = 1;
+        console.log('🏆 分数系统启动！');
+    }
+    
+    // 基础加分
+    add(points, reason = '') {
+        if (!this.isPlaying) return;
+        const actual = Math.floor(points * this.streakMultiplier);
+        this.score += actual;
+        if (reason) console.log(`💯 +${actual}分 (${reason})`);
+        return actual;
+    }
+    
+    // 扣分
+    deduct(points, reason = '') {
+        if (!this.isPlaying) return;
+        this.score = Math.max(this.MIN_SCORE - 500, this.score - points); // 保证死亡后不低于MIN_SCORE
+        if (reason) console.log(`💔 -${points}分 (${reason})`);
+    }
+    
+    // 击杀敌人
+    onKillEnemy(enemyType = 'normal') {
+        this.stats.enemiesKilled++;
+        
+        // 连杀计算
+        const now = Date.now();
+        if (now - this.lastKillTime < 10000) { // 10秒内
+            this.killStreak++;
+            if (this.killStreak >= 3) {
+                this.streakMultiplier = 1.5;
+                console.log(`🔥 连杀x${this.killStreak}！分数加成50%`);
+            }
+        } else {
+            this.killStreak = 1;
+            this.streakMultiplier = 1;
+        }
+        this.lastKillTime = now;
+        
+        let points = 10;
+        if (enemyType === 'elite') {
+            points = 30;
+            this.stats.elitesKilled++;
+        } else if (enemyType === 'boss') {
+            points = 500;
+            this.stats.bossesKilled++;
+        }
+        
+        this.add(points, `击杀${enemyType === 'normal' ? '普通怪' : enemyType === 'elite' ? '精英' : 'Boss'}`);
+    }
+    
+    // 进入新房间
+    onEnterRoom() {
+        this.stats.roomsExplored++;
+        this.add(50, '探索新房间');
+    }
+    
+    // 拾取道具
+    onCollectItem() {
+        this.stats.itemsCollected++;
+        this.add(50, '拾取道具');
+    }
+    
+    // 拾取金币
+    onCollectGold(amount) {
+        this.stats.goldCollected += amount;
+        this.add(amount, `拾取${amount}金币`);
+    }
+    
+    // 受伤
+    onDamage() {
+        this.stats.damageTaken++;
+        this.deduct(5, '受伤');
+    }
+    
+    // 到达下层
+    onFloorClear(floorNum) {
+        this.stats.floorsCleared++;
+        this.add(300, `通关第${floorNum}层`);
+    }
+    
+    // 游戏结束计算
+    end(result) {
+        this.isPlaying = false;
+        this.endTime = Date.now();
+        
+        const playTime = (this.endTime - this.startTime) / 1000; // 秒
+        let finalScore = this.score;
+        let multiplier = 1;
+        
+        // 通关加成
+        if (result === 'cleared') {
+            multiplier = 1.5;
+            
+            // 无伤加成
+            if (this.stats.damageTaken === 0) {
+                multiplier = 2.0;
+                console.log('🌟 无伤通关！分数×2');
+            }
+            
+            // 快速通关
+            if (playTime < 300) { // 5分钟
+                multiplier *= 1.5;
+                console.log('⚡ 极速通关！额外×1.5');
+            }
+        }
+        
+        // 死亡惩罚
+        if (result === 'dead') {
+            finalScore -= 500;
+            console.log('💀 死亡惩罚 -500分');
+        }
+        
+        finalScore = Math.max(this.MIN_SCORE, Math.floor(finalScore * multiplier));
+        
+        // 保存到本地排行榜
+        this.saveHighScore(finalScore, result);
+        
+        return {
+            finalScore,
+            baseScore: this.score,
+            multiplier,
+            playTime,
+            stats: {...this.stats},
+            result
+        };
+    }
+    
+    // 保存最高分
+    saveHighScore(score, result) {
+        const key = 'rougecow_highscores';
+        let scores = JSON.parse(localStorage.getItem(key) || '[]');
+        scores.push({
+            score,
+            result,
+            date: new Date().toISOString(),
+            stats: {...this.stats}
+        });
+        scores.sort((a, b) => b.score - a.score);
+        scores = scores.slice(0, 10); // 只保留前10
+        localStorage.setItem(key, JSON.stringify(scores));
+    }
+    
+    // 获取排行榜
+    getHighScores() {
+        return JSON.parse(localStorage.getItem('rougecow_highscores') || '[]');
+    }
+    
+    // 格式化显示
+    formatScore() {
+        return this.score.toLocaleString();
+    }
+}
+
+// ============================================================================
 
 class Game {
     constructor() {
         this.canvas = document.getElementById('gameCanvas');
         this.ctx = this.canvas.getContext('2d');
+        
+        // 分数系统
+        this.scoreManager = new ScoreManager();
         
         // 全屏适配
         this.fullscreen = new FullscreenAdapter(this.canvas, 900, 600);
@@ -1601,10 +2465,31 @@ class Game {
         this.sprites = new SpriteLoader();
         this.state = 'loading';
         
-        // 玩家初始位置在大房间中心
-        const startX = SURVIVOR_CONFIG.ROOM_WIDTH / 2;
-        const startY = SURVIVOR_CONFIG.ROOM_HEIGHT / 2;
-        this.player = { x: startX, y: startY, hp: 6, maxHp: 6, exp: 0, lv: 1, gold: 100, 
+        // 玩家初始位置 - 找安全位置（避开障碍物）
+        let startX = SURVIVOR_CONFIG.ROOM_WIDTH / 2;
+        let startY = SURVIVOR_CONFIG.ROOM_HEIGHT / 2;
+        
+        // 检查中心是否有障碍物，如果有就尝试其他位置
+        const wallT = 60;  // 墙厚度改小
+        const safePositions = [
+            {x: startX, y: startY},                    // 中心
+            {x: startX - 100, y: startY},              // 左
+            {x: startX + 100, y: startY},              // 右
+            {x: startX, y: startY - 100},              // 上
+            {x: startX, y: startY + 100},              // 下
+            {x: startX - 150, y: startY - 150},        // 左上
+            {x: startX + 150, y: startY - 150},        // 右上
+            {x: startX - 150, y: startY + 150},        // 左下
+            {x: startX + 150, y: startY + 150},        // 右下
+            {x: wallT + 50, y: wallT + 50},            // 左上角附近
+            {x: SURVIVOR_CONFIG.ROOM_WIDTH - wallT - 50, y: wallT + 50}, // 右上角
+            {x: wallT + 50, y: SURVIVOR_CONFIG.ROOM_HEIGHT - wallT - 50}, // 左下角
+            {x: SURVIVOR_CONFIG.ROOM_WIDTH - wallT - 50, y: SURVIVOR_CONFIG.ROOM_HEIGHT - wallT - 50} // 右下角
+        ];
+        
+        let safePos = safePositions[0];
+        
+        this.player = { x: safePos.x, y: safePos.y, hp: 6, maxHp: 6, exp: 0, lv: 1, gold: 100, 
             facingRight: true, isMoving: false, walkCycle: 0,
             isDashing: false, dashTime: 0, dashCooldown: 0, dashDirection: {x:0, y:0}, dashTrail: [], jumpY: 0
         };
@@ -1614,8 +2499,7 @@ class Game {
         this.items = new ItemManager(this.player);
         this.totems = new TotemManager();
         this.materials = new MaterialManager(); // 材料系统
-        this.weapons = [new Weapon('whip', 1)];
-        this.activeWeapon = 0;
+        this.weapons = [new Weapon('wand', 1)];  // 默认武器改为魔杖（远程）
         this.bullets = [];
         this.particles = new ParticleSystem();
         this.gems = [];
@@ -1625,6 +2509,17 @@ class Game {
         this.maxFloors = 6; // 6层地图：菌丝区、孵化温室、神经索、消化熔炉、母虫庭院、千根之心
         this.allFloors = new Map();
         
+        // 先初始化相机视野，确保房间尺寸正确
+        this.camera.updateViewport();
+        
+        // 等待一帧确保 canvas 尺寸正确
+        setTimeout(() => {
+            this.camera.updateViewport();
+            // 重新生成地图以使用正确的房间尺寸
+            this.regenerateMap();
+        }, 0);
+        
+        // 临时地图（会被替换）
         const gen = new MapGenerator();
         const map = gen.generate(1);
         this.curRoom = map.start;
@@ -1644,10 +2539,243 @@ class Game {
         this.evolutionOpen = false; // 武器进化界面
         this.evolutionSelected = -1;
         
+        this.weaponSelectOpen = false; // 3选1武器选择界面
+        this.weaponOptions = [];
+        
         this.sounds = new SoundManager();
+        
+        // 时间缩放（游戏速度）
+        this.timeScale = 1;
+        
         this.setupInput();
+        
+        // 暴露到全局供按钮调用
+        window.game = this;
     }
-
+    
+    setSpeed(speed) {
+        this.timeScale = speed;
+        // 更新按钮状态
+        document.querySelectorAll('.speed-btn').forEach(btn => {
+            btn.classList.toggle('active', parseInt(btn.dataset.speed) === speed);
+        });
+        document.getElementById('speedLabel').textContent = `游戏速度: ${speed}x`;
+        console.log(`⚡ 游戏速度设置为 ${speed}x`);
+    }
+    
+    // 更新分数显示
+    updateScoreDisplay() {
+        const sm = this.scoreManager;
+        if (!sm.isPlaying) return;
+        
+        // 顶部中央分数
+        const scoreValue = document.getElementById('scoreValue');
+        if (scoreValue) scoreValue.textContent = sm.formatScore();
+        
+        // 连杀显示
+        const streakEl = document.getElementById('killStreak');
+        if (streakEl) {
+            if (sm.killStreak >= 3) {
+                streakEl.style.display = 'block';
+                document.getElementById('streakCount').textContent = sm.killStreak;
+            } else {
+                streakEl.style.display = 'none';
+            }
+        }
+    }
+    
+    // 结束游戏并计算分数
+    endGame(result) {
+        const scoreData = this.scoreManager.end(result);
+        console.log('🏆 游戏结束！分数统计：', scoreData);
+        
+        // 隐藏游戏布局
+        document.getElementById('mainLayout').style.display = 'none';
+        document.getElementById('topScoreBar').style.display = 'none';
+        document.getElementById('bottomStatusBar').style.display = 'none';
+        document.getElementById('floorIndicator').style.display = 'none';
+        
+        // 显示结果
+        const resultText = result === 'cleared' ? '通关！' : result === 'dead' ? '阵亡' : '结束';
+        alert(`游戏${resultText}\n最终分数: ${scoreData.finalScore.toLocaleString()}\n击杀: ${scoreData.stats.enemiesKilled} | 探索: ${scoreData.stats.roomsExplored}间`);
+        
+        return scoreData;
+    }
+    
+    // 初始化道具格子
+    initItemGrid() {
+        const grid = document.getElementById('sidebarItems');
+        if (!grid) return;
+        grid.innerHTML = '';
+        for (let i = 0; i < 20; i++) {
+            const slot = document.createElement('div');
+            slot.className = 'item-cell';
+            slot.id = `sidebarItem${i}`;
+            grid.appendChild(slot);
+        }
+    }
+    
+    // 更新侧边面板
+    updateSidePanels() {
+        // 左侧边栏 - 角色状态
+        const hpEl = document.getElementById('sidebarHp');
+        if (hpEl) hpEl.textContent = `${this.player.hp}/${this.player.maxHp}`;
+        
+        const lvEl = document.getElementById('sidebarLv');
+        if (lvEl) lvEl.textContent = `Lv.${this.player.lv}`;
+        
+        const goldEl = document.getElementById('sidebarGold');
+        if (goldEl) goldEl.textContent = this.player.gold;
+        
+        const floorEl = document.getElementById('sidebarFloor');
+        if (floorEl) floorEl.textContent = `${this.currentFloor}/${this.maxFloors}`;
+        
+        // 武器列表
+        const weaponList = document.getElementById('sidebarWeapons');
+        if (weaponList) {
+            weaponList.innerHTML = '';
+            // 幸存者模式：显示所有已装备武器
+            this.weapons.forEach((w) => {
+                const div = document.createElement('div');
+                div.className = 'weapon-item';
+                div.innerHTML = `
+                    <span class="weapon-icon">${w.cfg.icon}</span>
+                    <span class="weapon-name">${w.cfg.name}</span>
+                    <span class="weapon-lv">Lv.${w.level}${w.evolution ? '★' : ''}</span>
+                `;
+                weaponList.appendChild(div);
+            });
+        }
+        
+        // 材料
+        const matsEl = document.getElementById('sidebarMaterials');
+        if (matsEl) {
+            const mats = this.materials.getAll();
+            if (mats.length > 0) {
+                matsEl.innerHTML = mats.map(m => `${m.icon}${m.count}`).join(' ');
+            } else {
+                matsEl.textContent = '暂无';
+            }
+        }
+        
+        // 战斗属性
+        if (this.items) {
+            const stats = this.items.getStats();
+            // 幸存者模式：显示所有武器总DPS
+            const dmgEl = document.getElementById('sidebarDmg');
+            if (dmgEl && this.weapons.length > 0) {
+                // 计算所有武器的平均伤害
+                let totalDmg = 0;
+                this.weapons.forEach(w => {
+                    totalDmg += Math.floor(w.cfg.dmg * (1 + (w.level - 1) * 0.15) * stats.projSize);
+                });
+                dmgEl.textContent = totalDmg;
+            }
+            
+            // 移速
+            const speedEl = document.getElementById('sidebarSpeed');
+            if (speedEl) {
+                const speedPercent = Math.floor(stats.speed * 100);
+                speedEl.textContent = speedPercent + '%';
+            }
+            
+            // 攻速
+            const fireRateEl = document.getElementById('sidebarFireRate');
+            if (fireRateEl) {
+                const fireRatePercent = Math.floor(stats.fireRate * 100);
+                fireRateEl.textContent = fireRatePercent + '%';
+            }
+            
+            // 暴击率
+            const critEl = document.getElementById('sidebarCrit');
+            if (critEl) {
+                const critPercent = Math.floor(stats.crit * 100);
+                critEl.textContent = critPercent + '%';
+            }
+            
+            // 护甲
+            const armorEl = document.getElementById('sidebarArmor');
+            if (armorEl) {
+                armorEl.textContent = stats.armor;
+            }
+        }
+        
+        // 右侧边栏 - 房间类型和状态
+        const roomTypeEl = document.getElementById('sidebarRoomType');
+        if (roomTypeEl) {
+            const names = { start: '起点', normal: '战斗', boss: 'BOSS', treasure: '宝箱', shop: '商店', hidden: '隐藏' };
+            roomTypeEl.textContent = names[this.curRoom.type] || '未知';
+        }
+        
+        const roomStatusEl = document.getElementById('sidebarRoomStatus');
+        if (roomStatusEl) {
+            if (this.curRoom.cleared) {
+                roomStatusEl.innerHTML = '✓ <span style="color:#4f4">已清理</span>';
+            } else {
+                roomStatusEl.innerHTML = '🔒 <span style="color:#f44">锁定</span>';
+            }
+        }
+        
+        // 分数
+        const scoreEl = document.getElementById('sidebarScore');
+        if (scoreEl && this.scoreManager) {
+            scoreEl.textContent = this.scoreManager.score;
+        }
+        
+        // 击杀
+        const killsEl = document.getElementById('sidebarKills');
+        if (killsEl && this.scoreManager) {
+            killsEl.textContent = this.scoreManager.stats.enemiesKilled;
+        }
+        
+        // 探索
+        const roomsEl = document.getElementById('sidebarRooms');
+        if (roomsEl && this.scoreManager) {
+            roomsEl.textContent = this.scoreManager.stats.roomsExplored;
+        }
+        
+        // 道具格子（20格）
+        const items = this.items?.items || [];
+        for (let i = 0; i < 20; i++) {
+            const slot = document.getElementById(`sidebarItem${i}`);
+            if (slot) {
+                if (items[i]) {
+                    slot.textContent = items[i].icon;
+                    slot.classList.add('filled');
+                    slot.title = items[i].name;
+                } else {
+                    slot.textContent = '';
+                    slot.classList.remove('filled');
+                    slot.title = '';
+                }
+            }
+        }
+        
+        // 底部状态条
+        const bottomFloor = document.getElementById('bottomFloor');
+        if (bottomFloor) bottomFloor.textContent = this.currentFloor;
+        
+        const bottomMaxFloor = document.getElementById('bottomMaxFloor');
+        if (bottomMaxFloor) bottomMaxFloor.textContent = this.maxFloors;
+        
+        const bottomEnemies = document.getElementById('bottomEnemies');
+        if (bottomEnemies) bottomEnemies.textContent = this.curRoom.enemies.length;
+        
+        const bottomRoomStatus = document.getElementById('bottomRoomStatus');
+        if (bottomRoomStatus) {
+            if (this.curRoom.cleared) {
+                bottomRoomStatus.innerHTML = '✓ <span style="color:#4f4">已清理</span>';
+            } else {
+                bottomRoomStatus.innerHTML = '🔒 <span style="color:#f44">锁定</span>';
+            }
+        }
+        
+        // 更新小地图（以撒风格：已访问=实心，未访问=轮廓）
+        this.updateMiniMap();
+    }
+    
+    // 小地图在右侧边栏以撒风格绘制 (updateMiniMap)
+    // 已访问房间=实心，未访问房间=轮廓
     async loadSprites() {
         const basePath = 'https://wearescientist.github.io/rouge-cow/assets/sprites/';
         await this.sprites.load('player', basePath + 'player_cow.png');
@@ -1672,6 +2800,25 @@ class Game {
         if (progressBar) progressBar.style.width = `${progress}%`;
         if (loadingText) loadingText.textContent = `正在加载... ${Math.floor(progress)}%`;
     }
+    
+    // 重新生成地图（当房间尺寸改变时调用）
+    regenerateMap() {
+        const gen = new MapGenerator();
+        const map = gen.generate(1);
+        this.curRoom = map.start;
+        this.allRooms = map.rooms;
+        this.curRoom.visited = true;
+        this.allFloors.set(1, { start: map.start, rooms: map.rooms });
+        
+        // 重新设置玩家位置
+        const roomW = SURVIVOR_CONFIG.ROOM_WIDTH;
+        const roomH = SURVIVOR_CONFIG.ROOM_HEIGHT;
+        this.player.x = roomW / 2;
+        this.player.y = roomH / 2;
+        this.camera.follow(this.player);
+        
+        console.log(`🗺️ 地图重新生成: ${roomW}x${roomH}`);
+    }
 
     setupInput() {
         window.addEventListener('keydown', e => {
@@ -1691,6 +2838,14 @@ class Game {
             if (this.evolutionOpen) {
                 if (e.key >= '1' && e.key <= '3') {
                     this.evolveWeapon(parseInt(e.key) - 1);
+                }
+                return;
+            }
+            
+            // 武器选择界面操作
+            if (this.weaponSelectOpen) {
+                if (e.key >= '1' && e.key <= '3') {
+                    this.selectWeapon(parseInt(e.key) - 1);
                 }
                 return;
             }
@@ -1734,6 +2889,20 @@ class Game {
                 console.log(`无敌模式: ${this.godMode ? '开启' : '关闭'}`);
             }
             
+            // 速度调整快捷键 -/+ (或 =)
+            if (e.key === '-' || e.key === '_') {
+                const speeds = [1, 2, 5, 10];
+                const currentIdx = speeds.indexOf(this.timeScale);
+                const newIdx = Math.max(0, currentIdx - 1);
+                this.setSpeed(speeds[newIdx]);
+            }
+            if (e.key === '=' || e.key === '+' || e.key === '0') {
+                const speeds = [1, 2, 5, 10];
+                const currentIdx = speeds.indexOf(this.timeScale);
+                const newIdx = Math.min(speeds.length - 1, currentIdx + 1);
+                this.setSpeed(speeds[newIdx]);
+            }
+            
             // 存档功能快捷键（第5次迭代）
             if (e.key === 'l' || e.key === 'L') {
                 if (this.hasSave()) {
@@ -1765,8 +2934,9 @@ class Game {
         console.log('武器进化界面已关闭');
     }
     
-    evolveWeapon(index) {
-        const weapon = this.weapons[this.activeWeapon];
+    evolveWeapon(index, weaponIdx = 0) {
+        // 幸存者模式：默认进化第一个武器（可以扩展为选择进化哪个武器）
+        const weapon = this.weapons[weaponIdx];
         if (!weapon) return;
         
         const evolutions = WEAPON_EVOLUTIONS[weapon.baseKey];
@@ -1805,6 +2975,53 @@ class Game {
         } else {
             console.log('材料不足，无法进化');
         }
+    }
+    
+    // 幸存者模式：3选1武器选择界面
+    openWeaponSelect() {
+        this.weaponSelectOpen = true;
+        // 随机3个武器选项
+        const allWeaponKeys = Object.keys(WEAPONS);
+        this.weaponOptions = [];
+        while (this.weaponOptions.length < 3 && allWeaponKeys.length > 0) {
+            const idx = Math.floor(Math.random() * allWeaponKeys.length);
+            const key = allWeaponKeys.splice(idx, 1)[0];
+            // 如果已拥有该武器，则提供升级版本
+            const existing = this.weapons.find(w => w.cfg.key === key);
+            this.weaponOptions.push({
+                key: key,
+                isNew: !existing,
+                level: existing ? existing.level + 1 : 1,
+                cfg: WEAPONS[key]
+            });
+        }
+        console.log('武器选择界面已打开', this.weaponOptions);
+    }
+    
+    closeWeaponSelect() {
+        this.weaponSelectOpen = false;
+        this.weaponOptions = [];
+    }
+    
+    selectWeapon(index) {
+        if (index >= this.weaponOptions.length) return;
+        const option = this.weaponOptions[index];
+        
+        const existingIdx = this.weapons.findIndex(w => w.cfg.key === option.key);
+        if (existingIdx >= 0) {
+            // 升级现有武器
+            const leveledUp = this.weapons[existingIdx].addXp(100);
+            if (leveledUp) {
+                this.particles.burst(this.player.x, this.player.y, '#f0f', 20);
+                console.log(`武器升级: ${option.cfg.name} Lv.${this.weapons[existingIdx].level}`);
+            }
+        } else if (this.weapons.length < 6) {
+            // 添加新武器
+            this.weapons.push(new Weapon(option.key, 1));
+            console.log(`获得新武器: ${option.cfg.name}`);
+        }
+        
+        this.closeWeaponSelect();
     }
     
     openShop() {
@@ -1858,16 +3075,34 @@ class Game {
         this.sounds.init();
         document.getElementById('loading').classList.add('hidden');
         
+        // 窗口大小变化时更新相机视野
+        window.addEventListener('resize', () => {
+            if (this.camera) {
+                this.camera.updateViewport();
+            }
+        });
+        
         document.getElementById('story').style.display = 'block';
         document.getElementById('startGameBtn').addEventListener('click', () => {
             document.getElementById('story').style.display = 'none';
             this.state = 'playing';
+            // 显示游戏布局
+            document.getElementById('mainLayout').classList.add('active');
+            document.getElementById('topScoreBar').style.display = 'block';
+            document.getElementById('bottomStatusBar').style.display = 'flex';
+            // 初始化相机视野
+            this.camera.updateViewport();
+            // 初始化道具格子
+            this.initItemGrid();
+            // 启动分数系统
+            this.scoreManager.start();
+            this.updateScoreDisplay();
             this.loop(0);
         });
     }
 
     update(dt) {
-        if (this.shopOpen || this.evolutionOpen) return;
+        if (this.shopOpen || this.evolutionOpen || this.weaponSelectOpen) return;
         
         // 更新房间（波次系统）
         this.curRoom.update(dt);
@@ -1877,16 +3112,19 @@ class Game {
             if (this.transition.timer <= 0) {
                 this.curRoom = this.transition.target;
                 this.curRoom.visited = true;
+                // 分数：进入新房间
+                this.scoreManager.onEnterRoom();
                 const roomW = SURVIVOR_CONFIG.ROOM_WIDTH;
                 const roomH = SURVIVOR_CONFIG.ROOM_HEIGHT;
-                const wallT = 100;
-                // 大房间传送位置
-                if (this.transition.dir === 'left') this.player.x = roomW - wallT - 50;
-                else if (this.transition.dir === 'right') this.player.x = wallT + 50;
+                const wallT = 60;
+                // 传送位置：远离门区域，往房间中心移动 150px
+                const spawnOffset = 150;
+                if (this.transition.dir === 'left') this.player.x = roomW - wallT - spawnOffset;
+                else if (this.transition.dir === 'right') this.player.x = wallT + spawnOffset;
                 else this.player.x = roomW / 2;
                 
-                if (this.transition.dir === 'up') this.player.y = roomH - wallT - 50;
-                else if (this.transition.dir === 'down') this.player.y = wallT + 50;
+                if (this.transition.dir === 'up') this.player.y = roomH - wallT - spawnOffset;
+                else if (this.transition.dir === 'down') this.player.y = wallT + spawnOffset;
                 else this.player.y = roomH / 2;
                 
                 this.transition.active = false;
@@ -1903,7 +3141,7 @@ class Game {
         stats.speed *= (1 + totemBonuses.speed);
         stats.crit = Math.min(1, stats.crit + totemBonuses.crit);
         
-        const speed = 150 * stats.speed;
+        const speed = 300 * stats.speed;  // 移速翻倍
         
         // 冲刺冷却更新
         if (this.player.dashCooldown > 0) this.player.dashCooldown -= dt;
@@ -1996,34 +3234,38 @@ class Game {
                 }
             }
             
-            // 障碍物碰撞检测
-            for (const obs of this.curRoom.obstacles) {
-                if (newX > obs.x - 20 && newX < obs.x + obs.w + 20 &&
-                    newY > obs.y - 20 && newY < obs.y + obs.h + 20) {
-                    canMoveX = false;
-                    canMoveY = false;
-                    break;
-                }
-            }
-            
             if (canMoveX) this.player.x = newX;
             if (canMoveY) this.player.y = newY;
         }
         
-        const wallT = 100; // 墙壁厚度
-        this.player.x = clamp(this.player.x, wallT, SURVIVOR_CONFIG.ROOM_WIDTH - wallT);
-        this.player.y = clamp(this.player.y, wallT, SURVIVOR_CONFIG.ROOM_HEIGHT - wallT);
+        // 玩家边界限制 - 有门的地方允许走出去（走进门触发传送）
+        let minX = 0, maxX = SURVIVOR_CONFIG.ROOM_WIDTH;
+        let minY = 0, maxY = SURVIVOR_CONFIG.ROOM_HEIGHT;
         
+        // 如果没有门，限制在墙内
+        if (!this.curRoom.doors.left) minX = 60;
+        if (!this.curRoom.doors.right) maxX = SURVIVOR_CONFIG.ROOM_WIDTH - 60;
+        if (!this.curRoom.doors.up) minY = 60;
+        if (!this.curRoom.doors.down) maxY = SURVIVOR_CONFIG.ROOM_HEIGHT - 60;
+        
+        this.player.x = clamp(this.player.x, minX, maxX);
+        this.player.y = clamp(this.player.y, minY, maxY);
+        
+        // 门传送检测 - 与 Room.draw 中的门位置保持一致（门和墙平齐）
         if (this.curRoom.cleared) {
             const roomW = SURVIVOR_CONFIG.ROOM_WIDTH;
             const roomH = SURVIVOR_CONFIG.ROOM_HEIGHT;
+            const wallT = 60;
+            const centerX = roomW / 2;
+            const centerY = roomH / 2;
             for (const [dir, door] of Object.entries(this.curRoom.doors)) {
                 if (!door || !door.open) continue;
+                // 门位置与 Room.draw 中一致（和墙平齐）
                 const pos = { 
-                    up: [roomW/2 - 30, 0, 60, 40], 
-                    down: [roomW/2 - 30, roomH - 40, 60, 40], 
-                    left: [0, roomH/2 - 40, 40, 80], 
-                    right: [roomW - 40, roomH/2 - 40, 40, 80] 
+                    up: [centerX - 40, 0, 80, wallT],              // 上: y=0, h=60
+                    down: [centerX - 40, roomH - wallT, 80, wallT], // 下: y=740, h=60
+                    left: [0, centerY - 50, wallT, 100],           // 左: x=0, w=60
+                    right: [roomW - wallT, centerY - 50, wallT, 100] // 右: x=1140, w=60
                 }[dir];
                 if (this.player.x > pos[0] && this.player.x < pos[0] + pos[2] &&
                     this.player.y > pos[1] && this.player.y < pos[1] + pos[3]) {
@@ -2041,7 +3283,10 @@ class Game {
             const d = dist(e.x, e.y, this.player.x, this.player.y);
             if (d < 25 && e.attackCd <= 0) {
                 if (!this.godMode && !this.player.isDashing) {
-                    this.player.hp -= Math.max(0, e.dmg - stats.armor);
+                    const actualDmg = Math.max(0, e.dmg - stats.armor);
+                    this.player.hp -= actualDmg;
+                    // 分数：受伤扣分
+                    if (actualDmg > 0) this.scoreManager.onDamage();
                 }
                 e.attackCd = 0.5;
                 if (this.player.hp <= 0) this.state = 'gameover';
@@ -2053,7 +3298,7 @@ class Game {
             for (const door of Object.values(this.curRoom.doors)) {
                 if (door) door.open = true;
             }
-            this.particles.burst(450, 300, '#4f4', 30);
+            this.particles.burst(this.player.x, this.player.y, '#4f4', 30);
             
             if (this.curRoom.type === 'boss') {
                 this.state = 'victory';
@@ -2072,12 +3317,13 @@ class Game {
             if (d < minD) { minD = d; target = e; }
         }
         
-        for (const w of this.weapons) w.update(dt);
-        
-        const activeW = this.weapons[this.activeWeapon];
-        if (activeW && activeW.canFire() && target) {
-            this.bullets.push(...activeW.fire(this.player, target, stats));
-            this.sounds.play('shoot');
+        // 幸存者模式：所有武器独立更新和开火
+        for (const w of this.weapons) {
+            w.update(dt);
+            if (w.canFire() && target) {
+                this.bullets.push(...w.fire(this.player, target, stats));
+                this.sounds.play('shoot');
+            }
         }
         
         // 子弹边界检查（大房间）
@@ -2136,7 +3382,11 @@ class Game {
                     if (killed) {
                         e.hp = 0; // 标记死亡
                         this.gems.push({ x: e.x, y: e.y, v: e.exp || 10, life: 30 });
-                        this.goldDrops.push({ x: e.x, y: e.y, v: e.gold || 5, life: 30 });
+                        // 金币直接加，不掉落
+                        const goldAmount = e.gold || 5;
+                        this.player.gold += goldAmount;
+                        // 显示金币飘字效果
+                        this.particles.burst(e.x, e.y, '#fc0', 5);
                         
                         // 材料掉落
                         if (Math.random() < 0.15) {
@@ -2145,6 +3395,10 @@ class Game {
                             this.materials.add(matType, 1);
                             console.log(`获得材料: ${MATERIALS[matType].name}`);
                         }
+                        
+                        // 分数：击杀敌人
+                        const enemyType = e.isBoss ? 'boss' : (e.elite || e.hp > 50) ? 'elite' : 'normal';
+                        this.scoreManager.onKillEnemy(enemyType);
                         
                         this.particles.burst(e.x, e.y, e.color, 8);
                         this.sounds.play('kill');
@@ -2178,19 +3432,8 @@ class Game {
             }
         }
         
-        for (let i = this.goldDrops.length - 1; i >= 0; i--) {
-            const g = this.goldDrops[i];
-            const d = dist(g.x, g.y, this.player.x, this.player.y);
-            if (d < stats.magnet) {
-                g.x += (this.player.x - g.x) * 5 * dt;
-                g.y += (this.player.y - g.y) * 5 * dt;
-            }
-            if (d < 20) {
-                this.player.gold += g.v;
-                this.goldDrops.splice(i, 1);
-                this.particles.burst(this.player.x, this.player.y, '#fc0', 5);
-            }
-        }
+        // 金币直接加，无需拾取
+        this.goldDrops = [];
         
         for (let i = this.curRoom.items.length - 1; i >= 0; i--) {
             const item = this.curRoom.items[i];
@@ -2198,13 +3441,8 @@ class Game {
             
             if (d < 30) {
                 if (item.type === 'weapon') {
-                    const existingIdx = this.weapons.findIndex(w => w.cfg.key === item.weaponKey);
-                    if (existingIdx >= 0) {
-                        const leveledUp = this.weapons[existingIdx].addXp(100);
-                        if (leveledUp) this.particles.burst(item.x, item.y, '#f0f', 20);
-                    } else if (this.weapons.length < 5) {
-                        this.weapons.push(new Weapon(item.weaponKey, 1));
-                    }
+                    // 幸存者模式：打开3选1武器选择界面
+                    this.openWeaponSelect();
                 } else if (item.type === 'totem') {
                     if (this.totems.collect(item.totemId)) {
                         this.particles.burst(item.x, item.y, '#ff0', 30);
@@ -2219,6 +3457,8 @@ class Game {
                 }
                 this.curRoom.items.splice(i, 1);
                 this.particles.burst(item.x, item.y, '#ff0', 10);
+                // 分数：拾取道具
+                this.scoreManager.onCollectItem();
             }
         }
         
@@ -2229,23 +3469,25 @@ class Game {
         // 更新相机
         this.camera.update();
         
+        // 使用 canvas 实际尺寸
+        const canvasW = this.canvas.width;
+        const canvasH = this.canvas.height;
+        
         // 清空画布
-        this.ctx.fillStyle = '#000';
-        this.ctx.fillRect(0, 0, 900, 600);
+        this.ctx.fillStyle = '#0d0d1a';
+        this.ctx.fillRect(0, 0, canvasW, canvasH);
+        
+        // 保存上下文用于缩放
+        this.ctx.save();
+        if (this.camera.showFullRoom) {
+            this.ctx.scale(this.camera.zoom, this.camera.zoom);
+        }
         
         // 绘制房间（传入相机）
         this.curRoom.draw(this.ctx, this.camera);
         
         // 绘制掉落物（只绘制视野内的）
-        for (const g of this.goldDrops) {
-            if (!this.camera.isVisible(g.x, g.y, 20)) continue;
-            const pos = this.camera.worldToScreen(g.x, g.y);
-            this.ctx.fillStyle = '#fc0';
-            this.ctx.font = '16px Arial';
-            this.ctx.textAlign = 'center';
-            this.ctx.fillText('💰', pos.x, pos.y);
-        }
-        
+        // 金币直接加，无需绘制
         for (const g of this.gems) {
             if (!this.camera.isVisible(g.x, g.y, 20)) continue;
             const pos = this.camera.worldToScreen(g.x, g.y);
@@ -2258,21 +3500,54 @@ class Game {
             this.ctx.fill();
         }
         
+        // 绘制子弹（使用武器图标）
         for (const b of this.bullets) {
             if (!this.camera.isVisible(b.x, b.y, 20)) continue;
             const pos = this.camera.worldToScreen(b.x, b.y);
-            this.ctx.fillStyle = b.color;
-            this.ctx.beginPath();
-            this.ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
-            this.ctx.fill();
+            
+            if (b.icon && b.type !== 'melee') {
+                // 使用emoji图标绘制子弹
+                this.ctx.font = '16px Arial';
+                this.ctx.textAlign = 'center';
+                this.ctx.textBaseline = 'middle';
+                this.ctx.fillText(b.icon, pos.x, pos.y);
+            } else {
+                // 近战或没有图标的用圆形
+                this.ctx.fillStyle = b.color;
+                this.ctx.beginPath();
+                this.ctx.arc(pos.x, pos.y, b.type === 'melee' ? 15 : 6, 0, Math.PI * 2);
+                this.ctx.fill();
+            }
         }
         
         for (const item of this.curRoom.items) {
             if (!this.camera.isVisible(item.x, item.y, 30)) continue;
             const pos = this.camera.worldToScreen(item.x, item.y);
+            
+            // 获取物品描述
+            let desc = '';
+            if (item.type === 'weapon') {
+                const w = WEAPONS[item.weaponKey];
+                desc = w ? `${w.name}|伤害${w.dmg}|冷却${w.cd}s` : '武器';
+            } else if (item.type === 'totem') {
+                const t = TOTEMS[item.totemId];
+                desc = t ? `${t.name}|${t.desc}` : '图腾';
+            } else {
+                const itemData = ITEMS[item.id];
+                desc = itemData ? `${itemData.name}|${itemData.desc}` : '道具';
+            }
+            
+            // 绘制描述文字（物品上方）
+            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+            this.ctx.fillRect(pos.x - 60, pos.y - 35, 120, 14);
+            this.ctx.fillStyle = '#fff';
+            this.ctx.font = '10px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(desc.substring(0, 20), pos.x, pos.y - 25);
+            
+            // 绘制物品图标
             this.ctx.fillStyle = '#ff0';
             this.ctx.font = '20px Arial';
-            this.ctx.textAlign = 'center';
             this.ctx.fillText(item.icon, pos.x, pos.y + 5);
             
             this.ctx.strokeStyle = 'rgba(255, 255, 0, 0.3)';
@@ -2344,17 +3619,9 @@ class Game {
         }
         this.ctx.globalAlpha = 1;
         
-        // 绘制阴影
-        const shadowScale = this.player.isDashing ? 0.7 : 1;
-        this.ctx.fillStyle = 'rgba(0,0,0,0.25)';
-        this.ctx.beginPath();
-        this.ctx.ellipse(playerScreen.x, playerScreen.y + 12, 10 * shadowScale, 3 * shadowScale, 0, 0, Math.PI * 2);
-        this.ctx.fill();
-        
         // 绘制玩家（带动画）
         const breathY = Math.sin(Date.now() / 300) * 1;
         const totalScreenY = playerScreen.y + (this.player.jumpY || 0) + breathY;
-        const legOffset = Math.sin(this.player.walkCycle) * 4;
         
         const playerSprite = this.sprites.get('player');
         this.ctx.save();
@@ -2362,15 +3629,10 @@ class Game {
         if (!this.player.facingRight) this.ctx.scale(-1, 1);
         
         if (playerSprite) {
+            // 使用精灵图绘制角色（角色本身包含脚）
             this.ctx.drawImage(playerSprite, -16, -16, 32, 32);
-            // 腿部动画
-            if (this.player.isMoving && !this.player.isDashing) {
-                this.ctx.fillStyle = '#553322';
-                this.ctx.fillRect(-6, 10, 4, 8 + Math.abs(legOffset));
-                this.ctx.fillRect(2, 10, 4, 8 - Math.abs(legOffset));
-            }
         } else {
-            // 程序化绘制
+            // 程序化绘制牛牛（简化版，不额外绘制脚）
             this.ctx.fillStyle = '#e8e8e8';
             this.ctx.beginPath();
             this.ctx.ellipse(0, breathY, 13, 10, 0, 0, Math.PI * 2);
@@ -2381,6 +3643,7 @@ class Game {
             this.ctx.arc(12, -6 + breathY, 1.2, 0, Math.PI * 2);
             this.ctx.fill();
         }
+        
         this.ctx.restore();
         
         // 冲刺特效
@@ -2414,6 +3677,17 @@ class Game {
         if (this.evolutionOpen) {
             this.drawEvolutionUI();
         }
+        
+        // 3选1武器选择UI
+        if (this.weaponSelectOpen) {
+            this.drawWeaponSelectUI();
+        }
+        
+        // 恢复上下文
+        this.ctx.restore();
+        
+        // 更新侧边面板
+        this.updateSidePanels();
         
         this.drawUI();
     }
@@ -2580,103 +3854,82 @@ class Game {
         ctx.font = '14px Arial';
         ctx.fillText('按 1-3 选择进化 | 按 V 关闭', 450, boxY + boxHeight - 20);
     }
-
-    drawUI() {
+    
+    drawWeaponSelectUI() {
         const ctx = this.ctx;
-        const pad = 20;
+        const boxWidth = 600;
+        const boxHeight = 400;
+        const boxX = (ctx.canvas.width || 900) / 2 - boxWidth / 2;
+        const boxY = (ctx.canvas.height || 600) / 2 - boxHeight / 2;
+        const centerX = (ctx.canvas.width || 900) / 2;
         
-        ctx.fillStyle = 'rgba(0,0,0,0.7)';
-        ctx.fillRect(pad, pad, 200, 130);
-        
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 16px Arial';
-        ctx.textAlign = 'left';
-        ctx.fillText('❤️'.repeat(Math.max(0, Math.ceil(this.player.hp))), pad + 10, pad + 35);
+        ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
+        ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
+        ctx.strokeStyle = '#48f';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
         
         ctx.fillStyle = '#48f';
-        ctx.fillText(`Lv.${this.player.lv} EXP:${Math.floor(this.player.exp)}/${this.player.lv*100}`, pad + 10, pad + 60);
+        ctx.font = 'bold 28px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('⚔️ 选择武器 ⚔️', centerX, boxY + 50);
         
-        ctx.fillStyle = '#fc0';
-        ctx.fillText(`💰 ${this.player.gold}`, pad + 10, pad + 85);
+        const itemWidth = 160;
+        const itemHeight = 200;
+        const startX = centerX - (this.weaponOptions.length * itemWidth) / 2 + itemWidth / 2;
         
-        ctx.fillStyle = '#aaa';
-        ctx.fillText(`第 ${this.currentFloor}/${this.maxFloors} 层`, pad + 10, pad + 105);
-        
-        // 显示材料数量（简要）
-        const mats = this.materials.getAll();
-        if (mats.length > 0) {
-            ctx.fillStyle = '#f8f';
-            ctx.font = '12px Arial';
-            let matStr = '';
-            mats.slice(0, 4).forEach(m => matStr += `${m.icon}${m.count} `);
-            ctx.fillText(matStr, pad + 10, pad + 125);
-        }
-        
-        if (this.godMode) {
-            ctx.fillStyle = '#f0f';
-            ctx.font = 'bold 14px Arial';
-            ctx.fillText('👑 GOD MODE', pad + 10, pad + 145);
-        }
-        
-        ctx.textAlign = 'right';
-        ctx.fillStyle = '#fff';
-        const names = { start: '起点', normal: '战斗', boss: 'BOSS', treasure: '宝箱', shop: '商店', hidden: '隐藏' };
-        ctx.fillText(`${names[this.curRoom.type]}房间`, 880, pad + 35);
-        ctx.fillText(`敌人:${this.curRoom.enemies.length}`, 880, pad + 60);
-        
-        if (!this.curRoom.cleared) {
-            ctx.fillStyle = '#f44';
-            ctx.fillText('🔒 锁定', 880, pad + 85);
-        } else {
-            ctx.fillStyle = '#4f4';
-            ctx.fillText('✓ 已清理', 880, pad + 85);
-        }
-        
-        const mx = 750, my = 140;
-        ctx.fillStyle = 'rgba(0,0,0,0.7)';
-        ctx.fillRect(mx, my, 130, 130);
-        
-        for (const [, r] of this.allRooms) {
-            if (!r.visited) continue;
-            const rx = mx + 10 + (r.gx + 5) * 10;
-            const ry = my + 10 + (r.gy + 5) * 10;
-            ctx.fillStyle = r === this.curRoom ? '#ff0' : { normal: '#666', boss: '#f00', treasure: '#0f0', start: '#66f', shop: '#48f', hidden: '#f0f' }[r.type];
-            ctx.fillRect(rx, ry, 8, 8);
-        }
-        
-        const by = 530;
-        ctx.fillStyle = 'rgba(0,0,0,0.7)';
-        ctx.fillRect(pad, by, 350, 50);
-        
-        let wx = pad + 10;
-        for (let i = 0; i < this.weapons.length; i++) {
-            const w = this.weapons[i];
-            ctx.fillStyle = i === this.activeWeapon ? '#444' : '#333';
-            ctx.fillRect(wx, by + 5, 50, 40);
+        this.weaponOptions.forEach((option, i) => {
+            const ix = startX + i * (itemWidth + 20);
+            const iy = boxY + 180;
             
-            ctx.fillStyle = w.getLevelColor();
-            ctx.font = '20px Arial';
+            // 背景框
+            ctx.fillStyle = '#1a1a2e';
+            ctx.fillRect(ix - itemWidth/2, iy - itemHeight/2, itemWidth, itemHeight);
+            ctx.strokeStyle = '#48f';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(ix - itemWidth/2, iy - itemHeight/2, itemWidth, itemHeight);
+            
+            // 武器图标
+            ctx.font = '64px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(w.cfg.icon, wx + 25, by + 32);
+            ctx.fillText(option.cfg.icon, ix, iy - 40);
             
-            if (w.level > 1 || w.evolution) {
-                ctx.fillStyle = w.evolution ? '#f0f' : '#ff0';
-                ctx.font = '10px Arial';
-                ctx.fillText(w.evolution ? '★' : '+' + (w.level - 1), wx + 42, by + 15);
+            // 武器名称
+            ctx.fillStyle = '#fff';
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText(option.cfg.name, ix, iy);
+            
+            // 新武器/升级标识
+            if (option.isNew) {
+                ctx.fillStyle = '#4f4';
+                ctx.font = '14px Arial';
+                ctx.fillText('[新武器]', ix, iy + 25);
+            } else {
+                ctx.fillStyle = '#f0f';
+                ctx.font = '14px Arial';
+                ctx.fillText(`[升级 Lv.${option.level}]`, ix, iy + 25);
             }
             
-            wx += 60;
-        }
-        
-        const totemCount = this.totems.getCount();
-        if (totemCount > 0) {
-            ctx.fillStyle = 'rgba(0,0,0,0.7)';
-            ctx.fillRect(370, by, 100, 50);
-            ctx.fillStyle = '#fc0';
+            // 属性
+            ctx.fillStyle = '#aaa';
+            ctx.font = '12px Arial';
+            ctx.fillText(`伤害: ${option.cfg.dmg}`, ix, iy + 50);
+            ctx.fillText(`冷却: ${option.cfg.cd}s`, ix, iy + 70);
+            
+            // 按键提示
+            ctx.fillStyle = '#666';
             ctx.font = '14px Arial';
-            ctx.textAlign = 'center';
-            ctx.fillText(`图腾: ${totemCount}/7`, 420, by + 20);
-        }
+            ctx.fillText(`[${i + 1}]`, ix, iy + 100);
+        });
+        
+        ctx.fillStyle = '#888';
+        ctx.font = '14px Arial';
+        ctx.fillText('按 1-3 选择武器', centerX, boxY + boxHeight - 30);
+    }
+
+    drawUI() {
+        // 游戏结束/胜利画面
+        const ctx = this.ctx;
         
         if (this.state === 'gameover') {
             ctx.fillStyle = 'rgba(0,0,0,0.8)';
@@ -2688,6 +3941,9 @@ class Game {
             ctx.font = '24px Arial';
             ctx.fillStyle = '#fff';
             ctx.fillText(`到达层数: ${this.currentFloor} | 金币: ${this.player.gold}`, 450, 340);
+            if (this.scoreManager.isPlaying) {
+                this.endGame('dead');
+            }
         }
         
         if (this.state === 'victory') {
@@ -2697,6 +3953,71 @@ class Game {
             ctx.font = 'bold 56px Arial';
             ctx.textAlign = 'center';
             ctx.fillText('🎉 胜利! 🎉', 450, 260);
+            if (this.scoreManager.isPlaying) {
+                this.endGame('cleared');
+            }
+        }
+    }
+    
+    // 以撒风格小地图（在右侧边栏显示）
+    // 已访问房间=实心，未访问房间=轮廓
+    updateMiniMap() {
+        const canvas = document.getElementById('miniMapCanvas');
+        if (!canvas) return;
+        const ctx = canvas.getContext('2d');
+        const size = 220;
+        
+        ctx.clearRect(0, 0, size, size);
+        
+        const rooms = Array.from(this.allRooms?.values() || []);
+        if (!rooms || rooms.length === 0) return;
+        
+        // 计算地图范围
+        let minX = 0, maxX = 0, minY = 0, maxY = 0;
+        for (const r of rooms) {
+            minX = Math.min(minX, r.gridX);
+            maxX = Math.max(maxX, r.gridX);
+            minY = Math.min(minY, r.gridY);
+            maxY = Math.max(maxY, r.gridY);
+        }
+        
+        const width = maxX - minX + 1;
+        const height = maxY - minY + 1;
+        const padding = 20;
+        const cellSize = Math.min((size - padding * 2) / width, (size - padding * 2) / height);
+        const mapPixelW = width * cellSize;
+        const mapPixelH = height * cellSize;
+        const offsetX = (size - mapPixelW) / 2;
+        const offsetY = (size - mapPixelH) / 2;
+        
+        // 绘制房间
+        for (const r of rooms) {
+            const rx = offsetX + (r.gridX - minX) * cellSize + 2;
+            const ry = offsetY + (r.gridY - minY) * cellSize + 2;
+            const rw = cellSize - 4;
+            
+            // 未访问的房间只绘制轮廓（以撒风格）
+            if (r.visited) {
+                switch(r.type) {
+                    case 'start': ctx.fillStyle = '#4f4'; break;
+                    case 'boss': ctx.fillStyle = '#f44'; break;
+                    case 'treasure': ctx.fillStyle = '#fa0'; break;
+                    case 'shop': ctx.fillStyle = '#48f'; break;
+                    default: ctx.fillStyle = '#ccc';
+                }
+                ctx.fillRect(rx, ry, rw, rw);
+            } else {
+                ctx.strokeStyle = '#555';
+                ctx.lineWidth = 1.5;
+                ctx.strokeRect(rx, ry, rw, rw);
+            }
+            
+            // 当前房间高亮
+            if (r === this.curRoom) {
+                ctx.strokeStyle = '#ff0';
+                ctx.lineWidth = 3;
+                ctx.strokeRect(rx - 2, ry - 2, rw + 4, rw + 4);
+            }
         }
     }
     
@@ -2717,14 +4038,14 @@ class Game {
         const itemId = randInt(1, 16);
         const item = ITEMS[itemId];
         if (!item) return;
-        this.curRoom.items.push({ x: 450, y: 300, id: itemId, icon: item.icon, name: item.name });
+        this.curRoom.items.push({ x: this.curRoom.centerX, y: this.curRoom.centerY, id: itemId, icon: item.icon, name: item.name });
     }
     
     spawnWeaponPickup() {
         const wKeys = Object.keys(WEAPONS);
         const randKey = wKeys[Math.floor(Math.random() * wKeys.length)];
         this.curRoom.items.push({
-            x: 450, y: 300,
+            x: this.curRoom.centerX, y: this.curRoom.centerY,
             type: 'weapon', weaponKey: randKey,
             icon: WEAPONS[randKey].icon, name: WEAPONS[randKey].name
         });
@@ -2735,7 +4056,7 @@ class Game {
         const totem = TOTEMS[totemId];
         if (!totem) return;
         this.curRoom.items.push({
-            x: 450, y: 300,
+            x: this.curRoom.centerX, y: this.curRoom.centerY,
             type: 'totem', totemId: totemId,
             icon: totem.icon, name: totem.name
         });
@@ -2806,13 +4127,18 @@ class Game {
     }
 
     loop(t) {
-        const dt = Math.min((t - (this.lastT || t)) / 1000, 0.1);
+        const dt = Math.min((t - (this.lastT || t)) / 1000, 0.1) * this.timeScale;
         this.lastT = t;
         
         if (this.state === 'playing' || this.transition.active) {
             this.update(dt);
         }
         this.draw();
+        
+        // 更新分数显示
+        if (this.state === 'playing' && this.scoreManager.isPlaying) {
+            this.updateScoreDisplay();
+        }
         
         this.rafId = requestAnimationFrame(t => this.loop(t));
     }

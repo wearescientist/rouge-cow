@@ -1,0 +1,1245 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>肉鸽牛牛 v0.7.1 - 盲眼商店</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
+        #gameCanvas { display: block; }
+        #ui { position: fixed; top: 0; left: 0; pointer-events: none; }
+        #loading { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #0a0a14; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 1000;
+            transition: opacity 0.5s;
+        }
+        #loading.hidden { opacity: 0; pointer-events: none; }
+        .cow { font-size: 100px; animation: bounce 0.6s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0) scale(1); } to { transform: translateY(-30px) scale(1.1); } }
+        .loading-text { color: #4488ff; margin-top: 30px; font-size: 24px; font-family: Arial; }
+        .controls-hint { 
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            color: #666; font-family: Arial; font-size: 14px; text-align: center;
+            background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 20px;
+        }
+        .key { background: #333; color: #fff; padding: 2px 8px; border-radius: 4px; margin: 0 2px; }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="cow">🐮</div>
+        <div class="loading-text">正在初始化牛牛的冒险... v0.7.1</div>
+    </div>
+    <canvas id="gameCanvas"></canvas>
+    <div class="controls-hint">
+        <span class="key">WASD</span>移动 
+        <span class="key">1-9</span>道具 
+        <span class="key">W</span>武器 
+        <span class="key">E</span>互动 
+        <span class="key">F</span>全屏
+    </div>
+
+<script>
+// ============================================================================
+// 肉鸽牛牛 v0.7.1 - 盲眼NPC商店系统
+// ============================================================================
+
+const VERSION = 'v0.7.1';
+
+// 工具函数
+const $ = (fn) => fn();
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+const dist = (x1, y1, x2, y2) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+const rand = (min, max) => Math.random() * (max - min) + min;
+const randInt = (min, max) => Math.floor(rand(min, max));
+const randChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// 向量类
+class Vec2 {
+    constructor(x = 0, y = 0) { this.x = x; this.y = y; }
+    add(v) { return new Vec2(this.x + v.x, this.y + v.y); }
+    sub(v) { return new Vec2(this.x - v.x, this.y - v.y); }
+    mul(s) { return new Vec2(this.x * s, this.y * s); }
+    len() { return Math.sqrt(this.x**2 + this.y**2); }
+    norm() { const l = this.len(); return l > 0.001 ? new Vec2(this.x/l, this.y/l) : new Vec2(0, 0); }
+    dist(v) { return Math.sqrt((this.x-v.x)**2 + (this.y-v.y)**2); }
+    static fromAngle(a, len = 1) { return new Vec2(Math.cos(a) * len, Math.sin(a) * len); }
+}
+
+// ============================================================================
+// 粒子系统（带对象池）
+// ============================================================================
+class ParticleSystem {
+    constructor(max = 200) {
+        this.pool = Array(max).fill(null).map(() => ({
+            x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 1,
+            color: '#fff', size: 4, active: false
+        }));
+        this.active = [];
+    }
+
+    emit(x, y, color, opts = {}) {
+        const p = this.pool.find(p => !p.active) || this.pool[0];
+        p.x = x; p.y = y; p.color = color; p.active = true;
+        p.life = opts.life || 1; p.maxLife = p.life;
+        p.size = opts.size || 4;
+        const speed = opts.speed || 100;
+        const angle = opts.angle != null ? opts.angle : Math.random() * Math.PI * 2;
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+        if (!this.active.includes(p)) this.active.push(p);
+    }
+
+    burst(x, y, color, count = 10) {
+        for (let i = 0; i < count; i++) {
+            this.emit(x, y, color, { 
+                speed: rand(50, 150), 
+                life: rand(0.3, 0.8),
+                size: rand(2, 5)
+            });
+        }
+    }
+
+    update(dt) {
+        for (let i = this.active.length - 1; i >= 0; i--) {
+            const p = this.active[i];
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.life -= dt;
+            if (p.life <= 0) {
+                p.active = false;
+                this.active.splice(i, 1);
+            }
+        }
+    }
+
+    draw(ctx) {
+        for (const p of this.active) {
+            const alpha = p.life / p.maxLife;
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+        }
+        ctx.globalAlpha = 1;
+    }
+}
+
+// ============================================================================
+// 道具数据库（修复版）
+// ============================================================================
+const ITEMS = {
+    // 攻击类
+    1: { id: 1, name: '多重射击', icon: '🎯', rarity: 'common', effect: 'projCount', value: 1, desc: '子弹+1', price: 50 },
+    2: { id: 2, name: '巨大化', icon: '📏', rarity: 'common', effect: 'projSize', value: 0.3, desc: '子弹变大', price: 40 },
+    3: { id: 3, name: '快速射击', icon: '⚡', rarity: 'common', effect: 'fireRate', value: 0.15, desc: '射速+15%', price: 60 },
+    4: { id: 4, name: '穿甲弹', icon: '🔩', rarity: 'rare', effect: 'pierce', value: 1, desc: '穿透+1', price: 100 },
+    5: { id: 5, name: '暴击镜片', icon: '🔍', rarity: 'rare', effect: 'crit', value: 0.1, desc: '暴击+10%', price: 120 },
+    // 防御类
+    6: { id: 6, name: '心之容器', icon: '❤️', rarity: 'common', effect: 'maxHp', value: 2, desc: '生命+2', price: 80 },
+    7: { id: 7, name: '钢铁护甲', icon: '🛡️', rarity: 'rare', effect: 'armor', value: 1, desc: '护甲+1', price: 150 },
+    8: { id: 8, name: '吸血獠牙', icon: '🦷', rarity: 'rare', effect: 'lifeSteal', value: 0.05, desc: '吸血5%', price: 130 },
+    // 移动类
+    9: { id: 9, name: '加速靴', icon: '👟', rarity: 'common', effect: 'speed', value: 0.2, desc: '移速+20%', price: 50 },
+    10: { id: 10, name: '飞行翅膀', icon: '🦅', rarity: 'epic', effect: 'fly', value: 1, desc: '可以飞行', price: 200 },
+    // 特殊
+    11: { id: 11, name: '磁铁', icon: '🧲', rarity: 'rare', effect: 'magnet', value: 50, desc: '吸范围+50', price: 90 },
+    12: { id: 12, name: '金蛋', icon: '🥚', rarity: 'epic', effect: 'goldBonus', value: 0.5, desc: '金币+50%', price: 180 }
+};
+
+class ItemManager {
+    constructor(player) {
+        this.player = player;
+        this.owned = {}; // id -> count
+        this.cache = null;
+        this.dirty = true;
+    }
+
+    add(id) {
+        const item = ITEMS[id];
+        if (!item) return false;
+        this.owned[id] = (this.owned[id] || 0) + 1;
+        this.dirty = true;
+        
+        // 即时效果
+        if (item.effect === 'maxHp') {
+            this.player.maxHp += item.value;
+            this.player.hp += item.value;
+        }
+        return true;
+    }
+
+    getStats() {
+        if (!this.dirty) return this.cache;
+        
+        const s = {
+            projCount: 1, projSize: 1, fireRate: 1, pierce: 0,
+            crit: 0, maxHp: 0, armor: 0, lifeSteal: 0,
+            speed: 1, fly: false, magnet: 100, goldBonus: 1
+        };
+        
+        for (const [id, count] of Object.entries(this.owned)) {
+            const item = ITEMS[id];
+            if (!item) continue;
+            const v = item.value * count;
+            
+            switch (item.effect) {
+                case 'projCount': s.projCount += v; break;
+                case 'projSize': s.projSize += v; break;
+                case 'fireRate': s.fireRate *= (1 + v); break;
+                case 'pierce': s.pierce += v; break;
+                case 'crit': s.crit = Math.min(1, s.crit + v); break;
+                case 'maxHp': s.maxHp += v; break;
+                case 'armor': s.armor += v; break;
+                case 'lifeSteal': s.lifeSteal += v; break;
+                case 'speed': s.speed += v; break;
+                case 'fly': s.fly = true; break;
+                case 'magnet': s.magnet += v; break;
+                case 'goldBonus': s.goldBonus += v; break;
+            }
+        }
+        
+        this.cache = s;
+        this.dirty = false;
+        return s;
+    }
+
+    has(id) { return (this.owned[id] || 0) > 0; }
+    count(id) { return this.owned[id] || 0; }
+    getList() { return Object.entries(this.owned).map(([id, c]) => ({ ...ITEMS[id], count: c })).filter(x => x.name); }
+}
+
+// ============================================================================
+// 武器系统（修复版）
+// ============================================================================
+const WEAPONS = {
+    whip: { key: 'whip', name: '鞭子', icon: '🪄', dmg: 12, cd: 1.2, range: 80, type: 'melee', color: '#f60' },
+    wand: { key: 'wand', name: '魔杖', icon: '🔮', dmg: 8, cd: 0.8, speed: 250, type: 'proj', color: '#48f' },
+    knife: { key: 'knife', name: '飞刀', icon: '🗡️', dmg: 6, cd: 0.5, speed: 350, pierce: 2, type: 'proj', color: '#ccc' },
+    axe: { key: 'axe', name: '斧头', icon: '🪓', dmg: 15, cd: 1.5, speed: 200, type: 'proj', color: '#8b4513' }
+};
+
+class Weapon {
+    constructor(key, level = 1) {
+        this.cfg = WEAPONS[key];
+        this.level = level;
+        this.cd = 0;
+    }
+    
+    getDamage(stats) { return this.cfg.dmg * (1 + (this.level - 1) * 0.15) * stats.projSize; }
+    
+    update(dt) { this.cd -= dt; }
+    canFire() { return this.cd <= 0; }
+    
+    fire(player, target, stats) {
+        this.cd = this.cfg.cd / stats.fireRate;
+        const bullets = [];
+        const count = Math.floor(stats.projCount);
+        
+        for (let i = 0; i < count; i++) {
+            let angle = 0;
+            if (target) {
+                angle = Math.atan2(target.y - player.y, target.x - player.x);
+                if (count > 1) angle += (i - (count - 1) / 2) * 0.15;
+            } else {
+                angle = Math.random() * Math.PI * 2;
+            }
+            
+            bullets.push({
+                x: player.x, y: player.y,
+                vx: Math.cos(angle) * (this.cfg.speed || 0),
+                vy: Math.sin(angle) * (this.cfg.speed || 0),
+                dmg: this.getDamage(stats),
+                color: this.cfg.color,
+                life: 3,
+                pierce: (this.cfg.pierce || 0) + stats.pierce,
+                type: this.cfg.type,
+                range: this.cfg.range,
+                hits: new Set()
+            });
+        }
+        return bullets;
+    }
+}
+
+// ============================================================================
+// 敌人类（修复版）
+// ============================================================================
+class Enemy {
+    constructor(x, y, config) {
+        this.x = x; this.y = y;
+        this.hp = config.hp;
+        this.maxHp = config.hp;
+        this.speed = config.speed;
+        this.dmg = config.dmg;
+        this.exp = config.exp;
+        this.gold = config.gold || 0;
+        this.color = config.color || '#f44';
+        this.vx = 0; this.vy = 0;
+        this.hitTimer = 0;
+        this.attackCd = 0;
+    }
+
+    update(dt, player, room) {
+        // 寻路
+        const dx = player.x - this.x;
+        const dy = player.y - this.y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        
+        if (d > 0) {
+            this.vx = (dx / d) * this.speed;
+            this.vy = (dy / d) * this.speed;
+        }
+        
+        // 简单分离
+        for (const other of room.enemies) {
+            if (other === this) continue;
+            const odx = this.x - other.x;
+            const ody = this.y - other.y;
+            const od = Math.sqrt(odx*odx + ody*ody);
+            if (od < 30 && od > 0) {
+                this.vx += (odx / od) * 50;
+                this.vy += (ody / od) * 50;
+            }
+        }
+        
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        
+        // 边界
+        this.x = clamp(this.x, 50, 850);
+        this.y = clamp(this.y, 50, 550);
+        
+        // 攻击CD
+        if (this.attackCd > 0) this.attackCd -= dt;
+        if (this.hitTimer > 0) this.hitTimer -= dt;
+    }
+
+    takeDamage(amt) {
+        this.hp -= amt;
+        this.hitTimer = 0.2;
+        return this.hp <= 0;
+    }
+
+    draw(ctx) {
+        if (this.hitTimer > 0) {
+            ctx.fillStyle = 'rgba(255,255,255,0.5)';
+            ctx.fillRect(this.x - 15, this.y - 15, 30, 30);
+        }
+        
+        ctx.fillStyle = this.color;
+        ctx.fillRect(this.x - 12, this.y - 12, 24, 24);
+        
+        // 血条
+        if (this.hp < this.maxHp) {
+            ctx.fillStyle = '#333';
+            ctx.fillRect(this.x - 12, this.y - 20, 24, 4);
+            ctx.fillStyle = this.hp / this.maxHp > 0.5 ? '#0f0' : '#f00';
+            ctx.fillRect(this.x - 12, this.y - 20, 24 * (this.hp / this.maxHp), 4);
+        }
+    }
+}
+
+// ============================================================================
+// 商店NPC类 - 盲眼鼹鼠商人
+// ============================================================================
+class ShopNPC {
+    constructor(x, y) {
+        this.x = x;
+        this.y = y;
+        this.icon = '🦔';
+        this.name = '盲眼鼹鼠商人';
+        this.dialogues = [
+            '闻到了金币的味道...',
+            '要买点什么吗，陌生人？',
+            '我的货物都是好货色！',
+            '看不见，但我能感知到你...'
+        ];
+        this.currentDialogue = '';
+        this.dialogueTimer = 0;
+        this.shopItems = [];
+        this.generateShopItems();
+    }
+
+    generateShopItems() {
+        // 随机生成3个商品
+        const itemIds = Object.keys(ITEMS).map(Number);
+        const selected = [];
+        while (selected.length < 3) {
+            const id = randChoice(itemIds);
+            if (!selected.includes(id)) {
+                selected.push(id);
+            }
+        }
+        this.shopItems = selected.map(id => ({
+            ...ITEMS[id],
+            sold: false
+        }));
+    }
+
+    update(dt, player) {
+        this.dialogueTimer -= dt;
+        if (this.dialogueTimer <= 0) {
+            this.currentDialogue = randChoice(this.dialogues);
+            this.dialogueTimer = rand(3, 6);
+        }
+    }
+
+    draw(ctx) {
+        // 绘制NPC
+        ctx.font = '32px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(this.icon, this.x, this.y + 10);
+        
+        // 绘制名字
+        ctx.font = '12px Arial';
+        ctx.fillStyle = '#fc0';
+        ctx.fillText(this.name, this.x, this.y - 25);
+        
+        // 绘制对话气泡
+        if (this.currentDialogue) {
+            ctx.fillStyle = 'rgba(0,0,0,0.8)';
+            const textWidth = ctx.measureText(this.currentDialogue).width;
+            ctx.fillRect(this.x - textWidth/2 - 10, this.y - 65, textWidth + 20, 25);
+            ctx.fillStyle = '#fff';
+            ctx.fillText(this.currentDialogue, this.x, this.y - 48);
+        }
+        
+        // 互动提示
+        ctx.font = '14px Arial';
+        ctx.fillStyle = '#4f4';
+        ctx.fillText('按 E 打开商店', this.x, this.y + 35);
+    }
+
+    isNear(player) {
+        return dist(this.x, this.y, player.x, player.y) < 60;
+    }
+
+    buyItem(index, player) {
+        if (index < 0 || index >= this.shopItems.length) return { success: false, msg: '无效商品' };
+        const item = this.shopItems[index];
+        if (item.sold) return { success: false, msg: '已售罄' };
+        if (player.gold < item.price) return { success: false, msg: '金币不足' };
+        
+        player.gold -= item.price;
+        item.sold = true;
+        return { success: true, item: item };
+    }
+}
+
+// ============================================================================
+// 房间系统（修复版）
+// ============================================================================
+class Room {
+    constructor(x, y, type = 'normal') {
+        this.gx = x; this.gy = y;
+        this.type = type;
+        this.id = `${x},${y}`;
+        this.w = 900; this.h = 600;
+        this.wall = 40;
+        
+        this.doors = { up: null, right: null, down: null, left: null };
+        this.visited = false;
+        this.cleared = false;
+        this.enemies = [];
+        this.obstacles = [];
+        this.wave = 0;
+        this.maxWave = type === 'boss' ? 3 : type === 'normal' ? 2 : 0;
+        this.spawnTimer = 0;
+        
+        // 商店房间特殊处理
+        this.npc = null;
+        if (type === 'shop') {
+            this.npc = new ShopNPC(450, 250);
+            this.cleared = true; // 商店房间不需要战斗
+        }
+        
+        // 生成障碍物
+        const obsCount = type === 'boss' ? 5 : type === 'treasure' ? 2 : type === 'shop' ? 0 : randInt(2, 5);
+        for (let i = 0; i < obsCount; i++) {
+            this.obstacles.push({
+                x: rand(100, 800), y: rand(100, 500),
+                w: rand(30, 60), h: rand(30, 60)
+            });
+        }
+    }
+
+    update(dt, player, game) {
+        if (!this.visited) return null;
+        
+        // 更新NPC
+        if (this.npc) {
+            this.npc.update(dt, player);
+        }
+        
+        if (this.cleared) return null;
+        
+        // 更新敌人
+        const events = [];
+        for (let i = this.enemies.length - 1; i >= 0; i--) {
+            const e = this.enemies[i];
+            e.update(dt, player, this);
+            
+            // 碰撞玩家
+            if (dist(e.x, e.y, player.x, player.y) < 25 && e.attackCd <= 0) {
+                player.hp -= e.dmg;
+                e.attackCd = 1;
+                events.push({ type: 'player_hit' });
+            }
+            
+            // 死亡
+            if (e.hp <= 0) {
+                events.push({ type: 'enemy_die', x: e.x, y: e.y, exp: e.exp, gold: e.gold });
+                this.enemies.splice(i, 1);
+            }
+        }
+        
+        // 刷怪
+        if (this.wave < this.maxWave) {
+            this.spawnTimer += dt;
+            if (this.spawnTimer > 2) {
+                this.spawnTimer = 0;
+                this.wave++;
+                const count = 2 + this.wave;
+                for (let i = 0; i < count; i++) {
+                    this.spawnEnemy(game);
+                }
+            }
+        }
+        
+        // 清理检查
+        if (this.wave >= this.maxWave && this.enemies.length === 0 && !this.cleared) {
+            this.cleared = true;
+            this.openDoors();
+            events.push({ type: 'room_clear' });
+        }
+        
+        return events;
+    }
+
+    spawnEnemy(game) {
+        const side = randInt(0, 4);
+        let x, y;
+        switch (side) {
+            case 0: x = rand(50, 850); y = 60; break;
+            case 1: x = 840; y = rand(50, 550); break;
+            case 2: x = rand(50, 850); y = 540; break;
+            case 3: x = 60; y = rand(50, 550); break;
+        }
+        
+        const configs = {
+            normal: [
+                { hp: 10, speed: 40, dmg: 1, exp: 2, gold: 5, color: '#f88' },
+                { hp: 15, speed: 60, dmg: 2, exp: 3, gold: 8, color: '#f44' }
+            ],
+            boss: [
+                { hp: 50, speed: 30, dmg: 3, exp: 10, gold: 50, color: '#f00' }
+            ]
+        };
+        const cfg = randChoice(configs[this.type] || configs.normal);
+        this.enemies.push(new Enemy(x, y, cfg));
+    }
+
+    openDoors() {
+        for (const d in this.doors) if (this.doors[d]) this.doors[d].open = true;
+    }
+
+    checkTransition(p) {
+        const cx = this.w / 2, cy = this.h / 2;
+        if (this.doors.up?.open && p.y < 60 && Math.abs(p.x - cx) < 40) return 'up';
+        if (this.doors.down?.open && p.y > 540 && Math.abs(p.x - cx) < 40) return 'down';
+        if (this.doors.left?.open && p.x < 60 && Math.abs(p.y - cy) < 40) return 'left';
+        if (this.doors.right?.open && p.x > 840 && Math.abs(p.y - cy) < 40) return 'right';
+        return null;
+    }
+
+    draw(ctx) {
+        // 地板
+        const colors = { 
+            normal: '#2a2a3e', 
+            boss: '#3e1a1a', 
+            treasure: '#1a3e1a', 
+            start: '#2a3e2a',
+            shop: '#3e2a1a'
+        };
+        ctx.fillStyle = colors[this.type] || colors.normal;
+        ctx.fillRect(0, 0, this.w, this.h);
+        
+        // 网格
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x < this.w; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, this.h); ctx.stroke(); }
+        for (let y = 0; y < this.h; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(this.w, y); ctx.stroke(); }
+        
+        // 墙壁
+        ctx.fillStyle = this.cleared ? '#3a3a4e' : '#1a1a2e';
+        const d = 40, cx = this.w / 2, cy = this.h / 2;
+        // 上门
+        if (!this.doors.up?.open) { ctx.fillRect(0, 0, cx - 40, d); ctx.fillRect(cx + 40, 0, cx - 40, d); }
+        else ctx.fillRect(0, 0, this.w, d);
+        // 下门
+        if (!this.doors.down?.open) { ctx.fillRect(0, this.h - d, cx - 40, d); ctx.fillRect(cx + 40, this.h - d, cx - 40, d); }
+        else ctx.fillRect(0, this.h - d, this.w, d);
+        // 左门
+        if (!this.doors.left?.open) { ctx.fillRect(0, 0, d, cy - 40); ctx.fillRect(0, cy + 40, d, cy - 40); }
+        else ctx.fillRect(0, 0, d, this.h);
+        // 右门
+        if (!this.doors.right?.open) { ctx.fillRect(this.w - d, 0, d, cy - 40); ctx.fillRect(this.w - d, cy + 40, d, cy - 40); }
+        else ctx.fillRect(this.w - d, 0, d, this.h);
+        
+        // 障碍物
+        for (const o of this.obstacles) {
+            ctx.fillStyle = '#444';
+            ctx.fillRect(o.x - o.w/2, o.y - o.h/2, o.w, o.h);
+            ctx.fillStyle = '#555';
+            ctx.fillRect(o.x - o.w/2 + 3, o.y - o.h/2 + 3, o.w - 6, o.h - 6);
+        }
+        
+        // NPC
+        if (this.npc) this.npc.draw(ctx);
+        
+        // 敌人
+        for (const e of this.enemies) e.draw(ctx);
+        
+        // 锁定图标
+        if (!this.cleared && this.enemies.length > 0) {
+            ctx.fillStyle = '#f44';
+            ctx.font = '20px Arial';
+            ctx.fillText('🔒', cx, d + 30);
+        }
+    }
+}
+
+class MapGenerator {
+    generate() {
+        const rooms = new Map();
+        const start = new Room(0, 0, 'start');
+        rooms.set(start.id, start);
+        
+        const queue = [start];
+        const dirs = [
+            { dx: 0, dy: -1, name: 'up', opp: 'down' },
+            { dx: 1, dy: 0, name: 'right', opp: 'left' },
+            { dx: 0, dy: 1, name: 'down', opp: 'up' },
+            { dx: -1, dy: 0, name: 'left', opp: 'right' }
+        ];
+        
+        let count = 1;
+        let shopPlaced = false;
+        
+        while (queue.length && count < 12) {
+            const cur = queue.shift();
+            for (const dir of dirs.sort(() => Math.random() - 0.5)) {
+                const nx = cur.gx + dir.dx, ny = cur.gy + dir.dy;
+                const id = `${nx},${ny}`;
+                
+                if (rooms.has(id)) {
+                    const ex = rooms.get(id);
+                    if (!cur.doors[dir.name]) {
+                        cur.doors[dir.name] = { open: false, target: ex };
+                        ex.doors[dir.opp] = { open: false, target: cur };
+                    }
+                    continue;
+                }
+                
+                if (Math.random() > 0.4 || count < 5) {
+                    let type = 'normal';
+                    if (count === 11) type = 'boss';
+                    else if (!shopPlaced && count > 3 && Math.random() < 0.3) {
+                        type = 'shop';
+                        shopPlaced = true;
+                    } else if (Math.random() < 0.2) type = 'treasure';
+                    
+                    const nr = new Room(nx, ny, type);
+                    cur.doors[dir.name] = { open: false, target: nr };
+                    nr.doors[dir.opp] = { open: false, target: cur };
+                    rooms.set(id, nr);
+                    queue.push(nr);
+                    count++;
+                }
+            }
+        }
+        
+        return { start, rooms };
+    }
+}
+
+// ============================================================================
+// 主游戏类（完全重构）
+// ============================================================================
+class Game {
+    constructor() {
+        this.canvas = document.getElementById('gameCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        this.resize();
+        window.addEventListener('resize', () => this.resize());
+        
+        // 游戏状态
+        this.state = 'loading'; // loading, playing, paused, gameover, shop
+        this.player = { x: 450, y: 300, hp: 6, maxHp: 6, exp: 0, lv: 1, gold: 100 };
+        this.items = new ItemManager(this.player);
+        this.weapons = [new Weapon('whip', 1)];
+        this.bullets = [];
+        this.particles = new ParticleSystem();
+        this.gems = []; // 经验宝石
+        this.coins = []; // 金币
+        
+        // 地图
+        const gen = new MapGenerator();
+        const map = gen.generate();
+        this.curRoom = map.start;
+        this.allRooms = map.rooms;
+        this.curRoom.visited = true;
+        
+        // 商店UI
+        this.shopUI = {
+            visible: false,
+            selectedIndex: -1,
+            msg: '',
+            msgTimer: 0
+        };
+        
+        // 系统
+        this.keys = {};
+        this.keysPressed = {}; // 用于检测单次按键
+        this.transition = { active: false, timer: 0, dir: null, target: null };
+        this.rafId = null;
+        
+        this.setupInput();
+    }
+
+    resize() {
+        const w = window.innerWidth, h = window.innerHeight;
+        const targetRatio = 900 / 600;
+        const actualRatio = w / h;
+        
+        if (actualRatio > targetRatio) {
+            this.canvas.height = h;
+            this.canvas.width = h * targetRatio;
+        } else {
+            this.canvas.width = w;
+            this.canvas.height = w / targetRatio;
+        }
+        
+        this.scale = this.canvas.width / 900;
+        this.offsetX = (w - this.canvas.width) / 2;
+        this.offsetY = (h - this.canvas.height) / 2;
+    }
+
+    setupInput() {
+        window.addEventListener('keydown', e => {
+            this.keys[e.key] = true;
+            
+            // 商店界面按键
+            if (this.shopUI.visible) {
+                if (e.key >= '1' && e.key <= '3') {
+                    this.buyItem(parseInt(e.key) - 1);
+                }
+                if (e.key === 'Escape' || e.key === 'e' || e.key === 'E') {
+                    this.closeShop();
+                }
+                return;
+            }
+            
+            // 普通游戏按键
+            if (e.key >= '1' && e.key <= '9') {
+                const id = parseInt(e.key);
+                if (this.items.add(id)) {
+                    const item = ITEMS[id];
+                    this.particles.burst(this.player.x, this.player.y, item.rarity === 'legendary' ? '#fc0' : '#48f', 20);
+                }
+            }
+            if (e.key === '0') {
+                const id = randInt(1, 13);
+                if (this.items.add(id)) {
+                    this.particles.burst(this.player.x, this.player.y, '#48f', 20);
+                }
+            }
+            if (e.key === 'w' || e.key === 'W') {
+                const keys = Object.keys(WEAPONS);
+                const k = randChoice(keys);
+                const ex = this.weapons.find(w => w.cfg.key === k);
+                if (ex) ex.level++;
+                else this.weapons.push(new Weapon(k, 1));
+            }
+            if (e.key === 'f' || e.key === 'F') {
+                if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+                else document.exitFullscreen();
+            }
+            if ((e.key === 'e' || e.key === 'E') && !this.keysPressed['e']) {
+                this.keysPressed['e'] = true;
+                this.interact();
+            }
+            // 无敌模式调试键
+            if (e.key === 'g' || e.key === 'G') {
+                this.player.gold += 100;
+            }
+        });
+        
+        window.addEventListener('keyup', e => {
+            this.keys[e.key] = false;
+            if (e.key === 'e' || e.key === 'E') {
+                this.keysPressed['e'] = false;
+            }
+        });
+    }
+
+    interact() {
+        // 检查是否在商店房间且靠近NPC
+        if (this.curRoom.type === 'shop' && this.curRoom.npc) {
+            if (this.curRoom.npc.isNear(this.player)) {
+                this.openShop();
+            }
+        }
+    }
+
+    openShop() {
+        this.shopUI.visible = true;
+        this.shopUI.selectedIndex = -1;
+        this.shopUI.msg = '';
+        this.state = 'shop';
+    }
+
+    closeShop() {
+        this.shopUI.visible = false;
+        this.state = 'playing';
+    }
+
+    buyItem(index) {
+        if (!this.curRoom.npc) return;
+        const result = this.curRoom.npc.buyItem(index, this.player);
+        if (result.success) {
+            this.items.add(result.item.id);
+            this.particles.burst(this.player.x, this.player.y, '#fc0', 15);
+            this.shopUI.msg = `购买了 ${result.item.icon} ${result.item.name}！`;
+        } else {
+            this.shopUI.msg = result.msg;
+        }
+        this.shopUI.msgTimer = 2;
+    }
+
+    start() {
+        document.getElementById('loading').classList.add('hidden');
+        this.state = 'playing';
+        this.loop(0);
+    }
+
+    update(dt) {
+        if (this.shopUI.visible) {
+            this.shopUI.msgTimer -= dt;
+            if (this.shopUI.msgTimer <= 0) this.shopUI.msg = '';
+            return;
+        }
+        
+        if (this.state !== 'playing') return;
+        
+        // 转场
+        if (this.transition.active) {
+            this.transition.timer += dt;
+            if (this.transition.timer > 0.3) {
+                this.curRoom = this.transition.target;
+                this.curRoom.visited = true;
+                this.bullets = [];
+                this.gems = [];
+                this.coins = [];
+                // 放置玩家
+                const pos = { up: [450, 550], down: [450, 50], left: [850, 300], right: [50, 300] };
+                const opposite = { up: 'down', down: 'up', left: 'right', right: 'left' };
+                [this.player.x, this.player.y] = pos[opposite[this.transition.dir]];
+                this.transition.active = false;
+            }
+            return;
+        }
+        
+        const stats = this.items.getStats();
+        
+        // 玩家移动
+        let vx = 0, vy = 0;
+        if (this.keys['w'] || this.keys['ArrowUp']) vy -= 1;
+        if (this.keys['s'] || this.keys['ArrowDown']) vy += 1;
+        if (this.keys['a'] || this.keys['ArrowLeft']) vx -= 1;
+        if (this.keys['d'] || this.keys['ArrowRight']) vx += 1;
+        
+        if (vx !== 0 || vy !== 0) {
+            const len = Math.sqrt(vx*vx + vy*vy);
+            vx /= len; vy /= len;
+            this.player.x += vx * 150 * stats.speed * dt;
+            this.player.y += vy * 150 * stats.speed * dt;
+        }
+        
+        // 边界
+        this.player.x = clamp(this.player.x, 50, 850);
+        this.player.y = clamp(this.player.y, 50, 550);
+        
+        // 房间更新
+        const events = this.curRoom.update(dt, this.player, this);
+        if (events) {
+            for (const ev of events) {
+                if (ev.type === 'enemy_die') {
+                    this.gems.push({ x: ev.x, y: ev.y, v: ev.exp, life: 30 });
+                    // 掉落金币
+                    const goldAmount = Math.floor(ev.gold * stats.goldBonus);
+                    for (let i = 0; i < Math.min(goldAmount, 5); i++) {
+                        this.coins.push({
+                            x: ev.x + rand(-20, 20),
+                            y: ev.y + rand(-20, 20),
+                            v: Math.max(1, Math.floor(goldAmount / Math.min(goldAmount, 5))),
+                            life: 30
+                        });
+                    }
+                    this.particles.burst(ev.x, ev.y, '#fc0', 8);
+                }
+                if (ev.type === 'player_hit') {
+                    this.particles.burst(this.player.x, this.player.y, '#f00', 5);
+                }
+                if (ev.type === 'room_clear') {
+                    // 给予奖励
+                    this.player.gold += 20;
+                }
+            }
+        }
+        
+        // 门传送
+        const door = this.curRoom.checkTransition(this.player);
+        if (door && this.curRoom.cleared && !this.transition.active) {
+            this.transition.active = true;
+            this.transition.timer = 0;
+            this.transition.dir = door;
+            this.transition.target = this.curRoom.doors[door].target;
+        }
+        
+        // 武器
+        let target = null, minD = 9999;
+        for (const e of this.curRoom.enemies) {
+            const d = dist(e.x, e.y, this.player.x, this.player.y);
+            if (d < minD) { minD = d; target = e; }
+        }
+        
+        for (const w of this.weapons) {
+            w.update(dt);
+            if (w.canFire() && target) {
+                this.bullets.push(...w.fire(this.player, target, stats));
+            }
+        }
+        
+        // 子弹
+        for (let i = this.bullets.length - 1; i >= 0; i--) {
+            const b = this.bullets[i];
+            b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
+            
+            if (b.life <= 0) { this.bullets.splice(i, 1); continue; }
+            
+            // 碰撞敌人
+            let hit = false;
+            for (let j = this.curRoom.enemies.length - 1; j >= 0; j--) {
+                const e = this.curRoom.enemies[j];
+                if (dist(b.x, b.y, e.x, e.y) < 20 && !b.hits.has(e)) {
+                    b.hits.add(e);
+                    if (e.takeDamage(b.dmg)) {
+                        this.curRoom.enemies.splice(j, 1);
+                        this.gems.push({ x: e.x, y: e.y, v: e.exp, life: 30 });
+                        // 掉落金币
+                        const goldAmount = Math.floor(e.gold * stats.goldBonus);
+                        for (let k = 0; k < Math.min(goldAmount, 3); k++) {
+                            this.coins.push({
+                                x: e.x + rand(-20, 20),
+                                y: e.y + rand(-20, 20),
+                                v: Math.max(1, Math.floor(goldAmount / Math.min(goldAmount, 3))),
+                                life: 30
+                            });
+                        }
+                    }
+                    if (b.pierce-- <= 0) { hit = true; break; }
+                }
+            }
+            if (hit) this.bullets.splice(i, 1);
+        }
+        
+        // 经验宝石
+        for (let i = this.gems.length - 1; i >= 0; i--) {
+            const g = this.gems[i];
+            const d = dist(g.x, g.y, this.player.x, this.player.y);
+            if (d < stats.magnet) {
+                g.x += (this.player.x - g.x) * 5 * dt;
+                g.y += (this.player.y - g.y) * 5 * dt;
+            }
+            if (d < 20) {
+                this.player.exp += g.v;
+                this.gems.splice(i, 1);
+                // 升级检查
+                if (this.player.exp >= this.player.lv * 100) {
+                    this.player.exp -= this.player.lv * 100;
+                    this.player.lv++;
+                    this.player.maxHp++;
+                    this.player.hp++;
+                }
+            }
+        }
+        
+        // 金币
+        for (let i = this.coins.length - 1; i >= 0; i--) {
+            const c = this.coins[i];
+            const d = dist(c.x, c.y, this.player.x, this.player.y);
+            if (d < stats.magnet) {
+                c.x += (this.player.x - c.x) * 5 * dt;
+                c.y += (this.player.y - c.y) * 5 * dt;
+            }
+            if (d < 20) {
+                this.player.gold += c.v;
+                this.coins.splice(i, 1);
+            }
+        }
+        
+        this.particles.update(dt);
+    }
+
+    draw() {
+        // 背景
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
+        
+        this.ctx.save();
+        this.ctx.translate(this.offsetX, this.offsetY);
+        this.ctx.scale(this.scale, this.scale);
+        
+        // 房间
+        this.curRoom.draw(this.ctx);
+        
+        // 宝石
+        for (const g of this.gems) {
+            this.ctx.fillStyle = '#48f';
+            this.ctx.beginPath();
+            this.ctx.moveTo(g.x, g.y - 5);
+            this.ctx.lineTo(g.x + 4, g.y);
+            this.ctx.lineTo(g.x, g.y + 5);
+            this.ctx.lineTo(g.x - 4, g.y);
+            this.ctx.fill();
+        }
+        
+        // 金币
+        for (const c of this.coins) {
+            this.ctx.fillStyle = '#fc0';
+            this.ctx.beginPath();
+            this.ctx.arc(c.x, c.y, 4, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.fillStyle = '#ff0';
+            this.ctx.beginPath();
+            this.ctx.arc(c.x - 1, c.y - 1, 2, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        
+        // 子弹
+        for (const b of this.bullets) {
+            this.ctx.fillStyle = b.color;
+            this.ctx.beginPath();
+            this.ctx.arc(b.x, b.y, 4, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        
+        // 玩家
+        this.ctx.fillStyle = '#fff';
+        this.ctx.font = '24px Arial';
+        this.ctx.fillText('🐮', this.player.x - 12, this.player.y + 8);
+        
+        // 粒子
+        this.particles.draw(this.ctx);
+        
+        // 转场遮罩
+        if (this.transition.active) {
+            const alpha = Math.sin(this.transition.timer / 0.3 * Math.PI);
+            this.ctx.fillStyle = `rgba(0,0,0,${alpha})`;
+            this.ctx.fillRect(0, 0, 900, 600);
+        }
+        
+        this.ctx.restore();
+        
+        // UI（屏幕坐标）
+        this.drawUI();
+        
+        // 商店UI
+        if (this.shopUI.visible) {
+            this.drawShopUI();
+        }
+    }
+
+    drawUI() {
+        const ctx = this.ctx;
+        const pad = 20;
+        
+        // 版本号
+        ctx.fillStyle = '#666';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText(VERSION, pad, this.canvas.height - 10);
+        
+        // 状态面板
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(pad, pad, 180, 100);
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText('❤️'.repeat(Math.max(0, Math.ceil(this.player.hp))), pad + 10, pad + 35);
+        
+        ctx.fillStyle = '#48f';
+        ctx.fillText(`Lv.${this.player.lv} EXP:${Math.floor(this.player.exp)}/${this.player.lv*100}`, pad + 10, pad + 60);
+        
+        ctx.fillStyle = '#fc0';
+        ctx.fillText(`💰 ${this.player.gold}`, pad + 10, pad + 85);
+        
+        // 房间信息
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#fff';
+        const names = { normal: '普通', boss: 'BOSS', treasure: '宝箱', start: '起点', shop: '商店' };
+        ctx.fillText(`${names[this.curRoom.type]}房间`, this.canvas.width - pad, pad + 35);
+        ctx.fillText(`敌人:${this.curRoom.enemies.length}`, this.canvas.width - pad, pad + 60);
+        
+        if (!this.curRoom.cleared) {
+            ctx.fillStyle = '#f44';
+            ctx.fillText('🔒 锁定', this.canvas.width - pad, pad + 85);
+        } else {
+            ctx.fillStyle = '#4f4';
+            ctx.fillText('✓ 已清理', this.canvas.width - pad, pad + 85);
+        }
+        
+        // 小地图
+        const mx = this.canvas.width - 150, my = 120;
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(mx, my, 130, 130);
+        
+        for (const [, r] of this.allRooms) {
+            if (!r.visited) continue;
+            const rx = mx + 10 + (r.gx + 5) * 10;
+            const ry = my + 10 + (r.gy + 5) * 10;
+            ctx.fillStyle = r === this.curRoom ? '#ff0' : { normal: '#666', boss: '#f00', treasure: '#0f0', start: '#66f', shop: '#fc0' }[r.type];
+            ctx.fillRect(rx, ry, 8, 8);
+        }
+        
+        // 底部武器栏
+        const by = this.canvas.height - 70;
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(pad, by, 300, 50);
+        
+        let wx = pad + 10;
+        for (const w of this.weapons) {
+            ctx.fillStyle = '#333';
+            ctx.fillRect(wx, by + 5, 40, 40);
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(w.cfg.icon, wx + 20, by + 32);
+            wx += 50;
+        }
+    }
+
+    drawShopUI() {
+        const ctx = this.ctx;
+        const w = this.canvas.width, h = this.canvas.height;
+        
+        // 半透明背景
+        ctx.fillStyle = 'rgba(0,0,0,0.85)';
+        ctx.fillRect(0, 0, w, h);
+        
+        // 商店标题
+        ctx.fillStyle = '#fc0';
+        ctx.font = 'bold 32px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText('🦔 盲眼鼹鼠的商店', w/2, 80);
+        
+        // 金币显示
+        ctx.fillStyle = '#fc0';
+        ctx.font = '20px Arial';
+        ctx.fillText(`💰 ${this.player.gold} 金币`, w/2, 120);
+        
+        // 商品列表
+        if (this.curRoom.npc) {
+            const items = this.curRoom.npc.shopItems;
+            const startX = w/2 - 300;
+            const itemW = 180;
+            const gap = 30;
+            
+            for (let i = 0; i < items.length; i++) {
+                const item = items[i];
+                const x = startX + i * (itemW + gap);
+                const y = 180;
+                
+                // 商品背景
+                if (item.sold) {
+                    ctx.fillStyle = 'rgba(50,50,50,0.8)';
+                } else {
+                    const rarityColors = { common: 'rgba(100,100,100,0.8)', rare: 'rgba(50,100,150,0.8)', epic: 'rgba(150,50,150,0.8)' };
+                    ctx.fillStyle = rarityColors[item.rarity] || rarityColors.common;
+                }
+                ctx.fillRect(x, y, itemW, 220);
+                
+                // 边框
+                ctx.strokeStyle = item.sold ? '#444' : '#fc0';
+                ctx.lineWidth = 2;
+                ctx.strokeRect(x, y, itemW, 220);
+                
+                // 图标
+                ctx.font = '48px Arial';
+                ctx.fillStyle = '#fff';
+                ctx.fillText(item.icon, x + itemW/2, y + 60);
+                
+                // 名称
+                ctx.font = 'bold 16px Arial';
+                ctx.fillStyle = item.sold ? '#666' : '#fff';
+                ctx.fillText(item.name, x + itemW/2, y + 100);
+                
+                // 描述
+                ctx.font = '12px Arial';
+                ctx.fillStyle = item.sold ? '#555' : '#aaa';
+                ctx.fillText(item.desc, x + itemW/2, y + 125);
+                
+                // 价格
+                if (!item.sold) {
+                    ctx.font = 'bold 18px Arial';
+                    ctx.fillStyle = this.player.gold >= item.price ? '#fc0' : '#f44';
+                    ctx.fillText(`💰 ${item.price}`, x + itemW/2, y + 160);
+                    
+                    // 购买提示
+                    ctx.font = '14px Arial';
+                    ctx.fillStyle = '#4f4';
+                    ctx.fillText(`按 ${i+1} 购买`, x + itemW/2, y + 190);
+                } else {
+                    ctx.font = 'bold 18px Arial';
+                    ctx.fillStyle = '#666';
+                    ctx.fillText('已售罄', x + itemW/2, y + 175);
+                }
+            }
+        }
+        
+        // 消息提示
+        if (this.shopUI.msg) {
+            ctx.font = 'bold 18px Arial';
+            ctx.fillStyle = this.shopUI.msg.includes('购买') ? '#4f4' : '#f44';
+            ctx.fillText(this.shopUI.msg, w/2, h - 120);
+        }
+        
+        // 关闭提示
+        ctx.font = '14px Arial';
+        ctx.fillStyle = '#888';
+        ctx.fillText('按 E 或 ESC 关闭商店', w/2, h - 80);
+    }
+
+    loop(t) {
+        const dt = Math.min((t - (this.lastT || t)) / 1000, 0.1);
+        this.lastT = t;
+        
+        this.update(dt);
+        this.draw();
+        
+        this.rafId = requestAnimationFrame(t => this.loop(t));
+    }
+}
+
+// 启动
+window.onload = () => {
+    const game = new Game();
+    setTimeout(() => game.start(), 500);
+};
+</script>
+</body>
+</html>

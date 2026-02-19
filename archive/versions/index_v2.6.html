@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>肉鸽牛牛 - v2.6 快速迭代版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; }
+        html, body { 
+            width: 100%; 
+            height: 100%; 
+            background: #0a0a14; 
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        #gameContainer {
+            position: relative;
+            width: 900px;
+            height: 600px;
+            max-width: 100vw;
+            max-height: 100vh;
+        }
+        #gameCanvas { 
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #0d0d1a;
+            border: 3px solid #333;
+            border-radius: 8px;
+        }
+        #loading { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: #0a0a14; display: flex; flex-direction: column; 
+            justify-content: center; align-items: center; z-index: 1000;
+            transition: opacity 0.5s;
+        }
+        #loading.hidden { opacity: 0; pointer-events: none; }
+        .cow { font-size: 100px; animation: bounce 0.6s infinite alternate; }
+        @keyframes bounce { from { transform: translateY(0) scale(1); } to { transform: translateY(-30px) scale(1.1); } }
+        .loading-text { color: #4488ff; margin-top: 30px; font-size: 24px; font-family: Arial; }
+        .controls-hint { 
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            color: #666; font-family: Arial; font-size: 14px; text-align: center;
+            background: rgba(0,0,0,0.8); padding: 10px 20px; border-radius: 20px;
+            z-index: 100;
+        }
+        .key { background: #333; color: #fff; padding: 2px 8px; border-radius: 4px; margin: 0 2px; }
+    </style>
+</head>
+<body>
+    <div id="loading">
+        <div class="cow">🐮</div>
+        <div class="loading-text">正在加载精灵图资源...</div>
+    </div>
+    
+    <div id="gameContainer">
+        <canvas id="gameCanvas" width="900" height="600"></canvas>
+    </div>
+    
+    <div class="controls-hint">
+        <span class="key">WASD</span>移动 
+        <span class="key">1-9</span>道具 
+        <span class="key">W</span>武器 
+        <span class="key">F</span>全屏
+    </div>
+
+<script>
+// ============================================================================
+// 肉鸽牛牛 v2.0 - 精灵图版本
+// 修复画面显示，添加精灵图支持
+// ============================================================================
+
+const $ = (fn) => fn();
+const clamp = (v, min, max) => Math.max(min, Math.min(max, v));
+const dist = (x1, y1, x2, y2) => Math.sqrt((x2-x1)**2 + (y2-y1)**2);
+const rand = (min, max) => Math.random() * (max - min) + min;
+const randInt = (min, max) => Math.floor(rand(min, max));
+const randChoice = (arr) => arr[Math.floor(Math.random() * arr.length)];
+
+// 精灵图加载器
+class SpriteLoader {
+    constructor() {
+        this.sprites = {};
+        this.loaded = 0;
+        this.total = 0;
+    }
+    
+    load(name, src) {
+        this.total++;
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => {
+                this.sprites[name] = img;
+                this.loaded++;
+                resolve(img);
+            };
+            img.onerror = () => {
+                console.warn(`Failed to load: ${src}`);
+                resolve(null);
+            };
+            img.src = src;
+        });
+    }
+    
+    get(name) {
+        return this.sprites[name];
+    }
+    
+    isReady() {
+        return this.loaded >= this.total;
+    }
+    
+    getProgress() {
+        return this.total > 0 ? this.loaded / this.total : 1;
+    }
+}
+
+// 粒子系统
+class ParticleSystem {
+    constructor(max = 200) {
+        this.pool = Array(max).fill(null).map(() => ({
+            x: 0, y: 0, vx: 0, vy: 0, life: 0, maxLife: 1,
+            color: '#fff', size: 4, active: false
+        }));
+        this.active = [];
+    }
+
+    emit(x, y, color, opts = {}) {
+        const p = this.pool.find(p => !p.active) || this.pool[0];
+        p.x = x; p.y = y; p.color = color; p.active = true;
+        p.life = opts.life || 1; p.maxLife = p.life;
+        p.size = opts.size || 4;
+        const speed = opts.speed || 100;
+        const angle = opts.angle != null ? opts.angle : Math.random() * Math.PI * 2;
+        p.vx = Math.cos(angle) * speed;
+        p.vy = Math.sin(angle) * speed;
+        if (!this.active.includes(p)) this.active.push(p);
+    }
+
+    burst(x, y, color, count = 10) {
+        for (let i = 0; i < count; i++) {
+            this.emit(x, y, color, { 
+                speed: rand(50, 150), 
+                life: rand(0.3, 0.8),
+                size: rand(2, 5)
+            });
+        }
+    }
+
+    update(dt) {
+        for (let i = this.active.length - 1; i >= 0; i--) {
+            const p = this.active[i];
+            p.x += p.vx * dt;
+            p.y += p.vy * dt;
+            p.life -= dt;
+            if (p.life <= 0) {
+                p.active = false;
+                this.active.splice(i, 1);
+            }
+        }
+    }
+
+    draw(ctx) {
+        for (const p of this.active) {
+            const alpha = p.life / p.maxLife;
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = p.color;
+            ctx.fillRect(p.x - p.size/2, p.y - p.size/2, p.size, p.size);
+        }
+        ctx.globalAlpha = 1;
+    }
+}
+
+// 道具数据库
+const ITEMS = {
+    1: { id: 1, name: '多重射击', icon: '🎯', rarity: 'common', effect: 'projCount', value: 1, desc: '子弹+1' },
+    2: { id: 2, name: '巨大化', icon: '📏', rarity: 'common', effect: 'projSize', value: 0.3, desc: '子弹变大' },
+    3: { id: 3, name: '快速射击', icon: '⚡', rarity: 'common', effect: 'fireRate', value: 0.15, desc: '射速+15%' },
+    4: { id: 4, name: '穿甲弹', icon: '🔩', rarity: 'rare', effect: 'pierce', value: 1, desc: '穿透+1' },
+    5: { id: 5, name: '暴击镜片', icon: '🔍', rarity: 'rare', effect: 'crit', value: 0.1, desc: '暴击+10%' },
+    6: { id: 6, name: '心之容器', icon: '❤️', rarity: 'common', effect: 'maxHp', value: 2, desc: '生命+2' },
+    7: { id: 7, name: '钢铁护甲', icon: '🛡️', rarity: 'rare', effect: 'armor', value: 1, desc: '护甲+1' },
+    8: { id: 8, name: '吸血獠牙', icon: '🦷', rarity: 'rare', effect: 'lifeSteal', value: 0.05, desc: '吸血5%' },
+    9: { id: 9, name: '加速靴', icon: '👟', rarity: 'common', effect: 'speed', value: 0.2, desc: '移速+20%' },
+    10: { id: 10, name: '飞行翅膀', icon: '🦅', rarity: 'epic', effect: 'fly', value: 1, desc: '可以飞行' },
+    11: { id: 11, name: '磁铁', icon: '🧲', rarity: 'rare', effect: 'magnet', value: 50, desc: '吸范围+50' },
+    12: { id: 12, name: '金蛋', icon: '🥚', rarity: 'epic', effect: 'goldBonus', value: 0.5, desc: '金币+50%' }
+};
+
+class ItemManager {
+    constructor(player) {
+        this.player = player;
+        this.owned = {};
+        this.cache = null;
+        this.dirty = true;
+    }
+
+    add(id) {
+        const item = ITEMS[id];
+        if (!item) return false;
+        this.owned[id] = (this.owned[id] || 0) + 1;
+        this.dirty = true;
+        
+        if (item.effect === 'maxHp') {
+            this.player.maxHp += item.value;
+            this.player.hp += item.value;
+        }
+        return true;
+    }
+
+    getStats() {
+        if (!this.dirty) return this.cache;
+        
+        const s = {
+            projCount: 1, projSize: 1, fireRate: 1, pierce: 0,
+            crit: 0, maxHp: 0, armor: 0, lifeSteal: 0,
+            speed: 1, fly: false, magnet: 100, goldBonus: 1
+        };
+        
+        for (const [id, count] of Object.entries(this.owned)) {
+            const item = ITEMS[id];
+            if (!item) continue;
+            const v = item.value * count;
+            
+            switch (item.effect) {
+                case 'projCount': s.projCount += v; break;
+                case 'projSize': s.projSize += v; break;
+                case 'fireRate': s.fireRate *= (1 + v); break;
+                case 'pierce': s.pierce += v; break;
+                case 'crit': s.crit = Math.min(1, s.crit + v); break;
+                case 'maxHp': s.maxHp += v; break;
+                case 'armor': s.armor += v; break;
+                case 'lifeSteal': s.lifeSteal += v; break;
+                case 'speed': s.speed += v; break;
+                case 'fly': s.fly = true; break;
+                case 'magnet': s.magnet += v; break;
+                case 'goldBonus': s.goldBonus += v; break;
+            }
+        }
+        
+        this.cache = s;
+        this.dirty = false;
+        return s;
+    }
+
+    has(id) { return (this.owned[id] || 0) > 0; }
+    count(id) { return this.owned[id] || 0; }
+    getList() { return Object.entries(this.owned).map(([id, c]) => ({ ...ITEMS[id], count: c })).filter(x => x.name); }
+}
+
+// 武器系统
+const WEAPONS = {
+    whip: { key: 'whip', name: '鞭子', icon: '🪄', dmg: 12, cd: 1.2, range: 80, type: 'melee', color: '#f60' },
+    wand: { key: 'wand', name: '魔杖', icon: '🔮', dmg: 8, cd: 0.8, speed: 250, type: 'proj', color: '#48f' },
+    knife: { key: 'knife', name: '飞刀', icon: '🗡️', dmg: 6, cd: 0.5, speed: 350, pierce: 2, type: 'proj', color: '#ccc' },
+    axe: { key: 'axe', name: '斧头', dmg: 15, cd: 1.5, speed: 200, type: 'proj', color: '#8b4513' }
+};
+
+class Weapon {
+    constructor(key, level = 1) {
+        this.cfg = WEAPONS[key];
+        this.level = level;
+        this.cd = 0;
+    }
+    
+    getDamage(stats) { return this.cfg.dmg * (1 + (this.level - 1) * 0.15) * stats.projSize; }
+    
+    update(dt) { this.cd -= dt; }
+    canFire() { return this.cd <= 0; }
+    
+    fire(player, target, stats) {
+        this.cd = this.cfg.cd / stats.fireRate;
+        const bullets = [];
+        const count = Math.floor(stats.projCount);
+        
+        for (let i = 0; i < count; i++) {
+            let angle = 0;
+            if (target) {
+                angle = Math.atan2(target.y - player.y, target.x - player.x);
+                if (count > 1) angle += (i - (count - 1) / 2) * 0.15;
+            } else {
+                angle = Math.random() * Math.PI * 2;
+            }
+            
+            bullets.push({
+                x: player.x, y: player.y,
+                vx: Math.cos(angle) * (this.cfg.speed || 0),
+                vy: Math.sin(angle) * (this.cfg.speed || 0),
+                dmg: this.getDamage(stats),
+                color: this.cfg.color,
+                life: 3,
+                pierce: (this.cfg.pierce || 0) + stats.pierce,
+                type: this.cfg.type,
+                range: this.cfg.range,
+                hits: new Set()
+            });
+        }
+        return bullets;
+    }
+}
+
+// 敌人配置 - 使用精灵图
+const ENEMY_TYPES = {
+    chick: { name: '变异小鸡', hp: 15, speed: 80, dmg: 1, exp: 2, color: '#ff6', sprite: 'chick' },
+    pig: { name: '变异小猪', hp: 30, speed: 50, dmg: 2, exp: 4, color: '#f9c', sprite: 'pig' },
+    sheep: { name: '变异小羊', hp: 20, speed: 60, dmg: 1, exp: 3, color: '#eee', sprite: 'sheep' },
+    dog: { name: '疯狗', hp: 25, speed: 100, dmg: 2, exp: 5, color: '#963', sprite: 'dog' },
+    cat: { name: '变异猫', hp: 18, speed: 90, dmg: 1, exp: 3, color: '#fa3', sprite: 'cat' },
+    bear: { name: '巨熊', hp: 50, speed: 40, dmg: 3, exp: 8, color: '#630', sprite: 'bear' }
+};
+
+class Enemy {
+    constructor(x, y, typeKey) {
+        const cfg = ENEMY_TYPES[typeKey] || ENEMY_TYPES.chick;
+        this.x = x; this.y = y;
+        this.typeKey = typeKey;
+        this.hp = cfg.hp;
+        this.maxHp = cfg.hp;
+        this.speed = cfg.speed;
+        this.dmg = cfg.dmg;
+        this.exp = cfg.exp;
+        this.color = cfg.color;
+        this.sprite = cfg.sprite;
+        this.vx = 0; this.vy = 0;
+        this.hitTimer = 0;
+        this.attackCd = 0;
+    }
+
+    update(dt, player, room) {
+        const dx = player.x - this.x;
+        const dy = player.y - this.y;
+        const d = Math.sqrt(dx*dx + dy*dy);
+        
+        if (d > 0) {
+            this.vx = (dx / d) * this.speed;
+            this.vy = (dy / d) * this.speed;
+        }
+        
+        // 简单分离
+        for (const other of room.enemies) {
+            if (other === this) continue;
+            const odx = this.x - other.x;
+            const ody = this.y - other.y;
+            const od = Math.sqrt(odx*odx + ody*ody);
+            if (od < 30 && od > 0) {
+                this.vx += (odx / od) * 50;
+                this.vy += (ody / od) * 50;
+            }
+        }
+        
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        
+        // 边界
+        this.x = clamp(this.x, 50, 850);
+        this.y = clamp(this.y, 50, 550);
+        
+        if (this.hitTimer > 0) this.hitTimer -= dt;
+        if (this.attackCd > 0) this.attackCd -= dt;
+    }
+
+    takeDamage(dmg) {
+        this.hp -= dmg;
+        this.hitTimer = 0.1;
+        return this.hp <= 0;
+    }
+
+    draw(ctx, sprites) {
+        const size = 24;
+        
+        // 受击闪烁
+        if (this.hitTimer > 0 && Math.floor(Date.now() / 50) % 2) {
+            ctx.globalAlpha = 0.5;
+        }
+        
+        // 尝试使用精灵图，否则用emoji
+        const sprite = sprites.get(this.sprite);
+        if (sprite) {
+            ctx.drawImage(sprite, this.x - size, this.y - size, size * 2, size * 2);
+        } else {
+            // 备用：使用emoji
+            const emojiMap = {
+                chick: '🐤', pig: '🐷', sheep: '🐑', dog: '🐕',
+                cat: '🐱', bear: '🐻'
+            };
+            ctx.font = '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(emojiMap[this.sprite] || '👾', this.x, this.y + 8);
+        }
+        
+        ctx.globalAlpha = 1;
+        
+        // 血条
+        if (this.hp < this.maxHp) {
+            ctx.fillStyle = '#000';
+            ctx.fillRect(this.x - 12, this.y - 20, 24, 4);
+            ctx.fillStyle = '#f00';
+            ctx.fillRect(this.x - 12, this.y - 20, 24 * (this.hp / this.maxHp), 4);
+        }
+    }
+}
+
+// 房间类
+class Room {
+    constructor(gx, gy, type = 'normal') {
+        this.gx = gx; this.gy = gy;
+        this.id = `${gx},${gy}`;
+        this.type = type;
+        this.doors = { up: null, down: null, left: null, right: null };
+        this.enemies = [];
+        this.cleared = false;
+        this.visited = false;
+        this.items = [];
+        
+        this.spawnEnemies();
+    }
+
+    spawnEnemies() {
+        if (this.type === 'start') return;
+        
+        const count = this.type === 'boss' ? 1 : randInt(3, 7);
+        const types = Object.keys(ENEMY_TYPES);
+        
+        for (let i = 0; i < count; i++) {
+            const angle = (i / count) * Math.PI * 2;
+            const r = 150 + Math.random() * 100;
+            const x = 450 + Math.cos(angle) * r;
+            const y = 300 + Math.sin(angle) * r;
+            const typeKey = randChoice(types);
+            this.enemies.push(new Enemy(x, y, typeKey));
+        }
+    }
+
+    draw(ctx) {
+        // 地板
+        const floorColors = { start: '#1a1a2e', normal: '#16213e', boss: '#2d1b2e', treasure: '#1b2d1b' };
+        ctx.fillStyle = floorColors[this.type] || '#16213e';
+        ctx.fillRect(0, 0, 900, 600);
+        
+        // 网格装饰
+        ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+        ctx.lineWidth = 1;
+        for (let x = 0; x <= 900; x += 50) {
+            ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, 600); ctx.stroke();
+        }
+        for (let y = 0; y <= 600; y += 50) {
+            ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(900, y); ctx.stroke();
+        }
+        
+        // 墙壁
+        ctx.fillStyle = '#0f0f1a';
+        ctx.fillRect(0, 0, 900, 40);
+        ctx.fillRect(0, 560, 900, 40);
+        ctx.fillRect(0, 0, 40, 600);
+        ctx.fillRect(860, 0, 40, 600);
+        
+        // 门
+        for (const [dir, door] of Object.entries(this.doors)) {
+            if (!door) continue;
+            ctx.fillStyle = door.open ? '#4a4' : '#a44';
+            const pos = { up: [420, 0, 60, 40], down: [420, 560, 60, 40], left: [0, 260, 40, 80], right: [860, 260, 40, 80] }[dir];
+            ctx.fillRect(...pos);
+        }
+    }
+}
+
+// 地图生成器
+class MapGenerator {
+    generate() {
+        const rooms = new Map();
+        const start = new Room(0, 0, 'start');
+        rooms.set(start.id, start);
+        
+        const queue = [start];
+        const dirs = [
+            { dx: 0, dy: -1, name: 'up', opp: 'down' },
+            { dx: 1, dy: 0, name: 'right', opp: 'left' },
+            { dx: 0, dy: 1, name: 'down', opp: 'up' },
+            { dx: -1, dy: 0, name: 'left', opp: 'right' }
+        ];
+        
+        let count = 1;
+        while (queue.length && count < 12) {
+            const cur = queue.shift();
+            for (const dir of dirs.sort(() => Math.random() - 0.5)) {
+                const nx = cur.gx + dir.dx, ny = cur.gy + dir.dy;
+                const id = `${nx},${ny}`;
+                
+                if (rooms.has(id)) {
+                    const ex = rooms.get(id);
+                    if (!cur.doors[dir.name]) {
+                        cur.doors[dir.name] = { open: false, target: ex };
+                        ex.doors[dir.opp] = { open: false, target: cur };
+                    }
+                    continue;
+                }
+                
+                if (Math.random() > 0.4 || count < 5) {
+                    const type = count === 11 ? 'boss' : Math.random() < 0.2 ? 'treasure' : 'normal';
+                    const nr = new Room(nx, ny, type);
+                    cur.doors[dir.name] = { open: false, target: nr };
+                    nr.doors[dir.opp] = { open: false, target: cur };
+                    rooms.set(id, nr);
+                    queue.push(nr);
+                    count++;
+                }
+            }
+        }
+        
+        return { start, rooms };
+    }
+}
+
+// ============================================================================
+// 主游戏类 v2.0
+// ============================================================================
+class Game {
+    constructor() {
+        this.canvas = document.getElementById('gameCanvas');
+        this.ctx = this.canvas.getContext('2d');
+        
+        // 固定画布大小，使用CSS缩放
+        this.canvas.width = 900;
+        this.canvas.height = 600;
+        
+        // 精灵图加载器
+        this.sprites = new SpriteLoader();
+        
+        // 游戏状态
+        this.state = 'loading';
+        this.player = { x: 450, y: 300, hp: 6, maxHp: 6, exp: 0, lv: 1, gold: 0 };
+        this.items = new ItemManager(this.player);
+        this.weapons = [new Weapon('whip', 1)];
+        this.bullets = [];
+        this.particles = new ParticleSystem();
+        this.gems = [];
+        
+        // 地图
+        const gen = new MapGenerator();
+        const map = gen.generate();
+        this.curRoom = map.start;
+        this.allRooms = map.rooms;
+        this.curRoom.visited = true;
+        
+        // 系统
+        this.keys = {};
+        this.transition = { active: false, timer: 0, dir: null, target: null };
+        this.rafId = null;
+        
+        // 动画系统
+        this.animations = {
+            player: { frame: 0, timer: 0, speed: 0.15 },
+            enemies: new Map()
+        };
+        
+        this.setupInput();
+    }
+
+    async loadSprites() {
+        // 加载主角精灵图
+        await this.sprites.load('player', 'assets/sprites/player_cow.png');
+        
+        // 加载敌人精灵图
+        const enemies = ['chick', 'pig', 'sheep', 'dog', 'cat', 'bear'];
+        for (const name of enemies) {
+            await this.sprites.load(name, `assets/sprites/${name}.png`);
+        }
+        
+        console.log(`Loaded ${this.sprites.loaded}/${this.sprites.total} sprites`);
+    }
+
+    setupInput() {
+        window.addEventListener('keydown', e => {
+            this.keys[e.key] = true;
+            
+            if (e.key >= '1' && e.key <= '9') {
+                const id = parseInt(e.key);
+                if (this.items.add(id)) {
+                    this.particles.burst(this.player.x, this.player.y, '#ff0', 15);
+                }
+            }
+            
+            if (e.key === 'w' || e.key === 'W') {
+                const wKeys = Object.keys(WEAPONS);
+                const randKey = wKeys[Math.floor(Math.random() * wKeys.length)];
+                this.weapons.push(new Weapon(randKey, 1));
+            }
+            
+            if (e.key === 'f' || e.key === 'F') {
+                if (!document.fullscreenElement) {
+                    document.documentElement.requestFullscreen();
+                } else {
+                    document.exitFullscreen();
+                }
+            }
+        });
+        
+        window.addEventListener('keyup', e => this.keys[e.key] = false);
+    }
+
+    async start() {
+        await this.loadSprites();
+        document.getElementById('loading').classList.add('hidden');
+        this.state = 'playing';
+        this.loop(0);
+    }
+
+    update(dt) {
+        if (this.transition.active) {
+            this.transition.timer -= dt;
+            if (this.transition.timer <= 0) {
+                this.curRoom = this.transition.target;
+                this.curRoom.visited = true;
+                this.player.x = 450 + (this.transition.dir === 'left' ? 400 : this.transition.dir === 'right' ? -400 : 0);
+                this.player.y = 300 + (this.transition.dir === 'up' ? 250 : this.transition.dir === 'down' ? -250 : 0);
+                this.transition.active = false;
+            }
+            return;
+        }
+
+        const stats = this.items.getStats();
+        const speed = 150 * stats.speed;
+        
+        // 玩家移动
+        let dx = 0, dy = 0;
+        if (this.keys['w'] || this.keys['W'] || this.keys['ArrowUp']) dy -= 1;
+        if (this.keys['s'] || this.keys['S'] || this.keys['ArrowDown']) dy += 1;
+        if (this.keys['a'] || this.keys['A'] || this.keys['ArrowLeft']) dx -= 1;
+        if (this.keys['d'] || this.keys['D'] || this.keys['ArrowRight']) dx += 1;
+        
+        if (dx !== 0 || dy !== 0) {
+            const len = Math.sqrt(dx*dx + dy*dy);
+            this.player.x += (dx / len) * speed * dt;
+            this.player.y += (dy / len) * speed * dt;
+        }
+        
+        // 边界
+        this.player.x = clamp(this.player.x, 60, 840);
+        this.player.y = clamp(this.player.y, 60, 540);
+        
+        // 门检测
+        if (this.curRoom.cleared) {
+            for (const [dir, door] of Object.entries(this.curRoom.doors)) {
+                if (!door || !door.open) continue;
+                const pos = { up: [420, 40, 60, 10], down: [420, 550, 60, 10], left: [40, 260, 10, 80], right: [850, 260, 10, 80] }[dir];
+                if (this.player.x > pos[0] && this.player.x < pos[0] + pos[2] &&
+                    this.player.y > pos[1] && this.player.y < pos[1] + pos[3]) {
+                    this.transition = { active: true, timer: 0.3, dir, target: door.target };
+                    break;
+                }
+            }
+        }
+        
+        // 敌人
+        for (const e of this.curRoom.enemies) {
+            e.update(dt, this.player, this.curRoom);
+            const d = dist(e.x, e.y, this.player.x, this.player.y);
+            if (d < 25 && e.attackCd <= 0) {
+                this.player.hp -= Math.max(0, e.dmg - stats.armor);
+                e.attackCd = 0.5;
+                if (this.player.hp <= 0) this.state = 'gameover';
+            }
+        }
+        
+        if (this.curRoom.enemies.length === 0 && !this.curRoom.cleared) {
+            this.curRoom.cleared = true;
+            for (const door of Object.values(this.curRoom.doors)) {
+                if (door) door.open = true;
+            }
+            this.particles.burst(450, 300, '#4f4', 30);
+        }
+        
+        // 武器
+        let target = null, minD = 9999;
+        for (const e of this.curRoom.enemies) {
+            const d = dist(e.x, e.y, this.player.x, this.player.y);
+            if (d < minD) { minD = d; target = e; }
+        }
+        
+        for (const w of this.weapons) {
+            w.update(dt);
+            if (w.canFire() && target) {
+                this.bullets.push(...w.fire(this.player, target, stats));
+            }
+        }
+        
+        // 子弹
+        for (let i = this.bullets.length - 1; i >= 0; i--) {
+            const b = this.bullets[i];
+            b.x += b.vx * dt; b.y += b.vy * dt; b.life -= dt;
+            
+            if (b.life <= 0) { this.bullets.splice(i, 1); continue; }
+            
+            let hit = false;
+            for (let j = this.curRoom.enemies.length - 1; j >= 0; j--) {
+                const e = this.curRoom.enemies[j];
+                if (dist(b.x, b.y, e.x, e.y) < 20 && !b.hits.has(e)) {
+                    b.hits.add(e);
+                    if (e.takeDamage(b.dmg)) {
+                        this.curRoom.enemies.splice(j, 1);
+                        this.gems.push({ x: e.x, y: e.y, v: e.exp, life: 30 });
+                        this.particles.burst(e.x, e.y, e.color, 8);
+                    }
+                    if (b.pierce-- <= 0) { hit = true; break; }
+                }
+            }
+            if (hit) this.bullets.splice(i, 1);
+        }
+        
+        // 经验宝石
+        for (let i = this.gems.length - 1; i >= 0; i--) {
+            const g = this.gems[i];
+            const d = dist(g.x, g.y, this.player.x, this.player.y);
+            if (d < stats.magnet) {
+                g.x += (this.player.x - g.x) * 5 * dt;
+                g.y += (this.player.y - g.y) * 5 * dt;
+            }
+            if (d < 20) {
+                this.player.exp += g.v;
+                this.gems.splice(i, 1);
+                if (this.player.exp >= this.player.lv * 100) {
+                    this.player.exp -= this.player.lv * 100;
+                    this.player.lv++;
+                    this.player.maxHp++;
+                    this.player.hp++;
+                    this.particles.burst(this.player.x, this.player.y, '#ff0', 20);
+                }
+            }
+        }
+        
+        this.particles.update(dt);
+    }
+
+    draw() {
+        // 清空
+        this.ctx.fillStyle = '#000';
+        this.ctx.fillRect(0, 0, 900, 600);
+        
+        // 房间
+        this.curRoom.draw(this.ctx);
+        
+        // 宝石
+        for (const g of this.gems) {
+            this.ctx.fillStyle = '#48f';
+            this.ctx.beginPath();
+            this.ctx.moveTo(g.x, g.y - 5);
+            this.ctx.lineTo(g.x + 4, g.y);
+            this.ctx.lineTo(g.x, g.y + 5);
+            this.ctx.lineTo(g.x - 4, g.y);
+            this.ctx.fill();
+        }
+        
+        // 子弹
+        for (const b of this.bullets) {
+            this.ctx.fillStyle = b.color;
+            this.ctx.beginPath();
+            this.ctx.arc(b.x, b.y, 4, 0, Math.PI * 2);
+            this.ctx.fill();
+        }
+        
+        // 敌人
+        for (const e of this.curRoom.enemies) {
+            e.draw(this.ctx, this.sprites);
+        }
+        
+        // 玩家 - 使用精灵图
+        const playerSprite = this.sprites.get('player');
+        if (playerSprite) {
+            this.ctx.drawImage(playerSprite, this.player.x - 16, this.player.y - 16, 32, 32);
+        } else {
+            // 备用emoji
+            this.ctx.font = '24px Arial';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText('🐮', this.player.x, this.player.y + 8);
+        }
+        
+        // 粒子
+        this.particles.draw(this.ctx);
+        
+        // 转场遮罩
+        if (this.transition.active) {
+            const alpha = Math.sin(this.transition.timer / 0.3 * Math.PI);
+            this.ctx.fillStyle = `rgba(0,0,0,${alpha})`;
+            this.ctx.fillRect(0, 0, 900, 600);
+        }
+        
+        // UI
+        this.drawUI();
+    }
+
+    drawUI() {
+        const ctx = this.ctx;
+        const pad = 20;
+        
+        // 状态面板
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(pad, pad, 180, 100);
+        
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 16px Arial';
+        ctx.textAlign = 'left';
+        ctx.fillText('❤️'.repeat(Math.max(0, Math.ceil(this.player.hp))), pad + 10, pad + 35);
+        
+        ctx.fillStyle = '#48f';
+        ctx.fillText(`Lv.${this.player.lv} EXP:${Math.floor(this.player.exp)}/${this.player.lv*100}`, pad + 10, pad + 60);
+        
+        ctx.fillStyle = '#fc0';
+        ctx.fillText(`💰 ${this.player.gold}`, pad + 10, pad + 85);
+        
+        // 房间信息
+        ctx.textAlign = 'right';
+        ctx.fillStyle = '#fff';
+        const names = { start: '起点', normal: '战斗', boss: 'BOSS', treasure: '宝箱' };
+        ctx.fillText(`${names[this.curRoom.type]}房间`, 880, pad + 35);
+        ctx.fillText(`敌人:${this.curRoom.enemies.length}`, 880, pad + 60);
+        
+        if (!this.curRoom.cleared) {
+            ctx.fillStyle = '#f44';
+            ctx.fillText('🔒 锁定', 880, pad + 85);
+        } else {
+            ctx.fillStyle = '#4f4';
+            ctx.fillText('✓ 已清理', 880, pad + 85);
+        }
+        
+        // 小地图
+        const mx = 750, my = 120;
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(mx, my, 130, 130);
+        
+        for (const [, r] of this.allRooms) {
+            if (!r.visited) continue;
+            const rx = mx + 10 + (r.gx + 5) * 10;
+            const ry = my + 10 + (r.gy + 5) * 10;
+            ctx.fillStyle = r === this.curRoom ? '#ff0' : { normal: '#666', boss: '#f00', treasure: '#0f0', start: '#66f' }[r.type];
+            ctx.fillRect(rx, ry, 8, 8);
+        }
+        
+        // 武器栏
+        const by = 530;
+        ctx.fillStyle = 'rgba(0,0,0,0.7)';
+        ctx.fillRect(pad, by, 300, 50);
+        
+        let wx = pad + 10;
+        for (const w of this.weapons) {
+            ctx.fillStyle = '#333';
+            ctx.fillRect(wx, by + 5, 40, 40);
+            ctx.fillStyle = '#fff';
+            ctx.font = '20px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(w.cfg.icon, wx + 20, by + 32);
+            wx += 50;
+        }
+        
+        // 游戏结束
+        if (this.state === 'gameover') {
+            ctx.fillStyle = 'rgba(0,0,0,0.8)';
+            ctx.fillRect(0, 0, 900, 600);
+            ctx.fillStyle = '#f44';
+            ctx.font = 'bold 48px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText('游戏结束', 450, 280);
+            ctx.font = '24px Arial';
+            ctx.fillStyle = '#fff';
+            ctx.fillText(`到达层数: ${this.player.lv} | 击杀: ${Array.from(this.allRooms.values()).reduce((a,r) => a + (r.cleared ? 1 : 0), 0)}`, 450, 340);
+            ctx.fillText('按 F5 重新开始', 450, 380);
+        }
+    }
+
+    loop(t) {
+        const dt = Math.min((t - (this.lastT || t)) / 1000, 0.1);
+        this.lastT = t;
+        
+        if (this.state === 'playing' || this.transition.active) {
+            this.update(dt);
+        }
+        this.draw();
+        
+        this.rafId = requestAnimationFrame(t => this.loop(t));
+    }
+}
+
+// 启动
+window.onload = () => {
+    const game = new Game();
+    setTimeout(() => game.start(), 500);
+};
+</script>
+</body>
+</html>
