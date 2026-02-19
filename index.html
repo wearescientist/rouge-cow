@@ -453,7 +453,39 @@ const ITEMS = {
     23: { id: 23, name: '疾风靴', icon: '👢', rarity: 'epic', effect: 'speed', value: 0.3, desc: '移速+30%', price: 140 },
     24: { id: 24, name: '天使祝福', icon: '👼', rarity: 'legendary', effect: 'maxHp', value: 3, desc: '生命+3', price: 350 },
     25: { id: 25, name: '黑洞核心', icon: '🕳️', rarity: 'legendary', effect: 'magnet', value: 200, desc: '拾取范围+200', price: 400 },
-    26: { id: 26, name: '雷电之刃', icon: '⚡', rarity: 'epic', effect: 'chain', value: 1, desc: '连锁攻击+1', price: 140 }
+    26: { id: 26, name: '雷电之刃', icon: '⚡', rarity: 'epic', effect: 'chain', value: 1, desc: '连锁攻击+1', price: 140 },
+    // 第1次迭代：新增24个道具 (27-50)
+    // 攻击类扩展
+    27: { id: 27, name: '霰弹扩散', icon: '📦', rarity: 'common', effect: 'spread', value: 15, desc: '散射角度+15°', price: 35 },
+    28: { id: 28, name: '追踪芯片', icon: '🧿', rarity: 'rare', effect: 'homing', value: 0.3, desc: '追踪强度+30%', price: 95 },
+    29: { id: 29, name: '弹跳子弹', icon: '🎱', rarity: 'rare', effect: 'bounce', value: 1, desc: '弹跳+1次', price: 85 },
+    30: { id: 30, name: '毒液涂层的', icon: '🧪', rarity: 'rare', effect: 'poisonDmg', value: 3, desc: '毒伤害+3/秒', price: 80 },
+    31: { id: 31, name: '狙击镜', icon: '🔭', rarity: 'epic', effect: 'critDmg', value: 0.5, desc: '暴击伤害+50%', price: 130 },
+    32: { id: 32, name: '连发装置', icon: '🔫', rarity: 'epic', effect: 'burst', value: 1, desc: '连射+1发', price: 150 },
+    // 防御类扩展
+    33: { id: 33, name: '再生因子', icon: '🧬', rarity: 'rare', effect: 'regen', value: 0.5, desc: '每秒回复0.5HP', price: 100 },
+    34: { id: 34, name: '荆棘护甲', icon: '🌵', rarity: 'rare', effect: 'thorn', value: 2, desc: '反弹2点伤害', price: 90 },
+    35: { id: 35, name: '闪避靴', icon: '👻', rarity: 'epic', effect: 'dodge', value: 0.1, desc: '闪避+10%', price: 130 },
+    36: { id: 36, name: '神圣护盾', icon: '✨', rarity: 'legendary', effect: 'shield', value: 1, desc: '免伤盾+1层', price: 300 },
+    37: { id: 37, name: '不朽之心', icon: '💝', rarity: 'legendary', effect: 'revive', value: 1, desc: '死亡时复活一次', price: 500 },
+    // 移动类扩展
+    38: { id: 38, name: '瞬移装置', icon: '🌀', rarity: 'epic', effect: 'dashDist', value: 0.5, desc: '冲刺距离+50%', price: 120 },
+    39: { id: 39, name: '时间怀表', icon: '⏱️', rarity: 'legendary', effect: 'slowTime', value: 0.2, desc: '子弹时间20%', price: 400 },
+    // 资源类扩展
+    40: { id: 40, name: '幸运币', icon: '🍀', rarity: 'rare', effect: 'luck', value: 0.2, desc: '幸运+20%', price: 110 },
+    41: { id: 41, name: '贪婪之手', icon: '🤲', rarity: 'rare', effect: 'goldOnKill', value: 2, desc: '击杀金币+2', price: 95 },
+    42: { id: 42, name: '经验加成', icon: '📈', rarity: 'common', effect: 'expBonus', value: 0.2, desc: '经验+20%', price: 45 },
+    43: { id: 43, name: '采集器', icon: '📡', rarity: 'epic', effect: 'pickupRange', value: 50, desc: '拾取范围+50', price: 125 },
+    // 召唤类
+    44: { id: 44, name: '小精灵', icon: '🧚', rarity: 'rare', effect: 'fairy', value: 1, desc: '小精灵跟随射击', price: 140 },
+    45: { id: 45, name: '守护球', icon: '🔮', rarity: 'epic', effect: 'orbit', value: 1, desc: '环绕攻击球+1', price: 160 },
+    46: { id: 46, name: '宠物龙', icon: '🐉', rarity: 'legendary', effect: 'dragon', value: 1, desc: '喷火幼龙跟随', price: 450 },
+    // 诅咒类（高风险高回报）
+    47: { id: 47, name: '狂暴模式', icon: '😈', rarity: 'cursed', effect: 'glassCannon', value: 1, desc: '伤害+50% 生命-30%', price: 0 },
+    48: { id: 48, name: '献祭之心', icon: '💔', rarity: 'cursed', effect: 'bloodMoney', value: 1, desc: '金币+100% 每秒扣血', price: 0 },
+    // 特殊道具
+    49: { id: 49, name: '盲眼萃取液', icon: '🧴', rarity: 'legendary', effect: 'invincible', value: 3, desc: '3秒无敌时间', price: 350 },
+    50: { id: 50, name: '图腾骨片', icon: '🦴', rarity: 'legendary', effect: 'upgradeAll', value: 1, desc: '全属性+10%', price: 600 }
 };
 
 function getItemPrice(itemId) {
@@ -489,11 +521,21 @@ class ItemManager {
         if (!this.dirty) return this.cache;
         
         const s = {
+            // 基础属性
             projCount: 1, projSize: 1, fireRate: 1, pierce: 0,
-            crit: 0, maxHp: 0, armor: 0, lifeSteal: 0,
+            crit: 0, critDmg: 1.5, maxHp: 0, armor: 0, lifeSteal: 0,
             speed: 1, fly: false, magnet: 100, goldBonus: 1,
+            // 伤害类型
             fireDmg: 0, thunderDmg: 0, poisonDmg: 0, curseDmg: 0,
+            // 控制效果
             slowChance: 0, slowAmount: 0, stunChance: 0,
+            // 新属性（第1次迭代）
+            spread: 0, homing: 0, bounce: 0, burst: 0,
+            regen: 0, thorn: 0, dodge: 0, shield: 0, revive: 0,
+            dashDist: 1, slowTime: 0, luck: 0, goldOnKill: 0, expBonus: 0,
+            pickupRange: 0, fairy: 0, orbit: 0, dragon: 0,
+            glassCannon: 0, bloodMoney: 0, invincible: 0, upgradeAll: 0,
+            // 治疗
             healOnHit: 0
         };
         
@@ -503,21 +545,71 @@ class ItemManager {
             const v = item.value * count;
             
             switch (item.effect) {
+                // 基础攻击
                 case 'projCount': s.projCount += v; break;
                 case 'projSize': s.projSize += v; break;
                 case 'fireRate': s.fireRate *= (1 + v); break;
                 case 'pierce': s.pierce += v; break;
                 case 'crit': s.crit = Math.min(1, s.crit + v); break;
+                case 'critDmg': s.critDmg += v; break;
+                // 防御
                 case 'maxHp': s.maxHp += v; break;
                 case 'armor': s.armor += v; break;
                 case 'lifeSteal': s.lifeSteal += v; break;
+                case 'regen': s.regen += v; break;
+                case 'thorn': s.thorn += v; break;
+                case 'dodge': s.dodge = Math.min(0.5, s.dodge + v); break;
+                case 'shield': s.shield += v; break;
+                case 'revive': s.revive += v; break;
+                // 移动
                 case 'speed': s.speed += v; break;
                 case 'fly': s.fly = true; break;
+                case 'dashDist': s.dashDist += v; break;
+                case 'slowTime': s.slowTime += v; break;
+                // 资源
                 case 'magnet': s.magnet += v; break;
                 case 'goldBonus': s.goldBonus += v; break;
+                case 'luck': s.luck += v; break;
+                case 'goldOnKill': s.goldOnKill += v; break;
+                case 'expBonus': s.expBonus += v; break;
+                case 'pickupRange': s.pickupRange += v; break;
+                // 伤害类型
                 case 'fireDmg': s.fireDmg += v; break;
+                case 'thunderDmg': s.thunderDmg += v; break;
+                case 'poisonDmg': s.poisonDmg += v; break;
+                case 'curseDmg': s.curseDmg += v; break;
                 case 'slow': s.slowAmount += v; break;
+                case 'chain': s.chain = (s.chain || 0) + v; break;
+                // 特殊效果
+                case 'spread': s.spread += v; break;
+                case 'homing': s.homing += v; break;
+                case 'bounce': s.bounce += v; break;
+                case 'burst': s.burst += v; break;
+                // 召唤
+                case 'fairy': s.fairy += v; break;
+                case 'orbit': s.orbit += v; break;
+                case 'dragon': s.dragon += v; break;
+                // 诅咒
+                case 'glassCannon': s.glassCannon += v; break;
+                case 'bloodMoney': s.bloodMoney += v; break;
+                // 特殊
+                case 'invincible': s.invincible += v; break;
+                case 'upgradeAll': s.upgradeAll += v; break;
             }
+        }
+        
+        // 诅咒效果处理
+        if (s.glassCannon > 0) {
+            s.fireRate *= 1.5;
+            s.maxHp *= 0.7;
+        }
+        if (s.bloodMoney > 0) {
+            s.goldBonus *= 2;
+        }
+        if (s.upgradeAll > 0) {
+            s.speed *= 1.1;
+            s.fireRate *= 1.1;
+            s.crit = Math.min(1, s.crit * 1.1 + 0.1);
         }
         
         this.cache = s;
