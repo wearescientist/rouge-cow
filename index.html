@@ -472,8 +472,15 @@
     
     <!-- 顶部信息栏 -->
     <div id="topScoreBar">
-        <!-- 左侧：玩家生命值（心形） -->
-        <div id="playerHearts" style="position:absolute; left:280px; top:10px; font-size:20px;">❤️❤️❤️❤️❤️❤️</div>
+        <!-- 左侧：玩家生命值（心形）+ 经验条 -->
+        <div style="position:absolute; left:280px; top:8px;">
+            <div id="playerHearts" style="font-size:20px;">❤️❤️❤️❤️❤️❤️</div>
+            <!-- 经验条 -->
+            <div style="margin-top:4px; width:120px; height:8px; background:rgba(0,0,0,0.5); border-radius:4px; overflow:hidden; border:1px solid #444;">
+                <div id="expBar" style="width:0%; height:100%; background:linear-gradient(90deg, #48f, #8cf); transition:width 0.3s;"></div>
+            </div>
+            <div style="font-size:10px; color:#8cf; margin-top:1px;">LV.<span id="levelDisplay">1</span> <span id="expText">0/100</span></div>
+        </div>
         
         <!-- 中间：层数——地形名称 -->
         <div id="floorInfo" style="position:absolute; left:50%; transform:translateX(-50%); top:10px; text-align:center;">
@@ -1117,48 +1124,312 @@ class ItemManager {
     }
 }
 
-// 武器系统 - 支持进化
-const WEAPONS = {
-    // 原有4种武器
-    whip: { key: 'whip', name: '鞭子', icon: '🪄', dmg: 20, cd: 1.0, range: 100, type: 'melee', color: '#f60' },
-    wand: { key: 'wand', name: '魔杖', icon: '🔮', dmg: 15, cd: 0.6, speed: 300, type: 'proj', color: '#48f' },
-    knife: { key: 'knife', name: '飞刀', icon: '🗡️', dmg: 12, cd: 0.4, speed: 400, pierce: 3, type: 'proj', color: '#ccc' },
-    axe: { key: 'axe', name: '斧头', icon: '🪓', dmg: 25, cd: 1.2, speed: 250, type: 'proj', color: '#8b4513' },
-    // 新增4种武器（第2次迭代）
-    bible: { key: 'bible', name: '圣经', icon: '📖', dmg: 10, cd: 0.8, range: 80, type: 'orbit', color: '#ffd700' },
-    fireball: { key: 'fireball', name: '火球', icon: '🔥', dmg: 30, cd: 1.5, speed: 200, type: 'proj', color: '#ff4500' },
-    lightning: { key: 'lightning', name: '闪电', icon: '⚡', dmg: 18, cd: 0.5, range: 150, type: 'instant', color: '#ffff00' },
-    holy_water: { key: 'holy_water', name: '圣水', icon: '💧', dmg: 8, cd: 1.0, range: 60, type: 'area', color: '#00bfff' }
-};
-
-class Weapon {
-    constructor(key, level = 1, evolution = null) {
-        this.baseKey = key;
-        this.cfg = { ...WEAPONS[key] };
-        this.level = level;
-        this.evolution = evolution;
-        this.cd = 0;
-        this.xp = 0;
-        this.xpToNext = 100;
+// 被动道具管理器（吸血鬼幸存者风格）
+class PassiveManager {
+    constructor(player) {
+        this.player = player;
+        this.passives = {}; // { key: level }
+    }
+    
+    // 添加或升级被动
+    add(key) {
+        const passive = PASSIVES[key];
+        if (!passive) return false;
         
-        // 应用进化属性
-        if (evolution) {
-            const evoData = WEAPON_EVOLUTIONS[key]?.[evolution];
-            if (evoData) {
-                this.cfg.name = evoData.name;
-                this.cfg.icon = evoData.icon;
-                this.cfg.color = evoData.bonus.color || this.cfg.color;
-                // 应用属性加成
-                if (evoData.bonus.dmg) this.cfg.dmg *= evoData.bonus.dmg;
-                if (evoData.bonus.range) this.cfg.range *= evoData.bonus.range;
-                if (evoData.bonus.speed) this.cfg.speed *= evoData.bonus.speed;
-                if (evoData.bonus.pierce) this.cfg.pierce = (this.cfg.pierce || 0) + evoData.bonus.pierce;
-            }
+        const currentLevel = this.passives[key] || 0;
+        if (currentLevel >= passive.maxLevel) return false; // 已满级
+        
+        this.passives[key] = currentLevel + 1;
+        
+        // 立即应用被动效果
+        this.applyEffect(passive);
+        
+        return true;
+    }
+    
+    // 应用被动效果
+    applyEffect(passive) {
+        switch(passive.effect) {
+            case 'maxHpPct':
+                // 空心之心：增加最大生命值百分比
+                const hpBonus = Math.floor(this.player.maxHp * passive.value);
+                this.player.maxHp += hpBonus;
+                this.player.hp += hpBonus;
+                break;
         }
     }
     
+    // 获取被动效果统计
+    getStats() {
+        const stats = {
+            dmg: 1,           // 菠菜
+            armor: 0,         // 护甲
+            maxHpPct: 0,      // 空心之心
+            cooldown: 1,      // 空白之书（冷却倍率，越小越好）
+            range: 1,         // 烛台
+            projSpeed: 1,     // 护腕
+            duration: 1,      // 魔法拼写器
+            projCount: 0,     // 复制器
+            speed: 1,         // 翅膀
+            magnet: 0,        // 吸引器
+            luck: 0,          // 四叶草
+            expBonus: 0       // 王冠
+        };
+        
+        for (const [key, level] of Object.entries(this.passives)) {
+            const passive = PASSIVES[key];
+            if (!passive || level <= 0) continue;
+            
+            const totalValue = passive.value * level;
+            
+            switch(passive.effect) {
+                case 'dmg':
+                    stats.dmg += totalValue;
+                    break;
+                case 'armor':
+                    stats.armor += totalValue;
+                    break;
+                case 'maxHpPct':
+                    stats.maxHpPct += totalValue;
+                    break;
+                case 'cooldown':
+                    stats.cooldown *= Math.pow(1 - passive.value, level);
+                    break;
+                case 'range':
+                    stats.range += totalValue;
+                    break;
+                case 'projSpeed':
+                    stats.projSpeed += totalValue;
+                    break;
+                case 'duration':
+                    stats.duration += totalValue;
+                    break;
+                case 'projCount':
+                    stats.projCount += totalValue;
+                    break;
+                case 'speed':
+                    stats.speed += totalValue;
+                    break;
+                case 'magnet':
+                    stats.magnet += totalValue;
+                    break;
+                case 'luck':
+                    stats.luck += totalValue;
+                    break;
+                case 'expBonus':
+                    stats.expBonus += totalValue;
+                    break;
+            }
+        }
+        
+        return stats;
+    }
+    
+    // 检查是否有某个被动
+    has(key) {
+        return (this.passives[key] || 0) > 0;
+    }
+    
+    // 获取被动等级
+    getLevel(key) {
+        return this.passives[key] || 0;
+    }
+    
+    // 获取所有被动列表（用于UI显示）
+    getOwnedPassives() {
+        const list = [];
+        for (const [key, level] of Object.entries(this.passives)) {
+            const passive = PASSIVES[key];
+            if (passive && level > 0) {
+                list.push({
+                    key: key,
+                    name: passive.name,
+                    icon: passive.icon,
+                    level: level,
+                    maxLevel: passive.maxLevel,
+                    desc: passive.desc
+                });
+            }
+        }
+        return list;
+    }
+    
+    // 检查是否可以合成超武
+    checkEvolution(weaponKey) {
+        const evo = WEAPON_EVOLUTIONS[weaponKey];
+        if (!evo) return null;
+        
+        // 检查是否有对应被动
+        if (!this.has(evo.requires)) return null;
+        
+        return evo;
+    }
+    
+    // 序列化（用于存档）
+    serialize() {
+        return this.passives;
+    }
+    
+    // 反序列化（用于读档）
+    deserialize(data) {
+        this.passives = data || {};
+    }
+}
+
+// 武器系统 - 支持进化
+const WEAPONS = {
+    // 基础武器（吸血鬼幸存者风格）
+    whip: { key: 'whip', name: '鞭子', icon: '🪄', dmg: 20, cd: 1.0, range: 100, type: 'melee', color: '#f60', maxLevel: 8 },
+    wand: { key: 'wand', name: '魔杖', icon: '🔮', dmg: 15, cd: 0.6, speed: 300, type: 'proj', color: '#48f', maxLevel: 8 },
+    knife: { key: 'knife', name: '飞刀', icon: '🗡️', dmg: 12, cd: 0.4, speed: 400, pierce: 3, type: 'proj', color: '#ccc', maxLevel: 8 },
+    axe: { key: 'axe', name: '斧头', icon: '🪓', dmg: 25, cd: 1.2, speed: 250, type: 'proj', color: '#8b4513', maxLevel: 8 },
+    bible: { key: 'bible', name: '圣经', icon: '📖', dmg: 10, cd: 0.8, range: 80, type: 'orbit', color: '#ffd700', maxLevel: 8 },
+    fireball: { key: 'fireball', name: '火球', icon: '🔥', dmg: 30, cd: 1.5, speed: 200, type: 'proj', color: '#ff4500', maxLevel: 8 },
+    lightning: { key: 'lightning', name: '闪电', icon: '⚡', dmg: 18, cd: 0.5, range: 150, type: 'instant', color: '#ffff00', maxLevel: 8 },
+    holy_water: { key: 'holy_water', name: '圣水', icon: '💧', dmg: 8, cd: 1.0, range: 60, type: 'area', color: '#00bfff', maxLevel: 8 },
+    cross: { key: 'cross', name: '十字架', icon: '✝️', dmg: 22, cd: 1.0, speed: 250, type: 'proj', color: '#ddd', maxLevel: 8 },
+    garlic: { key: 'garlic', name: '大蒜', icon: '🧄', dmg: 5, cd: 0.3, range: 50, type: 'aura', color: '#4a4', maxLevel: 8 }
+};
+
+// 被动道具系统（吸血鬼幸存者风格）
+const PASSIVES = {
+    spinach: { key: 'spinach', name: '菠菜', icon: '🥬', desc: '伤害+10%', effect: 'dmg', value: 0.1, maxLevel: 5 },
+    armor: { key: 'armor', name: '护甲', icon: '🛡️', desc: '减伤+1', effect: 'armor', value: 1, maxLevel: 5 },
+    hollow_heart: { key: 'hollow_heart', name: '空心之心', icon: '💝', desc: '最大生命+20%', effect: 'maxHpPct', value: 0.2, maxLevel: 5 },
+    empty_tome: { key: 'empty_tome', name: '空白之书', icon: '📚', desc: '冷却-8%', effect: 'cooldown', value: 0.08, maxLevel: 5 },
+    candelabrador: { key: 'candelabrador', name: '烛台', icon: '🕯️', desc: '攻击范围+10%', effect: 'range', value: 0.1, maxLevel: 5 },
+    bracer: { key: 'bracer', name: '护腕', icon: '💪', desc: '弹射速度+10%', effect: 'projSpeed', value: 0.1, maxLevel: 5 },
+    spellbinder: { key: 'spellbinder', name: '魔法拼写器', icon: '✨', desc: '持续时间+10%', effect: 'duration', value: 0.1, maxLevel: 5 },
+    duplicator: { key: 'duplicator', name: '复制器', icon: '🔄', desc: '投射物数量+1', effect: 'projCount', value: 1, maxLevel: 5 },
+    wings: { key: 'wings', name: '翅膀', icon: '🪶', desc: '移速+10%', effect: 'speed', value: 0.1, maxLevel: 5 },
+    attractorb: { key: 'attractorb', name: '吸引器', icon: '🧲', desc: '拾取范围+25%', effect: 'magnet', value: 25, maxLevel: 5 },
+    clover: { key: 'clover', name: '四叶草', icon: '🍀', desc: '幸运+10%', effect: 'luck', value: 0.1, maxLevel: 5 },
+    crown: { key: 'crown', name: '王冠', icon: '👑', desc: '经验获取+8%', effect: 'expBonus', value: 0.08, maxLevel: 5 }
+};
+
+// 超武合成配方（武器满级+对应被动=超武）
+const WEAPON_EVOLUTIONS = {
+    whip: { 
+        requires: 'hollow_heart', 
+        result: 'blood_whip',
+        name: '血鞭',
+        icon: '🩸',
+        desc: '可暴击并吸血',
+        bonus: { dmg: 1.5, lifeSteal: 0.1, crit: 0.15 }
+    },
+    wand: { 
+        requires: 'empty_tome', 
+        result: 'holy_wand',
+        name: '圣魔杖',
+        icon: '🔯',
+        desc: '无CD自动追踪',
+        bonus: { cd: 0.3, homing: true }
+    },
+    knife: { 
+        requires: 'bracer', 
+        result: 'thousand_edge',
+        name: '千刃',
+        icon: '💠',
+        desc: '极速连射',
+        bonus: { cd: 0.2, projCount: 2 }
+    },
+    axe: { 
+        requires: 'candelabrador', 
+        result: 'death_spiral',
+        name: '死亡螺旋',
+        icon: '🌀',
+        desc: '穿透高伤',
+        bonus: { dmg: 1.8, pierce: 5 }
+    },
+    cross: { 
+        requires: 'clover', 
+        result: 'heaven_sword',
+        name: '天堂之剑',
+        icon: '⚔️',
+        desc: '高暴击',
+        bonus: { dmg: 2, crit: 0.25 }
+    },
+    bible: { 
+        requires: 'spellbinder', 
+        result: 'unholy_vespers',
+        name: '邪恶晚祷',
+        icon: '📿',
+        desc: '永不消失',
+        bonus: { duration: 3 }
+    },
+    fireball: { 
+        requires: 'spinach', 
+        result: 'hellfire',
+        name: '地狱火',
+        icon: '🔥',
+        desc: '穿透火焰',
+        bonus: { dmg: 1.5, pierce: 3 }
+    },
+    holy_water: { 
+        requires: 'attractorb', 
+        result: 'la_borra',
+        name: '拉博拉',
+        icon: '💦',
+        desc: '追踪区域',
+        bonus: { homing: true, range: 1.3 }
+    }
+};
+
+// 超武定义
+const SUPER_WEAPONS = {
+    blood_whip: { name: '血鞭', icon: '🩸', dmg: 35, cd: 0.8, range: 120, type: 'melee', color: '#c00' },
+    holy_wand: { name: '圣魔杖', icon: '🔯', dmg: 20, cd: 0.2, speed: 350, type: 'proj', color: '#88f' },
+    thousand_edge: { name: '千刃', icon: '💠', dmg: 15, cd: 0.1, speed: 500, pierce: 5, type: 'proj', color: '#0ff' },
+    death_spiral: { name: '死亡螺旋', icon: '🌀', dmg: 45, cd: 1.0, speed: 200, pierce: 10, type: 'proj', color: '#800' },
+    heaven_sword: { name: '天堂之剑', icon: '⚔️', dmg: 50, cd: 1.2, speed: 300, type: 'proj', color: '#fe0' },
+    unholy_vespers: { name: '邪恶晚祷', icon: '📿', dmg: 18, cd: 0.5, range: 100, type: 'orbit', color: '#4a0' },
+    hellfire: { name: '地狱火', icon: '🔥', dmg: 50, cd: 1.2, speed: 250, pierce: 5, type: 'proj', color: '#f40' },
+    la_borra: { name: '拉博拉', icon: '💦', dmg: 12, cd: 0.8, range: 80, type: 'area', color: '#48f' }
+};
+
+class Weapon {
+    constructor(key, level = 1, isSuper = false) {
+        this.baseKey = key;
+        this.isSuper = isSuper; // 是否为超武
+        
+        // 根据是否是超武选择配置
+        if (isSuper && SUPER_WEAPONS[key]) {
+            this.cfg = { ...SUPER_WEAPONS[key] };
+            this.level = 1; // 超武固定1级
+            this.maxLevel = 1;
+        } else {
+            this.cfg = { ...WEAPONS[key] };
+            this.level = level;
+            this.maxLevel = WEAPONS[key]?.maxLevel || 8;
+        }
+        
+        this.cd = 0;
+        this.xp = 0;
+        this.xpToNext = 100;
+    }
+    
+    // 进化成超武
+    evolveToSuper(evoKey) {
+        if (!SUPER_WEAPONS[evoKey]) return false;
+        
+        this.isSuper = true;
+        this.baseKey = evoKey;
+        this.cfg = { ...SUPER_WEAPONS[evoKey] };
+        this.level = 1;
+        this.maxLevel = 1;
+        
+        return true;
+    }
+    
+    // 检查是否可以升级
+    canLevelUp() {
+        if (this.isSuper) return false; // 超武不能升级
+        return this.level < this.maxLevel;
+    }
+    
     getDamage(stats) { 
-        let dmg = this.cfg.dmg * (1 + (this.level - 1) * 0.15) * stats.projSize;
+        if (this.isSuper) return this.cfg.dmg; // 超武固定伤害
+        let dmg = this.cfg.dmg * (1 + (this.level - 1) * 0.15);
         return dmg;
     }
     
@@ -1166,6 +1437,9 @@ class Weapon {
     canFire() { return this.cd <= 0; }
     
     addXp(amount) {
+        if (this.isSuper) return false; // 超武不能升级
+        if (this.level >= this.maxLevel) return false; // 满级
+        
         this.xp += amount;
         if (this.xp >= this.xpToNext) {
             this.xp -= this.xpToNext;
@@ -1177,9 +1451,10 @@ class Weapon {
     }
     
     getLevelColor() {
-        if (this.evolution) return '#f0f'; // 进化武器紫色
-        if (this.level >= 5) return '#fa0';
-        if (this.level >= 3) return '#0ff';
+        if (this.isSuper) return '#f0f'; // 超武紫色
+        if (this.level >= this.maxLevel) return '#fa0'; // 满级金色
+        if (this.level >= 5) return '#0ff';
+        if (this.level >= 3) return '#4f4';
         if (this.level >= 2) return '#fff';
         return '#aaa';
     }
@@ -2779,6 +3054,7 @@ class Game {
         // 相机跟随玩家
         this.camera.follow(this.player);
         this.items = new ItemManager(this.player);
+        this.passives = new PassiveManager(this.player); // 被动道具系统（吸血鬼幸存者风格）
         this.totems = new TotemManager();
         this.materials = new MaterialManager(); // 材料系统
         this.weapons = [new Weapon('wand', 1)];  // 默认武器改为魔杖（远程）
@@ -2823,8 +3099,8 @@ class Game {
         this.evolutionOpen = false; // 武器进化界面
         this.evolutionSelected = -1;
         
-        this.weaponSelectOpen = false; // 3选1武器选择界面
-        this.weaponOptions = [];
+        this.levelUpOpen = false; // 4选1升级选择界面（2武器+2被动）
+        this.levelUpOptions = [];
         
         this.sounds = new SoundManager();
         
@@ -3053,7 +3329,19 @@ class Game {
             heartsEl.textContent = heartsStr;
         }
         
-        // 2. 层数——地形名称
+        // 2. 经验条
+        const expBar = document.getElementById('expBar');
+        const levelDisplay = document.getElementById('levelDisplay');
+        const expText = document.getElementById('expText');
+        if (expBar && this.player) {
+            const expNeeded = this.player.lv * 100;
+            const expPercent = (this.player.exp / expNeeded) * 100;
+            expBar.style.width = `${expPercent}%`;
+            if (levelDisplay) levelDisplay.textContent = this.player.lv;
+            if (expText) expText.textContent = `${this.player.exp}/${expNeeded}`;
+        }
+        
+        // 3. 层数——地形名称
         const floorDisplay = document.getElementById('currentFloorDisplay');
         const floorName = document.getElementById('floorName');
         if (floorDisplay) floorDisplay.textContent = this.currentFloor;
@@ -3147,10 +3435,10 @@ class Game {
                 return;
             }
             
-            // 武器选择界面操作
-            if (this.weaponSelectOpen) {
-                if (e.key >= '1' && e.key <= '3') {
-                    this.selectWeapon(parseInt(e.key) - 1);
+            // 升级选择界面操作（4选1）
+            if (this.levelUpOpen) {
+                if (e.key >= '1' && e.key <= '4') {
+                    this.selectLevelUpOption(parseInt(e.key) - 1);
                 }
                 return;
             }
@@ -3256,28 +3544,33 @@ class Game {
     
     // 处理点击事件
     handleClick(x, y) {
-        // 武器选择界面点击处理
-        if (this.weaponSelectOpen) {
+        // 升级选择界面点击处理（4选1）
+        if (this.levelUpOpen) {
             const canvas = document.getElementById('gameCanvas');
             if (!canvas) return;
             const cw = canvas.width;
             const ch = canvas.height;
             
-            // 计算三个选项的位置（与绘制代码一致）
-            const boxWidth = 500;
-            const boxHeight = 320;
+            // 计算四个选项的位置（2x2网格）
+            const boxWidth = 560;
+            const boxHeight = 400;
             const boxX = (cw - boxWidth) / 2;
             const boxY = (ch - boxHeight) / 2;
-            const cardWidth = 140;
-            const cardHeight = 200;
-            const startX = boxX + (boxWidth - 3 * cardWidth) / 2 + cardWidth / 2;
-            const cardY = boxY + 140;
+            const cardWidth = 240;
+            const cardHeight = 150;
+            const gapX = 40;
+            const gapY = 30;
+            const startX = boxX + (boxWidth - 2 * cardWidth - gapX) / 2 + cardWidth / 2;
+            const startY = boxY + 100 + cardHeight / 2;
             
-            for (let i = 0; i < 3; i++) {
-                const cx = startX + i * (cardWidth + 20);
+            for (let i = 0; i < 4; i++) {
+                const row = Math.floor(i / 2);
+                const col = i % 2;
+                const cx = startX + col * (cardWidth + gapX);
+                const cy = startY + row * (cardHeight + gapY);
                 if (x > cx - cardWidth/2 && x < cx + cardWidth/2 &&
-                    y > cardY - cardHeight/2 && y < cardY + cardHeight/2) {
-                    this.selectWeapon(i);
+                    y > cy - cardHeight/2 && y < cy + cardHeight/2) {
+                    this.selectLevelUpOption(i);
                     return;
                 }
             }
@@ -3366,51 +3659,113 @@ class Game {
         }
     }
     
-    // 幸存者模式：3选1武器选择界面
-    openWeaponSelect() {
-        this.weaponSelectOpen = true;
-        // 随机3个武器选项
-        const allWeaponKeys = Object.keys(WEAPONS);
-        this.weaponOptions = [];
-        while (this.weaponOptions.length < 3 && allWeaponKeys.length > 0) {
-            const idx = Math.floor(Math.random() * allWeaponKeys.length);
-            const key = allWeaponKeys.splice(idx, 1)[0];
-            // 如果已拥有该武器，则提供升级版本
-            const existing = this.weapons.find(w => w.cfg.key === key);
-            this.weaponOptions.push({
+    // 吸血鬼幸存者风格：4选1升级选择界面（2武器+2被动）
+    openLevelUpSelect() {
+        this.levelUpOpen = true;
+        this.levelUpOptions = [];
+        
+        // 生成2个武器选项
+        const availableWeapons = Object.keys(WEAPONS).filter(key => {
+            const existing = this.weapons.find(w => w.baseKey === key && !w.isSuper);
+            // 未满级的武器或新武器
+            return !existing || existing.canLevelUp();
+        });
+        
+        for (let i = 0; i < 2 && availableWeapons.length > 0; i++) {
+            const idx = Math.floor(Math.random() * availableWeapons.length);
+            const key = availableWeapons.splice(idx, 1)[0];
+            const existing = this.weapons.find(w => w.baseKey === key);
+            
+            this.levelUpOptions.push({
+                type: 'weapon',
                 key: key,
                 isNew: !existing,
                 level: existing ? existing.level + 1 : 1,
-                cfg: WEAPONS[key]
+                maxLevel: WEAPONS[key].maxLevel,
+                data: WEAPONS[key]
             });
         }
-        console.log('武器选择界面已打开', this.weaponOptions);
-    }
-    
-    closeWeaponSelect() {
-        this.weaponSelectOpen = false;
-        this.weaponOptions = [];
-    }
-    
-    selectWeapon(index) {
-        if (index >= this.weaponOptions.length) return;
-        const option = this.weaponOptions[index];
         
-        const existingIdx = this.weapons.findIndex(w => w.cfg.key === option.key);
-        if (existingIdx >= 0) {
-            // 升级现有武器
-            const leveledUp = this.weapons[existingIdx].addXp(100);
-            if (leveledUp) {
-                this.particles.burst(this.player.x, this.player.y, '#f0f', 20);
-                console.log(`武器升级: ${option.cfg.name} Lv.${this.weapons[existingIdx].level}`);
-            }
-        } else if (this.weapons.length < 6) {
-            // 添加新武器
-            this.weapons.push(new Weapon(option.key, 1));
-            console.log(`获得新武器: ${option.cfg.name}`);
+        // 生成2个被动选项
+        const availablePassives = Object.keys(PASSIVES).filter(key => {
+            const level = this.passives.getLevel(key);
+            const maxLevel = PASSIVES[key].maxLevel;
+            return level < maxLevel; // 未满级的被动
+        });
+        
+        for (let i = 0; i < 2 && availablePassives.length > 0; i++) {
+            const idx = Math.floor(Math.random() * availablePassives.length);
+            const key = availablePassives.splice(idx, 1)[0];
+            const currentLevel = this.passives.getLevel(key);
+            
+            this.levelUpOptions.push({
+                type: 'passive',
+                key: key,
+                level: currentLevel + 1,
+                maxLevel: PASSIVES[key].maxLevel,
+                data: PASSIVES[key]
+            });
         }
         
-        this.closeWeaponSelect();
+        console.log('升级选择界面已打开', this.levelUpOptions);
+    }
+    
+    closeLevelUpSelect() {
+        this.levelUpOpen = false;
+        this.levelUpOptions = [];
+    }
+    
+    selectLevelUpOption(index) {
+        if (index >= this.levelUpOptions.length) return;
+        const option = this.levelUpOptions[index];
+        
+        if (option.type === 'weapon') {
+            const existingIdx = this.weapons.findIndex(w => w.baseKey === option.key && !w.isSuper);
+            if (existingIdx >= 0) {
+                // 升级现有武器
+                const weapon = this.weapons[existingIdx];
+                if (weapon.canLevelUp()) {
+                    weapon.level++;
+                    this.particles.burst(this.player.x, this.player.y, '#f0f', 20);
+                    console.log(`武器升级: ${option.data.name} Lv.${weapon.level}`);
+                    
+                    // 检查是否可以进化成超武
+                    this.checkWeaponEvolution(existingIdx);
+                }
+            } else if (this.weapons.length < 6) {
+                // 添加新武器
+                this.weapons.push(new Weapon(option.key, 1));
+                this.particles.burst(this.player.x, this.player.y, '#4f4', 15);
+                console.log(`获得新武器: ${option.data.name}`);
+            }
+        } else if (option.type === 'passive') {
+            // 添加或升级被动
+            const isNew = this.passives.getLevel(option.key) === 0;
+            this.passives.add(option.key);
+            this.particles.burst(this.player.x, this.player.y, '#48f', 15);
+            console.log(`${isNew ? '获得' : '升级'}被动: ${option.data.name} Lv.${option.level}`);
+        }
+        
+        this.closeLevelUpSelect();
+    }
+    
+    // 检查武器是否可以进化成超武
+    checkWeaponEvolution(weaponIdx) {
+        const weapon = this.weapons[weaponIdx];
+        if (!weapon || weapon.isSuper) return;
+        if (weapon.level < weapon.maxLevel) return; // 必须满级
+        
+        const evo = this.passives.checkEvolution(weapon.baseKey);
+        if (!evo) return;
+        
+        // 可以进化！
+        console.log(`武器${weapon.cfg.name}可以进化成${evo.name}！`);
+        
+        // 进化武器
+        weapon.evolveToSuper(evo.result);
+        this.particles.burst(this.player.x, this.player.y, '#f0f', 50);
+        this.sounds.play('evolve');
+        console.log(`✨ 武器进化: ${evo.name}！`);
     }
     
     openShop() {
@@ -3490,7 +3845,7 @@ class Game {
     }
 
     update(dt) {
-        if (this.shopOpen || this.evolutionOpen || this.weaponSelectOpen) return;
+        if (this.shopOpen || this.evolutionOpen || this.levelUpOpen) return;
         
         // 更新房间（波次系统）
         this.curRoom.update(dt);
@@ -3522,12 +3877,38 @@ class Game {
             return;
         }
 
-        const stats = this.items.getStats();
+        // 合并所有属性来源：道具 + 被动 + 图腾
+        const itemStats = this.items.getStats();
+        const passiveStats = this.passives.getStats();
         const totemBonuses = this.totems.getAllBonuses();
-        stats.dmg = (stats.dmg || 1) * (1 + totemBonuses.dmg);
-        stats.maxHp += totemBonuses.maxHp;
-        stats.speed *= (1 + totemBonuses.speed);
-        stats.crit = Math.min(1, stats.crit + totemBonuses.crit);
+        
+        const stats = {
+            // 基础属性（道具+被动合并）
+            projCount: itemStats.projCount + passiveStats.projCount,
+            projSize: itemStats.projSize,
+            fireRate: itemStats.fireRate * (1 / passiveStats.cooldown), // 空白之书减少冷却
+            pierce: itemStats.pierce,
+            crit: Math.min(1, itemStats.crit + totemBonuses.crit + (passiveStats.luck * 0.5)), // 幸运转化为暴击
+            critDmg: itemStats.critDmg,
+            maxHp: itemStats.maxHp,
+            armor: itemStats.armor + passiveStats.armor,
+            lifeSteal: itemStats.lifeSteal,
+            speed: (itemStats.speed + passiveStats.speed) * (1 + totemBonuses.speed), // 翅膀+图腾
+            fly: itemStats.fly,
+            magnet: itemStats.magnet + passiveStats.magnet,
+            goldBonus: itemStats.goldBonus,
+            // 伤害类型
+            fireDmg: itemStats.fireDmg,
+            thunderDmg: itemStats.thunderDmg,
+            poisonDmg: itemStats.poisonDmg,
+            curseDmg: itemStats.curseDmg,
+            // 控制效果
+            slowChance: itemStats.slowChance,
+            slowAmount: itemStats.slowAmount,
+            stunChance: itemStats.stunChance,
+            // 其他
+            dmg: (itemStats.dmg || 1) * passiveStats.dmg * (1 + totemBonuses.dmg) // 菠菜+图腾
+        };
         
         const speed = 300 * stats.speed;  // 移速翻倍
         
@@ -3807,15 +4188,20 @@ class Game {
                 g.y += (this.player.y - g.y) * 5 * dt;
             }
             if (d < 20) {
-                this.player.exp += g.v;
+                // 应用经验加成
+                const expBonus = this.passives ? this.passives.getStats().expBonus : 0;
+                const expGained = Math.floor(g.v * (1 + expBonus));
+                this.player.exp += expGained;
                 this.gems.splice(i, 1);
+                
+                // 检查升级
                 if (this.player.exp >= this.player.lv * 100) {
                     this.player.exp -= this.player.lv * 100;
                     this.player.lv++;
-                    this.player.maxHp++;
-                    this.player.hp++;
-                    this.particles.burst(this.player.x, this.player.y, '#ff0', 20);
                     this.sounds.play('levelup');
+                    this.particles.burst(this.player.x, this.player.y, '#ff0', 20);
+                    // 打开4选1升级界面
+                    this.openLevelUpSelect();
                 }
             }
         }
@@ -3829,8 +4215,8 @@ class Game {
             
             if (d < 30) {
                 if (item.type === 'weapon') {
-                    // 幸存者模式：打开3选1武器选择界面
-                    this.openWeaponSelect();
+                    // 吸血鬼幸存者风格：打开4选1升级选择界面
+                    this.openLevelUpSelect();
                 } else if (item.type === 'totem') {
                     if (this.totems.collect(item.totemId)) {
                         this.particles.burst(item.x, item.y, '#ff0', 30);
@@ -4059,9 +4445,9 @@ class Game {
             this.drawEvolutionUI();
         }
         
-        // 3选1武器选择UI
-        if (this.weaponSelectOpen) {
-            this.drawWeaponSelectUI();
+        // 4选1升级选择UI
+        if (this.levelUpOpen) {
+            this.drawLevelUpUI();
         }
         
         // 恢复上下文
@@ -4236,76 +4622,106 @@ class Game {
         ctx.fillText('按 1-3 选择进化 | 按 V 关闭', 450, boxY + boxHeight - 20);
     }
     
-    drawWeaponSelectUI() {
+    drawLevelUpUI() {
         const ctx = this.ctx;
-        const boxWidth = 600;
-        const boxHeight = 400;
+        const boxWidth = 560;
+        const boxHeight = 420;
         const boxX = (ctx.canvas.width || 900) / 2 - boxWidth / 2;
         const boxY = (ctx.canvas.height || 600) / 2 - boxHeight / 2;
         const centerX = (ctx.canvas.width || 900) / 2;
         
         ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
         ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
-        ctx.strokeStyle = '#48f';
+        ctx.strokeStyle = '#ff0';
         ctx.lineWidth = 3;
         ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
         
-        ctx.fillStyle = '#48f';
+        // 标题
+        ctx.fillStyle = '#ff0';
         ctx.font = 'bold 28px Arial';
         ctx.textAlign = 'center';
-        ctx.fillText('⚔️ 选择武器 ⚔️', centerX, boxY + 50);
+        ctx.fillText('⭐ 升级！选择一项 ⭐', centerX, boxY + 45);
         
-        const itemWidth = 160;
-        const itemHeight = 200;
-        const startX = centerX - (this.weaponOptions.length * itemWidth) / 2 + itemWidth / 2;
+        // 副标题
+        ctx.fillStyle = '#aaa';
+        ctx.font = '14px Arial';
+        ctx.fillText('武器（2个）                被动道具（2个）', centerX, boxY + 75);
         
-        this.weaponOptions.forEach((option, i) => {
-            const ix = startX + i * (itemWidth + 20);
-            const iy = boxY + 180;
+        const cardWidth = 240;
+        const cardHeight = 150;
+        const gapX = 40;
+        const gapY = 20;
+        const startX = centerX - (2 * cardWidth + gapX) / 2 + cardWidth / 2;
+        const startY = boxY + 100 + cardHeight / 2;
+        
+        this.levelUpOptions.forEach((option, i) => {
+            const row = Math.floor(i / 2);
+            const col = i % 2;
+            const ix = startX + col * (cardWidth + gapX);
+            const iy = startY + row * (cardHeight + gapY);
+            
+            const isWeapon = option.type === 'weapon';
+            const borderColor = isWeapon ? '#48f' : '#4f4';
             
             // 背景框
             ctx.fillStyle = '#1a1a2e';
-            ctx.fillRect(ix - itemWidth/2, iy - itemHeight/2, itemWidth, itemHeight);
-            ctx.strokeStyle = '#48f';
+            ctx.fillRect(ix - cardWidth/2, iy - cardHeight/2, cardWidth, cardHeight);
+            ctx.strokeStyle = borderColor;
             ctx.lineWidth = 2;
-            ctx.strokeRect(ix - itemWidth/2, iy - itemHeight/2, itemWidth, itemHeight);
+            ctx.strokeRect(ix - cardWidth/2, iy - cardHeight/2, cardWidth, cardHeight);
             
-            // 武器图标
-            ctx.font = '64px Arial';
+            // 类型标签
+            ctx.fillStyle = borderColor;
+            ctx.font = 'bold 12px Arial';
+            ctx.textAlign = 'left';
+            ctx.fillText(isWeapon ? '🔫 武器' : '📦 被动', ix - cardWidth/2 + 10, iy - cardHeight/2 + 20);
+            
+            // 图标
+            ctx.font = '40px Arial';
             ctx.textAlign = 'center';
-            ctx.fillText(option.cfg.icon, ix, iy - 40);
+            ctx.fillText(option.data.icon, ix, iy - 15);
             
-            // 武器名称
+            // 名称
             ctx.fillStyle = '#fff';
             ctx.font = 'bold 16px Arial';
-            ctx.fillText(option.cfg.name, ix, iy);
+            ctx.fillText(option.data.name, ix, iy + 20);
             
-            // 新武器/升级标识
-            if (option.isNew) {
-                ctx.fillStyle = '#4f4';
-                ctx.font = '14px Arial';
-                ctx.fillText('[新武器]', ix, iy + 25);
+            // 等级/新标识
+            if (isWeapon) {
+                if (option.isNew) {
+                    ctx.fillStyle = '#4f4';
+                    ctx.font = '12px Arial';
+                    ctx.fillText('[新武器]', ix, iy + 40);
+                } else {
+                    ctx.fillStyle = '#f0f';
+                    ctx.font = '12px Arial';
+                    ctx.fillText(`Lv.${option.level}/${option.maxLevel}`, ix, iy + 40);
+                }
+                // 武器属性
+                ctx.fillStyle = '#888';
+                ctx.font = '11px Arial';
+                ctx.fillText(`伤害${option.data.dmg} 冷却${option.data.cd}s`, ix, iy + 58);
             } else {
-                ctx.fillStyle = '#f0f';
-                ctx.font = '14px Arial';
-                ctx.fillText(`[升级 Lv.${option.level}]`, ix, iy + 25);
+                // 被动等级
+                ctx.fillStyle = '#0ff';
+                ctx.font = '12px Arial';
+                ctx.fillText(`Lv.${option.level}/${option.maxLevel}`, ix, iy + 40);
+                // 被动描述
+                ctx.fillStyle = '#888';
+                ctx.font = '11px Arial';
+                ctx.fillText(option.data.desc, ix, iy + 58);
             }
             
-            // 属性
-            ctx.fillStyle = '#aaa';
-            ctx.font = '12px Arial';
-            ctx.fillText(`伤害: ${option.cfg.dmg}`, ix, iy + 50);
-            ctx.fillText(`冷却: ${option.cfg.cd}s`, ix, iy + 70);
-            
             // 按键提示
-            ctx.fillStyle = '#666';
-            ctx.font = '14px Arial';
-            ctx.fillText(`[${i + 1}]`, ix, iy + 100);
+            ctx.fillStyle = '#ff0';
+            ctx.font = 'bold 14px Arial';
+            ctx.fillText(`[${i + 1}]`, ix, iy + cardHeight/2 - 15);
         });
         
         ctx.fillStyle = '#888';
         ctx.font = '14px Arial';
-        ctx.fillText('按 1-3 选择武器', centerX, boxY + boxHeight - 30);
+        ctx.textAlign = 'center';
+        ctx.fillText('按 1-4 选择 | 武器满级+对应被动可合成超武', centerX, boxY + boxHeight - 20);
     }
 
     drawUI() {
