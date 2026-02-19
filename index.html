@@ -769,147 +769,6 @@ class MaterialManager {
     }
 }
 
-// 武器进化配置
-const WEAPON_EVOLUTIONS = {
-    whip: {
-        fire: { 
-            name: '火焰鞭', icon: '🔥', 
-            req: { fire: 3 }, 
-            bonus: { fireDmg: 5, color: '#f44' },
-            desc: '附加火焰伤害'
-        },
-        thunder: { 
-            name: '雷电鞭', icon: '⚡', 
-            req: { thunder: 3 }, 
-            bonus: { thunderDmg: 5, stunChance: 0.1, color: '#fc0' },
-            desc: '雷电伤害+麻痹'
-        },
-        thorn: { 
-            name: '荆棘鞭', icon: '🌿', 
-            req: { life: 3 }, 
-            bonus: { lifeSteal: 0.08, color: '#4f4' },
-            desc: '吸血效果'
-        }
-    },
-    wand: {
-        ice: { 
-            name: '冰霜魔杖', icon: '❄️', 
-            req: { ice: 3 }, 
-            bonus: { slowChance: 0.2, slowAmount: 0.3, color: '#48f' },
-            desc: '减速效果'
-        },
-        arcane: { 
-            name: '奥数魔杖', icon: '✨', 
-            req: { magic: 3 }, 
-            bonus: { pierce: 2, color: '#f8f' },
-            desc: '穿透+2'
-        },
-        life: { 
-            name: '生命魔杖', icon: '💚', 
-            req: { life: 3 }, 
-            bonus: { healOnHit: 1, color: '#4f4' },
-            desc: '攻击回血'
-        }
-    },
-    knife: {
-        poison: { 
-            name: '毒刃', icon: '☠️', 
-            req: { shadow: 2, life: 1 }, 
-            bonus: { poisonDmg: 3, poisonDuration: 3, color: '#4a4' },
-            desc: '中毒效果'
-        },
-        shadow: { 
-            name: '暗影飞刀', icon: '🌑', 
-            req: { shadow: 3 }, 
-            bonus: { critChance: 0.15, color: '#848' },
-            desc: '暴击率提升'
-        },
-        steel: { 
-            name: '精钢飞刀', icon: '🔪', 
-            req: { steel: 3 }, 
-            bonus: { dmg: 1.3, pierce: 1, color: '#ccc' },
-            desc: '伤害+穿透'
-        }
-    },
-    axe: {
-        war: { 
-            name: '战斧', icon: '🪓', 
-            req: { steel: 3 }, 
-            bonus: { dmg: 1.4, color: '#a52' },
-            desc: '伤害提升'
-        },
-        throwing: { 
-            name: '投掷斧', icon: '🎯', 
-            req: { steel: 2, magic: 1 }, 
-            bonus: { range: 1.5, speed: 1.2, color: '#8b4513' },
-            desc: '射程+速度'
-        },
-        curse: { 
-            name: '诅咒斧', icon: '💀', 
-            req: { shadow: 2, ancient: 1 }, 
-            bonus: { curseDmg: 5, color: '#404' },
-            desc: '诅咒伤害'
-        }
-    },
-    // 新增武器进化（第2次迭代）
-    bible: {
-        eternal: { 
-            name: '不洁晚祷', icon: '📜', 
-            req: { magic: 2, life: 1 }, 
-            bonus: { duration: 2, color: '#ffd700' },
-            desc: '环绕时间延长'
-        },
-        shield: { 
-            name: '守护圣经', icon: '🛡️', 
-            req: { steel: 2, life: 1 }, 
-            bonus: { block: 1, color: '#c0c0c0' },
-            desc: '可格挡子弹'
-        }
-    },
-    fireball: {
-        inferno: { 
-            name: '地狱火', icon: '🌋', 
-            req: { fire: 3 }, 
-            bonus: { explosion: 1.5, color: '#ff0000' },
-            desc: '爆炸范围+50%'
-        },
-        meteor: { 
-            name: '陨石术', icon: '☄️', 
-            req: { fire: 2, ancient: 1 }, 
-            bonus: { dmg: 1.5, cd: 1.3, color: '#ff4500' },
-            desc: '伤害+50% 冷却+30%'
-        }
-    },
-    lightning: {
-        chain: { 
-            name: '雷霆循环', icon: '⛓️', 
-            req: { thunder: 3 }, 
-            bonus: { chain: 3, color: '#ffff00' },
-            desc: '连锁+3目标'
-        },
-        storm: { 
-            name: '雷暴', icon: '🌩️', 
-            req: { thunder: 2, wind: 1 }, 
-            bonus: { aoe: 1, color: '#9400d3' },
-            desc: '范围伤害'
-        }
-    },
-    holy_water: {
-        tracking: { 
-            name: '撒拉逊之水', icon: '🎯', 
-            req: { magic: 2, water: 1 }, 
-            bonus: { homing: 0.5, color: '#00ffff' },
-            desc: '追踪敌人'
-        },
-        healing: { 
-            name: '圣疗之水', icon: '💚', 
-            req: { life: 3 }, 
-            bonus: { heal: 2, color: '#00ff00' },
-            desc: '站在区域内回血'
-        }
-    }
-};
-
 // 道具数据库
 const ITEMS = {
     1: { id: 1, name: '多重射击', icon: '🎯', rarity: 'common', effect: 'projCount', value: 1, desc: '子弹+1', price: 40 },
@@ -3096,9 +2955,6 @@ class Game {
         this.shopItems = [];
         this.shopSelected = -1;
         
-        this.evolutionOpen = false; // 武器进化界面
-        this.evolutionSelected = -1;
-        
         this.levelUpOpen = false; // 4选1升级选择界面（2武器+2被动）
         this.levelUpOptions = [];
         
@@ -3418,24 +3274,6 @@ class Game {
         window.addEventListener('keydown', e => {
             this.keys[e.key] = true;
             
-            // 武器进化界面
-            if (e.key === 'v' || e.key === 'V') {
-                if (this.evolutionOpen) {
-                    this.closeEvolution();
-                } else {
-                    this.openEvolution();
-                }
-                return;
-            }
-            
-            // 进化界面操作
-            if (this.evolutionOpen) {
-                if (e.key >= '1' && e.key <= '3') {
-                    this.evolveWeapon(parseInt(e.key) - 1);
-                }
-                return;
-            }
-            
             // 升级选择界面操作（4选1）
             if (this.levelUpOpen) {
                 if (e.key >= '1' && e.key <= '4') {
@@ -3612,60 +3450,6 @@ class Game {
                 }
             }
             return;
-        }
-    }
-    
-    openEvolution() {
-        this.evolutionOpen = true;
-        console.log('武器进化界面已打开');
-    }
-    
-    closeEvolution() {
-        this.evolutionOpen = false;
-        this.evolutionSelected = -1;
-        console.log('武器进化界面已关闭');
-    }
-    
-    evolveWeapon(index, weaponIdx = 0) {
-        // 幸存者模式：默认进化第一个武器（可以扩展为选择进化哪个武器）
-        const weapon = this.weapons[weaponIdx];
-        if (!weapon) return;
-        
-        const evolutions = WEAPON_EVOLUTIONS[weapon.baseKey];
-        if (!evolutions) return;
-        
-        const evoKeys = Object.keys(evolutions);
-        if (index >= evoKeys.length) return;
-        
-        const evoKey = evoKeys[index];
-        const evoData = evolutions[evoKey];
-        
-        // 检查材料
-        let canEvolve = true;
-        for (const [mat, count] of Object.entries(evoData.req)) {
-            if (!this.materials.has(mat, count)) {
-                canEvolve = false;
-                break;
-            }
-        }
-        
-        if (canEvolve) {
-            // 消耗材料
-            for (const [mat, count] of Object.entries(evoData.req)) {
-                this.materials.consume(mat, count);
-            }
-            
-            // 进化武器
-            const oldName = weapon.cfg.name;
-            this.weapons[this.activeWeapon] = new Weapon(weapon.baseKey, weapon.level, evoKey);
-            
-            this.particles.burst(this.player.x, this.player.y, '#f0f', 30);
-            this.sounds.play('evolve');
-            console.log(`武器进化: ${oldName} → ${evoData.name}`);
-            
-            this.closeEvolution();
-        } else {
-            console.log('材料不足，无法进化');
         }
     }
     
@@ -3855,7 +3639,7 @@ class Game {
     }
 
     update(dt) {
-        if (this.shopOpen || this.evolutionOpen || this.levelUpOpen) return;
+        if (this.shopOpen || this.levelUpOpen) return;
         
         // 更新房间（波次系统）
         this.curRoom.update(dt);
@@ -4503,11 +4287,6 @@ class Game {
             this.drawShopUI();
         }
         
-        // 武器进化UI
-        if (this.evolutionOpen) {
-            this.drawEvolutionUI();
-        }
-        
         // 4选1升级选择UI
         if (this.levelUpOpen) {
             this.drawLevelUpUI();
@@ -4582,107 +4361,6 @@ class Game {
         ctx.fillStyle = '#888';
         ctx.font = '14px Arial';
         ctx.fillText('按 1-3 购买 | 按 E 关闭', 450, boxY + boxHeight - 20);
-    }
-    
-    drawEvolutionUI() {
-        const ctx = this.ctx;
-        const weapon = this.weapons[this.activeWeapon];
-        if (!weapon) return;
-        
-        const boxWidth = 600;
-        const boxHeight = 400;
-        const boxX = 450 - boxWidth / 2;
-        const boxY = 300 - boxHeight / 2;
-        
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.95)';
-        ctx.fillRect(boxX, boxY, boxWidth, boxHeight);
-        ctx.strokeStyle = '#f0f';
-        ctx.lineWidth = 3;
-        ctx.strokeRect(boxX, boxY, boxWidth, boxHeight);
-        
-        ctx.fillStyle = '#f0f';
-        ctx.font = 'bold 28px Arial';
-        ctx.textAlign = 'center';
-        ctx.fillText('⚔️ 武器进化 ⚔️', 450, boxY + 40);
-        
-        // 当前武器
-        ctx.fillStyle = '#fff';
-        ctx.font = '20px Arial';
-        ctx.fillText(`当前: ${weapon.cfg.icon} ${weapon.cfg.name} (Lv.${weapon.level})`, 450, boxY + 80);
-        
-        // 材料显示
-        ctx.fillStyle = '#aaa';
-        ctx.font = '14px Arial';
-        const mats = this.materials.getAll();
-        if (mats.length > 0) {
-            let matText = '材料: ';
-            mats.forEach((m, i) => {
-                matText += `${m.icon}${m.count} `;
-            });
-            ctx.fillText(matText, 450, boxY + 110);
-        } else {
-            ctx.fillText('材料: 无 (击败敌人获得)', 450, boxY + 110);
-        }
-        
-        // 进化选项
-        const evolutions = WEAPON_EVOLUTIONS[weapon.baseKey];
-        if (evolutions) {
-            const evoKeys = Object.keys(evolutions);
-            const evoWidth = 160;
-            const startX = 450 - (evoKeys.length * evoWidth) / 2 + evoWidth / 2;
-            
-            evoKeys.forEach((evoKey, i) => {
-                const evo = evolutions[evoKey];
-                const ix = startX + i * (evoWidth + 20);
-                const iy = boxY + 220;
-                
-                // 检查材料是否足够
-                let canEvolve = true;
-                for (const [mat, count] of Object.entries(evo.req)) {
-                    if (!this.materials.has(mat, count)) {
-                        canEvolve = false;
-                        break;
-                    }
-                }
-                
-                ctx.fillStyle = canEvolve ? '#2a1a3a' : '#1a1a1a';
-                ctx.fillRect(ix - evoWidth/2, iy - 70, evoWidth, 180);
-                ctx.strokeStyle = canEvolve ? '#f0f' : '#444';
-                ctx.lineWidth = 2;
-                ctx.strokeRect(ix - evoWidth/2, iy - 70, evoWidth, 180);
-                
-                ctx.font = '40px Arial';
-                ctx.fillText(evo.icon, ix, iy - 30);
-                
-                ctx.fillStyle = canEvolve ? '#fff' : '#666';
-                ctx.font = 'bold 16px Arial';
-                ctx.fillText(evo.name, ix, iy);
-                
-                ctx.fillStyle = '#aaa';
-                ctx.font = '12px Arial';
-                ctx.fillText(evo.desc, ix, iy + 20);
-                
-                // 材料需求
-                ctx.fillStyle = '#888';
-                ctx.font = '11px Arial';
-                let reqY = iy + 45;
-                for (const [mat, count] of Object.entries(evo.req)) {
-                    const has = this.materials.getCount(mat);
-                    const matInfo = MATERIALS[mat];
-                    ctx.fillStyle = has >= count ? '#4f4' : '#f44';
-                    ctx.fillText(`${matInfo.icon} ${has}/${count}`, ix, reqY);
-                    reqY += 16;
-                }
-                
-                ctx.fillStyle = '#666';
-                ctx.font = '12px Arial';
-                ctx.fillText(`[${i + 1}]`, ix, iy + 95);
-            });
-        }
-        
-        ctx.fillStyle = '#888';
-        ctx.font = '14px Arial';
-        ctx.fillText('按 1-3 选择进化 | 按 V 关闭', 450, boxY + boxHeight - 20);
     }
     
     drawLevelUpUI() {
