@@ -422,6 +422,63 @@ const WEAPON_EVOLUTIONS = {
             bonus: { curseDmg: 5, color: '#404' },
             desc: '诅咒伤害'
         }
+    },
+    // 新增武器进化（第2次迭代）
+    bible: {
+        eternal: { 
+            name: '不洁晚祷', icon: '📜', 
+            req: { magic: 2, life: 1 }, 
+            bonus: { duration: 2, color: '#ffd700' },
+            desc: '环绕时间延长'
+        },
+        shield: { 
+            name: '守护圣经', icon: '🛡️', 
+            req: { steel: 2, life: 1 }, 
+            bonus: { block: 1, color: '#c0c0c0' },
+            desc: '可格挡子弹'
+        }
+    },
+    fireball: {
+        inferno: { 
+            name: '地狱火', icon: '🌋', 
+            req: { fire: 3 }, 
+            bonus: { explosion: 1.5, color: '#ff0000' },
+            desc: '爆炸范围+50%'
+        },
+        meteor: { 
+            name: '陨石术', icon: '☄️', 
+            req: { fire: 2, ancient: 1 }, 
+            bonus: { dmg: 1.5, cd: 1.3, color: '#ff4500' },
+            desc: '伤害+50% 冷却+30%'
+        }
+    },
+    lightning: {
+        chain: { 
+            name: '雷霆循环', icon: '⛓️', 
+            req: { thunder: 3 }, 
+            bonus: { chain: 3, color: '#ffff00' },
+            desc: '连锁+3目标'
+        },
+        storm: { 
+            name: '雷暴', icon: '🌩️', 
+            req: { thunder: 2, wind: 1 }, 
+            bonus: { aoe: 1, color: '#9400d3' },
+            desc: '范围伤害'
+        }
+    },
+    holy_water: {
+        tracking: { 
+            name: '撒拉逊之水', icon: '🎯', 
+            req: { magic: 2, water: 1 }, 
+            bonus: { homing: 0.5, color: '#00ffff' },
+            desc: '追踪敌人'
+        },
+        healing: { 
+            name: '圣疗之水', icon: '💚', 
+            req: { life: 3 }, 
+            bonus: { heal: 2, color: '#00ff00' },
+            desc: '站在区域内回血'
+        }
     }
 };
 
@@ -623,10 +680,16 @@ class ItemManager {
 
 // 武器系统 - 支持进化
 const WEAPONS = {
+    // 原有4种武器
     whip: { key: 'whip', name: '鞭子', icon: '🪄', dmg: 20, cd: 1.0, range: 100, type: 'melee', color: '#f60' },
     wand: { key: 'wand', name: '魔杖', icon: '🔮', dmg: 15, cd: 0.6, speed: 300, type: 'proj', color: '#48f' },
     knife: { key: 'knife', name: '飞刀', icon: '🗡️', dmg: 12, cd: 0.4, speed: 400, pierce: 3, type: 'proj', color: '#ccc' },
-    axe: { key: 'axe', name: '斧头', dmg: 25, cd: 1.2, speed: 250, type: 'proj', color: '#8b4513' }
+    axe: { key: 'axe', name: '斧头', dmg: 25, cd: 1.2, speed: 250, type: 'proj', color: '#8b4513' },
+    // 新增4种武器（第2次迭代）
+    bible: { key: 'bible', name: '圣经', icon: '📖', dmg: 10, cd: 0.8, range: 80, type: 'orbit', color: '#ffd700' },
+    fireball: { key: 'fireball', name: '火球', icon: '🔥', dmg: 30, cd: 1.5, speed: 200, type: 'proj', color: '#ff4500' },
+    lightning: { key: 'lightning', name: '闪电', icon: '⚡', dmg: 18, cd: 0.5, range: 150, type: 'instant', color: '#ffff00' },
+    holy_water: { key: 'holy_water', name: '圣水', icon: '💧', dmg: 8, cd: 1.0, range: 60, type: 'area', color: '#00bfff' }
 };
 
 class Weapon {
