@@ -3582,17 +3582,26 @@ class Game {
         if (this.shopOpen) {
             const canvas = document.getElementById('gameCanvas');
             if (!canvas) return;
-            const cw = canvas.width;
-            const ch = canvas.height;
+            const cw = canvas.width || 900;
+            const ch = canvas.height || 600;
+            const centerX = cw / 2;
+            const centerY = ch / 2;
             
-            const boxWidth = 480;
-            const boxHeight = 360;
-            const boxX = (cw - boxWidth) / 2;
-            const boxY = (ch - boxHeight) / 2;
+            // 与 drawShopUI 完全一致的坐标
+            const boxWidth = 500;
+            const boxHeight = 350;
+            const boxX = centerX - boxWidth / 2;
+            const boxY = centerY - boxHeight / 2;
             const itemWidth = 130;
             const itemHeight = 160;
-            const startX = (cw - this.shopItems.length * itemWidth) / 2 + itemWidth / 2;
+            const startX = centerX - (this.shopItems.length * itemWidth) / 2 + itemWidth / 2;
             const itemY = boxY + 160;
+            
+            // 检查是否点击在关闭区域（点击背景关闭）
+            if (x < boxX || x > boxX + boxWidth || y < boxY || y > boxY + boxHeight) {
+                this.closeShop();
+                return;
+            }
             
             for (let i = 0; i < this.shopItems.length; i++) {
                 const ix = startX + i * (itemWidth + 20);
@@ -4388,27 +4397,80 @@ class Game {
         this.ctx.globalAlpha = 1;
         
         // 绘制玩家（带动画）
-        const breathY = Math.sin(Date.now() / 300) * 1;
-        const totalScreenY = playerScreen.y + (this.player.jumpY || 0) + breathY;
+        // 计算行走动画
+        if (this.player.isMoving && !this.player.isDashing) {
+            this.player.walkCycle = (this.player.walkCycle || 0) + 0.15;
+        } else {
+            this.player.walkCycle = 0;
+        }
+        
+        const walkPhase = Math.sin(this.player.walkCycle);
+        const walkBob = Math.abs(Math.sin(this.player.walkCycle * 0.5)) * -4; // 行走时的上下颠簸
+        const breathY = Math.sin(Date.now() / 300) * 1; // 呼吸动画
+        const wobble = this.player.isMoving ? walkPhase * 3 : 0; // 左右轻微摇摆
+        
+        const totalScreenY = playerScreen.y + (this.player.jumpY || 0) + breathY + walkBob;
         
         const playerSprite = this.sprites.get('player');
         this.ctx.save();
         this.ctx.translate(playerScreen.x, totalScreenY);
+        
+        // 面向方向翻转
         if (!this.player.facingRight) this.ctx.scale(-1, 1);
         
+        // 行走时的身体倾斜
+        if (this.player.isMoving && !this.player.isDashing) {
+            this.ctx.rotate(walkPhase * 0.05);
+        }
+        
         if (playerSprite) {
+            // 绘制腿部摆动（在精灵图下方）
+            if (this.player.isMoving && !this.player.isDashing) {
+                const legOffset = Math.sin(this.player.walkCycle) * 8;
+                // 左腿
+                this.ctx.fillStyle = '#333';
+                this.ctx.fillRect(-12 + legOffset, 20, 6, 12);
+                // 右腿
+                this.ctx.fillRect(6 - legOffset, 20, 6, 12);
+            }
+            
             // 使用精灵图绘制角色（放大一倍以匹配敌人尺寸）
             this.ctx.drawImage(playerSprite, -32, -32, 64, 64);
         } else {
-            // 程序化绘制牛牛（放大版备用方案）
+            // 程序化绘制牛牛（带行走动画）
+            // 身体上下动
+            const bodyY = breathY + walkBob * 0.5;
+            
+            // 腿部动画
+            if (this.player.isMoving && !this.player.isDashing) {
+                const legOffset = Math.sin(this.player.walkCycle) * 10;
+                this.ctx.fillStyle = '#444';
+                // 后腿
+                this.ctx.fillRect(-15 + legOffset, 15, 8, 18);
+                // 前腿
+                this.ctx.fillRect(7 - legOffset, 15, 8, 18);
+            }
+            
+            // 身体
             this.ctx.fillStyle = '#e8e8e8';
             this.ctx.beginPath();
-            this.ctx.ellipse(0, breathY, 26, 20, 0, 0, Math.PI * 2);
+            this.ctx.ellipse(0, bodyY, 26, 20, 0, 0, Math.PI * 2);
             this.ctx.fill();
+            
+            // 头部轻微摆动
+            const headBob = Math.sin(this.player.walkCycle * 0.5) * 2;
             // 眼睛
             this.ctx.fillStyle = '#333';
             this.ctx.beginPath();
-            this.ctx.arc(24, -12 + breathY, 2.4, 0, Math.PI * 2);
+            this.ctx.arc(20, -12 + bodyY + headBob, 3, 0, Math.PI * 2);
+            this.ctx.fill();
+            
+            // 牛角
+            this.ctx.fillStyle = '#666';
+            this.ctx.beginPath();
+            this.ctx.moveTo(15, -25 + bodyY);
+            this.ctx.lineTo(20, -35 + bodyY);
+            this.ctx.lineTo(25, -25 + bodyY);
             this.ctx.fill();
         }
         
@@ -4779,10 +4841,10 @@ class Game {
         // 计算地图范围
         let minX = 0, maxX = 0, minY = 0, maxY = 0;
         for (const r of rooms) {
-            minX = Math.min(minX, r.gridX);
-            maxX = Math.max(maxX, r.gridX);
-            minY = Math.min(minY, r.gridY);
-            maxY = Math.max(maxY, r.gridY);
+            minX = Math.min(minX, r.gx);
+            maxX = Math.max(maxX, r.gx);
+            minY = Math.min(minY, r.gy);
+            maxY = Math.max(maxY, r.gy);
         }
         
         const width = maxX - minX + 1;
@@ -4796,8 +4858,8 @@ class Game {
         
         // 绘制房间
         for (const r of rooms) {
-            const rx = offsetX + (r.gridX - minX) * cellSize + 2;
-            const ry = offsetY + (r.gridY - minY) * cellSize + 2;
+            const rx = offsetX + (r.gx - minX) * cellSize + 2;
+            const ry = offsetY + (r.gy - minY) * cellSize + 2;
             const rw = cellSize - 4;
             
             // 未访问的房间只绘制轮廓（以撒风格）
