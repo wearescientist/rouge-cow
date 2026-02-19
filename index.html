@@ -1733,6 +1733,22 @@ class Game {
                 this.godMode = !this.godMode;
                 console.log(`无敌模式: ${this.godMode ? '开启' : '关闭'}`);
             }
+            
+            // 存档功能快捷键（第5次迭代）
+            if (e.key === 'l' || e.key === 'L') {
+                if (this.hasSave()) {
+                    this.loadGame();
+                    this.particles.burst(this.player.x, this.player.y, '#48f', 20);
+                    console.log('📂 已加载存档');
+                } else {
+                    console.log('❌ 无存档可加载');
+                }
+            }
+            if (e.key === 'k' || e.key === 'K') {
+                this.saveGame();
+                this.particles.burst(this.player.x, this.player.y, '#4f4', 20);
+                console.log('💾 已手动存档');
+            }
         });
         
         window.addEventListener('keyup', e => this.keys[e.key] = false);
@@ -1874,6 +1890,8 @@ class Game {
                 else this.player.y = roomH / 2;
                 
                 this.transition.active = false;
+                // 自动存档（进入新房间时）
+                this.saveGame();
             }
             return;
         }
@@ -2720,6 +2738,70 @@ class Game {
             type: 'totem', totemId: totemId,
             icon: totem.icon, name: totem.name
         });
+    }
+
+    // 存档系统（第5次迭代）
+    saveGame() {
+        try {
+            const saveData = {
+                player: {
+                    hp: this.player.hp,
+                    maxHp: this.player.maxHp,
+                    exp: this.player.exp,
+                    lv: this.player.lv,
+                    gold: this.player.gold
+                },
+                items: this.items.owned,
+                weapons: this.weapons.map(w => ({ key: w.baseKey, level: w.level, evolution: w.evolution })),
+                currentFloor: this.currentFloor,
+                timestamp: Date.now()
+            };
+            localStorage.setItem('rougecow_save', JSON.stringify(saveData));
+            console.log('💾 游戏已存档');
+            return true;
+        } catch (e) {
+            console.error('存档失败:', e);
+            return false;
+        }
+    }
+    
+    loadGame() {
+        try {
+            const saveData = localStorage.getItem('rougecow_save');
+            if (!saveData) return false;
+            
+            const data = JSON.parse(saveData);
+            
+            // 恢复玩家数据
+            Object.assign(this.player, data.player);
+            
+            // 恢复道具
+            this.items.owned = data.items || {};
+            this.items.dirty = true;
+            
+            // 恢复武器
+            if (data.weapons && data.weapons.length > 0) {
+                this.weapons = data.weapons.map(w => new Weapon(w.key, w.level, w.evolution));
+            }
+            
+            // 恢复层数
+            this.currentFloor = data.currentFloor || 1;
+            
+            console.log('📂 游戏已加载');
+            return true;
+        } catch (e) {
+            console.error('读档失败:', e);
+            return false;
+        }
+    }
+    
+    hasSave() {
+        return !!localStorage.getItem('rougecow_save');
+    }
+    
+    deleteSave() {
+        localStorage.removeItem('rougecow_save');
+        console.log('🗑️ 存档已删除');
     }
 
     loop(t) {
