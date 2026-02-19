@@ -290,12 +290,15 @@
             top: 10px;
             left: 50%;
             transform: translateX(-50%);
+            width: 400px;
+            height: 60px;
             background: rgba(0,0,0,0.9);
-            padding: 10px 30px;
             border-radius: 10px;
             border: 2px solid #fa0;
             z-index: 300;
-            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             display: none;
         }
         
@@ -482,16 +485,16 @@
     
     <!-- 顶部信息栏 -->
     <div id="topScoreBar">
-        <!-- 中间：层数——地形名称 -->
-        <div id="floorInfo" style="position:absolute; left:50%; transform:translateX(-50%); top:10px; text-align:center;">
+        <!-- 层数——地形名称 -->
+        <div id="floorInfo" style="text-align:center;">
             <div style="font-size:18px; font-weight:bold; color:#fff;">第 <span id="currentFloorDisplay">1</span> 层</div>
             <div style="font-size:14px; color:#aaa;" id="floorName">菌丝区</div>
         </div>
         
-        <!-- 右侧：波次 | 敌人 | 连杀 -->
-        <div style="position:absolute; right:10px; top:10px; text-align:right;">
-            <div id="waveInfo" style="font-size:14px; color:#aaa;">波次: <span id="waveNum">0</span> | 敌人: <span id="enemyNum">0</span></div>
-            <div id="killStreak" style="display:none; font-size:14px; color:#f80;">🔥 连杀 x<span id="streakCount">0</span></div>
+        <!-- 波次 | 敌人 | 连杀 -->
+        <div style="position:absolute; right:15px; top:50%; transform:translateY(-50%); text-align:right;">
+            <div id="waveInfo" style="font-size:13px; color:#aaa;">波次: <span id="waveNum">0</span> | 敌人: <span id="enemyNum">0</span></div>
+            <div id="killStreak" style="display:none; font-size:13px; color:#f80;">🔥 连杀 x<span id="streakCount">0</span></div>
         </div>
     </div>
     
