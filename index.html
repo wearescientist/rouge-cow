@@ -313,28 +313,11 @@
             margin-top: 2px;
         }
         
-        /* 底部状态条 */
-        #bottomStatusBar {
-            position: fixed;
-            bottom: 10px;
-            left: 50%;
-            transform: translateX(-50%);
-            display: flex;
-            gap: 15px;
-            z-index: 300;
-            display: none;
+        /* 玩家生命值 */
+        #playerHearts {
+            letter-spacing: 2px;
+            text-shadow: 0 0 5px rgba(255,0,0,0.5);
         }
-        
-        .status-pill {
-            background: rgba(0,0,0,0.8);
-            padding: 6px 15px;
-            border-radius: 15px;
-            font-size: 12px;
-            color: #aaa;
-            border: 1px solid #333;
-        }
-        
-        .status-pill span { color: #fff; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -487,17 +470,22 @@
         </div>
     </div>
     
-    <!-- 顶部分数条 -->
+    <!-- 顶部信息栏 -->
     <div id="topScoreBar">
-        <div id="scoreValue">0</div>
-        <div id="killStreak" style="display:none">🔥 连杀 x<span id="streakCount">0</span></div>
-    </div>
-    
-    <!-- 底部状态条 -->
-    <div id="bottomStatusBar">
-        <div class="status-pill">第 <span id="bottomFloor">1</span> / <span id="bottomMaxFloor">6</span> 层</div>
-        <div class="status-pill">敌人: <span id="bottomEnemies">0</span></div>
-        <div class="status-pill" id="bottomRoomStatus">✓ 已清理</div>
+        <!-- 左侧：玩家生命值（心形） -->
+        <div id="playerHearts" style="position:absolute; left:280px; top:10px; font-size:20px;">❤️❤️❤️❤️❤️❤️</div>
+        
+        <!-- 中间：层数——地形名称 -->
+        <div id="floorInfo" style="position:absolute; left:50%; transform:translateX(-50%); top:10px; text-align:center;">
+            <div style="font-size:18px; font-weight:bold; color:#fff;">第 <span id="currentFloorDisplay">1</span> 层</div>
+            <div style="font-size:14px; color:#aaa;" id="floorName">菌丝区</div>
+        </div>
+        
+        <!-- 右侧：波次 | 敌人 | 连杀 -->
+        <div style="position:absolute; right:280px; top:10px; text-align:right;">
+            <div id="waveInfo" style="font-size:14px; color:#aaa;">波次: <span id="waveNum">0</span> | 敌人: <span id="enemyNum">0</span></div>
+            <div id="killStreak" style="display:none; font-size:14px; color:#f80;">🔥 连杀 x<span id="streakCount">0</span></div>
+        </div>
     </div>
     
     <!-- 速度控制 -->
@@ -1452,6 +1440,7 @@ class Enemy {
         this.poisonTimer = Math.max(this.poisonTimer, duration);
     }
 
+    // 使用世界坐标绘制（在Room.draw中使用）
     draw(ctx, sprites) {
         const size = this.isBoss ? 36 : 16;
         
@@ -1606,6 +1595,165 @@ class Enemy {
             ctx.font = 'bold 16px Arial';
             ctx.textAlign = 'center';
             ctx.fillText(this.name, this.x, this.y - size - 20);
+        }
+    }
+    
+    // 使用偏移坐标绘制（在已经translate到屏幕坐标后调用）
+    drawWithOffset(ctx, sprites) {
+        const size = this.isBoss ? 36 : 16;
+        
+        if (this.hitTimer > 0 && Math.floor(Date.now() / 50) % 2) {
+            ctx.globalAlpha = 0.5;
+        }
+        
+        // 状态效果视觉
+        if (this.slowTimer > 0) {
+            ctx.strokeStyle = '#48f';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, size + 5, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        if (this.poisonTimer > 0) {
+            ctx.strokeStyle = '#4a4';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(0, 0, size + 8, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        if (this.isBoss) {
+            ctx.strokeStyle = `rgba(255, 0, 255, ${0.3 + Math.sin(Date.now() / 200) * 0.2})`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(0, 0, size + 10, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        // 绘制敌人精灵（带动画效果）- 已经在(0,0)位置
+        const sprite = sprites.get(this.sprite);
+        if (sprite) {
+            ctx.save();
+            
+            // 计算动画偏移和旋转
+            let offsetY = 0;
+            let rotate = 0;
+            let scaleX = this.facingRight ? 1 : -1;
+            let scaleY = 1;
+            
+            const walkPhase = Math.sin(this.walkCycle);
+            const walkPhase2 = Math.cos(this.walkCycle);
+            
+            switch (this.animType) {
+                case 'hop':
+                    offsetY = Math.abs(Math.sin(this.walkCycle * 0.5)) * -8;
+                    rotate = this.vx * 0.01;
+                    break;
+                case 'hopfast':
+                    offsetY = Math.abs(Math.sin(this.walkCycle * 0.8)) * -6;
+                    rotate = this.vx * 0.015;
+                    break;
+                case 'scurry':
+                    offsetY = walkPhase * 2;
+                    rotate = walkPhase * 0.1;
+                    break;
+                case 'slide':
+                    offsetY = 0;
+                    rotate = 0;
+                    break;
+                case 'flutter':
+                    offsetY = Math.sin(this.animTimer * 15) * 3;
+                    rotate = Math.sin(this.animTimer * 10) * 0.1;
+                    break;
+                case 'waddle':
+                    offsetY = Math.abs(walkPhase) * -2;
+                    rotate = walkPhase * 0.2;
+                    break;
+                case 'fly':
+                    offsetY = Math.sin(this.animTimer * 3) * 4;
+                    rotate = this.vx * 0.005;
+                    break;
+                case 'prowl':
+                    offsetY = walkPhase2 * 1;
+                    rotate = walkPhase * 0.05;
+                    break;
+                case 'run':
+                    offsetY = Math.abs(walkPhase) * -3;
+                    rotate = this.vx * 0.008;
+                    break;
+                case 'trot':
+                    offsetY = walkPhase * 2;
+                    rotate = walkPhase * 0.08;
+                    break;
+                case 'slither':
+                    offsetY = Math.sin(this.x * 0.1 + this.animTimer * 5) * 2;
+                    rotate = Math.cos(this.x * 0.1 + this.animTimer * 5) * 0.15;
+                    break;
+                case 'heavy':
+                    offsetY = Math.abs(walkPhase) * -4;
+                    rotate = walkPhase * 0.15;
+                    break;
+                case 'sidle':
+                    offsetY = 0;
+                    rotate = walkPhase * 0.1;
+                    break;
+                case 'crawl':
+                    offsetY = 4;
+                    scaleY = 0.7;
+                    rotate = walkPhase * 0.05;
+                    break;
+                case 'charge':
+                    offsetY = Math.abs(walkPhase) * -2;
+                    rotate = this.facingRight ? 0.1 : -0.1;
+                    break;
+                case 'dive':
+                    offsetY = Math.sin(this.animTimer * 8) * 6;
+                    rotate = this.vy * 0.02;
+                    break;
+                default:
+                    offsetY = walkPhase * 1.5;
+                    rotate = this.vx * 0.003;
+            }
+            
+            // 应用变换
+            ctx.translate(0, offsetY);
+            ctx.rotate(rotate);
+            ctx.scale(scaleX, scaleY);
+            
+            // 绘制精灵
+            ctx.drawImage(sprite, -size, -size, size * 2, size * 2);
+            
+            ctx.restore();
+        } else {
+            // 使用emoji作为后备
+            const emojiMap = {
+                chick: '🐤', pig: '🐷', sheep: '🐑', dog: '🐕', cat: '🐱',
+                bear: '🐻', rabbit: '🐰', bird: '🐦', turtle: '🐢', dog2: '🐺',
+                mouse: '🐭', snail: '🐌', squirrel: '🐿️', goose: '🪿',
+                duck: '🦆', duck2: '🦆', duck3: '🐥', snake: '🐍',
+                crab: '🦀', pigeon: '🕊️', pig2: '🐖', rabbit2: '🐇'
+            };
+            ctx.font = this.isBoss ? '48px Arial' : '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(emojiMap[this.sprite] || '👾', 0, 8);
+        }
+        
+        ctx.globalAlpha = 1;
+        
+        // 血条
+        if (this.hp < this.maxHp) {
+            const barWidth = this.isBoss ? 100 : 24;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(-barWidth/2, -size - 10, barWidth, 6);
+            ctx.fillStyle = this.isBoss ? '#f0f' : '#f00';
+            ctx.fillRect(-barWidth/2, -size - 10, barWidth * (this.hp / this.maxHp), 6);
+        }
+        
+        if (this.isBoss) {
+            ctx.fillStyle = '#f0f';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(this.name, 0, -size - 20);
         }
     }
 }
@@ -1942,28 +2090,7 @@ class Room {
             }
         }
         
-        // 显示房间类型（不再显示地形名称）
-        const roomLabels = {
-            start: '起点', normal: '战斗', boss: 'BOSS',
-            treasure: '💎 宝箱房', shop: '🏪 商店', hidden: '👁️ 隐藏房'
-        };
-        // 房间标签（根据视野大小调整位置）
-        ctx.fillStyle = '#fff';
-        ctx.font = 'bold 16px Arial';
-        ctx.textAlign = 'left';
-        const labelX = Math.max(20, camera.viewWidth * 0.02);
-        const labelY = Math.max(30, camera.viewHeight * 0.05);
-        ctx.fillText(roomLabels[this.type] || '未知', labelX, labelY);
-        
-        // 波次信息
-        if (this.hordeManager && this.type === 'normal') {
-            ctx.fillStyle = '#aaa';
-            ctx.font = '14px Arial';
-            ctx.textAlign = 'right';
-            const infoX = camera.viewWidth - labelX;
-            ctx.fillText(`波次: ${this.hordeManager.wave}`, infoX, labelY);
-            ctx.fillText(`敌人: ${this.hordeManager.getActiveEnemies().length}`, infoX, labelY + 20);
-        }
+        // 房间信息现在显示在顶部栏，不再在房间内绘制
     }
 }
 
@@ -2661,7 +2788,9 @@ class Game {
         this.goldDrops = [];
         
         this.currentFloor = 1;
-        this.maxFloors = 6; // 6层地图：菌丝区、孵化温室、神经索、消化熔炉、母虫庭院、千根之心
+        this.maxFloors = 6;
+        // 6层地形名称
+        this.floorNames = ['菌丝区', '孵化温室', '神经索', '消化熔炉', '母虫庭院', '千根之心'];
         this.allFloors = new Map();
         
         // 先初始化相机视野，确保房间尺寸正确
@@ -2747,8 +2876,6 @@ class Game {
         // 隐藏游戏布局
         document.getElementById('mainLayout').style.display = 'none';
         document.getElementById('topScoreBar').style.display = 'none';
-        document.getElementById('bottomStatusBar').style.display = 'none';
-        document.getElementById('floorIndicator').style.display = 'none';
         
         // 显示结果
         const resultText = result === 'cleared' ? '通关！' : result === 'dead' ? '阵亡' : '结束';
@@ -2906,23 +3033,43 @@ class Game {
             }
         }
         
-        // 底部状态条
-        const bottomFloor = document.getElementById('bottomFloor');
-        if (bottomFloor) bottomFloor.textContent = this.currentFloor;
-        
-        const bottomMaxFloor = document.getElementById('bottomMaxFloor');
-        if (bottomMaxFloor) bottomMaxFloor.textContent = this.maxFloors;
-        
-        const bottomEnemies = document.getElementById('bottomEnemies');
-        if (bottomEnemies) bottomEnemies.textContent = this.curRoom.enemies.length;
-        
-        const bottomRoomStatus = document.getElementById('bottomRoomStatus');
-        if (bottomRoomStatus) {
-            if (this.curRoom.cleared) {
-                bottomRoomStatus.innerHTML = '✓ <span style="color:#4f4">已清理</span>';
-            } else {
-                bottomRoomStatus.innerHTML = '🔒 <span style="color:#f44">锁定</span>';
+        // 顶部信息栏更新
+        // 1. 玩家生命值（心形）
+        const heartsEl = document.getElementById('playerHearts');
+        if (heartsEl && this.player) {
+            const maxHearts = Math.ceil(this.player.maxHp / 2); // 每2点HP一个心
+            const currentHearts = Math.floor(this.player.hp / 2);
+            const hasHalf = this.player.hp % 2 === 1;
+            let heartsStr = '';
+            for (let i = 0; i < maxHearts; i++) {
+                if (i < currentHearts) {
+                    heartsStr += '❤️'; // 实心
+                } else if (i === currentHearts && hasHalf) {
+                    heartsStr += '💔'; // 半心（用破碎心代替）
+                } else {
+                    heartsStr += '🖤'; // 空心（用黑心代替）
+                }
             }
+            heartsEl.textContent = heartsStr;
+        }
+        
+        // 2. 层数——地形名称
+        const floorDisplay = document.getElementById('currentFloorDisplay');
+        const floorName = document.getElementById('floorName');
+        if (floorDisplay) floorDisplay.textContent = this.currentFloor;
+        if (floorName) floorName.textContent = this.floorNames[this.currentFloor - 1] || '未知';
+        
+        // 3. 波次 | 敌人 | 连杀
+        const waveNum = document.getElementById('waveNum');
+        const enemyNum = document.getElementById('enemyNum');
+        if (waveNum) {
+            waveNum.textContent = this.curRoom.hordeManager ? this.curRoom.hordeManager.wave : 0;
+        }
+        if (enemyNum) {
+            const activeCount = this.curRoom.hordeManager ? 
+                this.curRoom.hordeManager.getActiveEnemies().length : 
+                this.curRoom.enemies.filter(e => e.hp > 0).length;
+            enemyNum.textContent = activeCount;
         }
         
         // 更新小地图（以撒风格：已访问=实心，未访问=轮廓）
@@ -3331,7 +3478,6 @@ class Game {
             // 显示游戏布局
             document.getElementById('mainLayout').classList.add('active');
             document.getElementById('topScoreBar').style.display = 'block';
-            document.getElementById('bottomStatusBar').style.display = 'flex';
             // 初始化相机视野
             this.camera.updateViewport();
             // 初始化道具格子
@@ -3808,23 +3954,14 @@ class Game {
             if (e.hp > 0) this.spatialGrid.insert(e);
         }
         
+        // 绘制敌人（使用精灵图和动画）
         for (const e of activeEnemies) {
             if (!this.camera.isVisible(e.x, e.y, 30)) continue;
-            // 敌人使用相机坐标绘制（需要在Enemy类中支持）
+            // 使用Enemy类的draw方法，传入转换后的坐标
             const pos = this.camera.worldToScreen(e.x, e.y);
             this.ctx.save();
             this.ctx.translate(pos.x, pos.y);
-            // 简化的敌人绘制
-            this.ctx.fillStyle = e.color || '#c44';
-            this.ctx.beginPath();
-            this.ctx.arc(0, 0, e.radius || 15, 0, Math.PI * 2);
-            this.ctx.fill();
-            // 血条
-            const hpPercent = e.hp / e.maxHp;
-            this.ctx.fillStyle = '#300';
-            this.ctx.fillRect(-15, -25, 30, 4);
-            this.ctx.fillStyle = hpPercent > 0.5 ? '#4f4' : '#f44';
-            this.ctx.fillRect(-15, -25, 30 * hpPercent, 4);
+            e.drawWithOffset(this.ctx, this.sprites);
             this.ctx.restore();
         }
         
@@ -4211,10 +4348,16 @@ class Game {
         const ctx = canvas.getContext('2d');
         const size = 220;
         
-        ctx.clearRect(0, 0, size, size);
+        // 清空并填充背景
+        ctx.fillStyle = '#1a1a2e';
+        ctx.fillRect(0, 0, size, size);
         
-        const rooms = Array.from(this.allRooms?.values() || []);
-        if (!rooms || rooms.length === 0) return;
+        if (!this.allRooms || this.allRooms.size === 0) {
+            console.warn('小地图: allRooms为空');
+            return;
+        }
+        
+        const rooms = Array.from(this.allRooms.values());
         
         // 计算地图范围
         let minX = 0, maxX = 0, minY = 0, maxY = 0;
