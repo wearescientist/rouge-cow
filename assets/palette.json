@@ -1,0 +1,93 @@
+{
+  "name": "深根之疫 - 肉鸽牛牛调色板",
+  "description": "基于故事设定的16+16色彩系统",
+  "version": "1.0",
+  "pixelScale": 2,
+  
+  "mainColors": {
+    "c0_black": "#0d0d1a",
+    "c1_darkGray": "#2a2a3a",
+    "c2_midGray": "#4a4a5a",
+    "c3_lightGray": "#7a7a8a",
+    "c4_white": "#d0d0e0",
+    "c5_cream": "#f0f0e0",
+    
+    "c6_brown": "#5a3a2a",
+    "c7_tan": "#8a6a4a",
+    "c8_gold": "#c4a030",
+    "c9_amber": "#e8b860",
+    
+    "c10_green": "#4a6a3a",
+    "c11_sage": "#7a9a6a",
+    "c12_teal": "#3a6a6a",
+    "c13_cyan": "#5a9a9a",
+    
+    "c14_red": "#8a3a3a",
+    "c15_pink": "#c48a8a"
+  },
+  
+  "accentColors": {
+    "a0_infectionWhite": "#e8f0e8",
+    "a1_mycelium": "#c0d0c0",
+    "a2_spore": "#90b090",
+    "a3_slimeGreen": "#60a060",
+    
+    "a4_nervePurple": "#6a3a8a",
+    "a5_nerveLight": "#9a6aba",
+    "a6_nerveGlow": "#c09ae0",
+    
+    "a7_acidOrange": "#c47a2a",
+    "a8_acidYellow": "#e0a030",
+    "a9_magmaRed": "#a03020",
+    
+    "a10_bloodRed": "#8a1a1a",
+    "a11_heartGlow": "#ff4a4a",
+    "a12_biolumBlue": "#4affff",
+    "a13_coreGold": "#ffd700",
+    
+    "a14_shadow": "#1a0d1a",
+    "a15_void": "#0a050a"
+  },
+  
+  "layerThemes": {
+    "layer1_mycelium": {
+      "primary": ["a0_infectionWhite", "a1_mycelium", "c3_lightGray"],
+      "secondary": ["c4_white", "c7_tan"],
+      "accent": ["a2_spore"]
+    },
+    "layer2_greenhouse": {
+      "primary": ["a3_slimeGreen", "c10_green", "c11_sage"],
+      "secondary": ["a1_mycelium", "c6_brown"],
+      "accent": ["a4_nervePurple"]
+    },
+    "layer3_nerve": {
+      "primary": ["a4_nervePurple", "a5_nerveLight", "c2_midGray"],
+      "secondary": ["a6_nerveGlow", "c4_white"],
+      "accent": ["a12_biolumBlue"]
+    },
+    "layer4_furnace": {
+      "primary": ["a7_acidOrange", "a8_acidYellow", "a9_magmaRed"],
+      "secondary": ["c6_brown", "c14_red"],
+      "accent": ["a11_heartGlow"]
+    },
+    "layer5_courtyard": {
+      "primary": ["a10_bloodRed", "a11_heartGlow", "c14_red"],
+      "secondary": ["a4_nervePurple", "a6_nerveGlow"],
+      "accent": ["a13_coreGold"]
+    },
+    "layer6_core": {
+      "primary": ["a15_void", "a14_shadow", "a4_nervePurple"],
+      "secondary": ["a6_nerveGlow", "a12_biolumBlue"],
+      "accent": ["a13_coreGold", "a11_heartGlow"]
+    }
+  },
+  
+  "enemyTiers": {
+    "tier1_basic": ["c3_lightGray", "a0_infectionWhite", "a1_mycelium"],
+    "tier2_fast": ["c11_sage", "a3_slimeGreen", "c7_tan"],
+    "tier3_smart": ["a4_nervePurple", "a5_nerveLight", "c4_white"],
+    "tier4_heavy": ["c6_brown", "c2_midGray", "a7_acidOrange"],
+    "elite": ["a6_nerveGlow", "a12_biolumBlue", "c8_gold"],
+    "boss": ["a11_heartGlow", "a13_coreGold", "a15_void"]
+  }
+}
