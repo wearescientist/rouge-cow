@@ -1,0 +1,36 @@
+{
+    "id": "spinach",
+    "item_id": 2,
+    "name": "菠菜",
+    "name_en": "Spinach",
+    "description": "伤害 +10%",
+    "rarity": "common",
+    "category": "offense",
+    "subcategory": "damage",
+    "unlock_level": 0,
+    "effect": {
+        "type": "stat_modifier",
+        "target": "damage_multiplier",
+        "value": 0.1,
+        "operation": "multiply",
+        "stack_type": "linear",
+        "max_stacks": 0
+    },
+    "visual": {
+        "icon": "🥬",
+        "color": "#2ecc71",
+        "pickup_sound": "powerup"
+    },
+    "price": {
+        "base": 25,
+        "scaling": 1.2
+    },
+    "synergies": [
+        {
+            "partner": "fireball",
+            "effect_id": "hellfire",
+            "description": "火焰伤害+50%"
+        }
+    ],
+    "tags": ["damage", "permanent", "stackable", "common"]
+}

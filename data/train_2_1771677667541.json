@@ -1,0 +1,51 @@
+{
+  "version": "v3.3-continuous",
+  "trainCount": "2",
+  "timestamp": "2026-02-21T12:41:07.541Z",
+  "config": {
+    "rounds": 100,
+    "speed": 5,
+    "maxTime": 300000,
+    "headless": false
+  },
+  "result": "dead",
+  "score": -55,
+  "maxScoreDuringGame": 450,
+  "playTime": 187257,
+  "stats": {
+    "enemiesKilled": 28,
+    "elitesKilled": 0,
+    "bossesKilled": 0,
+    "roomsExplored": 1,
+    "itemsCollected": 0,
+    "goldCollected": 0,
+    "damageTaken": 3,
+    "floorsCleared": 0,
+    "goldSpent": 0,
+    "roomsRevisited": 0
+  },
+  "events": [
+    {
+      "time": 0,
+      "score": 0,
+      "hp": 6,
+      "enemies": 0,
+      "kills": 0,
+      "floor": 1
+    }
+  ],
+  "aiLearning": {
+    "gamesPlayed": 221,
+    "averageScore": 94.75,
+    "bestScore": 100,
+    "epsilon": 0.18818000000000001,
+    "strategyWeights": {
+      "SURVIVAL": 0.05,
+      "COMBAT": 0.624454283010566,
+      "EXPLORATION": 0.05,
+      "COLLECTION": 0.0518001150157422,
+      "DOOR_SEEKING": 0.19299340209131474,
+      "RETURN": 0.05
+    }
+  }
+}

@@ -1,0 +1,56 @@
+{
+    "id": "rabbit_t1",
+    "name": "感染兔",
+    "name_en": "Infected Rabbit",
+    "tier": 1,
+    "type": "ground",
+    "difficulty": 1,
+    "stats": {
+        "hp": 12,
+        "speed": 60,
+        "damage": 5,
+        "attack_cooldown": 1.5,
+        "exp": 2,
+        "gold": 1
+    },
+    "ai": {
+        "behavior": "chase",
+        "sight_range": 200,
+        "attack_range": 30,
+        "lose_interest_range": 300,
+        "skills": ["jump"],
+        "flee_threshold": 0.2,
+        "reaction_time": 0.3
+    },
+    "visual": {
+        "sprite": "rabbit",
+        "outline": "white",
+        "scale": 1.0,
+        "animations": {
+            "idle": "rabbit_idle",
+            "move": "rabbit_run",
+            "attack": "rabbit_attack",
+            "death": "rabbit_death",
+            "jump": "rabbit_jump"
+        },
+        "effects": {
+            "spawn": "dust_puff",
+            "death": "blood_splash_small"
+        }
+    },
+    "loot": {
+        "exp": { "min": 2, "max": 3 },
+        "gold": { "min": 0, "max": 1, "chance": 0.8 },
+        "items": [
+            { "id": "health_small", "chance": 0.02 }
+        ]
+    },
+    "sounds": {
+        "spawn": "rabbit_spawn",
+        "idle": "rabbit_idle",
+        "attack": "rabbit_attack",
+        "hurt": "rabbit_hurt",
+        "death": "rabbit_death"
+    },
+    "tags": ["ground", "fast", "jumper", "tier1"]
+}
