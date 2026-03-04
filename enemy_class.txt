@@ -1,0 +1,198 @@
+class Enemy {
+    constructor(x, y, typeKey) {
+        const cfg = ENEMY_TYPES[typeKey] || ENEMY_TYPES.chick;
+        this.x = x; this.y = y;
+        this.typeKey = typeKey;
+        this.hp = cfg.hp + (cfg.armor || 0) * 10;
+        this.maxHp = this.hp;
+        this.speed = cfg.speed;
+        this.dmg = cfg.dmg;
+        this.exp = cfg.exp;
+        this.gold = cfg.gold || 5;
+        this.color = cfg.color;
+        this.sprite = cfg.sprite;
+        this.special = cfg.special;
+        this.armor = cfg.armor || 0;
+        this.vx = 0; this.vy = 0;
+        this.hitTimer = 0;
+        this.attackCd = 0;
+        this.specialCd = 0;
+        
+        // 状态效果
+        this.slowTimer = 0;
+        this.stunTimer = 0;
+        this.poisonTimer = 0;
+        this.poisonDmg = 0;
+    }
+
+    update(dt, player, room) {
+        // 状态效果处理
+        if (this.stunTimer > 0) {
+            this.stunTimer -= dt;
+            return; // 眩晕时无法行动
+        }
+        
+        if (this.slowTimer > 0) {
+            this.slowTimer -= dt;
+            dt *= 0.5; // 减速50%
+        }
+        
+        if (this.poisonTimer > 0) {
+            this.poisonTimer -= dt;
+            this.hp -= this.poisonDmg * dt;
+        }
+        
+        // 特殊行为
+        if (this.special === 'jump' && this.specialCd <= 0) {
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            if (d > 0 && d < 200) {
+                this.vx = (dx / d) * this.speed * 2;
+                this.vy = (dy / d) * this.speed * 2;
+                this.specialCd = 2;
+            }
+        } else if (this.special === 'dive' && this.specialCd <= 0) {
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            if (d > 100 && d < 400) {
+                this.vx = (dx / d) * this.speed * 3;
+                this.vy = (dy / d) * this.speed * 3;
+                this.specialCd = 3;
+            }
+        } else {
+            const dx = player.x - this.x;
+            const dy = player.y - this.y;
+            const d = Math.sqrt(dx*dx + dy*dy);
+            
+            if (d > 0) {
+                this.vx = (dx / d) * this.speed;
+                this.vy = (dy / d) * this.speed;
+            }
+        }
+        
+        if (this.special === 'tank') {
+            this.vx *= 0.8;
+            this.vy *= 0.8;
+        }
+        
+        if (this.special === 'summon' && this.specialCd <= 0 && room.enemies.length < 10) {
+            this.specialCd = 5;
+            const angle = Math.random() * Math.PI * 2;
+            const r = 30;
+            room.enemies.push(new Enemy(
+                this.x + Math.cos(angle) * r,
+                this.y + Math.sin(angle) * r,
+                'dog'
+            ));
+        }
+        
+        for (const other of room.enemies) {
+            if (other === this) continue;
+            const odx = this.x - other.x;
+            const ody = this.y - other.y;
+            const od = Math.sqrt(odx*odx + ody*ody);
+            if (od < 30 && od > 0) {
+                this.vx += (odx / od) * 50;
+                this.vy += (ody / od) * 50;
+            }
+        }
+        
+        this.x += this.vx * dt;
+        this.y += this.vy * dt;
+        
+        this.x = clamp(this.x, 50, 850);
+        this.y = clamp(this.y, 50, 550);
+        
+        if (this.hitTimer > 0) this.hitTimer -= dt;
+        if (this.attackCd > 0) this.attackCd -= dt;
+        if (this.specialCd > 0) this.specialCd -= dt;
+    }
+
+    takeDamage(dmg, stats = {}) {
+        const actualDmg = Math.max(1, dmg - this.armor);
+        this.hp -= actualDmg;
+        this.hitTimer = 0.1;
+        
+        // 应用状态效果
+        if (stats.slowChance && Math.random() < stats.slowChance) {
+            this.slowTimer = 2;
+        }
+        if (stats.stunChance && Math.random() < stats.stunChance) {
+            this.stunTimer = 1;
+        }
+        
+        return this.hp <= 0;
+    }
+
+    applyPoison(dmg, duration) {
+        this.poisonDmg = Math.max(this.poisonDmg, dmg);
+        this.poisonTimer = Math.max(this.poisonTimer, duration);
+    }
+
+    draw(ctx, sprites) {
+        const size = this.isBoss ? 36 : 16;
+        
+        if (this.hitTimer > 0 && Math.floor(Date.now() / 50) % 2) {
+            ctx.globalAlpha = 0.5;
+        }
+        
+        // 状态效果视觉
+        if (this.slowTimer > 0) {
+            ctx.strokeStyle = '#48f';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size + 5, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        if (this.poisonTimer > 0) {
+            ctx.strokeStyle = '#4a4';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size + 8, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        if (this.isBoss) {
+            ctx.strokeStyle = `rgba(255, 0, 255, ${0.3 + Math.sin(Date.now() / 200) * 0.2})`;
+            ctx.lineWidth = 3;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, size + 10, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+        
+        const sprite = sprites.get(this.sprite);
+        if (sprite) {
+            ctx.drawImage(sprite, this.x - size, this.y - size, size * 2, size * 2);
+        } else {
+            const emojiMap = {
+                chick: '🐤', pig: '🐷', sheep: '🐑', dog: '🐕',
+                cat: '🐱', bear: '🐻', rabbit: '🦘', bird: '🦅',
+                turtle: '🐢', dog2: '🐺'
+            };
+            ctx.font = this.isBoss ? '48px Arial' : '24px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(emojiMap[this.sprite] || '👾', this.x, this.y + 8);
+        }
+        
+        ctx.globalAlpha = 1;
+        
+        if (this.hp < this.maxHp) {
+            const barWidth = this.isBoss ? 100 : 24;
+            ctx.fillStyle = '#000';
+            ctx.fillRect(this.x - barWidth/2, this.y - size - 10, barWidth, 6);
+            ctx.fillStyle = this.isBoss ? '#f0f' : '#f00';
+            ctx.fillRect(this.x - barWidth/2, this.y - size - 10, barWidth * (this.hp / this.maxHp), 6);
+        }
+        
+        if (this.isBoss) {
+            ctx.fillStyle = '#f0f';
+            ctx.font = 'bold 16px Arial';
+            ctx.textAlign = 'center';
+            ctx.fillText(this.name, this.x, this.y - size - 20);
+        }
+    }
+}
+
+// 盲眼NPC类

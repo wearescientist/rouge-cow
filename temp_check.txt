@@ -1,0 +1,50 @@
+        
+        if (killed) {
+            e.hp = 0;
+
+    // ============================================================
+    // v0.17.0 - 精细武器视觉效果绘制函数
+    // ============================================================
+    
+    // 近战斩击效果
+    drawMeleeEffect(b, pos, time) {
+        const ctx = this.ctx;
+        ctx.save();
+        ctx.translate(pos.x, pos.y);
+        
+        // 弧形斩击轨迹 - 由多条细线组�?
+        ctx.strokeStyle = b.color;
+        ctx.lineWidth = 2;
+        ctx.lineCap = 'round';
+        
+        const arcAngle = (b.arcAngle || 90) * Math.PI / 180;
+        const baseAngle = b.angle - arcAngle / 2;
+        const radius = b.range || 150;
+        
+        // 绘制3层逐渐变淡的弧�?
+        for (let i = 0; i < 3; i++) {
+            ctx.globalAlpha = (0.8 - i * 0.2) * (b.life / 0.25);
+            ctx.beginPath();
+            ctx.arc(pos.x, pos.y, radius * (0.8 + i * 0.1), baseAngle, baseAngle + arcAngle);
+            ctx.stroke();
+        }
+        
+        // 添加粒子火花
+        if (Math.random() < 0.5) {
+            const sparkAngle = baseAngle + Math.random() * arcAngle;
+            const sparkR = radius * (0.8 + Math.random() * 0.2);
+            window.weaponVisuals.spark(
+                pos.x + Math.cos(sparkAngle) * sparkR,
+                pos.y + Math.sin(sparkAngle) * sparkR,
+                b.color,
+                2
+            );
+        }
+        
+        ctx.restore();
+    }
+    
+    // 追踪弹效�?- 旋转核心+尾迹�?
+    drawHomingEffect(b, pos, time) {
+        const ctx = this.ctx;
+        ctx.save();

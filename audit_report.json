@@ -1,0 +1,5023 @@
+{
+  "summary": {
+    "total_files": 79,
+    "total_lines": 49419,
+    "issues": {
+      "error": 0,
+      "warning": 711,
+      "info": 2
+    },
+    "issue_rate": 14.43
+  },
+  "issues": [
+    {
+      "level": "warning",
+      "file": "src\\enemy_system.js",
+      "line": 234,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\enemy_system.js",
+      "line": 304,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_complete.js",
+      "line": 76,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_complete.js",
+      "line": 326,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 148,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 170,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 201,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 203,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 210,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 218,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 219,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 220,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 221,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 222,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 223,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 224,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 225,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 226,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 227,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 228,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 229,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 230,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 231,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 235,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 236,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 241,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_demo.js",
+      "line": 520,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 15,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 18,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 18,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 22,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 27,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 31,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 33,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 36,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 37,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 38,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 42,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 43,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 50,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 52,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 53,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 57,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 61,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 62,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 63,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 64,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 65,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 68,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 69,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 70,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 71,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 72,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 75,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 75,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 76,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 77,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 78,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 79,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_final.js",
+      "line": 79,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_fullscreen.js",
+      "line": 357,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_isaac_style.js",
+      "line": 67,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_isaac_style.js",
+      "line": 68,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_isaac_style.js",
+      "line": 244,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_isaac_style.js",
+      "line": 250,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_isaac_style.js",
+      "line": 451,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_simple.js",
+      "line": 361,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_simple.js",
+      "line": 464,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 2,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 6,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 9,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 12,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 13,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 16,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 19,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 23,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 25,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 27,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 29,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 31,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 34,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 35,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 36,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 37,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 40,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 40,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 41,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 42,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 43,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_stable.js",
+      "line": 44,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_unified.js",
+      "line": 522,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_unified.js",
+      "line": 556,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_unified.js",
+      "line": 602,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_unified.js",
+      "line": 618,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_unified.js",
+      "line": 619,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v1.js",
+      "line": 423,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v1.js",
+      "line": 544,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v11.js",
+      "line": 378,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v11.js",
+      "line": 379,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v11.js",
+      "line": 380,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v12.js",
+      "line": 54,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v12.js",
+      "line": 64,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v12.js",
+      "line": 122,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v12.js",
+      "line": 167,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v12.js",
+      "line": 295,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v12.js",
+      "line": 296,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v13.js",
+      "line": 381,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v13.js",
+      "line": 382,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v14.js",
+      "line": 222,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v14.js",
+      "line": 416,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v14.js",
+      "line": 417,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v15.js",
+      "line": 431,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v15.js",
+      "line": 432,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v15.js",
+      "line": 433,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v16.js",
+      "line": 32,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v16.js",
+      "line": 343,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v16.js",
+      "line": 349,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v16.js",
+      "line": 350,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v16.js",
+      "line": 359,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v16.js",
+      "line": 360,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v17.js",
+      "line": 286,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v17.js",
+      "line": 300,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v17.js",
+      "line": 336,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v17.js",
+      "line": 347,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v17.js",
+      "line": 348,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v17.js",
+      "line": 416,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v17.js",
+      "line": 417,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v18.js",
+      "line": 87,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 18,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 19,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 20,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 24,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 39,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 40,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 41,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 44,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 59,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 60,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 61,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 64,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 316,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v19.js",
+      "line": 317,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 112,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 116,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 322,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 356,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 367,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 434,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 435,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 450,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 488,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 491,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 517,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 538,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 561,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 563,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.1.js",
+      "line": 580,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 72,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 78,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 82,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 274,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 466,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 525,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 600,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 601,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 620,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 678,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 681,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 706,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 736,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 767,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 769,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 777,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.2.js",
+      "line": 801,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 30,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 31,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 78,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 94,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 100,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 104,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 311,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 381,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 389,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 395,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 401,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 504,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 577,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 667,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 668,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 687,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 751,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 754,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 788,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 791,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 822,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 848,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 867,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 869,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 876,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.3.js",
+      "line": 899,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 2,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 62,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 63,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 64,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 88,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 92,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 101,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 105,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 106,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 108,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 112,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 113,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 116,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 118,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 124,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 126,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 128,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 161,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 173,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 176,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 188,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 189,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 201,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 202,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 211,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 222,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 230,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 236,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 237,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 238,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 239,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 240,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 241,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 247,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 250,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 255,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 279,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 314,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 325,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 327,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 328,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 339,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 342,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 354,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 356,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 372,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 380,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 385,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 393,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 394,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 402,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 403,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 418,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 449,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 450,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 453,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 474,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 477,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 479,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 485,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 502,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 505,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 516,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 540,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 543,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 550,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 553,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 554,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 554,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 557,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 561,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 563,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 570,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 572,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 575,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 583,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.4.js",
+      "line": 587,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 7,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 9,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 14,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 15,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 18,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 22,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 23,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 24,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 26,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 31,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 36,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 37,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 38,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 39,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 40,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 43,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 45,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 47,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 48,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 51,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 54,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 55,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 56,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 57,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 58,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 59,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 60,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 61,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 63,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 64,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 65,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 66,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 67,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 68,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 72,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 72,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 73,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 74,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 75,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.5.js",
+      "line": 76,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 2,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 8,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 10,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 14,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 15,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 18,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 21,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 25,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 27,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 29,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 31,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 33,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 36,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 37,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 38,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 39,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 40,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 41,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 42,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 43,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 44,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 45,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 46,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 47,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 48,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 51,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 51,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 52,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 53,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 54,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.6.js",
+      "line": 55,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 2,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 6,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 9,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 12,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 13,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 16,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 19,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 23,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 25,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 27,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 29,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 31,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 34,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 35,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 36,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 37,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 40,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 40,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 41,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 42,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 43,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.7.js",
+      "line": 44,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 6,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 9,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 12,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 13,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 16,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 19,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 23,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 25,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 27,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 29,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 31,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 34,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 35,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 36,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 37,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 38,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 41,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 41,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 42,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 43,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 44,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.8.js",
+      "line": 45,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.js",
+      "line": 157,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v2.js",
+      "line": 294,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v3.js",
+      "line": 243,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v3.js",
+      "line": 293,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v4.js",
+      "line": 281,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v5.js",
+      "line": 59,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v5.js",
+      "line": 334,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v6.js",
+      "line": 18,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v6.js",
+      "line": 27,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v6.js",
+      "line": 137,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v6.js",
+      "line": 157,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v6.js",
+      "line": 192,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v6.js",
+      "line": 253,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v6.js",
+      "line": 264,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v6.js",
+      "line": 267,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v6.js",
+      "line": 292,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v7.js",
+      "line": 172,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v7.js",
+      "line": 323,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v8.js",
+      "line": 293,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v9.js",
+      "line": 287,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_v9.js",
+      "line": 288,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 347,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 397,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 416,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 418,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 424,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 425,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 426,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 427,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 428,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 429,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 433,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\game_with_sprites.js",
+      "line": 458,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\isaac_room_system.js",
+      "line": 185,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\isaac_room_system.js",
+      "line": 186,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\isaac_room_system.js",
+      "line": 291,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\isaac_room_system.js",
+      "line": 307,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\isaac_room_system.js",
+      "line": 364,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\isaac_room_system.js",
+      "line": 378,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "info",
+      "file": "src\\items_system.js",
+      "line": 263,
+      "message": "发现 toDo 标记",
+      "category": "todo"
+    },
+    {
+      "level": "warning",
+      "file": "src\\items_system.js",
+      "line": 592,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "info",
+      "file": "src\\items_system.js",
+      "line": 729,
+      "message": "发现 toDo 标记",
+      "category": "todo"
+    },
+    {
+      "level": "warning",
+      "file": "src\\main.js",
+      "line": 26,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\main.js",
+      "line": 47,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\room_rewards.js",
+      "line": 206,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\room_rewards.js",
+      "line": 216,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\room_rewards.js",
+      "line": 234,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\room_rewards.js",
+      "line": 245,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\sprites_manager.js",
+      "line": 118,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\vampire_engine.js",
+      "line": 377,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\weapon_system.js",
+      "line": 337,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\core\\PerformanceMonitor.js",
+      "line": 48,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\core\\StateManager.js",
+      "line": 47,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\data\\enemyCodex.js",
+      "line": 230,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\data\\totemData.js",
+      "line": 198,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\data\\totemData.js",
+      "line": 220,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\data\\totemData.js",
+      "line": 222,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\audio.js",
+      "line": 62,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\audio_enhanced.js",
+      "line": 67,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\audio_enhanced.js",
+      "line": 116,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\pixel_prologue.js",
+      "line": 541,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\pixel_prologue.js",
+      "line": 556,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\save_manager.js",
+      "line": 59,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\save_manager.js",
+      "line": 73,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\save_manager.js",
+      "line": 99,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\save_manager.js",
+      "line": 146,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\save_manager.js",
+      "line": 150,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\save_manager.js",
+      "line": 157,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\save_manager.js",
+      "line": 243,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\save_manager.js",
+      "line": 372,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\shopNPC.js",
+      "line": 320,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\shopNPC.js",
+      "line": 322,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\shopNPC.js",
+      "line": 411,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\shopNPC.js",
+      "line": 413,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\shopNPC.js",
+      "line": 577,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\shopNPC.js",
+      "line": 579,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\shopNPC.js",
+      "line": 592,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\shopNPC.js",
+      "line": 598,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\shopNPC.js",
+      "line": 599,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\stats_achievements.js",
+      "line": 429,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\storyEvents.js",
+      "line": 48,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\storyEvents.js",
+      "line": 81,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\storyEvents.js",
+      "line": 97,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\storyEvents.js",
+      "line": 193,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\storyEvents.js",
+      "line": 196,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\storyEvents.js",
+      "line": 200,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\weaponUpgrade.js",
+      "line": 34,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\weaponUpgrade.js",
+      "line": 96,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\weaponUpgrade.js",
+      "line": 191,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\systems\\weaponUpgrade.js",
+      "line": 195,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "src\\utils\\Logger.js",
+      "line": 45,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\utils\\safeguards.js",
+      "line": 315,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\utils\\safeguards.js",
+      "line": 316,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "src\\utils\\safeguards.js",
+      "line": 324,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 173,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 175,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 177,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 179,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1238,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1240,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1248,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1254,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1256,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1258,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1265,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1285,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1287,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1290,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1294,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1341,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1342,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1346,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1354,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1364,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1379,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1390,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1392,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1402,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1404,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1406,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1411,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1425,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1427,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1428,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1435,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1481,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1489,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1491,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1722,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1734,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1736,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1749,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1750,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1752,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1759,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1760,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1761,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1762,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1768,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1769,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1775,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1779,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1780,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1781,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1788,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1792,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1793,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1800,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1804,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1805,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1806,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1813,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1817,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1818,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1819,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1825,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1826,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1831,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1836,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1837,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1842,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 1843,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 2746,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 2755,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3605,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3606,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3613,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3617,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3622,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3623,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3626,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3629,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3632,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3635,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3639,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3640,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3643,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3644,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3645,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3646,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3647,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3648,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3649,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3650,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3653,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3654,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3655,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3656,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3657,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3658,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3662,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3663,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3664,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3665,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3666,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3667,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3668,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3669,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3670,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3671,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3672,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3673,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3674,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3675,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 3676,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 4610,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5802,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5803,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5806,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5807,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5808,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5809,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5810,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5811,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5812,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5813,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5814,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5817,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5818,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5819,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5821,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5834,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5836,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5838,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5842,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5844,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5848,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 5854,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6396,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6463,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6468,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6472,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6755,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6756,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6757,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6758,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6759,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6760,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6765,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6766,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6767,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6770,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6771,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6772,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6775,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6776,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6777,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6780,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6781,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6782,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6787,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6788,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6789,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6790,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 6795,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 7303,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 9197,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 9198,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 9283,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 10381,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 10645,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11758,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11766,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11776,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11787,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11799,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11813,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11824,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11828,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11844,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11861,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11868,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11878,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11884,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11932,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11934,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11949,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11957,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11973,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11975,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11990,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 11997,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 12008,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 12705,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 12971,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13305,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13309,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13318,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13322,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13325,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13334,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13338,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13342,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13346,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13560,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 13842,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 14547,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 14553,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 14569,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 14778,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 14846,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 15444,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 15446,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 15450,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 15903,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 16084,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 16908,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 16912,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 16919,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 17213,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 17215,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 17627,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 17799,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 18685,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 18733,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 18737,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 19301,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 21243,
+      "message": "发现 console.log，建议使用 Logger 工具",
+      "category": "logging"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 21279,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 21280,
+      "message": "行长度超过 {} 字符",
+      "category": "style"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 21293,
+      "message": "发现 alert()，建议使用自定义弹窗",
+      "category": "ui"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 0,
+      "message": "文件大小 590.3KB，建议模块化拆分",
+      "category": "architecture"
+    },
+    {
+      "level": "warning",
+      "file": "index.html",
+      "line": 0,
+      "message": "addEventListener (19) 远多于 removeEventListener (3)，可能存在内存泄漏",
+      "category": "memory"
+    }
+  ],
+  "recommendations": [
+    "发现 135 处 console.log，建议统一使用 Logger 工具",
+    "代码量较大，建议进一步模块化拆分"
+  ]
+}

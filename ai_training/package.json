@@ -1,0 +1,22 @@
+{
+  "name": "rouge-cow-ai-training",
+  "version": "1.0.0",
+  "description": "AI自动训练系统 - 肉鸽牛牛",
+  "main": "play_game_windows.js",
+  "scripts": {
+    "train": "node play_game_windows.js",
+    "train:video": "node play_game_windows.js 1",
+    "setup": "npm install && npx playwright install chromium"
+  },
+  "dependencies": {
+    "playwright": "^1.58.2"
+  },
+  "keywords": [
+    "ai",
+    "training",
+    "game",
+    "playwright"
+  ],
+  "author": "Rouge Cow Team",
+  "license": "MIT"
+}
