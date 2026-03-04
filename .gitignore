@@ -1,49 +1,15 @@
-# Git Ignore for Rogue Cow Game
-
-# Backup files
-*.backup*
-*.bak
-*~
-
-# Python cache
-__pycache__/
-*.pyc
-*.pyo
-
-# Temporary scripts (development tools)
-analyze_sprites.py
-code_check.py
-fix_size.py
-fix_sprite_center.py
-fix_super.py
-check_*.py
-find_*.py
-verify_*.py
-
-# Node modules
+# Dependencies
 node_modules/
+tools/nodejs/
 
-# OS files
+# Archives
+*.zip
+*.tar.gz
+*.rar
+
+# System files
 .DS_Store
 Thumbs.db
 
-# IDE
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# Temporary text files
-*.temp
-*.tmp
-
-# Large files (GitHub 100MB limit)
-*.zip
-*.bundle
-index.html.backup*
-*.7z
-*.tar.gz
-
-# Archives (keep source only)
-archive/
-versions/
+# Logs
+*.log
