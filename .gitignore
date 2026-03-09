@@ -13,3 +13,43 @@ Thumbs.db
 
 # Logs
 *.log
+
+# Large backup directories
+archive/
+backup/
+
+# Generated assets (large files)
+generated_assets/
+generated_audio/
+generated_assets.zip
+
+# Videos
+videos/
+
+# Distribution builds
+dist/
+
+# Python cache
+py/__pycache__/
+__pycache__/
+*.pyc
+
+# Reports (optional - may contain large files)
+reports/
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+
+# Large font vendor files
+assets/fonts/_vendor/
+
+# Node.js tools (large)
+tools/nodejs/
+
+# Audio files (optional - if they are large)
+# assets/audio/bgm/*.wav
+
+# Debug files
+generated_assets/*_debug.txt
