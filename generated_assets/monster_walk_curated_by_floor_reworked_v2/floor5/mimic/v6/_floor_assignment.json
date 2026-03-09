@@ -1,0 +1,14 @@
+{
+  "id": "mimic_v6",
+  "baseId": "mimic",
+  "version": "v6",
+  "name": "精英宝箱怪",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 120,
+    "speed": 90,
+    "dmg": 6
+  },
+  "sourceStatus": "needs_work"
+}

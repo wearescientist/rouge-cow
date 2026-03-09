@@ -1,0 +1,14 @@
+{
+  "id": "fox_v10",
+  "baseId": "fox",
+  "version": "v10",
+  "name": "天狐",
+  "tier": 4,
+  "type": "elite",
+  "stats": {
+    "hp": 120,
+    "speed": 190,
+    "dmg": 7
+  },
+  "sourceStatus": "ready"
+}

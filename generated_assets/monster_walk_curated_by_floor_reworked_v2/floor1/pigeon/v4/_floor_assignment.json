@@ -1,0 +1,14 @@
+{
+  "id": "pigeon_v4",
+  "baseId": "pigeon",
+  "version": "v4",
+  "name": "毒鸽",
+  "tier": 2,
+  "type": "ranged",
+  "stats": {
+    "hp": 22,
+    "speed": 140,
+    "dmg": 2
+  },
+  "sourceStatus": "ready"
+}

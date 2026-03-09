@@ -1,0 +1,14 @@
+{
+  "id": "goose_v10",
+  "baseId": "goose",
+  "version": "v10",
+  "name": "鹅王",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 60,
+    "speed": 120,
+    "dmg": 4
+  },
+  "sourceStatus": "needs_work"
+}

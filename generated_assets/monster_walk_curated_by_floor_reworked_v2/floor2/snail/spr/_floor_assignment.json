@@ -1,0 +1,14 @@
+{
+  "id": "snail_spr",
+  "baseId": "snail",
+  "version": "spr",
+  "name": "寄生蜗牛",
+  "tier": 1,
+  "type": "tank",
+  "stats": {
+    "hp": 25,
+    "speed": 50,
+    "dmg": 1
+  },
+  "sourceStatus": "ready"
+}

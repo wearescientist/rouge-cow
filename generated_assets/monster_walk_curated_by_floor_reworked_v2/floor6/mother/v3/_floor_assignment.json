@@ -1,0 +1,14 @@
+{
+  "id": "mother_v3",
+  "baseId": "mother",
+  "version": "v3",
+  "name": "深渊母体",
+  "tier": 5,
+  "type": "final_boss",
+  "stats": {
+    "hp": 5000,
+    "speed": 40,
+    "dmg": 20
+  },
+  "sourceStatus": "needs_work"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rabbit2_v8",
+  "baseId": "rabbit2",
+  "version": "v8",
+  "name": "兔王",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 50,
+    "speed": 240,
+    "dmg": 5
+  },
+  "sourceStatus": "needs_work"
+}

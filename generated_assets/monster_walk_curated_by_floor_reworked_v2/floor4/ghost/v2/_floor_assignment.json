@@ -1,0 +1,14 @@
+{
+  "id": "ghost_v2",
+  "baseId": "ghost",
+  "version": "v2",
+  "name": "游荡幽灵",
+  "tier": 2,
+  "type": "ethereal",
+  "stats": {
+    "hp": 25,
+    "speed": 170,
+    "dmg": 2
+  },
+  "sourceStatus": "ready"
+}

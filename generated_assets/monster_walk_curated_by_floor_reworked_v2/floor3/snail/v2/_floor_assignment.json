@@ -1,0 +1,14 @@
+{
+  "id": "snail_v2",
+  "baseId": "snail",
+  "version": "v2",
+  "name": "硬壳蜗牛",
+  "tier": 1,
+  "type": "tank",
+  "stats": {
+    "hp": 35,
+    "speed": 42,
+    "dmg": 1
+  },
+  "sourceStatus": "ready"
+}

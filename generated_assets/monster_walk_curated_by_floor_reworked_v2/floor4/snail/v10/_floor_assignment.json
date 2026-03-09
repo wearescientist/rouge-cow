@@ -1,0 +1,14 @@
+{
+  "id": "snail_v10",
+  "baseId": "snail",
+  "version": "v10",
+  "name": "神蜗牛",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 120,
+    "speed": 32,
+    "dmg": 5
+  },
+  "sourceStatus": "ready"
+}

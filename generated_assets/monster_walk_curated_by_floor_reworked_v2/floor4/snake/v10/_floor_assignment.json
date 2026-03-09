@@ -1,0 +1,14 @@
+{
+  "id": "snake_v10",
+  "baseId": "snake",
+  "version": "v10",
+  "name": "蛇王",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 80,
+    "speed": 110,
+    "dmg": 6
+  },
+  "sourceStatus": "needs_work"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "bat_v8",
+  "baseId": "bat",
+  "version": "v8",
+  "name": "巨蝙蝠",
+  "tier": 2,
+  "type": "elite",
+  "stats": {
+    "hp": 25,
+    "speed": 200,
+    "dmg": 3
+  },
+  "sourceStatus": "needs_work"
+}

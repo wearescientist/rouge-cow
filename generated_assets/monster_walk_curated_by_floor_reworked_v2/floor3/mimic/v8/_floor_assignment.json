@@ -1,0 +1,14 @@
+{
+  "id": "mimic_v8",
+  "baseId": "mimic",
+  "version": "v8",
+  "name": "宝箱王",
+  "tier": 4,
+  "type": "elite",
+  "stats": {
+    "hp": 200,
+    "speed": 80,
+    "dmg": 8
+  },
+  "sourceStatus": "needs_work"
+}

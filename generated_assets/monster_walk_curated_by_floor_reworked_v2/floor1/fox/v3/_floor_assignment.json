@@ -1,0 +1,14 @@
+{
+  "id": "fox_v3",
+  "baseId": "fox",
+  "version": "v3",
+  "name": "狡猾狐狸",
+  "tier": 2,
+  "type": "assassin",
+  "stats": {
+    "hp": 30,
+    "speed": 190,
+    "dmg": 3
+  },
+  "sourceStatus": "needs_work"
+}

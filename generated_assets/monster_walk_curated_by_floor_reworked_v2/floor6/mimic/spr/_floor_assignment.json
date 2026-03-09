@@ -1,0 +1,14 @@
+{
+  "id": "mimic_spr",
+  "baseId": "mimic",
+  "version": "spr",
+  "name": "小宝箱怪",
+  "tier": 2,
+  "type": "trickster",
+  "stats": {
+    "hp": 30,
+    "speed": 80,
+    "dmg": 2
+  },
+  "sourceStatus": "needs_work"
+}

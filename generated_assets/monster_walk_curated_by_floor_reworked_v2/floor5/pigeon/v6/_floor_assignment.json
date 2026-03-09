@@ -1,0 +1,14 @@
+{
+  "id": "pigeon_v6",
+  "baseId": "pigeon",
+  "version": "v6",
+  "name": "巨鸽",
+  "tier": 2,
+  "type": "ranged",
+  "stats": {
+    "hp": 30,
+    "speed": 145,
+    "dmg": 2
+  },
+  "sourceStatus": "needs_work"
+}

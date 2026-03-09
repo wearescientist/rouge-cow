@@ -1,0 +1,14 @@
+{
+  "id": "crab_spr",
+  "baseId": "crab",
+  "version": "spr",
+  "name": "小螃蟹",
+  "tier": 1,
+  "type": "common",
+  "stats": {
+    "hp": 20,
+    "speed": 70,
+    "dmg": 1
+  },
+  "sourceStatus": "needs_work"
+}

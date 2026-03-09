@@ -1,0 +1,14 @@
+{
+  "id": "mother_v2",
+  "baseId": "mother",
+  "version": "v2",
+  "name": "母虫幼体",
+  "tier": 4,
+  "type": "boss",
+  "stats": {
+    "hp": 3000,
+    "speed": 50,
+    "dmg": 15
+  },
+  "sourceStatus": "ready"
+}

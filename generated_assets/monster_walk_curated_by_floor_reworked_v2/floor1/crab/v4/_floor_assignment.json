@@ -1,0 +1,14 @@
+{
+  "id": "crab_v4",
+  "baseId": "crab",
+  "version": "v4",
+  "name": "铁甲蟹",
+  "tier": 2,
+  "type": "tank",
+  "stats": {
+    "hp": 45,
+    "speed": 60,
+    "dmg": 2
+  },
+  "sourceStatus": "needs_work"
+}

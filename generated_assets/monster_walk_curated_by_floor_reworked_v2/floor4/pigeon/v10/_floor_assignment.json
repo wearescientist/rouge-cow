@@ -1,0 +1,14 @@
+{
+  "id": "pigeon_v10",
+  "baseId": "pigeon",
+  "version": "v10",
+  "name": "传说鸽",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 60,
+    "speed": 155,
+    "dmg": 5
+  },
+  "sourceStatus": "needs_work"
+}

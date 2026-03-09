@@ -1,0 +1,14 @@
+{
+  "id": "nibei_v6",
+  "baseId": "nibei",
+  "version": "v6",
+  "name": "泥背",
+  "tier": 4,
+  "type": "boss",
+  "stats": {
+    "hp": 2000,
+    "speed": 50,
+    "dmg": 8
+  },
+  "sourceStatus": "needs_work"
+}

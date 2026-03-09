@@ -1,0 +1,166 @@
+{
+  "processedAt": "2026-03-10",
+  "source": "generated_assets_by_floor.zip",
+  "outputRoot": "generated_assets/monster_walk_curated_by_floor_reworked_v2",
+  "floors": {
+    "floor1": {
+      "versions": 18,
+      "frames": 64,
+      "bosses": [
+        "rabbit2_v4"
+      ],
+      "style": {
+        "shadow": [
+          70,
+          40,
+          35
+        ],
+        "shadow_amt": 0.1,
+        "highlight": [
+          210,
+          85,
+          80
+        ],
+        "highlight_amt": 0.06,
+        "saturation": 0.92,
+        "contrast": 1.02,
+        "brightness": 1.03,
+        "gamma": 0.98,
+        "sharpen": 1.05
+      }
+    },
+    "floor2": {
+      "versions": 11,
+      "frames": 40,
+      "bosses": [
+        "pigeon_v8"
+      ],
+      "style": {
+        "shadow": [
+          35,
+          48,
+          28
+        ],
+        "shadow_amt": 0.16,
+        "highlight": [
+          145,
+          130,
+          70
+        ],
+        "highlight_amt": 0.08,
+        "saturation": 0.9,
+        "contrast": 1.06,
+        "brightness": 0.98,
+        "gamma": 1.0,
+        "sharpen": 1.06
+      }
+    },
+    "floor3": {
+      "versions": 12,
+      "frames": 42,
+      "bosses": [
+        "nibei_v6"
+      ],
+      "style": {
+        "shadow": [
+          26,
+          24,
+          58
+        ],
+        "shadow_amt": 0.18,
+        "highlight": [
+          92,
+          165,
+          210
+        ],
+        "highlight_amt": 0.1,
+        "saturation": 0.96,
+        "contrast": 1.1,
+        "brightness": 0.97,
+        "gamma": 1.01,
+        "sharpen": 1.08
+      }
+    },
+    "floor4": {
+      "versions": 7,
+      "frames": 25,
+      "bosses": [
+        "panther_v10"
+      ],
+      "style": {
+        "shadow": [
+          55,
+          24,
+          16
+        ],
+        "shadow_amt": 0.2,
+        "highlight": [
+          210,
+          92,
+          52
+        ],
+        "highlight_amt": 0.08,
+        "saturation": 0.94,
+        "contrast": 1.14,
+        "brightness": 0.96,
+        "gamma": 1.02,
+        "sharpen": 1.1
+      }
+    },
+    "floor5": {
+      "versions": 13,
+      "frames": 45,
+      "bosses": [
+        "mother_v7"
+      ],
+      "style": {
+        "shadow": [
+          48,
+          18,
+          32
+        ],
+        "shadow_amt": 0.22,
+        "highlight": [
+          190,
+          70,
+          88
+        ],
+        "highlight_amt": 0.09,
+        "saturation": 0.93,
+        "contrast": 1.1,
+        "brightness": 0.95,
+        "gamma": 1.02,
+        "sharpen": 1.09
+      }
+    },
+    "floor6": {
+      "versions": 8,
+      "frames": 28,
+      "bosses": [
+        "mother_v2",
+        "mother_v3",
+        "mother_v8",
+        "mother_v10"
+      ],
+      "style": {
+        "shadow": [
+          16,
+          18,
+          52
+        ],
+        "shadow_amt": 0.24,
+        "highlight": [
+          144,
+          120,
+          240
+        ],
+        "highlight_amt": 0.11,
+        "saturation": 0.95,
+        "contrast": 1.15,
+        "brightness": 0.95,
+        "gamma": 1.03,
+        "sharpen": 1.1
+      }
+    }
+  }
+}

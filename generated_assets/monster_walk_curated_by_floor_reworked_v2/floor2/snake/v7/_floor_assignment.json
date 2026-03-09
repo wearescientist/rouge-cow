@@ -1,0 +1,14 @@
+{
+  "id": "snake_v7",
+  "baseId": "snake",
+  "version": "v7",
+  "name": "蟒蛇",
+  "tier": 2,
+  "type": "tank",
+  "stats": {
+    "hp": 35,
+    "speed": 100,
+    "dmg": 3
+  },
+  "sourceStatus": "ready"
+}

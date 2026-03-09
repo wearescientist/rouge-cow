@@ -1,0 +1,14 @@
+{
+  "id": "panther_v1",
+  "baseId": "panther",
+  "version": "v1",
+  "name": "幼豹",
+  "tier": 2,
+  "type": "speed",
+  "stats": {
+    "hp": 25,
+    "speed": 260,
+    "dmg": 2
+  },
+  "sourceStatus": "needs_work"
+}

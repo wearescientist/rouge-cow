@@ -1,0 +1,14 @@
+{
+  "id": "chick_spr",
+  "baseId": "chick",
+  "version": "spr",
+  "name": "变异小鸡",
+  "tier": 1,
+  "type": "common",
+  "stats": {
+    "hp": 12,
+    "speed": 140,
+    "dmg": 1
+  },
+  "sourceStatus": "ready"
+}

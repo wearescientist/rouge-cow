@@ -1,0 +1,14 @@
+{
+  "id": "bat_v3",
+  "baseId": "bat",
+  "version": "v3",
+  "name": "吸血蝙蝠",
+  "tier": 2,
+  "type": "speed",
+  "stats": {
+    "hp": 15,
+    "speed": 220,
+    "dmg": 2
+  },
+  "sourceStatus": "needs_work"
+}

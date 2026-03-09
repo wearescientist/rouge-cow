@@ -1,0 +1,14 @@
+{
+  "id": "mimic_v1",
+  "baseId": "mimic",
+  "version": "v1",
+  "name": "宝箱怪",
+  "tier": 2,
+  "type": "trickster",
+  "stats": {
+    "hp": 50,
+    "speed": 80,
+    "dmg": 3
+  },
+  "sourceStatus": "needs_work"
+}

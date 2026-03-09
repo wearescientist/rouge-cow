@@ -1,0 +1,14 @@
+{
+  "id": "bat_v9",
+  "baseId": "bat",
+  "version": "v9",
+  "name": "蝙蝠王",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 40,
+    "speed": 190,
+    "dmg": 4
+  },
+  "sourceStatus": "ready"
+}

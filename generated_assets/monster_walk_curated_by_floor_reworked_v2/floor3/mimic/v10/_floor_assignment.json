@@ -1,0 +1,14 @@
+{
+  "id": "mimic_v10",
+  "baseId": "mimic",
+  "version": "v10",
+  "name": "传说宝箱怪",
+  "tier": 4,
+  "type": "elite",
+  "stats": {
+    "hp": 250,
+    "speed": 85,
+    "dmg": 10
+  },
+  "sourceStatus": "ready"
+}

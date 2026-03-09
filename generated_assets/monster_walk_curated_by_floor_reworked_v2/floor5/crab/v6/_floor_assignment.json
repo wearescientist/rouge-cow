@@ -1,0 +1,14 @@
+{
+  "id": "crab_v6",
+  "baseId": "crab",
+  "version": "v6",
+  "name": "巨钳蟹",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 70,
+    "speed": 50,
+    "dmg": 4
+  },
+  "sourceStatus": "needs_work"
+}

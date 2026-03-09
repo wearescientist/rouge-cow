@@ -1,0 +1,14 @@
+{
+  "id": "fox_v1",
+  "baseId": "fox",
+  "version": "v1",
+  "name": "幼狐",
+  "tier": 1,
+  "type": "common",
+  "stats": {
+    "hp": 15,
+    "speed": 150,
+    "dmg": 1
+  },
+  "sourceStatus": "needs_work"
+}

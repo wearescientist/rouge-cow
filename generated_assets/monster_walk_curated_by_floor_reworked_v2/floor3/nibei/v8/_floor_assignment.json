@@ -1,0 +1,14 @@
+{
+  "id": "nibei_v8",
+  "baseId": "nibei",
+  "version": "v8",
+  "name": "巨泥龟",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 100,
+    "speed": 35,
+    "dmg": 5
+  },
+  "sourceStatus": "needs_work"
+}

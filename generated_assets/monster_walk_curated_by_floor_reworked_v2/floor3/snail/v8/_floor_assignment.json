@@ -1,0 +1,14 @@
+{
+  "id": "snail_v8",
+  "baseId": "snail",
+  "version": "v8",
+  "name": "传说蜗牛",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 100,
+    "speed": 30,
+    "dmg": 4
+  },
+  "sourceStatus": "ready"
+}

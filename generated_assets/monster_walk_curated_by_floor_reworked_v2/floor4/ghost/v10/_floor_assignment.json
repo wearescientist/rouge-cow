@@ -1,0 +1,14 @@
+{
+  "id": "ghost_v10",
+  "baseId": "ghost",
+  "version": "v10",
+  "name": "幽灵王",
+  "tier": 4,
+  "type": "elite",
+  "stats": {
+    "hp": 100,
+    "speed": 220,
+    "dmg": 6
+  },
+  "sourceStatus": "needs_work"
+}

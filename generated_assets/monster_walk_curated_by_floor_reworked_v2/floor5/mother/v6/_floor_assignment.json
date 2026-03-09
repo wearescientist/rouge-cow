@@ -1,0 +1,14 @@
+{
+  "id": "mother_v6",
+  "baseId": "mother",
+  "version": "v6",
+  "name": "母虫",
+  "tier": 4,
+  "type": "elite",
+  "stats": {
+    "hp": 4000,
+    "speed": 45,
+    "dmg": 18
+  },
+  "sourceStatus": "needs_work"
+}

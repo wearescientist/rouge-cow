@@ -1,0 +1,14 @@
+{
+  "id": "wolf_king_v2",
+  "baseId": "wolf_king",
+  "version": "v2",
+  "name": "狼王",
+  "tier": 4,
+  "type": "elite",
+  "stats": {
+    "hp": 2500,
+    "speed": 140,
+    "dmg": 15
+  },
+  "sourceStatus": "needs_work"
+}

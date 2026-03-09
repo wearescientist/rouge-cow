@@ -1,0 +1,14 @@
+{
+  "id": "pigeon_v1",
+  "baseId": "pigeon",
+  "version": "v1",
+  "name": "变异鸽子",
+  "tier": 1,
+  "type": "common",
+  "stats": {
+    "hp": 15,
+    "speed": 130,
+    "dmg": 1
+  },
+  "sourceStatus": "needs_work"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "fox_v7",
+  "baseId": "fox",
+  "version": "v7",
+  "name": "妖狐",
+  "tier": 3,
+  "type": "assassin",
+  "stats": {
+    "hp": 70,
+    "speed": 200,
+    "dmg": 4
+  },
+  "sourceStatus": "ready"
+}

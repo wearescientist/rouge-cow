@@ -1,0 +1,14 @@
+{
+  "id": "fox_v8",
+  "baseId": "fox",
+  "version": "v8",
+  "name": "九尾狐",
+  "tier": 4,
+  "type": "elite",
+  "stats": {
+    "hp": 100,
+    "speed": 180,
+    "dmg": 6
+  },
+  "sourceStatus": "needs_work"
+}

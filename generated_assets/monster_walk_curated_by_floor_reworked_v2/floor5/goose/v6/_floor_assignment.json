@@ -1,0 +1,14 @@
+{
+  "id": "goose_v6",
+  "baseId": "goose",
+  "version": "v6",
+  "name": "守卫鹅",
+  "tier": 2,
+  "type": "ranged",
+  "stats": {
+    "hp": 30,
+    "speed": 110,
+    "dmg": 2
+  },
+  "sourceStatus": "needs_work"
+}

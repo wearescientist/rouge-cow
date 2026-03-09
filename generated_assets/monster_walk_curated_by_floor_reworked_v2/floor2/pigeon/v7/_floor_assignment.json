@@ -1,0 +1,14 @@
+{
+  "id": "pigeon_v7",
+  "baseId": "pigeon",
+  "version": "v7",
+  "name": "飞鸽",
+  "tier": 2,
+  "type": "speed",
+  "stats": {
+    "hp": 28,
+    "speed": 160,
+    "dmg": 2
+  },
+  "sourceStatus": "needs_work"
+}

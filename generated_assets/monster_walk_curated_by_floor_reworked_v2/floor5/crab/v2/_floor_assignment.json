@@ -1,0 +1,14 @@
+{
+  "id": "crab_v2",
+  "baseId": "crab",
+  "version": "v2",
+  "name": "螃蟹",
+  "tier": 1,
+  "type": "common",
+  "stats": {
+    "hp": 25,
+    "speed": 65,
+    "dmg": 1
+  },
+  "sourceStatus": "ready"
+}

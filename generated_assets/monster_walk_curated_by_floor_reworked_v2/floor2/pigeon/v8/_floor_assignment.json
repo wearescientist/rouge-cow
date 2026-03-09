@@ -1,0 +1,14 @@
+{
+  "id": "pigeon_v8",
+  "baseId": "pigeon",
+  "version": "v8",
+  "name": "鸽王",
+  "tier": 3,
+  "type": "boss",
+  "stats": {
+    "hp": 50,
+    "speed": 150,
+    "dmg": 4
+  },
+  "sourceStatus": "needs_work"
+}

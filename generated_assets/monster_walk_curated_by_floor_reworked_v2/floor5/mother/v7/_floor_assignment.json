@@ -1,0 +1,14 @@
+{
+  "id": "mother_v7",
+  "baseId": "mother",
+  "version": "v7",
+  "name": "深渊母虫",
+  "tier": 5,
+  "type": "boss",
+  "stats": {
+    "hp": 5500,
+    "speed": 42,
+    "dmg": 22
+  },
+  "sourceStatus": "needs_work"
+}

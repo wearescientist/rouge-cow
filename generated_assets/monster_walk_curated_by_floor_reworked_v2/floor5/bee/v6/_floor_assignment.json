@@ -1,0 +1,14 @@
+{
+  "id": "bee_v6",
+  "baseId": "bee",
+  "version": "v6",
+  "name": "毒蜂",
+  "tier": 2,
+  "type": "ranged",
+  "stats": {
+    "hp": 12,
+    "speed": 300,
+    "dmg": 1
+  },
+  "sourceStatus": "ready"
+}

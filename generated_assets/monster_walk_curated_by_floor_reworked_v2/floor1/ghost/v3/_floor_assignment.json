@@ -1,0 +1,14 @@
+{
+  "id": "ghost_v3",
+  "baseId": "ghost",
+  "version": "v3",
+  "name": "怨灵",
+  "tier": 2,
+  "type": "ethereal",
+  "stats": {
+    "hp": 30,
+    "speed": 165,
+    "dmg": 3
+  },
+  "sourceStatus": "needs_work"
+}

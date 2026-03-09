@@ -1,0 +1,14 @@
+{
+  "id": "snake_v4",
+  "baseId": "snake",
+  "version": "v4",
+  "name": "毒蛇",
+  "tier": 2,
+  "type": "ranged",
+  "stats": {
+    "hp": 20,
+    "speed": 120,
+    "dmg": 2
+  },
+  "sourceStatus": "needs_work"
+}

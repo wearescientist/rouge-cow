@@ -1,0 +1,14 @@
+{
+  "id": "bat_v2",
+  "baseId": "bat",
+  "version": "v2",
+  "name": "小蝙蝠",
+  "tier": 1,
+  "type": "common",
+  "stats": {
+    "hp": 10,
+    "speed": 180,
+    "dmg": 1
+  },
+  "sourceStatus": "ready"
+}

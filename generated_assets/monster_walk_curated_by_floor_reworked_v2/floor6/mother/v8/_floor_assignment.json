@@ -1,0 +1,14 @@
+{
+  "id": "mother_v8",
+  "baseId": "mother",
+  "version": "v8",
+  "name": "千根母虫",
+  "tier": 5,
+  "type": "final_boss",
+  "stats": {
+    "hp": 6000,
+    "speed": 38,
+    "dmg": 25
+  },
+  "sourceStatus": "needs_work"
+}

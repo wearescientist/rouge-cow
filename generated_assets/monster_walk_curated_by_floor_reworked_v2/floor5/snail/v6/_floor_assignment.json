@@ -1,0 +1,14 @@
+{
+  "id": "snail_v6",
+  "baseId": "snail",
+  "version": "v6",
+  "name": "巨蜗牛",
+  "tier": 2,
+  "type": "tank",
+  "stats": {
+    "hp": 55,
+    "speed": 35,
+    "dmg": 2
+  },
+  "sourceStatus": "ready"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "snake_v8",
+  "baseId": "snake",
+  "version": "v8",
+  "name": "巨蛇",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 55,
+    "speed": 105,
+    "dmg": 4
+  },
+  "sourceStatus": "ready"
+}

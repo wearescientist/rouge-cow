@@ -1,0 +1,14 @@
+{
+  "id": "ghost_v8",
+  "baseId": "ghost",
+  "version": "v8",
+  "name": "盲眼",
+  "tier": 4,
+  "type": "elite",
+  "stats": {
+    "hp": 3000,
+    "speed": 160,
+    "dmg": 12
+  },
+  "sourceStatus": "needs_work"
+}

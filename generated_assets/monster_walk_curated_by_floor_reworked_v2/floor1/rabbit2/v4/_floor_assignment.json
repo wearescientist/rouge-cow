@@ -1,0 +1,14 @@
+{
+  "id": "rabbit2_v4",
+  "baseId": "rabbit2",
+  "version": "v4",
+  "name": "暴徒兔",
+  "tier": 3,
+  "type": "boss",
+  "stats": {
+    "hp": 30,
+    "speed": 260,
+    "dmg": 4
+  },
+  "sourceStatus": "needs_work"
+}

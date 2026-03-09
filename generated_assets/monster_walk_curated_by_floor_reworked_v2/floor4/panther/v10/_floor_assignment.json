@@ -1,0 +1,14 @@
+{
+  "id": "panther_v10",
+  "baseId": "panther",
+  "version": "v10",
+  "name": "豹王",
+  "tier": 3,
+  "type": "boss",
+  "stats": {
+    "hp": 80,
+    "speed": 270,
+    "dmg": 6
+  },
+  "sourceStatus": "needs_work"
+}

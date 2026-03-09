@@ -1,0 +1,14 @@
+{
+  "id": "nibei_spr",
+  "baseId": "nibei",
+  "version": "spr",
+  "name": "小泥龟",
+  "tier": 2,
+  "type": "tank",
+  "stats": {
+    "hp": 40,
+    "speed": 40,
+    "dmg": 1
+  },
+  "sourceStatus": "needs_work"
+}

@@ -1,0 +1,14 @@
+{
+  "id": "rabbit2_v2",
+  "baseId": "rabbit2",
+  "version": "v2",
+  "name": "疯兔",
+  "tier": 2,
+  "type": "speed",
+  "stats": {
+    "hp": 22,
+    "speed": 290,
+    "dmg": 2
+  },
+  "sourceStatus": "ready"
+}

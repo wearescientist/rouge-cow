@@ -1,0 +1,14 @@
+{
+  "id": "mother_v10",
+  "baseId": "mother",
+  "version": "v10",
+  "name": "群星母体",
+  "tier": 5,
+  "type": "final_boss",
+  "stats": {
+    "hp": 8000,
+    "speed": 35,
+    "dmg": 30
+  },
+  "sourceStatus": "needs_work"
+}

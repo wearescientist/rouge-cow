@@ -1,0 +1,14 @@
+{
+  "id": "crab_v8",
+  "baseId": "crab",
+  "version": "v8",
+  "name": "蟹王",
+  "tier": 3,
+  "type": "elite",
+  "stats": {
+    "hp": 90,
+    "speed": 45,
+    "dmg": 5
+  },
+  "sourceStatus": "needs_work"
+}

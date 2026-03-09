@@ -1,0 +1,14 @@
+{
+  "id": "panther_v2",
+  "baseId": "panther",
+  "version": "v2",
+  "name": "黑豹",
+  "tier": 2,
+  "type": "assassin",
+  "stats": {
+    "hp": 35,
+    "speed": 260,
+    "dmg": 3
+  },
+  "sourceStatus": "needs_work"
+}

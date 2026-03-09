@@ -1,0 +1,14 @@
+{
+  "id": "pigeon_v2",
+  "baseId": "pigeon",
+  "version": "v2",
+  "name": "腐化鸽",
+  "tier": 1,
+  "type": "common",
+  "stats": {
+    "hp": 18,
+    "speed": 135,
+    "dmg": 1
+  },
+  "sourceStatus": "ready"
+}

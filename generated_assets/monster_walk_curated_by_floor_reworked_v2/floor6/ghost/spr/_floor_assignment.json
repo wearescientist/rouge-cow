@@ -1,0 +1,14 @@
+{
+  "id": "ghost_spr",
+  "baseId": "ghost",
+  "version": "spr",
+  "name": "幽灵",
+  "tier": 2,
+  "type": "ethereal",
+  "stats": {
+    "hp": 20,
+    "speed": 160,
+    "dmg": 2
+  },
+  "sourceStatus": "needs_work"
+}
