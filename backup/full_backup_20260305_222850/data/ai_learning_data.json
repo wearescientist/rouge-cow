@@ -1,0 +1,851 @@
+{
+  "lastUpdated": "2026-02-23T08:54:23.389Z",
+  "gamesPlayed": 289,
+  "strategyWeights": {
+    "SURVIVAL": 0.05,
+    "COMBAT": 0.4627000018867081,
+    "EXPLORATION": 0.07028020516205975,
+    "COLLECTION": 0.0644464850131763,
+    "DOOR_SEEKING": 0.3135505249838887,
+    "RETURN": 0.05
+  },
+  "qTable": {
+    "medium_no_enemies_cleared_low_score": {
+      "explore": 7.901016921609776,
+      "collect": 6.413090727619769
+    },
+    "high_no_enemies_cleared_low_score": {
+      "explore": 22.383821593572396,
+      "collect": 20.983685240905178,
+      "seek_door": 4.737680774578643
+    },
+    "high_no_enemies_uncleared_low_score": {
+      "explore": 28.52805553011816,
+      "seek_door": 46.31983316853314
+    },
+    "low_no_enemies_cleared_low_score": {
+      "collect": 9.992539971017216,
+      "explore": 11.092836745335605
+    },
+    "test": {
+      "combat": 20.135500000000004
+    },
+    "medium_no_enemies_cleared_mid_score": {
+      "explore": 0.039295
+    },
+    "high_no_enemies_cleared_mid_score": {
+      "explore": 52.633566106362444,
+      "collect": 37.60556199401765,
+      "seek_door": 52.62999999999997
+    },
+    "high_has_enemies_cleared_low_score": {
+      "combat": 4.5917187161055635,
+      "collect": 0.010000000000000002,
+      "explore": 0.5271000000000001
+    },
+    "high_has_enemies_uncleared_low_score": {
+      "combat": 10.100000000000005,
+      "explore": 7.615850000000004,
+      "collect": 7.096289252538995
+    },
+    "low_no_enemies_cleared_high_score": {
+      "collect": 1.6707300000000003,
+      "explore": 1.95573
+    },
+    "medium_no_enemies_cleared_high_score": {
+      "collect": 0.2897000000000001,
+      "explore": 3.3482300000000005
+    },
+    "high_no_enemies_cleared_high_score": {
+      "explore": 7.959728723650775,
+      "collect": 8.933465105530038
+    }
+  },
+  "performance": {
+    "gamesPlayed": 289,
+    "averageScore": -117.45,
+    "bestScore": 160,
+    "scoreHistory": [
+      {
+        "game": 190,
+        "score": 100,
+        "result": "dead",
+        "duration": 40845,
+        "timestamp": "2026-02-21T11:25:19.955Z"
+      },
+      {
+        "game": 191,
+        "score": 100,
+        "result": "dead",
+        "duration": 41822,
+        "timestamp": "2026-02-21T11:29:23.310Z"
+      },
+      {
+        "game": 192,
+        "score": 100,
+        "result": "dead",
+        "duration": 7967,
+        "timestamp": "2026-02-21T11:57:50.052Z"
+      },
+      {
+        "game": 193,
+        "score": 100,
+        "result": "dead",
+        "duration": 25442,
+        "timestamp": "2026-02-21T11:58:22.223Z"
+      },
+      {
+        "game": 194,
+        "score": 100,
+        "result": "dead",
+        "duration": 41880,
+        "timestamp": "2026-02-21T11:59:10.857Z"
+      },
+      {
+        "game": 195,
+        "score": 100,
+        "result": "dead",
+        "duration": 6188,
+        "timestamp": "2026-02-21T12:00:31.534Z"
+      },
+      {
+        "game": 196,
+        "score": 100,
+        "result": "dead",
+        "duration": 9811,
+        "timestamp": "2026-02-21T12:00:48.090Z"
+      },
+      {
+        "game": 197,
+        "score": 100,
+        "result": "dead",
+        "duration": 5588,
+        "timestamp": "2026-02-21T12:01:00.396Z"
+      },
+      {
+        "game": 198,
+        "score": 100,
+        "result": "dead",
+        "duration": 9414,
+        "timestamp": "2026-02-21T12:01:16.570Z"
+      },
+      {
+        "game": 199,
+        "score": 100,
+        "result": "dead",
+        "duration": 14145,
+        "timestamp": "2026-02-21T12:01:37.452Z"
+      },
+      {
+        "game": 200,
+        "score": 100,
+        "result": "dead",
+        "duration": 13680,
+        "timestamp": "2026-02-21T12:01:57.911Z"
+      },
+      {
+        "game": 201,
+        "score": 100,
+        "result": "dead",
+        "duration": 5960,
+        "timestamp": "2026-02-21T12:02:10.648Z"
+      },
+      {
+        "game": 202,
+        "score": 100,
+        "result": "dead",
+        "duration": 34361,
+        "timestamp": "2026-02-21T12:02:51.775Z"
+      },
+      {
+        "game": 203,
+        "score": 100,
+        "result": "dead",
+        "duration": 19010,
+        "timestamp": "2026-02-21T12:03:17.549Z"
+      },
+      {
+        "game": 204,
+        "score": 100,
+        "result": "dead",
+        "duration": 6840,
+        "timestamp": "2026-02-21T12:03:31.155Z"
+      },
+      {
+        "game": 205,
+        "score": 100,
+        "result": "dead",
+        "duration": 87215,
+        "timestamp": "2026-02-21T12:05:05.156Z"
+      },
+      {
+        "game": 206,
+        "score": 100,
+        "result": "dead",
+        "duration": 17933,
+        "timestamp": "2026-02-21T12:05:29.895Z"
+      },
+      {
+        "game": 207,
+        "score": 100,
+        "result": "dead",
+        "duration": 11877,
+        "timestamp": "2026-02-21T12:05:48.587Z"
+      },
+      {
+        "game": 208,
+        "score": 100,
+        "result": "dead",
+        "duration": 42157,
+        "timestamp": "2026-02-21T12:06:37.528Z"
+      },
+      {
+        "game": 209,
+        "score": 100,
+        "result": "dead",
+        "duration": 7250,
+        "timestamp": "2026-02-21T12:06:51.537Z"
+      },
+      {
+        "game": 210,
+        "score": 100,
+        "result": "dead",
+        "duration": 26883,
+        "timestamp": "2026-02-21T12:07:25.199Z"
+      },
+      {
+        "game": 211,
+        "score": 100,
+        "result": "dead",
+        "duration": 22734,
+        "timestamp": "2026-02-21T12:07:54.713Z"
+      },
+      {
+        "game": 212,
+        "score": 100,
+        "result": "dead",
+        "duration": 19034,
+        "timestamp": "2026-02-21T12:08:20.541Z"
+      },
+      {
+        "game": 213,
+        "score": 100,
+        "result": "dead",
+        "duration": 20074,
+        "timestamp": "2026-02-21T12:08:47.407Z"
+      },
+      {
+        "game": 214,
+        "score": 100,
+        "result": "dead",
+        "duration": 39819,
+        "timestamp": "2026-02-21T12:09:34.023Z"
+      },
+      {
+        "game": 215,
+        "score": 100,
+        "result": "dead",
+        "duration": 37217,
+        "timestamp": "2026-02-21T12:10:54.712Z"
+      },
+      {
+        "game": 216,
+        "score": 100,
+        "result": "dead",
+        "duration": 16214,
+        "timestamp": "2026-02-21T12:11:17.655Z"
+      },
+      {
+        "game": 217,
+        "score": 100,
+        "result": "dead",
+        "duration": 53457,
+        "timestamp": "2026-02-21T12:12:17.846Z"
+      },
+      {
+        "game": 218,
+        "score": 100,
+        "result": "dead",
+        "duration": 16853,
+        "timestamp": "2026-02-21T12:12:41.456Z"
+      },
+      {
+        "game": 219,
+        "score": 100,
+        "result": "dead",
+        "duration": 10800,
+        "timestamp": "2026-02-21T12:12:59.014Z"
+      },
+      {
+        "game": 220,
+        "score": -270,
+        "result": "dead",
+        "duration": 41716,
+        "timestamp": "2026-02-21T12:37:53.454Z"
+      },
+      {
+        "game": 221,
+        "score": -55,
+        "result": "dead",
+        "duration": 187257,
+        "timestamp": "2026-02-21T12:41:07.538Z"
+      },
+      {
+        "game": 222,
+        "score": -240,
+        "result": "dead",
+        "duration": 27028,
+        "timestamp": "2026-02-21T12:41:41.369Z"
+      },
+      {
+        "game": 223,
+        "score": -260,
+        "result": "dead",
+        "duration": 18844,
+        "timestamp": "2026-02-21T12:42:07.065Z"
+      },
+      {
+        "game": 224,
+        "score": -280,
+        "result": "dead",
+        "duration": 40167,
+        "timestamp": "2026-02-21T12:42:54.125Z"
+      },
+      {
+        "game": 225,
+        "score": -275,
+        "result": "dead",
+        "duration": 4253,
+        "timestamp": "2026-02-21T12:43:05.211Z"
+      },
+      {
+        "game": 226,
+        "score": -245,
+        "result": "dead",
+        "duration": 3502,
+        "timestamp": "2026-02-21T12:43:15.464Z"
+      },
+      {
+        "game": 227,
+        "score": -185,
+        "result": "dead",
+        "duration": 173797,
+        "timestamp": "2026-02-21T12:46:16.029Z"
+      },
+      {
+        "game": 228,
+        "score": -290,
+        "result": "dead",
+        "duration": 115079,
+        "timestamp": "2026-02-21T12:49:49.899Z"
+      },
+      {
+        "game": 229,
+        "score": -270,
+        "result": "dead",
+        "duration": 7259,
+        "timestamp": "2026-02-21T12:50:03.984Z"
+      },
+      {
+        "game": 230,
+        "score": -230,
+        "result": "dead",
+        "duration": 24319,
+        "timestamp": "2026-02-21T12:50:35.099Z"
+      },
+      {
+        "game": 231,
+        "score": -125,
+        "result": "dead",
+        "duration": 40077,
+        "timestamp": "2026-02-21T23:36:36.839Z"
+      },
+      {
+        "game": 232,
+        "score": -115,
+        "result": "dead",
+        "duration": 30471,
+        "timestamp": "2026-02-21T23:37:13.553Z"
+      },
+      {
+        "game": 233,
+        "score": -140,
+        "result": "dead",
+        "duration": 30602,
+        "timestamp": "2026-02-21T23:37:50.372Z"
+      },
+      {
+        "game": 234,
+        "score": -215,
+        "result": "dead",
+        "duration": 19745,
+        "timestamp": "2026-02-21T23:38:16.378Z"
+      },
+      {
+        "game": 235,
+        "score": -105,
+        "result": "dead",
+        "duration": 36275,
+        "timestamp": "2026-02-21T23:38:58.909Z"
+      },
+      {
+        "game": 236,
+        "score": -85,
+        "result": "dead",
+        "duration": 19494,
+        "timestamp": "2026-02-21T23:50:42.748Z"
+      },
+      {
+        "game": 237,
+        "score": -325,
+        "result": "dead",
+        "duration": 7392,
+        "timestamp": "2026-02-21T23:50:56.940Z"
+      },
+      {
+        "game": 238,
+        "score": -300,
+        "result": "dead",
+        "duration": 7372,
+        "timestamp": "2026-02-21T23:51:11.063Z"
+      },
+      {
+        "game": 239,
+        "score": -215,
+        "result": "dead",
+        "duration": 9996,
+        "timestamp": "2026-02-21T23:51:27.831Z"
+      },
+      {
+        "game": 240,
+        "score": -195,
+        "result": "dead",
+        "duration": 11095,
+        "timestamp": "2026-02-21T23:51:45.683Z"
+      },
+      {
+        "game": 241,
+        "score": -215,
+        "result": "dead",
+        "duration": 20131,
+        "timestamp": "2026-02-21T23:52:12.684Z"
+      },
+      {
+        "game": 242,
+        "score": -120,
+        "result": "dead",
+        "duration": 16288,
+        "timestamp": "2026-02-21T23:52:35.783Z"
+      },
+      {
+        "game": 243,
+        "score": -255,
+        "result": "dead",
+        "duration": 8713,
+        "timestamp": "2026-02-21T23:52:51.297Z"
+      },
+      {
+        "game": 244,
+        "score": -210,
+        "result": "dead",
+        "duration": 23079,
+        "timestamp": "2026-02-21T23:53:21.129Z"
+      },
+      {
+        "game": 245,
+        "score": -285,
+        "result": "dead",
+        "duration": 9101,
+        "timestamp": "2026-02-22T00:00:20.873Z"
+      },
+      {
+        "game": 246,
+        "score": -105,
+        "result": "dead",
+        "duration": 16971,
+        "timestamp": "2026-02-22T00:34:48.113Z"
+      },
+      {
+        "game": 247,
+        "score": -145,
+        "result": "dead",
+        "duration": 13594,
+        "timestamp": "2026-02-22T00:35:08.438Z"
+      },
+      {
+        "game": 248,
+        "score": -195,
+        "result": "dead",
+        "duration": 13755,
+        "timestamp": "2026-02-22T00:35:28.921Z"
+      },
+      {
+        "game": 249,
+        "score": -55,
+        "result": "dead",
+        "duration": 16533,
+        "timestamp": "2026-02-22T00:35:52.194Z"
+      },
+      {
+        "game": 250,
+        "score": -245,
+        "result": "dead",
+        "duration": 11513,
+        "timestamp": "2026-02-22T00:36:10.435Z"
+      },
+      {
+        "game": 251,
+        "score": -120,
+        "result": "dead",
+        "duration": 20701,
+        "timestamp": "2026-02-22T00:36:37.963Z"
+      },
+      {
+        "game": 252,
+        "score": -230,
+        "result": "dead",
+        "duration": 19079,
+        "timestamp": "2026-02-22T00:37:03.808Z"
+      },
+      {
+        "game": 253,
+        "score": -275,
+        "result": "dead",
+        "duration": 10132,
+        "timestamp": "2026-02-22T00:37:20.687Z"
+      },
+      {
+        "game": 254,
+        "score": -305,
+        "result": "dead",
+        "duration": 10509,
+        "timestamp": "2026-02-22T00:51:29.505Z"
+      },
+      {
+        "game": 255,
+        "score": -280,
+        "result": "dead",
+        "duration": 8244,
+        "timestamp": "2026-02-22T00:51:44.490Z"
+      },
+      {
+        "game": 256,
+        "score": -280,
+        "result": "dead",
+        "duration": 7378,
+        "timestamp": "2026-02-22T00:51:58.620Z"
+      },
+      {
+        "game": 257,
+        "score": -95,
+        "result": "dead",
+        "duration": 15704,
+        "timestamp": "2026-02-22T00:52:42.795Z"
+      },
+      {
+        "game": 258,
+        "score": -305,
+        "result": "dead",
+        "duration": 175651,
+        "timestamp": "2026-02-22T00:55:45.236Z"
+      },
+      {
+        "game": 259,
+        "score": -75,
+        "result": "dead",
+        "duration": 18440,
+        "timestamp": "2026-02-22T00:56:10.493Z"
+      },
+      {
+        "game": 260,
+        "score": -200,
+        "result": "dead",
+        "duration": 12343,
+        "timestamp": "2026-02-22T01:58:02.472Z"
+      },
+      {
+        "game": 261,
+        "score": -105,
+        "result": "dead",
+        "duration": 22967,
+        "timestamp": "2026-02-22T01:58:32.310Z"
+      },
+      {
+        "game": 262,
+        "score": -270,
+        "result": "dead",
+        "duration": 10109,
+        "timestamp": "2026-02-22T01:58:49.183Z"
+      },
+      {
+        "game": 263,
+        "score": -215,
+        "result": "dead",
+        "duration": 14163,
+        "timestamp": "2026-02-22T01:59:10.137Z"
+      },
+      {
+        "game": 264,
+        "score": -245,
+        "result": "dead",
+        "duration": 10327,
+        "timestamp": "2026-02-22T01:59:27.211Z"
+      },
+      {
+        "game": 265,
+        "score": -205,
+        "result": "dead",
+        "duration": 14129,
+        "timestamp": "2026-02-22T01:59:48.075Z"
+      },
+      {
+        "game": 266,
+        "score": -260,
+        "result": "dead",
+        "duration": 8068,
+        "timestamp": "2026-02-22T02:00:02.897Z"
+      },
+      {
+        "game": 267,
+        "score": -215,
+        "result": "dead",
+        "duration": 15818,
+        "timestamp": "2026-02-22T02:00:25.462Z"
+      },
+      {
+        "game": 268,
+        "score": -300,
+        "result": "dead",
+        "duration": 10585,
+        "timestamp": "2026-02-22T02:00:42.785Z"
+      },
+      {
+        "game": 269,
+        "score": -270,
+        "result": "dead",
+        "duration": 18489,
+        "timestamp": "2026-02-22T02:01:08.086Z"
+      },
+      {
+        "game": 270,
+        "score": -280,
+        "result": "dead",
+        "duration": 8327,
+        "timestamp": "2026-02-22T02:01:23.260Z"
+      },
+      {
+        "game": 271,
+        "score": -285,
+        "result": "dead",
+        "duration": 14366,
+        "timestamp": "2026-02-22T02:01:44.498Z"
+      },
+      {
+        "game": 272,
+        "score": -135,
+        "result": "dead",
+        "duration": 20833,
+        "timestamp": "2026-02-22T02:02:12.198Z"
+      },
+      {
+        "game": 273,
+        "score": -145,
+        "result": "dead",
+        "duration": 20173,
+        "timestamp": "2026-02-22T02:02:39.679Z"
+      },
+      {
+        "game": 274,
+        "score": -105,
+        "result": "dead",
+        "duration": 17993,
+        "timestamp": "2026-02-22T02:15:15.675Z"
+      },
+      {
+        "game": 275,
+        "score": -315,
+        "result": "dead",
+        "duration": 9081,
+        "timestamp": "2026-02-22T02:43:53.190Z"
+      },
+      {
+        "game": 276,
+        "score": -115,
+        "result": "dead",
+        "duration": 17152,
+        "timestamp": "2026-02-22T02:51:30.704Z"
+      },
+      {
+        "game": 277,
+        "score": -245,
+        "result": "dead",
+        "duration": 10354,
+        "timestamp": "2026-02-22T03:46:19.214Z"
+      },
+      {
+        "game": 278,
+        "score": -185,
+        "result": "dead",
+        "duration": 17298,
+        "timestamp": "2026-02-22T06:35:44.545Z"
+      },
+      {
+        "game": 279,
+        "score": -380,
+        "result": "dead",
+        "duration": 5299,
+        "timestamp": "2026-02-22T06:35:56.630Z"
+      },
+      {
+        "game": 280,
+        "score": -440,
+        "result": "dead",
+        "duration": 5802,
+        "timestamp": "2026-02-22T06:36:09.194Z"
+      },
+      {
+        "game": 281,
+        "score": -110,
+        "result": "dead",
+        "duration": 17387,
+        "timestamp": "2026-02-22T06:36:33.357Z"
+      },
+      {
+        "game": 282,
+        "score": -200,
+        "result": "dead",
+        "duration": 13561,
+        "timestamp": "2026-02-22T06:48:46.396Z"
+      },
+      {
+        "game": 283,
+        "score": -225,
+        "result": "dead",
+        "duration": 5994,
+        "timestamp": "2026-02-22T09:34:52.306Z"
+      },
+      {
+        "game": 284,
+        "score": -325,
+        "result": "dead",
+        "duration": 20905,
+        "timestamp": "2026-02-22T17:03:18.707Z"
+      },
+      {
+        "game": 285,
+        "score": -445,
+        "result": "dead",
+        "duration": 4884,
+        "timestamp": "2026-02-22T17:03:30.427Z"
+      },
+      {
+        "game": 286,
+        "score": -105,
+        "result": "dead",
+        "duration": 52673,
+        "timestamp": "2026-02-23T00:27:16.470Z"
+      },
+      {
+        "game": 287,
+        "score": 45,
+        "result": "playing",
+        "duration": 14438,
+        "timestamp": "2026-02-23T08:44:02.186Z"
+      },
+      {
+        "game": 288,
+        "score": -410,
+        "result": "dead",
+        "duration": 5793,
+        "timestamp": "2026-02-23T08:52:04.625Z"
+      },
+      {
+        "game": 289,
+        "score": 160,
+        "result": "playing",
+        "duration": 18625,
+        "timestamp": "2026-02-23T08:54:23.388Z"
+      }
+    ],
+    "strategyEffectiveness": {
+      "SURVIVAL": [],
+      "COMBAT": [
+        66.66666666666667,
+        0,
+        0,
+        5,
+        0.019715224534501644,
+        0.0348605577689243,
+        0
+      ],
+      "EXPLORATION": [
+        0.4979253112033195,
+        2.4074074074074074,
+        2.6582278481012658,
+        2.4757281553398056,
+        2.2072072072072073,
+        0.6304347826086957,
+        0.43478260869565216,
+        0.6032482598607889,
+        0.6156716417910447,
+        0.37861915367483295,
+        0.46511627906976744,
+        0.12658227848101267,
+        0.7186544342507645,
+        0.6119402985074627,
+        16.11111111111111,
+        12.857142857142858,
+        10,
+        13.529411764705882,
+        6,
+        21.25
+      ],
+      "COLLECTION": [
+        0.684931506849315,
+        0.5128205128205128,
+        0.5371900826446281,
+        3.4615384615384617,
+        0.6521739130434783,
+        3.2857142857142856,
+        1.8421052631578947,
+        0.3508771929824561,
+        0.8450704225352113,
+        0.5029585798816568,
+        0.5555555555555556,
+        0.8854166666666666,
+        0.5,
+        -1.6666666666666667,
+        1.0784313725490196,
+        0.4166666666666667,
+        23.333333333333332,
+        10,
+        1.6666666666666667,
+        14
+      ],
+      "DOOR_SEEKING": [
+        0.3827751196172249,
+        3.3333333333333335,
+        0,
+        0,
+        1.6,
+        3.4782608695652173,
+        1.7777777777777777,
+        1.702127659574468,
+        1.4035087719298245,
+        2.2857142857142856,
+        4.444444444444445,
+        4.2105263157894735,
+        4.444444444444445,
+        1.8604651162790697,
+        80,
+        80,
+        80,
+        80,
+        90,
+        90
+      ],
+      "RETURN": []
+    }
+  },
+  "epsilon": 0.194
+}

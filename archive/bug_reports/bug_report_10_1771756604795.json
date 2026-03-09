@@ -1,0 +1,13 @@
+{
+  "trainCount": 10,
+  "timestamp": "2026-02-22T10:36:44.795Z",
+  "summary": {
+    "total": 0,
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "bugs": [],
+  "byType": {}
+}

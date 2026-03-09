@@ -1,0 +1,43 @@
+{
+  "trainCount": 3,
+  "timestamp": "2026-02-20T01:33:31.056Z",
+  "summary": {
+    "total": 1,
+    "critical": 1,
+    "high": 0,
+    "medium": 0,
+    "low": 0
+  },
+  "bugs": [
+    {
+      "bugId": "BUG_001",
+      "trainCount": 2,
+      "timestamp": "2026-02-20T01:33:23.731Z",
+      "type": "logic_error",
+      "severity": "critical",
+      "description": "玩家HP为负数: -5",
+      "details": {
+        "hp": -5,
+        "maxHp": 6
+      },
+      "screenshot": "E:\\AI\\game\\rougelike-cow\\bug_reports\\BUG_001_1771551203731.png"
+    }
+  ],
+  "byType": {
+    "logic_error": [
+      {
+        "bugId": "BUG_001",
+        "trainCount": 2,
+        "timestamp": "2026-02-20T01:33:23.731Z",
+        "type": "logic_error",
+        "severity": "critical",
+        "description": "玩家HP为负数: -5",
+        "details": {
+          "hp": -5,
+          "maxHp": 6
+        },
+        "screenshot": "E:\\AI\\game\\rougelike-cow\\bug_reports\\BUG_001_1771551203731.png"
+      }
+    ]
+  }
+}

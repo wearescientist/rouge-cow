@@ -1,0 +1,11 @@
+{
+  "name": "rouge-cow",
+  "version": "0.26.0",
+  "description": "深根之疫 - Roguelike游戏",
+  "scripts": {
+    "test:balance": "node scripts/auto-balance-test.js",
+    "test:weapon": "node scripts/auto-balance-test.js"
+  },
+  "keywords": ["game", "roguelike", "html5"],
+  "license": "MIT"
+}

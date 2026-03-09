@@ -1,0 +1,71 @@
+{
+    "id": "whip",
+    "name": "鞭子",
+    "name_en": "Whip",
+    "description": "近战武器，攻击范围为扇形，可穿透敌人",
+    "type": "melee",
+    "subtype": "slash",
+    "rarity": "common",
+    "unlock_level": 0,
+    "stats": {
+        "damage": 35,
+        "cooldown": 1.2,
+        "range": 80,
+        "angle": 90,
+        "pierce": 1,
+        "knockback": 5,
+        "crit_chance": 0.05,
+        "crit_multiplier": 1.5
+    },
+    "visual": {
+        "icon": "🪓",
+        "color": "#ff6b6b",
+        "particle_color": "#ff8888",
+        "swing_trail": "slash_red",
+        "hit_effect": "blood_splash",
+        "sound": "whip_crack"
+    },
+    "upgrades": {
+        "max_level": 8,
+        "per_level": {
+            "damage_multiplier": 1.2,
+            "range_multiplier": 1.1,
+            "cooldown_multiplier": 0.95
+        },
+        "milestones": {
+            "2": {
+                "bonus": { "pierce": 1 },
+                "description": "穿透+1"
+            },
+            "4": {
+                "bonus": { "angle": 120 },
+                "description": "攻击角度增加"
+            },
+            "6": {
+                "bonus": { "knockback": 10 },
+                "description": "击退增强"
+            },
+            "8": {
+                "evolution": "blood_whip",
+                "description": "进化为血腥鞭"
+            }
+        }
+    },
+    "evolution": {
+        "target": "blood_whip",
+        "requirements": [
+            { "type": "item", "id": "hollow_heart", "count": 1 }
+        ],
+        "bonus": {
+            "lifesteal": 0.1,
+            "damage_multiplier": 1.5
+        }
+    },
+    "attack_pattern": {
+        "type": "arc",
+        "swing_duration": 0.3,
+        "hit_frame": 0.15,
+        "animation": "whip_swing"
+    },
+    "tags": ["melee", "slash", "pierce", "upgradeable", "evolvable"]
+}

@@ -1,0 +1,1069 @@
+{
+  "trainCount": 5,
+  "timestamp": "2026-02-20T01:05:57.789Z",
+  "summary": {
+    "total": 33,
+    "critical": 1,
+    "high": 0,
+    "medium": 32,
+    "low": 0
+  },
+  "bugs": [
+    {
+      "bugId": "BUG_001",
+      "trainCount": 3,
+      "timestamp": "2026-02-20T01:05:41.032Z",
+      "type": "logic_error",
+      "severity": "critical",
+      "description": "玩家HP为负数: -3",
+      "details": {
+        "hp": -3,
+        "maxHp": 6
+      },
+      "screenshot": "E:\\AI\\game\\rougelike-cow\\bug_reports\\BUG_001_1771549541032.png"
+    },
+    {
+      "bugId": "BUG_002",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:46.623Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 31489,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_003",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:46.766Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 31633,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_004",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:46.915Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 31781,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_005",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:47.064Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 31930,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_006",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:47.216Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 32082,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_007",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:47.372Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 32239,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_008",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:47.531Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 32397,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_009",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:47.698Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 32564,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_010",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:47.848Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 32714,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_011",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:48.033Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 32891,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_012",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:48.190Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 33056,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_013",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:48.351Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 33216,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_014",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:48.498Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 33365,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_015",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:48.648Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 33515,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_016",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:48.806Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 33673,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_017",
+      "trainCount": 4,
+      "timestamp": "2026-02-20T01:05:48.965Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 33832,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_018",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:54.553Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 39419,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_019",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:54.702Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 39569,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_020",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:54.851Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 39718,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_021",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:55.008Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 39875,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_022",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:55.168Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 40035,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_023",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:55.318Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 40185,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_024",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:55.469Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 40336,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_025",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:55.621Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 40488,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_026",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:55.771Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 40638,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_027",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:55.935Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 40802,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_028",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:56.086Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 40953,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_029",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:56.236Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 41103,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_030",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:56.403Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 41269,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_031",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:56.559Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 41426,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_032",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:56.734Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 41594,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    },
+    {
+      "bugId": "BUG_033",
+      "trainCount": 5,
+      "timestamp": "2026-02-20T01:05:56.903Z",
+      "type": "no_progress",
+      "severity": "medium",
+      "description": "30秒内游戏无进展",
+      "details": {
+        "duration": 41770,
+        "lastScore": 65,
+        "currentScore": 50,
+        "room": 1,
+        "enemies": 0
+      },
+      "screenshot": null
+    }
+  ],
+  "byType": {
+    "logic_error": [
+      {
+        "bugId": "BUG_001",
+        "trainCount": 3,
+        "timestamp": "2026-02-20T01:05:41.032Z",
+        "type": "logic_error",
+        "severity": "critical",
+        "description": "玩家HP为负数: -3",
+        "details": {
+          "hp": -3,
+          "maxHp": 6
+        },
+        "screenshot": "E:\\AI\\game\\rougelike-cow\\bug_reports\\BUG_001_1771549541032.png"
+      }
+    ],
+    "no_progress": [
+      {
+        "bugId": "BUG_002",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:46.623Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 31489,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_003",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:46.766Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 31633,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_004",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:46.915Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 31781,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_005",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:47.064Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 31930,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_006",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:47.216Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 32082,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_007",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:47.372Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 32239,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_008",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:47.531Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 32397,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_009",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:47.698Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 32564,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_010",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:47.848Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 32714,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_011",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:48.033Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 32891,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_012",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:48.190Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 33056,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_013",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:48.351Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 33216,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_014",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:48.498Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 33365,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_015",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:48.648Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 33515,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_016",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:48.806Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 33673,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_017",
+        "trainCount": 4,
+        "timestamp": "2026-02-20T01:05:48.965Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 33832,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_018",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:54.553Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 39419,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_019",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:54.702Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 39569,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_020",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:54.851Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 39718,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_021",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:55.008Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 39875,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_022",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:55.168Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 40035,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_023",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:55.318Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 40185,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_024",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:55.469Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 40336,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_025",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:55.621Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 40488,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_026",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:55.771Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 40638,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_027",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:55.935Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 40802,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_028",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:56.086Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 40953,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_029",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:56.236Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 41103,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_030",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:56.403Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 41269,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_031",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:56.559Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 41426,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_032",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:56.734Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 41594,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      },
+      {
+        "bugId": "BUG_033",
+        "trainCount": 5,
+        "timestamp": "2026-02-20T01:05:56.903Z",
+        "type": "no_progress",
+        "severity": "medium",
+        "description": "30秒内游戏无进展",
+        "details": {
+          "duration": 41770,
+          "lastScore": 65,
+          "currentScore": 50,
+          "room": 1,
+          "enemies": 0
+        },
+        "screenshot": null
+      }
+    ]
+  }
+}

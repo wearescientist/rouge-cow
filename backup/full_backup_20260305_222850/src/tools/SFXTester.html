@@ -1,0 +1,1381 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>深根之疫 - 完整音效设计器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            color: #eee;
+            padding: 15px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 2em;
+            background: linear-gradient(45deg, #4f4, #48f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .section {
+            background: rgba(255,255,255,0.03);
+            border: 2px solid #333;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .section-title {
+            color: #4f4;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #333;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-primary { background: linear-gradient(45deg, #4f4, #2a2); color: #000; }
+        .btn-secondary { background: linear-gradient(45deg, #48f, #24a); color: #fff; }
+        .btn-warning { background: linear-gradient(45deg, #fa4, #a82); color: #000; }
+        .btn-danger { background: linear-gradient(45deg, #f44, #a22); color: #fff; }
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.3); }
+        
+        .category-tabs {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .tab {
+            padding: 8px 14px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid #333;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        
+        .tab:hover { border-color: #555; background: rgba(255,255,255,0.1); }
+        .tab.active { border-color: #4f4; background: rgba(79, 255, 79, 0.1); color: #4f4; }
+        .tab.selected { border-color: #fa4; background: rgba(255, 170, 68, 0.2); }
+        
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 12px;
+        }
+        
+        .sound-card {
+            background: rgba(0,0,0,0.2);
+            border: 2px solid #333;
+            border-radius: 10px;
+            padding: 12px;
+            transition: all 0.3s;
+            position: relative;
+        }
+        
+        .sound-card:hover { border-color: #555; transform: translateY(-2px); }
+        .sound-card.playing { border-color: #4f4; box-shadow: 0 0 15px rgba(79, 255, 79, 0.3); }
+        .sound-card.favorite { border-color: #fa4; background: rgba(255, 170, 68, 0.1); }
+        .sound-card.favorite::after {
+            content: '★';
+            position: absolute;
+            top: 5px;
+            right: 8px;
+            color: #fa4;
+            font-size: 16px;
+        }
+        
+        .sound-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        
+        .sound-name {
+            font-size: 12px;
+            font-weight: bold;
+            color: #ccc;
+        }
+        
+        .sound-id {
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .sound-params {
+            font-size: 10px;
+            color: #888;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+        
+        .waveform {
+            height: 30px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+            margin-bottom: 8px;
+            overflow: hidden;
+        }
+        
+        .waveform canvas { width: 100%; height: 100%; }
+        
+        .card-btns {
+            display: flex;
+            gap: 6px;
+        }
+        
+        .card-btn {
+            flex: 1;
+            padding: 6px;
+            border: none;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-play { background: #4f4; color: #000; }
+        .btn-fav { background: #333; color: #888; }
+        .btn-fav.active { background: #fa4; color: #000; }
+        
+        .selection-panel {
+            background: rgba(0,0,0,0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+        }
+        
+        .selection-title {
+            color: #fa4;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        
+        .selection-list {
+            font-family: monospace;
+            font-size: 11px;
+            line-height: 1.6;
+            color: #aaa;
+            white-space: pre-wrap;
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .volume-control input[type="range"] { width: 150px; }
+        
+        .two-column {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        @media (max-width: 900px) {
+            .two-column { grid-template-columns: 1fr; }
+        }
+        
+        .weapon-type, .enemy-type {
+            display: inline-block;
+            padding: 4px 8px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 4px;
+            font-size: 11px;
+            margin-right: 5px;
+            margin-bottom: 5px;
+        }
+        
+        .stats {
+            text-align: center;
+            color: #666;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎵 完整音效设计器</h1>
+        <p>为每种武器、每种怪物材质选择专属音效</p>
+    </div>
+    
+    <div class="volume-control">
+        <label>🔊 音量:</label>
+        <input type="range" id="volumeSlider" min="0" max="100" value="50">
+        <span id="volumeValue">50%</span>
+        <button class="btn btn-danger" onclick="stopAll()">⏹️ 停止</button>
+    </div>
+    
+    <div class="controls">
+        <button class="btn btn-primary" onclick="generateAll()">🎲 生成全部音效</button>
+        <button class="btn btn-warning" onclick="regenerateCurrent()">🔄 重新生成本类</button>
+    </div>
+    
+    <div class="stats" id="stats">点击"生成全部音效"或"重新生成本类"开始</div>
+    
+    <!-- 武器攻击音效 -->
+    <div class="section">
+        <div class="section-title">⚔️ 武器攻击音效</div>
+        <div class="category-tabs" id="weaponTabs">
+            <div class="tab active" onclick="switchTab('weapon', 'whip')">🪄 鞭子</div>
+            <div class="tab" onclick="switchTab('weapon', 'scythe')">⚰️ 镰刀</div>
+            <div class="tab" onclick="switchTab('weapon', 'wand')">🔮 魔杖</div>
+            <div class="tab" onclick="switchTab('weapon', 'knife')">🗡️ 飞刀</div>
+            <div class="tab" onclick="switchTab('weapon', 'axe')">🪓 斧头</div>
+            <div class="tab" onclick="switchTab('weapon', 'cross')">✝️ 十字架</div>
+            <div class="tab" onclick="switchTab('weapon', 'fireball')">🔥 火球</div>
+            <div class="tab" onclick="switchTab('weapon', 'shuriken')">🎯 手里剑</div>
+            <div class="tab" onclick="switchTab('weapon', 'icicle')">❄️ 冰锥</div>
+            <div class="tab" onclick="switchTab('weapon', 'laser')">🔦 激光</div>
+            <div class="tab" onclick="switchTab('weapon', 'poison')">📍 毒镖</div>
+            <div class="tab" onclick="switchTab('weapon', 'bible')">📖 圣经</div>
+            <div class="tab" onclick="switchTab('weapon', 'lightning')">⚡ 闪电</div>
+            <div class="tab" onclick="switchTab('weapon', 'holywater')">💧 圣水</div>
+            <div class="tab" onclick="switchTab('weapon', 'radiance')">🔥 辉耀</div>
+        </div>
+        <div class="sound-grid" id="weaponGrid"></div>
+    </div>
+    
+    <div class="two-column">
+        <!-- 命中音效（按怪物材质） -->
+        <div class="section">
+            <div class="section-title">🎯 命中音效 - 按怪物材质</div>
+            <div class="category-tabs" id="hitTabs">
+                <div class="tab active" onclick="switchTab('hit', 'flesh')">🥩 血肉</div>
+                <div class="tab" onclick="switchTab('hit', 'shell')">🐚 硬壳</div>
+                <div class="tab" onclick="switchTab('hit', 'fur')">🐻 皮毛</div>
+                <div class="tab" onclick="switchTab('hit', 'bird')">🐦 鸟类</div>
+                <div class="tab" onclick="switchTab('hit', 'slime')">💧 粘液</div>
+                <div class="tab" onclick="switchTab('hit', 'bone')">💀 骷髅</div>
+            </div>
+            <div class="sound-grid" id="hitGrid"></div>
+        </div>
+        
+        <!-- 暴击音效（按怪物材质） -->
+        <div class="section">
+            <div class="section-title">💥 暴击音效 - 按怪物材质</div>
+            <div class="category-tabs" id="critTabs">
+                <div class="tab active" onclick="switchTab('crit', 'flesh')">🥩 血肉</div>
+                <div class="tab" onclick="switchTab('crit', 'shell')">🐚 硬壳</div>
+                <div class="tab" onclick="switchTab('crit', 'fur')">🐻 皮毛</div>
+                <div class="tab" onclick="switchTab('crit', 'bird')">🐦 鸟类</div>
+                <div class="tab" onclick="switchTab('crit', 'slime')">💧 粘液</div>
+                <div class="tab" onclick="switchTab('crit', 'bone')">💀 骷髅</div>
+            </div>
+            <div class="sound-grid" id="critGrid"></div>
+        </div>
+    </div>
+    
+    <!-- 其他SFX -->
+    <div class="section">
+        <div class="section-title">🔊 其他游戏音效</div>
+        <div class="category-tabs" id="sfxTabs">
+            <div class="tab active" onclick="switchTab('sfx', 'dash')">💨 冲刺</div>
+            <div class="tab" onclick="switchTab('sfx', 'explosion')">💣 爆炸</div>
+            <div class="tab" onclick="switchTab('sfx', 'levelup')">⬆️ 升级</div>
+            <div class="tab" onclick="switchTab('sfx', 'buy')">💰 购买</div>
+            <div class="tab" onclick="switchTab('sfx', 'gem')">💎 宝石</div>
+            <div class="tab" onclick="switchTab('sfx', 'chest')">📦 宝箱</div>
+            <div class="tab" onclick="switchTab('sfx', 'gameover')">💀 死亡</div>
+            <div class="tab" onclick="switchTab('sfx', 'heal')">❤️ 治疗</div>
+            <div class="tab" onclick="switchTab('sfx', 'hurt')">😵 受伤</div>
+            <div class="tab" onclick="switchTab('sfx', 'kill')">☠️ 击杀</div>
+            <div class="tab" onclick="switchTab('sfx', 'evolve')">✨ 进化</div>
+            <div class="tab" onclick="switchTab('sfx', 'portal')">🌀 传送</div>
+            <div class="tab" onclick="switchTab('sfx', 'spawn')">👻 生成</div>
+            <div class="tab" onclick="switchTab('sfx', 'warning')">⚠️ 警告</div>
+            <div class="tab" onclick="switchTab('sfx', 'wave')">🌊 波次</div>
+            <div class="tab" onclick="switchTab('sfx', 'step')">👟 脚步</div>
+            <div class="tab" onclick="switchTab('sfx', 'land')">⬇️ 落地</div>
+            <div class="tab" onclick="switchTab('sfx', 'ui')">🖱️ UI点击</div>
+        </div>
+        <div class="sound-grid" id="sfxGrid"></div>
+    </div>
+    
+    <!-- BGM -->
+    <div class="section">
+        <div class="section-title">🎶 背景音乐</div>
+        <div class="category-tabs" id="bgmTabs">
+            <div class="tab active" onclick="switchTab('bgm', 'menu')">📋 菜单</div>
+            <div class="tab" onclick="switchTab('bgm', 'normal')">🏠 普通房间</div>
+            <div class="tab" onclick="switchTab('bgm', 'elite')">👹 精英房间</div>
+            <div class="tab" onclick="switchTab('bgm', 'boss')">🐉 Boss战</div>
+            <div class="tab" onclick="switchTab('bgm', 'victory')">🏆 胜利</div>
+        </div>
+        <div class="sound-grid" id="bgmGrid"></div>
+        <div style="margin-top:15px;padding:10px;background:rgba(0,0,0,0.3);border-radius:8px;text-align:center;">
+            <button class="btn btn-primary" onclick="downloadBGM()">💾 下载选中BGM为WAV</button>
+            <span style="color:#888;font-size:12px;margin-left:10px;">将实际听到的音乐导出为音频文件</span>
+        </div>
+    </div>
+    
+    <!-- 选择结果 -->
+    <div class="section">
+        <div class="section-title">📋 音效配置汇总</div>
+        <div class="controls">
+            <button class="btn btn-primary" onclick="copyConfig()">📋 复制配置</button>
+            <button class="btn btn-secondary" onclick="downloadConfig()">💾 下载JSON</button>
+            <button class="btn btn-warning" onclick="clearSelection()">🗑️ 清空选择</button>
+        </div>
+        <div class="selection-panel">
+            <div class="selection-title">当前选择（每类一个★）</div>
+            <div class="selection-list" id="selectionList">
+暂无选择，点击音效卡片上的 ★ 按钮选择
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ==================== 配置 ====================
+        const CATEGORIES = {
+            weapon: ['whip', 'scythe', 'wand', 'knife', 'axe', 'cross', 'fireball', 'shuriken', 'icicle', 'laser', 'poison', 'bible', 'lightning', 'holywater', 'radiance'],
+            hit: ['flesh', 'shell', 'fur', 'bird', 'slime', 'bone'],
+            crit: ['flesh', 'shell', 'fur', 'bird', 'slime', 'bone'],
+            sfx: ['dash', 'explosion', 'levelup', 'buy', 'gem', 'chest', 'gameover', 'heal', 'hurt', 'kill', 'evolve', 'portal', 'spawn', 'warning', 'wave', 'step', 'land', 'ui'],
+            bgm: ['menu', 'normal', 'elite', 'boss', 'victory']
+        };
+        
+        const NAMES = {
+            whip: '🪄 鞭子', scythe: '⚰️ 镰刀', wand: '🔮 魔杖', knife: '🗡️ 飞刀', 
+            axe: '🪓 斧头', cross: '✝️ 十字架', fireball: '🔥 火球', shuriken: '🎯 手里剑',
+            icicle: '❄️ 冰锥', laser: '🔦 激光', poison: '📍 毒镖', bible: '📖 圣经',
+            lightning: '⚡ 闪电', holywater: '💧 圣水', radiance: '🔥 辉耀',
+            flesh: '🥩 血肉', shell: '🐚 硬壳', fur: '🐻 皮毛', bird: '🐦 鸟类', slime: '💧 粘液', bone: '💀 骷髅',
+            dash: '💨 冲刺', explosion: '💣 爆炸', levelup: '⬆️ 升级', buy: '💰 购买', 
+            gem: '💎 宝石', chest: '📦 宝箱', gameover: '💀 死亡', heal: '❤️ 治疗',
+            hurt: '😵 受伤', kill: '☠️ 击杀', evolve: '✨ 进化', portal: '🌀 传送',
+            spawn: '👻 生成', warning: '⚠️ 警告', wave: '🌊 波次', step: '👟 脚步', land: '⬇️ 落地', ui: '🖱️ UI点击',
+            menu: '📋 菜单', normal: '🏠 普通', elite: '👹 精英', boss: '🐉 Boss', victory: '🏆 胜利'
+        };
+        
+        // ==================== 状态 ====================
+        let audioCtx = null;
+        let sounds = {};
+        let selection = { weapon: {}, hit: {}, crit: {}, sfx: {}, bgm: {} };
+        let currentTab = { weapon: 'whip', hit: 'flesh', crit: 'flesh', sfx: 'dash', bgm: 'menu' };
+        let currentPlaying = null;
+        let bgmNodes = [];
+        
+        // ==================== 初始化 ====================
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            document.getElementById('volumeValue').textContent = e.target.value + '%';
+        });
+        
+        function getVol() { return document.getElementById('volumeSlider').value / 100; }
+        
+        // ==================== 生成音效变体 ====================
+        // 风格定义 - 每个index对应一种独特风格
+        const STYLE_PRESETS = [
+            { name: '8-bit', waveform: 'square',   freqMult: 1.0,  durationMult: 0.8,  noise: 0,    vibrato: false, sweep: 'none' },
+            { name: '模拟',  waveform: 'sawtooth', freqMult: 0.8,  durationMult: 1.2,  noise: 0.1,  vibrato: true,  sweep: 'down' },
+            { name: '科幻',  waveform: 'sine',     freqMult: 1.5,  durationMult: 1.5,  noise: 0.2,  vibrato: true,  sweep: 'up' },
+            { name: '卡通',  waveform: 'triangle', freqMult: 0.6,  durationMult: 0.5,  noise: 0,    vibrato: false, sweep: 'none' },
+            { name: '重击',  waveform: 'sawtooth', freqMult: 0.4,  durationMult: 1.0,  noise: 0.3,  vibrato: false, sweep: 'down' },
+            { name: '清脆',  waveform: 'sine',     freqMult: 2.0,  durationMult: 0.3,  noise: 0,    vibrato: false, sweep: 'none' },
+            { name: '幽灵',  waveform: 'triangle', freqMult: 0.5,  durationMult: 2.0,  noise: 0.1,  vibrato: true,  sweep: 'down' },
+            { name: '机械',  waveform: 'square',   freqMult: 1.2,  durationMult: 0.6,  noise: 0.15, vibrato: false, sweep: 'none' },
+            { name: '液态',  waveform: 'sine',     freqMult: 0.7,  durationMult: 1.3,  noise: 0.05, vibrato: true,  sweep: 'up' },
+            { name: '电音',  waveform: 'sawtooth', freqMult: 1.8,  durationMult: 0.9,  noise: 0.25, vibrato: true,  sweep: 'up' },
+            { name: '木质感', waveform: 'triangle', freqMult: 0.9,  durationMult: 1.1,  noise: 0.08, vibrato: false, sweep: 'down' },
+            { name: '金属',  waveform: 'square',   freqMult: 1.3,  durationMult: 0.7,  noise: 0.2,  vibrato: true,  sweep: 'none' }
+        ];
+        
+        function generateVariant(category, subcategory, index) {
+            const style = STYLE_PRESETS[index % STYLE_PRESETS.length];
+            const p = {
+                id: `${subcategory}_${index + 1}`,
+                category, subcategory, index,
+                waveform: style.waveform,
+                freq: 200 + Math.random() * 500,
+                freqEnd: 0,
+                duration: 0.1,
+                attack: 0.01,
+                decay: 0.09,
+                sweep: style.sweep,
+                noise: style.noise,
+                vibrato: style.vibrato,
+                style: style.name
+            };
+            
+            // 根据类别调整参数
+            switch(category) {
+                case 'weapon':
+                    p.duration = 0.05 + Math.random() * 0.15;
+                    switch(subcategory) {
+                        case 'whip': p.freq = 300 + Math.random() * 400; p.sweep = 'down'; p.waveform = 'sawtooth'; break;
+                        case 'scythe': p.freq = 200 + Math.random() * 300; p.sweep = 'down'; p.waveform = 'sawtooth'; break;
+                        case 'wand': p.freq = 600 + Math.random() * 800; p.waveform = 'sine'; break;
+                        case 'knife': p.freq = 800 + Math.random() * 1200; p.duration = 0.03 + Math.random() * 0.05; break;
+                        case 'axe': p.freq = 250 + Math.random() * 350; p.sweep = 'down'; p.waveform = 'square'; break;
+                        case 'cross': p.freq = 500 + Math.random() * 600; p.vibrato = true; break;
+                        case 'fireball': p.freq = 150 + Math.random() * 200; p.noise = 0.5; p.sweep = 'down'; break;
+                        case 'shuriken': p.freq = 700 + Math.random() * 900; p.duration = 0.04 + Math.random() * 0.06; break;
+                        case 'icicle': p.freq = 400 + Math.random() * 600; p.waveform = 'sine'; break;
+                        case 'laser': p.freq = 600 + Math.random() * 800; p.waveform = 'sawtooth'; break;
+                        case 'poison': p.freq = 200 + Math.random() * 300; p.sweep = 'up'; break;
+                        case 'bible': p.freq = 300 + Math.random() * 400; p.vibrato = true; break;
+                        case 'lightning': p.freq = 800 + Math.random() * 1000; p.duration = 0.02 + Math.random() * 0.03; p.noise = 0.3; break;
+                        case 'holywater': p.freq = 250 + Math.random() * 350; p.waveform = 'sine'; break;
+                        case 'radiance': p.freq = 200 + Math.random() * 300; p.noise = 0.2; break;
+                    }
+                    break;
+                    
+                case 'hit':
+                    p.freq = 150 + Math.random() * 400;
+                    p.duration = 0.04 + Math.random() * 0.08;
+                    p.waveform = Math.random() > 0.5 ? 'sawtooth' : 'square';
+                    switch(subcategory) {
+                        case 'flesh': p.freq = 180 + Math.random() * 200; p.noise = 0.2; break;
+                        case 'shell': p.freq = 400 + Math.random() * 600; p.waveform = 'square'; break;
+                        case 'fur': p.freq = 120 + Math.random() * 180; p.noise = 0.15; break;
+                        case 'bird': p.freq = 300 + Math.random() * 400; p.waveform = 'triangle'; break;
+                        case 'slime': p.freq = 100 + Math.random() * 150; p.sweep = 'down'; p.waveform = 'sine'; break;
+                        case 'bone': p.freq = 500 + Math.random() * 700; p.waveform = 'square'; break;
+                    }
+                    break;
+                    
+                case 'crit':
+                    p.freq = 400 + Math.random() * 800;
+                    p.duration = 0.15 + Math.random() * 0.15;
+                    p.vibrato = true;
+                    switch(subcategory) {
+                        case 'flesh': p.freq = 350 + Math.random() * 300; p.noise = 0.3; break;
+                        case 'shell': p.freq = 600 + Math.random() * 800; p.waveform = 'sawtooth'; break;
+                        case 'fur': p.freq = 250 + Math.random() * 250; break;
+                        case 'bird': p.freq = 500 + Math.random() * 500; break;
+                        case 'slime': p.freq = 200 + Math.random() * 200; p.waveform = 'sine'; break;
+                        case 'bone': p.freq = 700 + Math.random() * 1000; p.waveform = 'square'; break;
+                    }
+                    break;
+                    
+                case 'sfx':
+                    switch(subcategory) {
+                        case 'dash': p.freq = 200 + Math.random() * 300; p.sweep = 'up'; p.duration = 0.1 + Math.random() * 0.1; break;
+                        case 'explosion': p.freq = 80 + Math.random() * 120; p.noise = 0.7; p.duration = 0.3 + Math.random() * 0.3; break;
+                        case 'levelup': p.freq = 400 + Math.random() * 400; p.sweep = 'up'; p.duration = 0.3 + Math.random() * 0.2; p.vibrato = true; break;
+                        case 'buy': p.freq = 800 + Math.random() * 600; p.waveform = 'sine'; p.duration = 0.1 + Math.random() * 0.1; break;
+                        case 'gem': p.freq = 1200 + Math.random() * 1000; p.waveform = 'sine'; break;
+                        case 'chest': p.freq = 250 + Math.random() * 250; p.duration = 0.2 + Math.random() * 0.2; break;
+                        case 'gameover': p.freq = 150 + Math.random() * 150; p.sweep = 'down'; p.duration = 0.6 + Math.random() * 0.4; break;
+                        case 'heal': p.freq = 300 + Math.random() * 300; p.sweep = 'up'; p.waveform = 'sine'; break;
+                        case 'hurt': p.freq = 150 + Math.random() * 200; p.duration = 0.1 + Math.random() * 0.1; break;
+                        case 'kill': p.freq = 80 + Math.random() * 120; p.noise = 0.3; p.duration = 0.3 + Math.random() * 0.2; break;
+                        case 'evolve': p.freq = 400 + Math.random() * 500; p.sweep = 'up'; p.vibrato = true; p.duration = 0.5 + Math.random() * 0.3; break;
+                        case 'portal': p.freq = 200 + Math.random() * 300; p.sweep = 'down'; p.waveform = 'sine'; break;
+                        case 'spawn': p.freq = 180 + Math.random() * 220; p.sweep = 'up'; break;
+                        case 'warning': p.freq = 500 + Math.random() * 500; p.vibrato = true; p.duration = 0.2 + Math.random() * 0.2; break;
+                        case 'wave': p.freq = 100 + Math.random() * 150; p.duration = 0.4 + Math.random() * 0.3; break;
+                        case 'step': p.freq = 80 + Math.random() * 100; p.duration = 0.03 + Math.random() * 0.02; p.noise = 0.4; break;
+                        case 'land': p.freq = 120 + Math.random() * 150; p.duration = 0.05 + Math.random() * 0.05; break;
+                        case 'ui': p.freq = 600 + Math.random() * 800; p.duration = 0.03 + Math.random() * 0.02; p.waveform = 'sine'; break;
+                    }
+                    break;
+                    
+                case 'bgm':
+                    p.tempo = 80 + Math.random() * 60;
+                    p.duration = 30 + Math.random() * 30; // 30-60秒
+                    p.bars = Math.floor(p.duration / (60 / p.tempo * 4)); // 计算小节数
+                    
+                    // 和弦进行
+                    const progressions = [
+                        [0, 4, 7, 11], [0, 3, 7, 10], [0, 4, 7, 9], [0, 5, 7, 10], // I-IV-V-vi 变体
+                        [0, 3, 5, 8], [0, 4, 6, 9], [0, 3, 5, 9], [0, 5, 7, 10],   // 小调
+                        [0, 4, 7, 11], [0, 5, 9, 0], [0, 7, 11, 2], [0, 4, 7, 11]  // 复杂进行
+                    ];
+                    p.progression = progressions[Math.floor(Math.random() * progressions.length)];
+                    p.scale = p.progression;
+                    
+                    switch(subcategory) {
+                        case 'menu': 
+                            p.tempo = 75 + Math.random() * 20; 
+                            p.style = 'ambient';
+                            p.instruments = ['pad', 'bell', 'bass'];
+                            break;
+                        case 'normal': 
+                            p.tempo = 100 + Math.random() * 25; 
+                            p.style = 'groove';
+                            p.instruments = ['drum', 'bass', 'chord', 'arp'];
+                            break;
+                        case 'elite': 
+                            p.tempo = 125 + Math.random() * 25; 
+                            p.style = 'intense';
+                            p.instruments = ['drum_heavy', 'bass_aggressive', 'chord', 'lead'];
+                            break;
+                        case 'boss': 
+                            p.tempo = 130 + Math.random() * 25; 
+                            p.style = 'epic';
+                            p.instruments = ['drum_epic', 'bass_dark', 'orch', 'choir'];
+                            break;
+                        case 'victory': 
+                            p.tempo = 115 + Math.random() * 20; 
+                            p.style = 'celebration';
+                            p.instruments = ['drum', 'bass', 'brass', 'bell'];
+                            break;
+                    }
+                    p.desc = `${p.style} ${Math.round(p.tempo)}BPM ${p.bars}小节`;
+                    break;
+            }
+            
+            // 应用风格参数
+            p.freq *= style.freqMult;
+            p.duration = (p.duration || 0.1) * style.durationMult;
+            
+            p.freqEnd = p.sweep === 'down' ? p.freq * 0.3 : (p.sweep === 'up' ? p.freq * 2 : p.freq);
+            p.attack = p.duration * 0.1;
+            p.decay = p.duration * 0.9;
+            
+            // 生成描述 - 显示风格名
+            p.desc = `${style.name} ${Math.round(p.freq)}Hz`;
+            
+            return p;
+        }
+        
+        // ==================== 播放 ====================
+        function playSound(params) {
+            initAudio();
+            const t = audioCtx.currentTime;
+            const gain = audioCtx.createGain();
+            gain.connect(audioCtx.destination);
+            gain.gain.setValueAtTime(0, t);
+            gain.gain.linearRampToValueAtTime(getVol(), t + params.attack);
+            gain.gain.exponentialRampToValueAtTime(0.001, t + params.duration);
+            
+            if (params.category === 'bgm') {
+                // 生成长达30-60秒的完整BGM
+                stopAll();
+                const beatTime = 60 / params.tempo;
+                const totalBeats = params.bars * 4;
+                const scaleFreqs = params.scale.map(s => 220 * Math.pow(2, s / 12));
+                
+                // 和弦进行 - 每4小节变化
+                const chordProgression = [
+                    [0, 4, 7], [3, 7, 10], [4, 7, 11], [0, 4, 7], // I-IV-V-I
+                    [0, 3, 7], [5, 9, 0], [7, 11, 2], [0, 4, 7]   // i-VI-VII-i
+                ];
+                
+                for (let beat = 0; beat < totalBeats; beat++) {
+                    const noteTime = t + beat * beatTime;
+                    const bar = Math.floor(beat / 4);
+                    const beatInBar = beat % 4;
+                    const section = Math.floor(bar / 4) % 2; // A段/B段交替
+                    
+                    // 获取当前和弦
+                    const chordIdx = bar % chordProgression.length;
+                    const chord = chordProgression[chordIdx];
+                    const chordFreqs = chord.map(n => 220 * Math.pow(2, n / 12));
+                    
+                    // ========== 鼓点 (每拍) ==========
+                    if (params.instruments.includes('drum') || params.instruments.includes('drum_heavy') || params.instruments.includes('drum_epic')) {
+                        const drumIntensity = params.style === 'epic' ? 1.2 : (params.style === 'intense' ? 1.0 : 0.7);
+                        
+                        // Kick - 第1拍和第3拍
+                        if (beatInBar === 0 || beatInBar === 2) {
+                            const kick = audioCtx.createOscillator();
+                            kick.frequency.setValueAtTime(150, noteTime);
+                            kick.frequency.exponentialRampToValueAtTime(40, noteTime + 0.1);
+                            const kickGain = audioCtx.createGain();
+                            kickGain.gain.setValueAtTime(getVol() * 0.6 * drumIntensity, noteTime);
+                            kickGain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.15);
+                            kick.connect(kickGain);
+                            kickGain.connect(audioCtx.destination);
+                            kick.start(noteTime);
+                            kick.stop(noteTime + 0.15);
+                            bgmNodes.push(kick, kickGain);
+                        }
+                        
+                        // Snare - 第2拍和第4拍
+                        if (beatInBar === 1 || beatInBar === 3) {
+                            const snare = audioCtx.createBufferSource();
+                            const bufferSize = audioCtx.sampleRate * 0.1;
+                            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                            const data = buffer.getChannelData(0);
+                            for (let i = 0; i < bufferSize; i++) {
+                                data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+                            }
+                            snare.buffer = buffer;
+                            const snareFilter = audioCtx.createBiquadFilter();
+                            snareFilter.type = 'highpass';
+                            snareFilter.frequency.value = 1500;
+                            const snareGain = audioCtx.createGain();
+                            snareGain.gain.setValueAtTime(getVol() * 0.4 * drumIntensity, noteTime);
+                            snareGain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.1);
+                            snare.connect(snareFilter);
+                            snareFilter.connect(snareGain);
+                            snareGain.connect(audioCtx.destination);
+                            snare.start(noteTime);
+                            bgmNodes.push(snare, snareFilter, snareGain);
+                        }
+                        
+                        // Hi-hat - 每拍的后半拍
+                        if (params.tempo > 110) {
+                            const hihat = audioCtx.createBufferSource();
+                            const bufferSize = audioCtx.sampleRate * 0.03;
+                            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                            const data = buffer.getChannelData(0);
+                            for (let i = 0; i < bufferSize; i++) {
+                                data[i] = (Math.random() * 2 - 1);
+                            }
+                            hihat.buffer = buffer;
+                            const hihatFilter = audioCtx.createBiquadFilter();
+                            hihatFilter.type = 'highpass';
+                            hihatFilter.frequency.value = 8000;
+                            const hihatGain = audioCtx.createGain();
+                            hihatGain.gain.setValueAtTime(getVol() * 0.2, noteTime + beatTime / 2);
+                            hihatGain.gain.exponentialRampToValueAtTime(0.001, noteTime + beatTime / 2 + 0.03);
+                            hihat.connect(hihatFilter);
+                            hihatFilter.connect(hihatGain);
+                            hihatGain.connect(audioCtx.destination);
+                            hihat.start(noteTime + beatTime / 2);
+                            bgmNodes.push(hihat, hihatFilter, hihatGain);
+                        }
+                    }
+                    
+                    // ========== 贝斯 (每小节第1拍) ==========
+                    if ((params.instruments.includes('bass') || params.instruments.includes('bass_aggressive') || params.instruments.includes('bass_dark')) && beatInBar === 0) {
+                        const bassType = params.instruments.includes('bass_aggressive') ? 'sawtooth' : 'triangle';
+                        const bassFreq = chordFreqs[0] / 2; // 低八度
+                        
+                        const bass = audioCtx.createOscillator();
+                        bass.type = bassType;
+                        bass.frequency.value = bassFreq;
+                        const bassGain = audioCtx.createGain();
+                        const bassVol = params.instruments.includes('bass_dark') ? 0.5 : 0.35;
+                        bassGain.gain.setValueAtTime(getVol() * bassVol, noteTime);
+                        bassGain.gain.setValueAtTime(getVol() * bassVol, noteTime + beatTime * 3.8);
+                        bassGain.gain.linearRampToValueAtTime(0.001, noteTime + beatTime * 4);
+                        
+                        // 贝斯滤波器
+                        const bassFilter = audioCtx.createBiquadFilter();
+                        bassFilter.type = 'lowpass';
+                        bassFilter.frequency.value = 800;
+                        bassFilter.Q.value = 2;
+                        
+                        bass.connect(bassFilter);
+                        bassFilter.connect(bassGain);
+                        bassGain.connect(audioCtx.destination);
+                        bass.start(noteTime);
+                        bass.stop(noteTime + beatTime * 4);
+                        bgmNodes.push(bass, bassFilter, bassGain);
+                    }
+                    
+                    // ========== 和弦铺底 (每2拍) ==========
+                    if (params.instruments.includes('chord') || params.instruments.includes('pad') || params.instruments.includes('orch')) {
+                        if (beatInBar % 2 === 0) {
+                            const chordType = params.instruments.includes('orch') ? 'sawtooth' : 'sine';
+                            const chordVol = params.instruments.includes('orch') ? 0.15 : 0.12;
+                            
+                            chordFreqs.forEach((f, i) => {
+                                const osc = audioCtx.createOscillator();
+                                osc.type = chordType;
+                                osc.frequency.value = f;
+                                const g = audioCtx.createGain();
+                                g.gain.setValueAtTime(0, noteTime);
+                                g.gain.linearRampToValueAtTime(getVol() * chordVol, noteTime + 0.1);
+                                g.gain.setValueAtTime(getVol() * chordVol, noteTime + beatTime * 1.5);
+                                g.gain.linearRampToValueAtTime(0.001, noteTime + beatTime * 2);
+                                osc.connect(g);
+                                g.connect(audioCtx.destination);
+                                osc.start(noteTime);
+                                osc.stop(noteTime + beatTime * 2);
+                                bgmNodes.push(osc, g);
+                            });
+                        }
+                    }
+                    
+                    // ========== 琶音/旋律 (8分音符) ==========
+                    if ((params.instruments.includes('arp') || params.instruments.includes('lead')) && beatInBar % 2 === 0) {
+                        const pattern = section === 0 ? [0, 2, 1, 2] : [2, 1, 0, 1]; // A段/B段不同模式
+                        const noteIdx = pattern[Math.floor(beat / 2) % 4];
+                        const freq = chordFreqs[noteIdx % chordFreqs.length] * (section === 1 ? 2 : 1);
+                        
+                        const osc = audioCtx.createOscillator();
+                        osc.type = 'sine';
+                        osc.frequency.value = freq;
+                        const g = audioCtx.createGain();
+                        g.gain.setValueAtTime(getVol() * 0.15, noteTime);
+                        g.gain.exponentialRampToValueAtTime(0.001, noteTime + beatTime);
+                        osc.connect(g);
+                        g.connect(audioCtx.destination);
+                        osc.start(noteTime);
+                        osc.stop(noteTime + beatTime);
+                        bgmNodes.push(osc, g);
+                    }
+                    
+                    // ========== 铃音/特殊效果 ==========
+                    if (params.instruments.includes('bell') && beatInBar === 0 && bar % 2 === 0) {
+                        const bell = audioCtx.createOscillator();
+                        bell.type = 'sine';
+                        bell.frequency.value = scaleFreqs[0] * 4;
+                        const bellGain = audioCtx.createGain();
+                        bellGain.gain.setValueAtTime(getVol() * 0.2, noteTime);
+                        bellGain.gain.exponentialRampToValueAtTime(0.001, noteTime + 1);
+                        bell.connect(bellGain);
+                        bellGain.connect(audioCtx.destination);
+                        bell.start(noteTime);
+                        bell.stop(noteTime + 1);
+                        bgmNodes.push(bell, bellGain);
+                    }
+                }
+                
+                return { duration: params.duration * 1000 };
+            }
+            
+            // SFX
+            const osc = audioCtx.createOscillator();
+            osc.type = params.waveform;
+            osc.frequency.setValueAtTime(params.freq, t);
+            if (params.sweep === 'down') {
+                osc.frequency.exponentialRampToValueAtTime(Math.max(50, params.freqEnd), t + params.duration);
+            } else if (params.sweep === 'up') {
+                osc.frequency.exponentialRampToValueAtTime(params.freqEnd, t + params.duration);
+            }
+            
+            if (params.vibrato) {
+                const vib = audioCtx.createOscillator();
+                vib.frequency.value = 15;
+                const vibGain = audioCtx.createGain();
+                vibGain.gain.value = params.freq * 0.1;
+                vib.connect(vibGain);
+                vibGain.connect(osc.frequency);
+                vib.start(t);
+                vib.stop(t + params.duration);
+            }
+            
+            osc.connect(gain);
+            osc.start(t);
+            osc.stop(t + params.duration);
+            
+            // 噪声
+            if (params.noise > 0) {
+                const bufferSize = audioCtx.sampleRate * params.duration;
+                const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                const data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = (Math.random() * 2 - 1) * params.noise;
+                const noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                const noiseFilter = audioCtx.createBiquadFilter();
+                noiseFilter.type = 'lowpass';
+                noiseFilter.frequency.value = params.freq;
+                const noiseGain = audioCtx.createGain();
+                noiseGain.gain.setValueAtTime(getVol() * params.noise, t);
+                noiseGain.gain.exponentialRampToValueAtTime(0.001, t + params.duration);
+                noise.connect(noiseFilter);
+                noiseFilter.connect(noiseGain);
+                noiseGain.connect(audioCtx.destination);
+                noise.start(t);
+            }
+            
+            return { duration: params.duration * 1000 };
+        }
+        
+        function stopAll() {
+            bgmNodes.forEach(n => { try { n.stop ? n.stop() : n.gain.setValueAtTime(0, audioCtx.currentTime); } catch(e) {} });
+            bgmNodes = [];
+            document.querySelectorAll('.card-btn').forEach(b => {
+                if (b.textContent === '⏹️') b.textContent = '▶️';
+            });
+        }
+        
+        // ==================== 界面 ====================
+        function generateAll() {
+            Object.keys(CATEGORIES).forEach(cat => {
+                sounds[cat] = {};
+                CATEGORIES[cat].forEach(sub => {
+                    sounds[cat][sub] = [];
+                    for (let i = 0; i < 12; i++) {
+                        sounds[cat][sub].push(generateVariant(cat, sub, i));
+                    }
+                });
+            });
+            updateStats();
+            renderAll();
+        }
+        
+        // 重新生成当前类别的音效（不同随机种子）
+        let regenerateSeed = 0;
+        function regenerateCurrent() {
+            // 确定当前显示的类别
+            let currentCategory = null;
+            let currentSub = null;
+            
+            // 检查哪个类别当前有显示内容
+            for (const cat of Object.keys(CATEGORIES)) {
+                const grid = document.getElementById(cat + 'Grid');
+                if (grid && grid.children.length > 0) {
+                    currentCategory = cat;
+                    currentSub = currentTab[cat];
+                    break;
+                }
+            }
+            
+            if (!currentCategory || !currentSub) {
+                alert('请先选择一个类别');
+                return;
+            }
+            
+            // 增加种子，确保生成不同结果
+            regenerateSeed += 100;
+            
+            // 重新生成该子类别的音效
+            sounds[currentCategory][currentSub] = [];
+            for (let i = 0; i < 12; i++) {
+                // 使用偏移后的index选择风格，但基础频率使用随机
+                const styleIndex = (i + regenerateSeed) % STYLE_PRESETS.length;
+                const variant = generateVariant(currentCategory, currentSub, styleIndex);
+                // 修改ID以反映新的生成
+                variant.id = `${currentSub}_${i + 1}_v${regenerateSeed}`;
+                sounds[currentCategory][currentSub].push(variant);
+            }
+            
+            // 清除该子类别的选择（因为音效已变）
+            if (selection[currentCategory][currentSub]) {
+                delete selection[currentCategory][currentSub];
+                updateSelectionList();
+            }
+            
+            updateStats();
+            renderGrid(currentCategory);
+        }
+        
+        function updateStats() {
+            let total = 0;
+            Object.values(sounds).forEach(cat => Object.values(cat).forEach(arr => total += arr.length));
+            let sel = 0;
+            Object.values(selection).forEach(cat => sel += Object.keys(cat).length);
+            document.getElementById('stats').textContent = `总音效: ${total} 个 | 已选择: ${sel} 类`;
+        }
+        
+        function switchTab(category, subcategory) {
+            currentTab[category] = subcategory;
+            document.querySelectorAll(`#${category}Tabs .tab`).forEach(t => {
+                t.classList.remove('active');
+                if (t.textContent.includes(NAMES[subcategory])) t.classList.add('active');
+            });
+            renderGrid(category);
+        }
+        
+        function renderAll() {
+            ['weapon', 'hit', 'crit', 'sfx', 'bgm'].forEach(cat => renderGrid(cat));
+            updateSelectionList();
+        }
+        
+        function renderGrid(category) {
+            const grid = document.getElementById(category + 'Grid');
+            const sub = currentTab[category];
+            const arr = sounds[category]?.[sub] || [];
+            
+            grid.innerHTML = '';
+            arr.forEach((sound, idx) => {
+                const card = document.createElement('div');
+                card.className = 'sound-card';
+                card.dataset.id = sound.id;
+                
+                const isSelected = selection[category][sub]?.id === sound.id;
+                if (isSelected) card.classList.add('favorite');
+                
+                // BGM显示不同的信息
+                const isBGM = category === 'bgm';
+                const paramText = isBGM 
+                    ? `速度: ${Math.round(sound.tempo)}BPM | ${sound.bars}小节 | ${sound.duration.toFixed(0)}秒`
+                    : `波形: ${sound.waveform} | 时长: ${sound.duration.toFixed(3)}s`;
+                
+                const styleText = isBGM && sound.instruments
+                    ? `<br>风格: ${sound.style} | 乐器: ${sound.instruments.slice(0, 3).join(',')}`
+                    : '';
+                
+                card.innerHTML = `
+                    <div class="sound-header">
+                        <span class="sound-name">${sound.desc}</span>
+                        <span class="sound-id">#${idx + 1}</span>
+                    </div>
+                    <div class="sound-params">
+                        ${paramText}
+                        ${styleText}
+                    </div>
+                    <div class="waveform"><canvas id="wave_${category}_${sub}_${idx}" width="160" height="30"></canvas></div>
+                    <div class="card-btns">
+                        <button class="card-btn btn-play" onclick="playOne('${category}', '${sub}', ${idx}, this)">▶️</button>
+                        <button class="card-btn btn-fav ${isSelected ? 'active' : ''}" onclick="selectOne('${category}', '${sub}', ${idx}, this)">★</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+                drawWave(sound, `wave_${category}_${sub}_${idx}`);
+            });
+        }
+        
+        function drawWave(p, id) {
+            const c = document.getElementById(id);
+            if (!c) return;
+            const ctx = c.getContext('2d');
+            ctx.fillStyle = 'rgba(0,0,0,0.3)';
+            ctx.fillRect(0, 0, c.width, c.height);
+            
+            if (p.category === 'bgm') {
+                // BGM波形 - 显示节奏结构
+                ctx.strokeStyle = '#48f';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                
+                const beats = 16; // 显示16拍的预览
+                for (let x = 0; x < c.width; x++) {
+                    const beatPos = (x / c.width) * beats;
+                    const beat = Math.floor(beatPos);
+                    const beatFrac = beatPos - beat;
+                    
+                    // 模拟鼓点和贝斯
+                    let y = 0;
+                    
+                    // Kick on 0, 2, 4, 6, 8, 10, 12, 14
+                    if (beat % 2 === 0 && beatFrac < 0.3) {
+                        y += Math.sin(beatFrac * Math.PI / 0.3) * 0.8;
+                    }
+                    
+                    // Snare on 1, 3, 5, 7, 9, 11, 13, 15
+                    if (beat % 2 === 1 && beatFrac < 0.2) {
+                        y -= Math.sin(beatFrac * Math.PI / 0.2) * 0.6;
+                    }
+                    
+                    // Hi-hat on every off-beat
+                    if ((beat + 0.5) % 1 < 0.1) {
+                        y += (Math.random() - 0.5) * 0.3;
+                    }
+                    
+                    // Bass line
+                    const bassFreq = 0.5;
+                    y += Math.sin(beatPos * Math.PI * bassFreq) * 0.3;
+                    
+                    const py = c.height / 2 + y * (c.height / 3);
+                    x === 0 ? ctx.moveTo(x, py) : ctx.lineTo(x, py);
+                }
+                ctx.stroke();
+                
+                // 画拍子标记
+                ctx.fillStyle = 'rgba(79, 136, 255, 0.3)';
+                for (let i = 0; i < 4; i++) {
+                    const x = (i / 4) * c.width;
+                    ctx.fillRect(x, 0, 2, c.height);
+                }
+            } else {
+                // SFX波形
+                ctx.strokeStyle = '#4f4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                for (let x = 0; x < c.width; x++) {
+                    const t = x / c.width;
+                    const ph = t * (p.freq / 100) * Math.PI * 10;
+                    let y = p.waveform === 'sine' ? Math.sin(ph) : 
+                        p.waveform === 'square' ? (Math.sin(ph) > 0 ? 1 : -1) :
+                        p.waveform === 'sawtooth' ? (ph % (Math.PI * 2)) / Math.PI - 1 :
+                        Math.asin(Math.sin(ph)) * 2 / Math.PI;
+                    const env = t < 0.1 ? t / 0.1 : 1 - (t - 0.1) / 0.9;
+                    y *= Math.max(0, env);
+                    const py = c.height / 2 + y * (c.height / 3);
+                    x === 0 ? ctx.moveTo(x, py) : ctx.lineTo(x, py);
+                }
+                ctx.stroke();
+            }
+        }
+        
+        function playOne(cat, sub, idx, btn) {
+            const sound = sounds[cat][sub][idx];
+            const result = playSound(sound);
+            
+            // 重置所有按钮
+            document.querySelectorAll('.card-btn').forEach(b => { if (b.textContent === '⏹️') b.textContent = '▶️'; });
+            
+            if (cat !== 'bgm') {
+                btn.textContent = '⏹️';
+                setTimeout(() => btn.textContent = '▶️', result.duration);
+            }
+            
+            // 高亮卡片
+            document.querySelectorAll('.sound-card').forEach(c => c.classList.remove('playing'));
+            btn.closest('.sound-card').classList.add('playing');
+            setTimeout(() => btn.closest('.sound-card').classList.remove('playing'), result.duration);
+        }
+        
+        function selectOne(cat, sub, idx, btn) {
+            const sound = sounds[cat][sub][idx];
+            
+            // 切换选择
+            if (selection[cat][sub]?.id === sound.id) {
+                delete selection[cat][sub];
+                btn.classList.remove('active');
+                btn.closest('.sound-card').classList.remove('favorite');
+            } else {
+                selection[cat][sub] = sound;
+                // 更新UI
+                renderGrid(cat);
+            }
+            
+            updateStats();
+            updateSelectionList();
+        }
+        
+        function updateSelectionList() {
+            const list = document.getElementById('selectionList');
+            let text = '';
+            
+            // Weapon
+            text += '// ===== 武器攻击音效 =====\n';
+            Object.entries(selection.weapon).forEach(([weapon, s]) => {
+                text += `${weapon}: { freq: ${Math.round(s.freq)}, waveform: '${s.waveform}', sweep: '${s.sweep}', duration: ${s.duration.toFixed(3)} },\n`;
+            });
+            
+            // Hit
+            text += '\n// ===== 命中音效（按材质） =====\n';
+            Object.entries(selection.hit).forEach(([mat, s]) => {
+                text += `hit_${mat}: { freq: ${Math.round(s.freq)}, waveform: '${s.waveform}', noise: ${s.noise.toFixed(2)} },\n`;
+            });
+            
+            // Crit
+            text += '\n// ===== 暴击音效（按材质） =====\n';
+            Object.entries(selection.crit).forEach(([mat, s]) => {
+                text += `crit_${mat}: { freq: ${Math.round(s.freq)}, vibrato: ${s.vibrato} },\n`;
+            });
+            
+            // SFX
+            text += '\n// ===== 其他SFX =====\n';
+            Object.entries(selection.sfx).forEach(([type, s]) => {
+                text += `${type}: { freq: ${Math.round(s.freq)}, duration: ${s.duration.toFixed(3)} },\n`;
+            });
+            
+            // BGM
+            text += '\n// ===== BGM (完整音乐配置) =====\n';
+            Object.entries(selection.bgm).forEach(([scene, s]) => {
+                text += `${scene}: {\n`;
+                text += `  tempo: ${Math.round(s.tempo)},\n`;
+                text += `  duration: ${s.duration.toFixed(1)},\n`;
+                text += `  bars: ${s.bars},\n`;
+                text += `  style: '${s.style}',\n`;
+                text += `  scale: [${s.scale.join(',')}],\n`;
+                text += `  instruments: ['${s.instruments.join("','")}'],\n`;
+                text += `  // 鼓点: 每拍 kick+snare, 后半拍 hihat\n`;
+                text += `  // 贝斯: 每小节根音持续\n`;
+                text += `  // 和弦: 每2拍铺底\n`;
+                text += `  // 琶音: 8分音符变化\n`;
+                text += `},\n`;
+            });
+            
+            list.textContent = text || '暂无选择，点击 ★ 按钮选择每类音效';
+        }
+        
+        function copyConfig() {
+            navigator.clipboard.writeText(document.getElementById('selectionList').textContent).then(() => alert('已复制！'));
+        }
+        
+        function downloadConfig() {
+            const blob = new Blob([JSON.stringify(selection, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sfx_config.json';
+            a.click();
+        }
+        
+        function clearSelection() {
+            if (confirm('清空所有选择？')) {
+                selection = { weapon: {}, hit: {}, crit: {}, sfx: {}, bgm: {} };
+                renderAll();
+                updateStats();
+            }
+        }
+        
+        // ==================== BGM 导出为 WAV ====================
+        function downloadBGM() {
+            const bgmKeys = Object.keys(selection.bgm);
+            if (bgmKeys.length === 0) {
+                alert('请先在BGM区域点击 ★ 选择一个背景音乐');
+                return;
+            }
+            
+            const scene = bgmKeys[0];
+            const params = selection.bgm[scene];
+            
+            alert('正在生成音频文件，请稍候...\n时长: ' + params.duration.toFixed(0) + '秒');
+            
+            // 使用 OfflineAudioContext 渲染音频
+            const sampleRate = 44100;
+            const offlineCtx = new (window.OfflineAudioContext || window.webkitOfflineAudioContext)(2, sampleRate * params.duration, sampleRate);
+            
+            const t = 0;
+            const beatTime = 60 / params.tempo;
+            const totalBeats = params.bars * 4;
+            const scaleFreqs = params.scale.map(s => 220 * Math.pow(2, s / 12));
+            
+            const chordProgression = [
+                [0, 4, 7], [3, 7, 10], [4, 7, 11], [0, 4, 7],
+                [0, 3, 7], [5, 9, 0], [7, 11, 2], [0, 4, 7]
+            ];
+            
+            // 创建主增益节点
+            const masterGain = offlineCtx.createGain();
+            masterGain.gain.value = 0.5;
+            masterGain.connect(offlineCtx.destination);
+            
+            for (let beat = 0; beat < totalBeats; beat++) {
+                const noteTime = t + beat * beatTime;
+                const bar = Math.floor(beat / 4);
+                const beatInBar = beat % 4;
+                const section = Math.floor(bar / 4) % 2;
+                
+                const chordIdx = bar % chordProgression.length;
+                const chord = chordProgression[chordIdx];
+                const chordFreqs = chord.map(n => 220 * Math.pow(2, n / 12));
+                
+                // 鼓点
+                if (params.instruments.includes('drum') || params.instruments.includes('drum_heavy') || params.instruments.includes('drum_epic')) {
+                    const drumIntensity = params.style === 'epic' ? 1.2 : (params.style === 'intense' ? 1.0 : 0.7);
+                    
+                    // Kick
+                    if (beatInBar === 0 || beatInBar === 2) {
+                        const kick = offlineCtx.createOscillator();
+                        kick.frequency.setValueAtTime(150, noteTime);
+                        kick.frequency.exponentialRampToValueAtTime(40, noteTime + 0.1);
+                        const kickGain = offlineCtx.createGain();
+                        kickGain.gain.setValueAtTime(0.6 * drumIntensity, noteTime);
+                        kickGain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.15);
+                        kick.connect(kickGain);
+                        kickGain.connect(masterGain);
+                        kick.start(noteTime);
+                        kick.stop(noteTime + 0.15);
+                    }
+                    
+                    // Snare
+                    if (beatInBar === 1 || beatInBar === 3) {
+                        const snare = offlineCtx.createBufferSource();
+                        const bufferSize = offlineCtx.sampleRate * 0.1;
+                        const buffer = offlineCtx.createBuffer(1, bufferSize, offlineCtx.sampleRate);
+                        const data = buffer.getChannelData(0);
+                        for (let i = 0; i < bufferSize; i++) {
+                            data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufferSize, 2);
+                        }
+                        snare.buffer = buffer;
+                        const snareFilter = offlineCtx.createBiquadFilter();
+                        snareFilter.type = 'highpass';
+                        snareFilter.frequency.value = 1500;
+                        const snareGain = offlineCtx.createGain();
+                        snareGain.gain.setValueAtTime(0.4 * drumIntensity, noteTime);
+                        snareGain.gain.exponentialRampToValueAtTime(0.001, noteTime + 0.1);
+                        snare.connect(snareFilter);
+                        snareFilter.connect(snareGain);
+                        snareGain.connect(masterGain);
+                        snare.start(noteTime);
+                    }
+                    
+                    // Hi-hat
+                    if (params.tempo > 110) {
+                        const hihat = offlineCtx.createBufferSource();
+                        const bufferSize = offlineCtx.sampleRate * 0.03;
+                        const buffer = offlineCtx.createBuffer(1, bufferSize, offlineCtx.sampleRate);
+                        const data = buffer.getChannelData(0);
+                        for (let i = 0; i < bufferSize; i++) {
+                            data[i] = (Math.random() * 2 - 1);
+                        }
+                        hihat.buffer = buffer;
+                        const hihatFilter = offlineCtx.createBiquadFilter();
+                        hihatFilter.type = 'highpass';
+                        hihatFilter.frequency.value = 8000;
+                        const hihatGain = offlineCtx.createGain();
+                        hihatGain.gain.setValueAtTime(0.2, noteTime + beatTime / 2);
+                        hihatGain.gain.exponentialRampToValueAtTime(0.001, noteTime + beatTime / 2 + 0.03);
+                        hihat.connect(hihatFilter);
+                        hihatFilter.connect(hihatGain);
+                        hihatGain.connect(masterGain);
+                        hihat.start(noteTime + beatTime / 2);
+                    }
+                }
+                
+                // 贝斯
+                if ((params.instruments.includes('bass') || params.instruments.includes('bass_aggressive') || params.instruments.includes('bass_dark')) && beatInBar === 0) {
+                    const bassType = params.instruments.includes('bass_aggressive') ? 'sawtooth' : 'triangle';
+                    const bassFreq = chordFreqs[0] / 2;
+                    
+                    const bass = offlineCtx.createOscillator();
+                    bass.type = bassType;
+                    bass.frequency.value = bassFreq;
+                    const bassGain = offlineCtx.createGain();
+                    const bassVol = params.instruments.includes('bass_dark') ? 0.5 : 0.35;
+                    bassGain.gain.setValueAtTime(bassVol, noteTime);
+                    bassGain.gain.setValueAtTime(bassVol, noteTime + beatTime * 3.8);
+                    bassGain.gain.linearRampToValueAtTime(0.001, noteTime + beatTime * 4);
+                    
+                    const bassFilter = offlineCtx.createBiquadFilter();
+                    bassFilter.type = 'lowpass';
+                    bassFilter.frequency.value = 800;
+                    bassFilter.Q.value = 2;
+                    
+                    bass.connect(bassFilter);
+                    bassFilter.connect(bassGain);
+                    bassGain.connect(masterGain);
+                    bass.start(noteTime);
+                    bass.stop(noteTime + beatTime * 4);
+                }
+                
+                // 和弦
+                if ((params.instruments.includes('chord') || params.instruments.includes('pad') || params.instruments.includes('orch')) && beatInBar % 2 === 0) {
+                    const chordType = params.instruments.includes('orch') ? 'sawtooth' : 'sine';
+                    const chordVol = params.instruments.includes('orch') ? 0.15 : 0.12;
+                    
+                    chordFreqs.forEach((f, i) => {
+                        const osc = offlineCtx.createOscillator();
+                        osc.type = chordType;
+                        osc.frequency.value = f;
+                        const g = offlineCtx.createGain();
+                        g.gain.setValueAtTime(0, noteTime);
+                        g.gain.linearRampToValueAtTime(chordVol, noteTime + 0.1);
+                        g.gain.setValueAtTime(chordVol, noteTime + beatTime * 1.5);
+                        g.gain.linearRampToValueAtTime(0.001, noteTime + beatTime * 2);
+                        osc.connect(g);
+                        g.connect(masterGain);
+                        osc.start(noteTime);
+                        osc.stop(noteTime + beatTime * 2);
+                    });
+                }
+                
+                // 琶音/旋律
+                if ((params.instruments.includes('arp') || params.instruments.includes('lead')) && beatInBar % 2 === 0) {
+                    const pattern = section === 0 ? [0, 2, 1, 2] : [2, 1, 0, 1];
+                    const noteIdx = pattern[Math.floor(beat / 2) % 4];
+                    const freq = chordFreqs[noteIdx % chordFreqs.length] * (section === 1 ? 2 : 1);
+                    
+                    const osc = offlineCtx.createOscillator();
+                    osc.type = 'sine';
+                    osc.frequency.value = freq;
+                    const g = offlineCtx.createGain();
+                    g.gain.setValueAtTime(0.15, noteTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, noteTime + beatTime);
+                    osc.connect(g);
+                    g.connect(masterGain);
+                    osc.start(noteTime);
+                    osc.stop(noteTime + beatTime);
+                }
+                
+                // 铃音
+                if (params.instruments.includes('bell') && beatInBar === 0 && bar % 2 === 0) {
+                    const bell = offlineCtx.createOscillator();
+                    bell.type = 'sine';
+                    bell.frequency.value = scaleFreqs[0] * 4;
+                    const bellGain = offlineCtx.createGain();
+                    bellGain.gain.setValueAtTime(0.2, noteTime);
+                    bellGain.gain.exponentialRampToValueAtTime(0.001, noteTime + 1);
+                    bell.connect(bellGain);
+                    bellGain.connect(masterGain);
+                    bell.start(noteTime);
+                    bell.stop(noteTime + 1);
+                }
+            }
+            
+            // 开始渲染
+            offlineCtx.startRendering().then(renderedBuffer => {
+                // 转换为 WAV 格式
+                const wavBlob = bufferToWave(renderedBuffer, renderedBuffer.length);
+                const url = URL.createObjectURL(wavBlob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `bgm_${scene}_${Math.round(params.tempo)}bpm.wav`;
+                a.click();
+                URL.revokeObjectURL(url);
+            }).catch(err => {
+                console.error('渲染失败:', err);
+                alert('音频生成失败，请重试');
+            });
+        }
+        
+        // AudioBuffer 转 WAV 格式
+        function bufferToWave(abuffer, len) {
+            let numOfChan = abuffer.numberOfChannels,
+                length = len * numOfChan * 2 + 44,
+                buffer = new ArrayBuffer(length),
+                view = new DataView(buffer),
+                channels = [], i, sample,
+                offset = 0,
+                pos = 0;
+
+            // 写入 WAV 头部
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // file length - 8
+            setUint32(0x45564157); // "WAVE"
+            setUint32(0x20746d66); // "fmt " chunk
+            setUint32(16); // length = 16
+            setUint16(1); // PCM
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan); // avg. bytes/sec
+            setUint16(numOfChan * 2); // block-align
+            setUint16(16); // 16-bit
+            setUint32(0x61746164); // "data" - chunk
+            setUint32(length - pos - 4); // chunk length
+
+            // 写入采样数据
+            for (i = 0; i < abuffer.numberOfChannels; i++)
+                channels.push(abuffer.getChannelData(i));
+
+            while (pos < length) {
+                for (i = 0; i < numOfChan; i++) {
+                    sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
+                    view.setInt16(pos, sample, true);
+                    pos += 2;
+                }
+                offset++;
+            }
+
+            return new Blob([buffer], { type: 'audio/wav' });
+
+            function setUint16(data) {
+                view.setUint16(pos, data, true);
+                pos += 2;
+            }
+            function setUint32(data) {
+                view.setUint32(pos, data, true);
+                pos += 4;
+            }
+        }
+        
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => generateAll());
+    </script>
+</body>
+</html>

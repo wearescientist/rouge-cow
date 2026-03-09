@@ -1,0 +1,274 @@
+{
+  "timestamp": "2026-03-04T07:59:37.548Z",
+  "summary": {
+    "totalWeapons": 15,
+    "avgDPS": "36.3",
+    "minDPS": "2.8",
+    "maxDPS": "69.2"
+  },
+  "tiers": {
+    "S": [
+      {
+        "name": "闪电",
+        "effectiveDPS": "69.2",
+        "ratio": "191%"
+      },
+      {
+        "name": "辉耀",
+        "effectiveDPS": "66.0",
+        "ratio": "182%"
+      },
+      {
+        "name": "飞刀",
+        "effectiveDPS": "60.0",
+        "ratio": "165%"
+      }
+    ],
+    "A": [
+      {
+        "name": "冰锥",
+        "effectiveDPS": "49.4",
+        "ratio": "136%"
+      },
+      {
+        "name": "手里剑",
+        "effectiveDPS": "45.0",
+        "ratio": "124%"
+      }
+    ],
+    "B": [
+      {
+        "name": "镰刀",
+        "effectiveDPS": "40.5",
+        "ratio": "112%"
+      },
+      {
+        "name": "火球",
+        "effectiveDPS": "40.0",
+        "ratio": "110%"
+      },
+      {
+        "name": "鞭子",
+        "effectiveDPS": "33.6",
+        "ratio": "93%"
+      },
+      {
+        "name": "十字架",
+        "effectiveDPS": "31.9",
+        "ratio": "88%"
+      },
+      {
+        "name": "毒镖",
+        "effectiveDPS": "31.1",
+        "ratio": "86%"
+      },
+      {
+        "name": "魔杖",
+        "effectiveDPS": "30.0",
+        "ratio": "83%"
+      },
+      {
+        "name": "斧头",
+        "effectiveDPS": "29.1",
+        "ratio": "80%"
+      }
+    ],
+    "C": [],
+    "D": [
+      {
+        "name": "圣水",
+        "effectiveDPS": "10.3",
+        "ratio": "28%"
+      },
+      {
+        "name": "环刃",
+        "effectiveDPS": "5.4",
+        "ratio": "15%"
+      },
+      {
+        "name": "圣经",
+        "effectiveDPS": "2.8",
+        "ratio": "8%"
+      }
+    ]
+  },
+  "suggestions": [
+    {
+      "weapon": "飞刀",
+      "type": "nerf",
+      "current": "60",
+      "target": "47",
+      "action": "伤害降低 21%"
+    },
+    {
+      "weapon": "环刃",
+      "type": "buff",
+      "current": "5",
+      "target": "25",
+      "action": "伤害增加 367%"
+    },
+    {
+      "weapon": "圣经",
+      "type": "buff",
+      "current": "3",
+      "target": "25",
+      "action": "伤害增加 822%"
+    },
+    {
+      "weapon": "闪电",
+      "type": "nerf",
+      "current": "69",
+      "target": "47",
+      "action": "伤害降低 32%"
+    },
+    {
+      "weapon": "圣水",
+      "type": "buff",
+      "current": "10",
+      "target": "25",
+      "action": "伤害增加 146%"
+    },
+    {
+      "weapon": "辉耀",
+      "type": "nerf",
+      "current": "66",
+      "target": "47",
+      "action": "伤害降低 29%"
+    }
+  ],
+  "details": [
+    {
+      "name": "闪电",
+      "baseDPS": "30.0",
+      "multiplier": "2.31",
+      "effectiveDPS": "69.2",
+      "factors": [
+        "连锁×2.31"
+      ]
+    },
+    {
+      "name": "辉耀",
+      "baseDPS": "60.0",
+      "multiplier": "1.10",
+      "effectiveDPS": "66.0",
+      "factors": [
+        "光环×1.10"
+      ]
+    },
+    {
+      "name": "飞刀",
+      "baseDPS": "34.3",
+      "multiplier": "1.75",
+      "effectiveDPS": "60.0",
+      "factors": [
+        "穿透×1.75"
+      ]
+    },
+    {
+      "name": "冰锥",
+      "baseDPS": "28.2",
+      "multiplier": "1.75",
+      "effectiveDPS": "49.4",
+      "factors": [
+        "穿透×1.75"
+      ]
+    },
+    {
+      "name": "手里剑",
+      "baseDPS": "25.0",
+      "multiplier": "1.80",
+      "effectiveDPS": "45.0",
+      "factors": [
+        "多发×1.80"
+      ]
+    },
+    {
+      "name": "镰刀",
+      "baseDPS": "45.0",
+      "multiplier": "0.90",
+      "effectiveDPS": "40.5",
+      "factors": [
+        "近战×0.90"
+      ]
+    },
+    {
+      "name": "火球",
+      "baseDPS": "20.0",
+      "multiplier": "2.00",
+      "effectiveDPS": "40.0",
+      "factors": [
+        "爆炸×2.00"
+      ]
+    },
+    {
+      "name": "鞭子",
+      "baseDPS": "37.3",
+      "multiplier": "0.90",
+      "effectiveDPS": "33.6",
+      "factors": [
+        "近战×0.90"
+      ]
+    },
+    {
+      "name": "十字架",
+      "baseDPS": "22.0",
+      "multiplier": "1.45",
+      "effectiveDPS": "31.9",
+      "factors": [
+        "弹跳×1.45"
+      ]
+    },
+    {
+      "name": "毒镖",
+      "baseDPS": "31.1",
+      "multiplier": "1.00",
+      "effectiveDPS": "31.1",
+      "factors": []
+    },
+    {
+      "name": "魔杖",
+      "baseDPS": "30.0",
+      "multiplier": "1.00",
+      "effectiveDPS": "30.0",
+      "factors": []
+    },
+    {
+      "name": "斧头",
+      "baseDPS": "29.1",
+      "multiplier": "1.00",
+      "effectiveDPS": "29.1",
+      "factors": []
+    },
+    {
+      "name": "圣水",
+      "baseDPS": "1.4",
+      "multiplier": "7.22",
+      "effectiveDPS": "10.3",
+      "factors": [
+        "持续×8.50",
+        "长CD×0.85"
+      ]
+    },
+    {
+      "name": "环刃",
+      "baseDPS": "4.6",
+      "multiplier": "1.19",
+      "effectiveDPS": "5.4",
+      "factors": [
+        "多发×1.40",
+        "长CD×0.85"
+      ]
+    },
+    {
+      "name": "圣经",
+      "baseDPS": "1.5",
+      "multiplier": "1.84",
+      "effectiveDPS": "2.8",
+      "factors": [
+        "多发×1.80",
+        "环绕×1.20",
+        "长CD×0.85"
+      ]
+    }
+  ]
+}

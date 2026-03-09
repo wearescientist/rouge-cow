@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 音频处理工具 - 火球截取 + 音量统一</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .section h2 {
+            color: #4eccff;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .file-input {
+            margin: 15px 0;
+        }
+        .file-input label {
+            display: block;
+            margin-bottom: 8px;
+            color: #aaa;
+        }
+        input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            background: rgba(0,0,0,0.3);
+            border: 2px dashed rgba(255,255,255,0.3);
+            border-radius: 8px;
+            color: #fff;
+            cursor: pointer;
+        }
+        input[type="file"]:hover {
+            border-color: #4eccff;
+        }
+        .btn {
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            color: white;
+            padding: 12px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            margin-top: 15px;
+            width: 100%;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+        .btn:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            transform: none;
+        }
+        .btn.success {
+            background: linear-gradient(90deg, #4ecca3 0%, #3db892 100%);
+        }
+        .progress {
+            margin-top: 15px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            height: 30px;
+            display: none;
+        }
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4eccff 0%, #667eea 100%);
+            width: 0%;
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .result {
+            margin-top: 15px;
+            padding: 15px;
+            background: rgba(78,204,163,0.1);
+            border: 1px solid rgba(78,204,163,0.3);
+            border-radius: 8px;
+            display: none;
+        }
+        .result a {
+            color: #4eccff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .result a:hover {
+            text-decoration: underline;
+        }
+        .slider-container {
+            margin: 20px 0;
+        }
+        .slider-container label {
+            display: block;
+            margin-bottom: 10px;
+            color: #aaa;
+        }
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255,255,255,0.1);
+            outline: none;
+        }
+        .audio-info {
+            background: rgba(0,0,0,0.3);
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: monospace;
+            font-size: 13px;
+        }
+        .audio-info div {
+            margin: 5px 0;
+        }
+        .warning {
+            background: rgba(255,215,0,0.1);
+            border: 1px solid rgba(255,215,0,0.3);
+            padding: 12px;
+            border-radius: 8px;
+            margin: 15px 0;
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 音频处理工具</h1>
+    <p class="subtitle">火球音效截取 + 批量音量统一（浏览器本地处理，无需安装）</p>
+
+    <!-- 火球音效处理 -->
+    <div class="section">
+        <h2>🔥 任务1：火球音效截取</h2>
+        <div class="warning">
+            将火球音效从原时长缩短到1.5秒，只保留发射部分
+        </div>
+        <div class="file-input">
+            <label>📁 选择火球音效文件 (fireball_v1.mp3)</label>
+            <input type="file" id="fireballInput" accept=".mp3,.ogg,.wav">
+        </div>
+        <div class="slider-container">
+            <label>⏱️ 截取时长: <span id="durationValue">1.5</span> 秒</label>
+            <input type="range" id="durationSlider" min="0.5" max="3" step="0.1" value="1.5">
+        </div>
+        <button class="btn" id="processFireball" onclick="processFireball()">✂️ 截取并下载</button>
+        <div class="progress" id="fireballProgress">
+            <div class="progress-bar" id="fireballProgressBar">0%</div>
+        </div>
+        <div class="result" id="fireballResult"></div>
+        <div class="audio-info" id="fireballInfo" style="display:none;"></div>
+    </div>
+
+    <!-- 音量统一 -->
+    <div class="section">
+        <h2>🎚️ 任务2：批量音量统一</h2>
+        <div class="warning">
+            选择多个音效文件，统一调整到相同的音量水平
+        </div>
+        <div class="file-input">
+            <label>📁 选择音效文件（可多选）</label>
+            <input type="file" id="volumeInput" accept=".mp3,.ogg,.wav" multiple>
+        </div>
+        <div class="slider-container">
+            <label>🎯 目标音量: <span id="volumeValue">-14</span> dB (建议-16到-12)</label>
+            <input type="range" id="volumeSlider" min="-20" max="-10" step="1" value="-14">
+        </div>
+        <button class="btn" id="processVolume" onclick="processVolume()">🎚️ 批量处理并下载</button>
+        <div class="progress" id="volumeProgress">
+            <div class="progress-bar" id="volumeProgressBar">0%</div>
+        </div>
+        <div class="result" id="volumeResult"></div>
+    </div>
+
+    <!-- 使用说明 -->
+    <div class="section">
+        <h2>📖 使用步骤</h2>
+        <div style="line-height: 2; color: #aaa;">
+            <p><strong>1. 火球音效处理：</strong></p>
+            <p>   ① 点击选择文件，找到 <code>assets/audio/weapons/fireball_v1.mp3</code></p>
+            <p>   ② 调整截取时长（默认1.5秒）</p>
+            <p>   ③ 点击"截取并下载"</p>
+            <p>   ④ 下载的文件覆盖原文件</p>
+            <br>
+            <p><strong>2. 音量统一：</strong></p>
+            <p>   ① Ctrl+A 选中 assets/audio 下所有 MP3/OGG 文件</p>
+            <p>   ② 拖入或点击选择文件框</p>
+            <p>   ③ 调整目标音量（推荐-14dB）</p>
+            <p>   ④ 点击"批量处理"，逐个下载覆盖</p>
+        </div>
+    </div>
+
+    <script>
+        // 音频上下文
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = new AudioContext();
+
+        // 火球处理
+        async function processFireball() {
+            const input = document.getElementById('fireballInput');
+            if (!input.files.length) {
+                alert('请先选择火球音效文件！');
+                return;
+            }
+
+            const file = input.files[0];
+            const duration = parseFloat(document.getElementById('durationSlider').value);
+            
+            document.getElementById('processFireball').disabled = true;
+            document.getElementById('fireballProgress').style.display = 'block';
+            document.getElementById('fireballProgressBar').style.width = '50%';
+
+            try {
+                // 读取文件
+                const arrayBuffer = await file.arrayBuffer();
+                const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+
+                // 创建新的音频缓冲区（截取前X秒）
+                const sampleRate = audioBuffer.sampleRate;
+                const channels = audioBuffer.numberOfChannels;
+                const newLength = Math.min(sampleRate * duration, audioBuffer.length);
+                
+                const newBuffer = audioCtx.createBuffer(channels, newLength, sampleRate);
+                
+                for (let i = 0; i < channels; i++) {
+                    const oldData = audioBuffer.getChannelData(i);
+                    const newData = newBuffer.getChannelData(i);
+                    
+                    for (let j = 0; j < newLength; j++) {
+                        // 添加短促淡出避免爆音
+                        if (j > newLength - sampleRate * 0.1) {
+                            const fade = (newLength - j) / (sampleRate * 0.1);
+                            newData[j] = oldData[j] * fade;
+                        } else {
+                            newData[j] = oldData[j];
+                        }
+                    }
+                }
+
+                document.getElementById('fireballProgressBar').style.width = '80%';
+
+                // 导出为WAV
+                const wavBlob = bufferToWave(newBuffer, newLength);
+                
+                // 创建下载链接
+                const url = URL.createObjectURL(wavBlob);
+                const downloadName = file.name.replace(/\.[^/.]+$/, '') + '_trimmed.wav';
+                
+                document.getElementById('fireballResult').innerHTML = `
+                    ✅ 处理完成！<br>
+                    原时长: ${audioBuffer.duration.toFixed(2)}秒 → 新时长: ${duration}秒<br>
+                    <a href="${url}" download="${downloadName}">⬇️ 点击下载处理后文件</a><br>
+                    <small>下载后将文件重命名为 fireball_v1.mp3 并覆盖原文件</small>
+                `;
+                document.getElementById('fireballResult').style.display = 'block';
+
+                // 显示信息
+                document.getElementById('fireballInfo').innerHTML = `
+                    <div>📊 文件信息</div>
+                    <div>文件名: ${file.name}</div>
+                    <div>原时长: ${audioBuffer.duration.toFixed(2)}秒</div>
+                    <div>采样率: ${sampleRate}Hz</div>
+                    <div>声道数: ${channels}</div>
+                    <div>截取后: ${duration}秒</div>
+                `;
+                document.getElementById('fireballInfo').style.display = 'block';
+
+                document.getElementById('fireballProgressBar').style.width = '100%';
+                document.getElementById('processFireball').classList.add('success');
+                document.getElementById('processFireball').textContent = '✅ 完成';
+
+            } catch (e) {
+                alert('处理失败: ' + e.message);
+                console.error(e);
+                document.getElementById('processFireball').disabled = false;
+            }
+        }
+
+        // 音量统一
+        async function processVolume() {
+            const input = document.getElementById('volumeInput');
+            if (!input.files.length) {
+                alert('请先选择音效文件！');
+                return;
+            }
+
+            const files = Array.from(input.files);
+            const targetDB = parseFloat(document.getElementById('volumeSlider').value);
+            
+            document.getElementById('processVolume').disabled = true;
+            document.getElementById('volumeProgress').style.display = 'block';
+            
+            const results = [];
+            
+            for (let i = 0; i < files.length; i++) {
+                const file = files[i];
+                const progress = ((i + 1) / files.length * 100).toFixed(0);
+                document.getElementById('volumeProgressBar').style.width = progress + '%';
+                document.getElementById('volumeProgressBar').textContent = progress + '%';
+
+                try {
+                    const arrayBuffer = await file.arrayBuffer();
+                    const audioBuffer = await audioCtx.decodeAudioData(arrayBuffer);
+                    
+                    // 计算RMS音量
+                    let sum = 0;
+                    const data = audioBuffer.getChannelData(0);
+                    for (let j = 0; j < data.length; j++) {
+                        sum += data[j] * data[j];
+                    }
+                    const rms = Math.sqrt(sum / data.length);
+                    const currentDB = 20 * Math.log10(rms);
+                    
+                    // 计算增益
+                    const gainDB = targetDB - currentDB;
+                    const gain = Math.pow(10, gainDB / 20);
+                    
+                    // 应用增益
+                    const newBuffer = audioCtx.createBuffer(
+                        audioBuffer.numberOfChannels,
+                        audioBuffer.length,
+                        audioBuffer.sampleRate
+                    );
+                    
+                    for (let c = 0; c < audioBuffer.numberOfChannels; c++) {
+                        const oldData = audioBuffer.getChannelData(c);
+                        const newData = newBuffer.getChannelData(c);
+                        
+                        for (let s = 0; s < oldData.length; s++) {
+                            // 限制峰值避免削波
+                            let sample = oldData[s] * gain;
+                            if (sample > 0.99) sample = 0.99;
+                            if (sample < -0.99) sample = -0.99;
+                            newData[s] = sample;
+                        }
+                    }
+                    
+                    // 导出
+                    const wavBlob = bufferToWave(newBuffer, newBuffer.length);
+                    const url = URL.createObjectURL(wavBlob);
+                    const ext = file.name.match(/\.[^/.]+$/) || '.wav';
+                    const downloadName = file.name.replace(/\.[^/.]+$/, '') + '_normalized' + ext;
+                    
+                    results.push({
+                        name: file.name,
+                        url: url,
+                        downloadName: downloadName,
+                        before: currentDB.toFixed(1),
+                        after: targetDB
+                    });
+                    
+                } catch (e) {
+                    console.error('处理失败:', file.name, e);
+                }
+            }
+            
+            // 显示结果
+            let resultHTML = `<strong>✅ 批量处理完成！${results.length}/${files.length} 个文件</strong><br><br>`;
+            resultHTML += '<div style="max-height: 300px; overflow-y: auto;">';
+            results.forEach(r => {
+                resultHTML += `
+                    <div style="margin: 10px 0; padding: 10px; background: rgba(0,0,0,0.2); border-radius: 5px;">
+                        <div>${r.name}</div>
+                        <small style="color: #888;">${r.before}dB → ${r.after}dB</small>
+                        <a href="${r.url}" download="${r.downloadName}" style="float: right;">⬇️ 下载</a>
+                    </div>
+                `;
+            });
+            resultHTML += '</div>';
+            resultHTML += '<br><small>逐个下载后，用处理后的文件覆盖原文件</small>';
+            
+            document.getElementById('volumeResult').innerHTML = resultHTML;
+            document.getElementById('volumeResult').style.display = 'block';
+            
+            document.getElementById('processVolume').classList.add('success');
+            document.getElementById('processVolume').textContent = '✅ 完成';
+        }
+
+        // 音频缓冲区转WAV
+        function bufferToWave(abuffer, len) {
+            let numOfChan = abuffer.numberOfChannels,
+                length = len * numOfChan * 2 + 44,
+                buffer = new ArrayBuffer(length),
+                view = new DataView(buffer),
+                channels = [], i, sample, offset = 0, pos = 0;
+
+            // 写入WAV头部
+            setUint32(0x46464952); // "RIFF"
+            setUint32(length - 8); // 文件长度
+            setUint32(0x45564157); // "WAVE"
+            setUint32(0x20746d66); // "fmt "
+            setUint32(16); // 长度
+            setUint16(1); // 格式 (1=PCM)
+            setUint16(numOfChan);
+            setUint32(abuffer.sampleRate);
+            setUint32(abuffer.sampleRate * 2 * numOfChan);
+            setUint16(numOfChan * 2);
+            setUint16(16);
+            setUint32(0x61746164); // "data"
+            setUint32(length - pos - 4);
+
+            // 写入音频数据
+            for(i = 0; i < abuffer.numberOfChannels; i++)
+                channels.push(abuffer.getChannelData(i));
+
+            while(pos < length) {
+                for(i = 0; i < numOfChan; i++) {
+                    sample = Math.max(-1, Math.min(1, channels[i][offset]));
+                    sample = (0.5 + sample < 0 ? sample * 32768 : sample * 32767)|0;
+                    view.setInt16(pos, sample, true);
+                    pos += 2;
+                }
+                offset++;
+            }
+
+            return new Blob([buffer], {type: 'audio/wav'});
+
+            function setUint16(data) {
+                view.setUint16(pos, data, true);
+                pos += 2;
+            }
+            function setUint32(data) {
+                view.setUint32(pos, data, true);
+                pos += 4;
+            }
+        }
+
+        // 滑块事件
+        document.getElementById('durationSlider').addEventListener('input', (e) => {
+            document.getElementById('durationValue').textContent = e.target.value;
+        });
+        document.getElementById('volumeSlider').addEventListener('input', (e) => {
+            document.getElementById('volumeValue').textContent = e.target.value;
+        });
+    </script>
+</body>
+</html>

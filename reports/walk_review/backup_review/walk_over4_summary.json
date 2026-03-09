@@ -1,0 +1,1308 @@
+[
+    {
+        "variantId":  "bat__monsters_v2_sheet",
+        "category":  "ready",
+        "monster":  "bat",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/bat/v2/f01.png",
+                             "generated_assets/monster_review_export/ready/bat/v2/f02.png",
+                             "generated_assets/monster_review_export/ready/bat/v2/f03.png",
+                             "generated_assets/monster_review_export/ready/bat/v2/f04.png",
+                             "generated_assets/monster_review_export/ready/bat/v2/f05.png",
+                             "generated_assets/monster_review_export/ready/bat/v2/f06.png",
+                             "generated_assets/monster_review_export/ready/bat/v2/f07.png",
+                             "generated_assets/monster_review_export/ready/bat/v2/f08.png",
+                             "generated_assets/monster_review_export/ready/bat/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              4,
+                              1,
+                              2,
+                              7,
+                              5,
+                              6,
+                              9,
+                              8,
+                              3
+                          ]
+    },
+    {
+        "variantId":  "bat__monsters_v9_sheet",
+        "category":  "ready",
+        "monster":  "bat",
+        "version":  "v9",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/bat/v9/f01.png",
+                             "generated_assets/monster_review_export/ready/bat/v9/f02.png",
+                             "generated_assets/monster_review_export/ready/bat/v9/f03.png",
+                             "generated_assets/monster_review_export/ready/bat/v9/f04.png",
+                             "generated_assets/monster_review_export/ready/bat/v9/f05.png",
+                             "generated_assets/monster_review_export/ready/bat/v9/f06.png",
+                             "generated_assets/monster_review_export/ready/bat/v9/f07.png",
+                             "generated_assets/monster_review_export/ready/bat/v9/f08.png",
+                             "generated_assets/monster_review_export/ready/bat/v9/f09.png"
+                         ],
+        "activeIndexes":  [
+                              9,
+                              3,
+                              6,
+                              8,
+                              7,
+                              5,
+                              2,
+                              4,
+                              1
+                          ]
+    },
+    {
+        "variantId":  "bee__monsters_v6_sheet",
+        "category":  "ready",
+        "monster":  "bee",
+        "version":  "v6",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/bee/v6/f01.png",
+                             "generated_assets/monster_review_export/ready/bee/v6/f02.png",
+                             "generated_assets/monster_review_export/ready/bee/v6/f03.png",
+                             "generated_assets/monster_review_export/ready/bee/v6/f04.png",
+                             "generated_assets/monster_review_export/ready/bee/v6/f05.png",
+                             "generated_assets/monster_review_export/ready/bee/v6/f06.png",
+                             "generated_assets/monster_review_export/ready/bee/v6/f07.png",
+                             "generated_assets/monster_review_export/ready/bee/v6/f08.png",
+                             "generated_assets/monster_review_export/ready/bee/v6/f09.png"
+                         ],
+        "activeIndexes":  [
+                              7,
+                              9,
+                              8,
+                              2,
+                              4,
+                              1,
+                              3,
+                              6,
+                              5
+                          ]
+    },
+    {
+        "variantId":  "chick__monsters_v6_sheet",
+        "category":  "needs_work",
+        "monster":  "chick",
+        "version":  "v6",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/chick/v6/f01.png",
+                             "generated_assets/monster_review_export/needs_work/chick/v6/f02.png",
+                             "generated_assets/monster_review_export/needs_work/chick/v6/f03.png",
+                             "generated_assets/monster_review_export/needs_work/chick/v6/f04.png",
+                             "generated_assets/monster_review_export/needs_work/chick/v6/f05.png",
+                             "generated_assets/monster_review_export/needs_work/chick/v6/f06.png",
+                             "generated_assets/monster_review_export/needs_work/chick/v6/f07.png",
+                             "generated_assets/monster_review_export/needs_work/chick/v6/f08.png",
+                             "generated_assets/monster_review_export/needs_work/chick/v6/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              1,
+                              4,
+                              5,
+                              3,
+                              6,
+                              8,
+                              7,
+                              9
+                          ]
+    },
+    {
+        "variantId":  "crab__monsters_v2_sheet",
+        "category":  "ready",
+        "monster":  "crab",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/crab/v2/f01.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f02.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f03.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f04.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f05.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f06.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f07.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f08.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f09.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f10.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f11.png",
+                             "generated_assets/monster_review_export/ready/crab/v2/f12.png"
+                         ],
+        "activeIndexes":  [
+                              10,
+                              5,
+                              2,
+                              1,
+                              4,
+                              8,
+                              11,
+                              7,
+                              6,
+                              9,
+                              12,
+                              3
+                          ]
+    },
+    {
+        "variantId":  "crab__monsters_v6_sheet",
+        "category":  "needs_work",
+        "monster":  "crab",
+        "version":  "v6",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/crab/v6/f01.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v6/f02.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v6/f03.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v6/f04.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v6/f05.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v6/f06.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v6/f07.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v6/f08.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v6/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              3,
+                              2,
+                              9,
+                              7,
+                              4,
+                              6,
+                              8,
+                              5
+                          ]
+    },
+    {
+        "variantId":  "crab__monsters_v8_sheet",
+        "category":  "needs_work",
+        "monster":  "crab",
+        "version":  "v8",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/crab/v8/f01.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v8/f02.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v8/f03.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v8/f04.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v8/f05.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v8/f06.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v8/f07.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v8/f08.png",
+                             "generated_assets/monster_review_export/needs_work/crab/v8/f09.png"
+                         ],
+        "activeIndexes":  [
+                              3,
+                              1,
+                              2,
+                              4,
+                              7,
+                              6,
+                              5,
+                              8,
+                              9
+                          ]
+    },
+    {
+        "variantId":  "fox__monsters_v10_sheet",
+        "category":  "ready",
+        "monster":  "fox",
+        "version":  "v10",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/fox/v10/f01.png",
+                             "generated_assets/monster_review_export/ready/fox/v10/f02.png",
+                             "generated_assets/monster_review_export/ready/fox/v10/f03.png",
+                             "generated_assets/monster_review_export/ready/fox/v10/f04.png",
+                             "generated_assets/monster_review_export/ready/fox/v10/f05.png",
+                             "generated_assets/monster_review_export/ready/fox/v10/f06.png",
+                             "generated_assets/monster_review_export/ready/fox/v10/f07.png",
+                             "generated_assets/monster_review_export/ready/fox/v10/f08.png",
+                             "generated_assets/monster_review_export/ready/fox/v10/f09.png"
+                         ],
+        "activeIndexes":  [
+                              3,
+                              8,
+                              1,
+                              2,
+                              5,
+                              6,
+                              7,
+                              4,
+                              9
+                          ]
+    },
+    {
+        "variantId":  "fox__monsters_v2_sheet",
+        "category":  "ready",
+        "monster":  "fox",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/fox/v2/f01.png",
+                             "generated_assets/monster_review_export/ready/fox/v2/f02.png",
+                             "generated_assets/monster_review_export/ready/fox/v2/f03.png",
+                             "generated_assets/monster_review_export/ready/fox/v2/f04.png",
+                             "generated_assets/monster_review_export/ready/fox/v2/f05.png",
+                             "generated_assets/monster_review_export/ready/fox/v2/f06.png",
+                             "generated_assets/monster_review_export/ready/fox/v2/f07.png",
+                             "generated_assets/monster_review_export/ready/fox/v2/f08.png",
+                             "generated_assets/monster_review_export/ready/fox/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              1,
+                              3,
+                              5,
+                              4,
+                              6,
+                              8,
+                              9,
+                              7
+                          ]
+    },
+    {
+        "variantId":  "fox__monsters_v6_sheet",
+        "category":  "needs_work",
+        "monster":  "fox",
+        "version":  "v6",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/fox/v6/f01.png",
+                             "generated_assets/monster_review_export/needs_work/fox/v6/f02.png",
+                             "generated_assets/monster_review_export/needs_work/fox/v6/f03.png",
+                             "generated_assets/monster_review_export/needs_work/fox/v6/f04.png",
+                             "generated_assets/monster_review_export/needs_work/fox/v6/f05.png",
+                             "generated_assets/monster_review_export/needs_work/fox/v6/f06.png",
+                             "generated_assets/monster_review_export/needs_work/fox/v6/f07.png",
+                             "generated_assets/monster_review_export/needs_work/fox/v6/f08.png",
+                             "generated_assets/monster_review_export/needs_work/fox/v6/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              3,
+                              2,
+                              9,
+                              8,
+                              5,
+                              6,
+                              4,
+                              7
+                          ]
+    },
+    {
+        "variantId":  "fox__monsters_v7_sheet",
+        "category":  "ready",
+        "monster":  "fox",
+        "version":  "v7",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/fox/v7/f01.png",
+                             "generated_assets/monster_review_export/ready/fox/v7/f02.png",
+                             "generated_assets/monster_review_export/ready/fox/v7/f03.png",
+                             "generated_assets/monster_review_export/ready/fox/v7/f04.png",
+                             "generated_assets/monster_review_export/ready/fox/v7/f05.png",
+                             "generated_assets/monster_review_export/ready/fox/v7/f06.png",
+                             "generated_assets/monster_review_export/ready/fox/v7/f07.png",
+                             "generated_assets/monster_review_export/ready/fox/v7/f08.png",
+                             "generated_assets/monster_review_export/ready/fox/v7/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              3,
+                              4,
+                              6,
+                              5,
+                              8,
+                              9,
+                              7
+                          ]
+    },
+    {
+        "variantId":  "ghost__monsters_v2_sheet",
+        "category":  "ready",
+        "monster":  "ghost",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/ghost/v2/f01.png",
+                             "generated_assets/monster_review_export/ready/ghost/v2/f02.png",
+                             "generated_assets/monster_review_export/ready/ghost/v2/f03.png",
+                             "generated_assets/monster_review_export/ready/ghost/v2/f04.png",
+                             "generated_assets/monster_review_export/ready/ghost/v2/f05.png",
+                             "generated_assets/monster_review_export/ready/ghost/v2/f06.png",
+                             "generated_assets/monster_review_export/ready/ghost/v2/f07.png",
+                             "generated_assets/monster_review_export/ready/ghost/v2/f08.png",
+                             "generated_assets/monster_review_export/ready/ghost/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              6,
+                              4,
+                              1,
+                              7,
+                              2,
+                              3,
+                              5,
+                              9,
+                              8
+                          ]
+    },
+    {
+        "variantId":  "goose__monsters_v6_sheet",
+        "category":  "needs_work",
+        "monster":  "goose",
+        "version":  "v6",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/goose/v6/f01.png",
+                             "generated_assets/monster_review_export/needs_work/goose/v6/f02.png",
+                             "generated_assets/monster_review_export/needs_work/goose/v6/f03.png",
+                             "generated_assets/monster_review_export/needs_work/goose/v6/f04.png",
+                             "generated_assets/monster_review_export/needs_work/goose/v6/f05.png",
+                             "generated_assets/monster_review_export/needs_work/goose/v6/f06.png",
+                             "generated_assets/monster_review_export/needs_work/goose/v6/f07.png",
+                             "generated_assets/monster_review_export/needs_work/goose/v6/f08.png",
+                             "generated_assets/monster_review_export/needs_work/goose/v6/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              3,
+                              4,
+                              5,
+                              6
+                          ]
+    },
+    {
+        "variantId":  "mimic__monsters_v5_sheet",
+        "category":  "needs_work",
+        "monster":  "mimic",
+        "version":  "v5",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/mimic/v5/f01.png",
+                             "generated_assets/monster_review_export/needs_work/mimic/v5/f02.png",
+                             "generated_assets/monster_review_export/needs_work/mimic/v5/f03.png",
+                             "generated_assets/monster_review_export/needs_work/mimic/v5/f04.png",
+                             "generated_assets/monster_review_export/needs_work/mimic/v5/f05.png",
+                             "generated_assets/monster_review_export/needs_work/mimic/v5/f06.png",
+                             "generated_assets/monster_review_export/needs_work/mimic/v5/f07.png",
+                             "generated_assets/monster_review_export/needs_work/mimic/v5/f08.png",
+                             "generated_assets/monster_review_export/needs_work/mimic/v5/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              4,
+                              7,
+                              3,
+                              5,
+                              8,
+                              9,
+                              6
+                          ]
+    },
+    {
+        "variantId":  "mother__monsters_v2_sheet",
+        "category":  "ready",
+        "monster":  "mother",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/mother/v2/f01.png",
+                             "generated_assets/monster_review_export/ready/mother/v2/f02.png",
+                             "generated_assets/monster_review_export/ready/mother/v2/f03.png",
+                             "generated_assets/monster_review_export/ready/mother/v2/f04.png",
+                             "generated_assets/monster_review_export/ready/mother/v2/f05.png",
+                             "generated_assets/monster_review_export/ready/mother/v2/f06.png",
+                             "generated_assets/monster_review_export/ready/mother/v2/f07.png",
+                             "generated_assets/monster_review_export/ready/mother/v2/f08.png",
+                             "generated_assets/monster_review_export/ready/mother/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              9,
+                              1,
+                              4,
+                              8,
+                              6,
+                              2,
+                              3,
+                              7,
+                              5
+                          ]
+    },
+    {
+        "variantId":  "pigeon__monsters_v2_sheet",
+        "category":  "ready",
+        "monster":  "pigeon",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/pigeon/v2/f01.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v2/f02.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v2/f03.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v2/f04.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v2/f05.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v2/f06.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v2/f07.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v2/f08.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              5,
+                              6,
+                              4,
+                              8,
+                              9,
+                              7,
+                              2,
+                              3
+                          ]
+    },
+    {
+        "variantId":  "pigeon__monsters_v4_sheet",
+        "category":  "ready",
+        "monster":  "pigeon",
+        "version":  "v4",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/pigeon/v4/f01.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v4/f02.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v4/f03.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v4/f04.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v4/f05.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v4/f06.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v4/f07.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v4/f08.png",
+                             "generated_assets/monster_review_export/ready/pigeon/v4/f09.png"
+                         ],
+        "activeIndexes":  [
+                              7,
+                              3,
+                              4,
+                              5,
+                              6,
+                              2,
+                              1,
+                              9,
+                              8
+                          ]
+    },
+    {
+        "variantId":  "rabbit2__monsters_v10_sheet",
+        "category":  "ready",
+        "monster":  "rabbit2",
+        "version":  "v10",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/rabbit2/v10/f01.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v10/f02.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v10/f03.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v10/f04.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v10/f05.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v10/f06.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v10/f07.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v10/f08.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v10/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              1,
+                              9,
+                              3,
+                              7,
+                              8,
+                              6,
+                              5,
+                              4
+                          ]
+    },
+    {
+        "variantId":  "rabbit2__monsters_v2_sheet",
+        "category":  "ready",
+        "monster":  "rabbit2",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/rabbit2/v2/f01.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v2/f02.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v2/f03.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v2/f04.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v2/f05.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v2/f06.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v2/f07.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v2/f08.png",
+                             "generated_assets/monster_review_export/ready/rabbit2/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              1,
+                              4,
+                              5,
+                              3,
+                              6,
+                              7,
+                              9,
+                              8
+                          ]
+    },
+    {
+        "variantId":  "rabbit2__monsters_v4_sheet",
+        "category":  "needs_work",
+        "monster":  "rabbit2",
+        "version":  "v4",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v4/f01.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v4/f02.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v4/f03.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v4/f04.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v4/f05.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v4/f06.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v4/f07.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v4/f08.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v4/f09.png"
+                         ],
+        "activeIndexes":  [
+                              5,
+                              1,
+                              2,
+                              3,
+                              4,
+                              8,
+                              9,
+                              7,
+                              6
+                          ]
+    },
+    {
+        "variantId":  "rabbit2__monsters_v6_sheet",
+        "category":  "needs_work",
+        "monster":  "rabbit2",
+        "version":  "v6",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v6/f01.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v6/f02.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v6/f03.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v6/f04.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v6/f05.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v6/f06.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v6/f07.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v6/f08.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v6/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              3,
+                              4,
+                              9,
+                              1,
+                              5,
+                              7,
+                              8,
+                              6
+                          ]
+    },
+    {
+        "variantId":  "rabbit2__monsters_v8_sheet",
+        "category":  "needs_work",
+        "monster":  "rabbit2",
+        "version":  "v8",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v8/f01.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v8/f02.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v8/f03.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v8/f04.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v8/f05.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v8/f06.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v8/f07.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v8/f08.png",
+                             "generated_assets/monster_review_export/needs_work/rabbit2/v8/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              3,
+                              5,
+                              1,
+                              9,
+                              8,
+                              7,
+                              4,
+                              6
+                          ]
+    },
+    {
+        "variantId":  "snail__monsters_v1_sheet",
+        "category":  "needs_work",
+        "monster":  "snail",
+        "version":  "v1",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/snail/v1/f01.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v1/f02.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v1/f03.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v1/f04.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v1/f05.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v1/f06.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v1/f07.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v1/f08.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v1/f09.png"
+                         ],
+        "activeIndexes":  [
+                              8,
+                              4,
+                              1,
+                              5,
+                              7,
+                              2,
+                              6,
+                              9,
+                              3
+                          ]
+    },
+    {
+        "variantId":  "snail__monsters_v10_sheet",
+        "category":  "ready",
+        "monster":  "snail",
+        "version":  "v10",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/snail/v10/f01.png",
+                             "generated_assets/monster_review_export/ready/snail/v10/f02.png",
+                             "generated_assets/monster_review_export/ready/snail/v10/f03.png",
+                             "generated_assets/monster_review_export/ready/snail/v10/f04.png",
+                             "generated_assets/monster_review_export/ready/snail/v10/f05.png",
+                             "generated_assets/monster_review_export/ready/snail/v10/f06.png",
+                             "generated_assets/monster_review_export/ready/snail/v10/f07.png",
+                             "generated_assets/monster_review_export/ready/snail/v10/f08.png",
+                             "generated_assets/monster_review_export/ready/snail/v10/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              4,
+                              3,
+                              6,
+                              5
+                          ]
+    },
+    {
+        "variantId":  "snail__monsters_v2_sheet",
+        "category":  "ready",
+        "monster":  "snail",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/snail/v2/f01.png",
+                             "generated_assets/monster_review_export/ready/snail/v2/f02.png",
+                             "generated_assets/monster_review_export/ready/snail/v2/f03.png",
+                             "generated_assets/monster_review_export/ready/snail/v2/f04.png",
+                             "generated_assets/monster_review_export/ready/snail/v2/f05.png",
+                             "generated_assets/monster_review_export/ready/snail/v2/f06.png",
+                             "generated_assets/monster_review_export/ready/snail/v2/f07.png",
+                             "generated_assets/monster_review_export/ready/snail/v2/f08.png",
+                             "generated_assets/monster_review_export/ready/snail/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              7,
+                              4,
+                              1,
+                              2,
+                              5,
+                              8,
+                              3,
+                              9,
+                              6
+                          ]
+    },
+    {
+        "variantId":  "snail__monsters_v4_sheet",
+        "category":  "needs_work",
+        "monster":  "snail",
+        "version":  "v4",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/snail/v4/f01.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v4/f02.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v4/f03.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v4/f04.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v4/f05.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v4/f06.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v4/f07.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v4/f08.png",
+                             "generated_assets/monster_review_export/needs_work/snail/v4/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              3,
+                              9,
+                              6,
+                              4,
+                              8,
+                              7,
+                              5
+                          ]
+    },
+    {
+        "variantId":  "snail__monsters_v7_sheet",
+        "category":  "ready",
+        "monster":  "snail",
+        "version":  "v7",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/snail/v7/f01.png",
+                             "generated_assets/monster_review_export/ready/snail/v7/f02.png",
+                             "generated_assets/monster_review_export/ready/snail/v7/f03.png",
+                             "generated_assets/monster_review_export/ready/snail/v7/f04.png",
+                             "generated_assets/monster_review_export/ready/snail/v7/f05.png",
+                             "generated_assets/monster_review_export/ready/snail/v7/f06.png",
+                             "generated_assets/monster_review_export/ready/snail/v7/f07.png",
+                             "generated_assets/monster_review_export/ready/snail/v7/f08.png",
+                             "generated_assets/monster_review_export/ready/snail/v7/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              4,
+                              7,
+                              2,
+                              3,
+                              8,
+                              6,
+                              5,
+                              9
+                          ]
+    },
+    {
+        "variantId":  "snail__monsters_v8_sheet",
+        "category":  "ready",
+        "monster":  "snail",
+        "version":  "v8",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/snail/v8/f01.png",
+                             "generated_assets/monster_review_export/ready/snail/v8/f02.png",
+                             "generated_assets/monster_review_export/ready/snail/v8/f03.png",
+                             "generated_assets/monster_review_export/ready/snail/v8/f04.png",
+                             "generated_assets/monster_review_export/ready/snail/v8/f05.png",
+                             "generated_assets/monster_review_export/ready/snail/v8/f06.png",
+                             "generated_assets/monster_review_export/ready/snail/v8/f07.png",
+                             "generated_assets/monster_review_export/ready/snail/v8/f08.png",
+                             "generated_assets/monster_review_export/ready/snail/v8/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              3,
+                              4,
+                              9,
+                              5,
+                              7,
+                              6,
+                              8
+                          ]
+    },
+    {
+        "variantId":  "snake__monsters_v10_sheet",
+        "category":  "needs_work",
+        "monster":  "snake",
+        "version":  "v10",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/snake/v10/f01.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v10/f02.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v10/f03.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v10/f04.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v10/f05.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v10/f06.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v10/f07.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v10/f08.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v10/f09.png"
+                         ],
+        "activeIndexes":  [
+                              6,
+                              4,
+                              3,
+                              5,
+                              9,
+                              7,
+                              8,
+                              1,
+                              2
+                          ]
+    },
+    {
+        "variantId":  "snake__monsters_v2_sheet",
+        "category":  "needs_work",
+        "monster":  "snake",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/snake/v2/f01.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v2/f02.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v2/f03.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v2/f04.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v2/f05.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v2/f06.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v2/f07.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v2/f08.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              3,
+                              6,
+                              5,
+                              8,
+                              9,
+                              4,
+                              7,
+                              1
+                          ]
+    },
+    {
+        "variantId":  "snake__monsters_v3_sheet",
+        "category":  "needs_work",
+        "monster":  "snake",
+        "version":  "v3",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/snake/v3/f01.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v3/f02.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v3/f03.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v3/f04.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v3/f05.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v3/f06.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v3/f07.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v3/f08.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v3/f09.png"
+                         ],
+        "activeIndexes":  [
+                              4,
+                              3,
+                              9,
+                              7,
+                              2,
+                              6,
+                              8,
+                              5,
+                              1
+                          ]
+    },
+    {
+        "variantId":  "snake__monsters_v4_sheet",
+        "category":  "needs_work",
+        "monster":  "snake",
+        "version":  "v4",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/snake/v4/f01.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v4/f02.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v4/f03.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v4/f04.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v4/f05.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v4/f06.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v4/f07.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v4/f08.png",
+                             "generated_assets/monster_review_export/needs_work/snake/v4/f09.png"
+                         ],
+        "activeIndexes":  [
+                              6,
+                              5,
+                              1,
+                              2,
+                              4,
+                              3,
+                              9,
+                              7,
+                              8
+                          ]
+    },
+    {
+        "variantId":  "snake__monsters_v7_sheet",
+        "category":  "ready",
+        "monster":  "snake",
+        "version":  "v7",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/snake/v7/f01.png",
+                             "generated_assets/monster_review_export/ready/snake/v7/f02.png",
+                             "generated_assets/monster_review_export/ready/snake/v7/f03.png",
+                             "generated_assets/monster_review_export/ready/snake/v7/f04.png",
+                             "generated_assets/monster_review_export/ready/snake/v7/f05.png",
+                             "generated_assets/monster_review_export/ready/snake/v7/f06.png",
+                             "generated_assets/monster_review_export/ready/snake/v7/f07.png",
+                             "generated_assets/monster_review_export/ready/snake/v7/f08.png",
+                             "generated_assets/monster_review_export/ready/snake/v7/f09.png",
+                             "generated_assets/monster_review_export/ready/snake/v7/f10.png"
+                         ],
+        "activeIndexes":  [
+                              3,
+                              6,
+                              4,
+                              7,
+                              9,
+                              8,
+                              5,
+                              2,
+                              10,
+                              1
+                          ]
+    },
+    {
+        "variantId":  "snake__monsters_v8_sheet",
+        "category":  "ready",
+        "monster":  "snake",
+        "version":  "v8",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/snake/v8/f01.png",
+                             "generated_assets/monster_review_export/ready/snake/v8/f02.png",
+                             "generated_assets/monster_review_export/ready/snake/v8/f03.png",
+                             "generated_assets/monster_review_export/ready/snake/v8/f04.png",
+                             "generated_assets/monster_review_export/ready/snake/v8/f05.png",
+                             "generated_assets/monster_review_export/ready/snake/v8/f06.png",
+                             "generated_assets/monster_review_export/ready/snake/v8/f07.png",
+                             "generated_assets/monster_review_export/ready/snake/v8/f08.png",
+                             "generated_assets/monster_review_export/ready/snake/v8/f09.png"
+                         ],
+        "activeIndexes":  [
+                              3,
+                              1,
+                              4,
+                              7,
+                              2,
+                              5,
+                              6,
+                              9,
+                              8
+                          ]
+    },
+    {
+        "variantId":  "tiaotiao__monsters_v2_sheet",
+        "category":  "ready",
+        "monster":  "tiaotiao",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/tiaotiao/v2/f01.png",
+                             "generated_assets/monster_review_export/ready/tiaotiao/v2/f02.png",
+                             "generated_assets/monster_review_export/ready/tiaotiao/v2/f03.png",
+                             "generated_assets/monster_review_export/ready/tiaotiao/v2/f04.png",
+                             "generated_assets/monster_review_export/ready/tiaotiao/v2/f05.png",
+                             "generated_assets/monster_review_export/ready/tiaotiao/v2/f06.png",
+                             "generated_assets/monster_review_export/ready/tiaotiao/v2/f07.png",
+                             "generated_assets/monster_review_export/ready/tiaotiao/v2/f08.png",
+                             "generated_assets/monster_review_export/ready/tiaotiao/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              3,
+                              2,
+                              4,
+                              6,
+                              5
+                          ]
+    },
+    {
+        "variantId":  "tiaotiao__monsters_v6_sheet",
+        "category":  "needs_work",
+        "monster":  "tiaotiao",
+        "version":  "v6",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v6/f01.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v6/f02.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v6/f03.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v6/f04.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v6/f05.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v6/f06.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v6/f07.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v6/f08.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v6/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              3,
+                              2,
+                              6,
+                              4,
+                              5
+                          ]
+    },
+    {
+        "variantId":  "tiaotiao__monsters_v8_sheet",
+        "category":  "needs_work",
+        "monster":  "tiaotiao",
+        "version":  "v8",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v8/f01.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v8/f02.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v8/f03.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v8/f04.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v8/f05.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v8/f06.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v8/f07.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v8/f08.png",
+                             "generated_assets/monster_review_export/needs_work/tiaotiao/v8/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              5,
+                              3,
+                              6,
+                              4
+                          ]
+    },
+    {
+        "variantId":  "wolf_king__monsters_v1_sheet",
+        "category":  "needs_work",
+        "monster":  "wolf_king",
+        "version":  "v1",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v1/f01.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v1/f02.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v1/f03.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v1/f04.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v1/f05.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v1/f06.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v1/f07.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v1/f08.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v1/f09.png"
+                         ],
+        "activeIndexes":  [
+                              7,
+                              3,
+                              6,
+                              4,
+                              2,
+                              8,
+                              9,
+                              5,
+                              1
+                          ]
+    },
+    {
+        "variantId":  "wolf_king__monsters_v2_sheet",
+        "category":  "needs_work",
+        "monster":  "wolf_king",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v2/f01.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v2/f02.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v2/f03.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v2/f04.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v2/f05.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v2/f06.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v2/f07.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v2/f08.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              1,
+                              4,
+                              5,
+                              3,
+                              6
+                          ]
+    },
+    {
+        "variantId":  "wolf_king__monsters_v4_sheet",
+        "category":  "needs_work",
+        "monster":  "wolf_king",
+        "version":  "v4",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v4/f01.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v4/f02.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v4/f03.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v4/f04.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v4/f05.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v4/f06.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v4/f07.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v4/f08.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v4/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              4,
+                              3,
+                              8,
+                              9,
+                              7,
+                              6,
+                              5
+                          ]
+    },
+    {
+        "variantId":  "wolf_king__monsters_v6_sheet",
+        "category":  "needs_work",
+        "monster":  "wolf_king",
+        "version":  "v6",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v6/f01.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v6/f02.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v6/f03.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v6/f04.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v6/f05.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v6/f06.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v6/f07.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v6/f08.png",
+                             "generated_assets/monster_review_export/needs_work/wolf_king/v6/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              3,
+                              1,
+                              5,
+                              9,
+                              6,
+                              4,
+                              8,
+                              7
+                          ]
+    },
+    {
+        "variantId":  "yinya__monsters_v1_sheet",
+        "category":  "needs_work",
+        "monster":  "yinya",
+        "version":  "v1",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/yinya/v1/f01.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v1/f02.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v1/f03.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v1/f04.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v1/f05.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v1/f06.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v1/f07.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v1/f08.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v1/f09.png"
+                         ],
+        "activeIndexes":  [
+                              2,
+                              4,
+                              5,
+                              1,
+                              9,
+                              7,
+                              6,
+                              3,
+                              8
+                          ]
+    },
+    {
+        "variantId":  "yinya__monsters_v2_sheet",
+        "category":  "needs_work",
+        "monster":  "yinya",
+        "version":  "v2",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/yinya/v2/f01.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v2/f02.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v2/f03.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v2/f04.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v2/f05.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v2/f06.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v2/f07.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v2/f08.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v2/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              5,
+                              2,
+                              3,
+                              4,
+                              6,
+                              8,
+                              7,
+                              9
+                          ]
+    },
+    {
+        "variantId":  "yinya__monsters_v4_sheet",
+        "category":  "needs_work",
+        "monster":  "yinya",
+        "version":  "v4",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/yinya/v4/f01.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v4/f02.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v4/f03.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v4/f04.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v4/f05.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v4/f06.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v4/f07.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v4/f08.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v4/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              3,
+                              6,
+                              9,
+                              4,
+                              7,
+                              5,
+                              8
+                          ]
+    },
+    {
+        "variantId":  "yinya__monsters_v6_sheet",
+        "category":  "needs_work",
+        "monster":  "yinya",
+        "version":  "v6",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/yinya/v6/f01.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v6/f02.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v6/f03.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v6/f04.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v6/f05.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v6/f06.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v6/f07.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v6/f08.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v6/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              3,
+                              2,
+                              4,
+                              9,
+                              6,
+                              5,
+                              8,
+                              7
+                          ]
+    },
+    {
+        "variantId":  "yinya__monsters_v7_sheet",
+        "category":  "ready",
+        "monster":  "yinya",
+        "version":  "v7",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/ready/yinya/v7/f01.png",
+                             "generated_assets/monster_review_export/ready/yinya/v7/f02.png",
+                             "generated_assets/monster_review_export/ready/yinya/v7/f03.png",
+                             "generated_assets/monster_review_export/ready/yinya/v7/f04.png",
+                             "generated_assets/monster_review_export/ready/yinya/v7/f05.png",
+                             "generated_assets/monster_review_export/ready/yinya/v7/f06.png",
+                             "generated_assets/monster_review_export/ready/yinya/v7/f07.png",
+                             "generated_assets/monster_review_export/ready/yinya/v7/f08.png",
+                             "generated_assets/monster_review_export/ready/yinya/v7/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              8,
+                              5,
+                              4,
+                              3,
+                              6,
+                              7,
+                              9
+                          ]
+    },
+    {
+        "variantId":  "yinya__monsters_v8_sheet",
+        "category":  "needs_work",
+        "monster":  "yinya",
+        "version":  "v8",
+        "sourceFrames":  [
+                             "generated_assets/monster_review_export/needs_work/yinya/v8/f01.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v8/f02.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v8/f03.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v8/f04.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v8/f05.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v8/f06.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v8/f07.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v8/f08.png",
+                             "generated_assets/monster_review_export/needs_work/yinya/v8/f09.png"
+                         ],
+        "activeIndexes":  [
+                              1,
+                              2,
+                              5,
+                              3,
+                              6,
+                              4,
+                              7,
+                              9,
+                              8
+                          ]
+    }
+]

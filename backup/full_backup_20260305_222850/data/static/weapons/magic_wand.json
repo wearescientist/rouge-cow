@@ -1,0 +1,67 @@
+{
+    "id": "magic_wand",
+    "name": "魔杖",
+    "name_en": "Magic Wand",
+    "description": "自动追踪最近敌人的魔法投射物",
+    "type": "magic",
+    "subtype": "projectile",
+    "rarity": "common",
+    "unlock_level": 0,
+    "stats": {
+        "damage": 20,
+        "cooldown": 1.0,
+        "range": 200,
+        "projectile_speed": 150,
+        "homing_strength": 0.8,
+        "pierce": 0,
+        "duration": 3.0
+    },
+    "visual": {
+        "icon": "🔮",
+        "color": "#9b59b6",
+        "particle_color": "#e74c3c",
+        "projectile_sprite": "magic_missile",
+        "hit_effect": "magic_burst",
+        "sound": "magic_shoot"
+    },
+    "upgrades": {
+        "max_level": 8,
+        "per_level": {
+            "damage_multiplier": 1.15,
+            "projectile_count": 1,
+            "cooldown_multiplier": 0.95
+        },
+        "milestones": {
+            "3": {
+                "bonus": { "pierce": 1 },
+                "description": "穿透+1"
+            },
+            "5": {
+                "bonus": { "homing_strength": 1.2 },
+                "description": "追踪强化"
+            },
+            "8": {
+                "evolution": "holy_wand",
+                "description": "进化为神圣魔杖"
+            }
+        }
+    },
+    "evolution": {
+        "target": "holy_wand",
+        "requirements": [
+            { "type": "item", "id": "empty_tome", "count": 1 }
+        ],
+        "bonus": {
+            "cooldown_reset": true,
+            "damage_multiplier": 2.0
+        }
+    },
+    "projectile": {
+        "type": "homing",
+        "sprite": "magic_missile",
+        "trail": true,
+        "glow": true,
+        "rotation_speed": 360
+    },
+    "tags": ["magic", "projectile", "homing", "upgradeable", "evolvable"]
+}

@@ -1,0 +1,113 @@
+/**
+ * 全局CSS动画 - 深根之疫版
+ * v0.10.0 - 统一动画定义，避免重复
+ */
+
+/* ========== 基础淡入淡出 ========== */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes fadeOut {
+    from { opacity: 1; }
+    to { opacity: 0; }
+}
+
+/* ========== 滑入滑出 ========== */
+@keyframes slideIn {
+    from { 
+        transform: translateX(100%); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateX(0); 
+        opacity: 1; 
+    }
+}
+
+@keyframes slideInUp {
+    from { 
+        transform: translateY(50px); 
+        opacity: 0; 
+    }
+    to { 
+        transform: translateY(0); 
+        opacity: 1; 
+    }
+}
+
+@keyframes slideOut {
+    from { 
+        transform: translateX(0); 
+        opacity: 1; 
+    }
+    to { 
+        transform: translateX(100%); 
+        opacity: 0; 
+    }
+}
+
+/* ========== 缩放动画 ========== */
+@keyframes scaleIn {
+    from { 
+        transform: scale(0.8); 
+        opacity: 0; 
+    }
+    to { 
+        transform: scale(1); 
+        opacity: 1; 
+    }
+}
+
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+}
+
+/* ========== 闪烁动画 ========== */
+@keyframes blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+@keyframes glow {
+    0%, 100% { 
+        box-shadow: 0 0 5px currentColor;
+    }
+    50% { 
+        box-shadow: 0 0 20px currentColor, 0 0 40px currentColor;
+    }
+}
+
+/* ========== 震动动画 ========== */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
+/* ========== 旋转动画 ========== */
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* ========== 弹跳动画 ========== */
+@keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+
+/* ========== 工具类 ========== */
+.anim-fadeIn { animation: fadeIn 0.3s ease; }
+.anim-fadeOut { animation: fadeOut 0.3s ease forwards; }
+.anim-slideIn { animation: slideIn 0.5s ease; }
+.anim-slideInUp { animation: slideInUp 0.5s ease; }
+.anim-scaleIn { animation: scaleIn 0.3s ease; }
+.anim-pulse { animation: pulse 2s ease infinite; }
+.anim-blink { animation: blink 1s ease infinite; }
+.anim-glow { animation: glow 2s ease infinite; }
+.anim-shake { animation: shake 0.5s ease; }
+.anim-spin { animation: spin 1s linear infinite; }
+.anim-bounce { animation: bounce 1s ease infinite; }

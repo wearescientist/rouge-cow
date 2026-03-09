@@ -1,0 +1,110 @@
+:root {
+    --scene-shell-top-light: rgba(228, 232, 238, 0.06);
+    --scene-shell-side-light: rgba(154, 146, 135, 0.12);
+    --scene-shell-side-shadow: rgba(6, 8, 10, 0.44);
+    --scene-shell-floor-haze: rgba(210, 205, 194, 0.05);
+    --scene-shell-center-edge: rgba(255, 248, 232, 0.02);
+}
+
+:root[data-floor-theme="mycelium"] {
+    --hud-ink: #e8e1d5;
+    --hud-muted: #aaa59a;
+    --hud-gold: #cdbda1;
+    --hud-surface-1: rgba(92, 86, 78, 0.5);
+    --hud-surface-2: rgba(28, 29, 28, 0.84);
+    --hud-surface-hero-1: rgba(112, 104, 95, 0.58);
+    --hud-surface-hero-2: rgba(39, 39, 37, 0.9);
+    --hud-border-strong: rgba(193, 184, 166, 0.24);
+    --hud-border-soft: rgba(193, 184, 166, 0.16);
+    --hud-title: rgba(231, 226, 216, 0.92);
+    --hud-title-right: rgba(214, 221, 211, 0.92);
+    --hud-heart: #f0a39c;
+    --hud-exp-1: #8f8d7a;
+    --hud-exp-2: #d1c8b5;
+    --hud-map-bg: #171715;
+    --hud-map-outline: rgba(193, 184, 166, 0.22);
+    --hud-map-unvisited: #5d5a54;
+    --hud-map-current: #e5dccb;
+    --hud-mobile-card-1: rgba(79, 75, 69, 0.84);
+    --hud-mobile-card-2: rgba(27, 29, 27, 0.9);
+    --hud-button-1: rgba(92, 88, 80, 0.92);
+    --hud-button-2: rgba(33, 35, 32, 0.94);
+    --hud-button-primary-1: rgba(129, 121, 108, 0.98);
+    --hud-button-primary-2: rgba(49, 49, 43, 0.96);
+    --hud-button-context: rgba(201, 188, 168, 0.26);
+    --hud-sidebar-fog-1: rgba(18, 19, 18, 0.8);
+    --hud-sidebar-fog-2: rgba(13, 14, 14, 0.56);
+    --hud-sidebar-edge: rgba(4, 5, 6, 0.46);
+    --scene-shell-top-light: rgba(233, 237, 243, 0.08);
+    --scene-shell-side-light: rgba(176, 168, 154, 0.16);
+    --scene-shell-side-shadow: rgba(5, 7, 9, 0.52);
+    --scene-shell-floor-haze: rgba(225, 219, 207, 0.07);
+    --scene-shell-center-edge: rgba(244, 239, 226, 0.03);
+    --hud-overlay-tint: rgba(10, 11, 10, 0.8);
+    --hud-overlay-ink: rgba(18, 17, 15, 0.92);
+    --hud-overlay-paper: rgba(76, 71, 62, 0.2);
+    --hud-overlay-accent: #cdc0ab;
+    --hud-overlay-status-new: #b8c2a7;
+    --hud-overlay-status-level: #d4c8b6;
+    --hud-overlay-status-price: #d4c5ad;
+    --hud-overlay-status-locked: #7a7671;
+    --hud-overlay-passive: #b7bcab;
+    --hud-overlay-status-victory: #ced8be;
+    --hud-overlay-status-neutral: #d4c5ad;
+}
+
+#mainLayout::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+        radial-gradient(circle at 50% 11%, var(--scene-shell-top-light), transparent 18%),
+        radial-gradient(circle at 7% 50%, var(--scene-shell-side-light), transparent 18%),
+        radial-gradient(circle at 93% 50%, var(--scene-shell-side-light), transparent 18%),
+        radial-gradient(circle at 50% 104%, var(--scene-shell-floor-haze), transparent 22%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+#leftSidebar::before,
+#rightSidebar::before {
+    background:
+        radial-gradient(circle at 50% 8%, var(--scene-shell-top-light), transparent 26%),
+        radial-gradient(circle at 110% 50%, var(--scene-shell-side-light), transparent 38%),
+        radial-gradient(circle at -10% 50%, var(--scene-shell-side-light), transparent 38%),
+        linear-gradient(90deg, var(--scene-shell-side-shadow) 0%, transparent 26%, transparent 72%, var(--scene-shell-side-shadow) 100%),
+        linear-gradient(
+            180deg,
+            color-mix(in srgb, var(--hud-sidebar-fog-1) 76%, rgba(4, 6, 10, 0.98)),
+            color-mix(in srgb, var(--hud-sidebar-fog-2) 78%, rgba(8, 10, 14, 0.96))
+        ),
+        radial-gradient(circle at 50% 12%, rgba(255, 245, 221, 0.032), transparent 30%),
+        linear-gradient(
+            90deg,
+            rgba(0, 0, 0, 0.28) 0%,
+            rgba(255, 246, 221, 0.026) 18%,
+            rgba(255, 255, 255, 0.01) 42%,
+            rgba(0, 0, 0, 0.08) 74%,
+            rgba(0, 0, 0, 0.22) 100%
+        ),
+        repeating-linear-gradient(
+            90deg,
+            rgba(255, 255, 255, 0.005) 0 1px,
+            transparent 1px 92px,
+            rgba(0, 0, 0, 0.016) 92px 94px,
+            transparent 84px 164px
+        );
+}
+
+#centerGame {
+    background:
+        radial-gradient(circle at 50% 10%, var(--scene-shell-top-light), transparent 18%),
+        linear-gradient(90deg, rgba(0, 0, 0, 0.22), transparent 18%, transparent 82%, rgba(0, 0, 0, 0.22)),
+        linear-gradient(180deg, rgba(6,8,10,0.18), rgba(6,8,10,0.12)),
+        radial-gradient(120% 130% at 50% 50%, rgba(53,37,25,0.08), rgba(7,9,14,0.04));
+}
+
+#centerGame::before,
+#centerGame::after {
+    background: linear-gradient(180deg, var(--scene-shell-center-edge), rgba(0, 0, 0, 0.08), var(--scene-shell-center-edge));
+}

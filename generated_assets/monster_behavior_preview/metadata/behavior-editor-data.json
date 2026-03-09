@@ -1,0 +1,3744 @@
+[
+  {
+    "variantId": "bat__monsters_v2_sheet",
+    "category": "ready",
+    "monster": "bat",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      33804.9,
+      33869.1,
+      34851
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/bat/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/bat/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/bat/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/bat/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 364,
+        "height": 225,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/bat/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/bat/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/bat/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/bat/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "bat__monsters_v3_sheet",
+    "category": "needs_work",
+    "monster": "bat",
+    "version": "v3",
+    "sourceKey": "monsters_v3_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      26521.9,
+      28358.3,
+      29732.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/bat/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v3/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 325,
+        "height": 213,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/bat/v3/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/bat/v3/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/bat/v3/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "bat__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "bat",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      31135,
+      35188.6,
+      35730.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/bat/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v6/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 344,
+        "height": 208,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/bat/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/bat/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/bat/v6/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "bat__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "bat",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      32487.9,
+      32198.3,
+      27385.7,
+      25119.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/bat/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v8/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 336,
+        "height": 233,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/bat/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/bat/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/bat/v8/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "bat__monsters_v9_sheet",
+    "category": "ready",
+    "monster": "bat",
+    "version": "v9",
+    "sourceKey": "monsters_v9_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      33360.8,
+      32308.4,
+      31031
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/bat/v9/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/bat/v9/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/bat/v9/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/bat/v9/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 351,
+        "height": 249,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/bat/v9/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/bat/v9/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/bat/v9/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/bat/v9/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "bee__monsters_v6_sheet",
+    "category": "ready",
+    "monster": "bee",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      32889,
+      34005,
+      31044.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/bee/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/bee/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/bee/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/bee/v6/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 327,
+        "height": 237,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/bee/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/bee/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/bee/v6/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/bee/v6/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "chick__monsters_sprites_sheet",
+    "category": "ready",
+    "monster": "chick",
+    "version": "spr",
+    "sourceKey": "monsters_sprites_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      101920.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/chick/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/chick/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/chick/spr/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/chick/spr/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 364,
+        "height": 556,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/chick/spr/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/chick/spr/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/chick/spr/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/chick/spr/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "chick__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "chick",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      40194.2,
+      41413.7,
+      43528.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 262,
+        "height": 276,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "crab__monsters_sprites_sheet",
+    "category": "needs_work",
+    "monster": "crab",
+    "version": "spr",
+    "sourceKey": "monsters_sprites_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      184452.7,
+      176834
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/crab/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/spr/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 712,
+        "height": 432,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/crab/spr/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/crab/spr/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/crab/spr/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "crab__monsters_v2_sheet",
+    "category": "ready",
+    "monster": "crab",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      34164.5,
+      33580.1,
+      34128.4,
+      33840.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/crab/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/crab/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/crab/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/crab/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 326,
+        "height": 196,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/crab/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/crab/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/crab/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/crab/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "crab__monsters_v4_sheet",
+    "category": "needs_work",
+    "monster": "crab",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x2",
+    "rowMeans": [
+      32147.9,
+      34555,
+      35458.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/crab/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v4/walk/f02.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 2,
+        "width": 316,
+        "height": 186,
+        "sourceFrameIndexes": [
+          1,
+          2
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/crab/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/crab/v4/walk/f02.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "crab__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "crab",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      41994.4,
+      46026.4,
+      44794.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 348,
+        "height": 228,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "crab__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "crab",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      36934.4,
+      40662.2,
+      41608.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 343,
+        "height": 210,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v1_sheet",
+    "category": "needs_work",
+    "monster": "fox",
+    "version": "v1",
+    "sourceKey": "monsters_v1_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      34223.5,
+      35618,
+      33944.1,
+      44147.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v1/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 384,
+        "height": 210,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/fox/v1/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v1/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v1/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v2_sheet",
+    "category": "ready",
+    "monster": "fox",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      27788.1,
+      28784.4,
+      30407.7
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/fox/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/fox/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/fox/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/fox/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 338,
+        "height": 199,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/fox/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/fox/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/fox/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/fox/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v3_sheet",
+    "category": "needs_work",
+    "monster": "fox",
+    "version": "v3",
+    "sourceKey": "monsters_v3_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      27703,
+      30276.8,
+      31432.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v3/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 313,
+        "height": 188,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/fox/v3/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v3/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v3/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v4_sheet",
+    "category": "needs_work",
+    "monster": "fox",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      27036.3,
+      28169.7,
+      29019.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v4/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 329,
+        "height": 184,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/fox/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v4/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v4/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "fox",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      32855.5,
+      34752.1,
+      35286.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 348,
+        "height": 206,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v7_sheet",
+    "category": "ready",
+    "monster": "fox",
+    "version": "v7",
+    "sourceKey": "monsters_v7_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      34048.4,
+      36702.2,
+      38324.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/fox/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/fox/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/fox/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/fox/v7/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 341,
+        "height": 220,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/fox/v7/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/fox/v7/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/fox/v7/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/fox/v7/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "fox",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      25079.4,
+      27683,
+      28303.1
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v8/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 325,
+        "height": 182,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/fox/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/fox/v8/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v10_sheet",
+    "category": "ready",
+    "monster": "fox",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      25686.7,
+      27275,
+      27533.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/fox/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/fox/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/fox/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/fox/v10/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 311,
+        "height": 189,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/fox/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/fox/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/fox/v10/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/fox/v10/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_sprites_sheet",
+    "category": "needs_work",
+    "monster": "ghost",
+    "version": "spr",
+    "sourceKey": "monsters_sprites_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      141845.3,
+      158502.2
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/spr/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 728,
+        "height": 480,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/ghost/spr/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/spr/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/spr/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v2_sheet",
+    "category": "ready",
+    "monster": "ghost",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      43420.8,
+      43309.5,
+      46676.7
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 348,
+        "height": 274,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v3_sheet",
+    "category": "needs_work",
+    "monster": "ghost",
+    "version": "v3",
+    "sourceKey": "monsters_v3_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      44104.9,
+      48588.5,
+      48085
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v3/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 345,
+        "height": 274,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/ghost/v3/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v3/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v3/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v4_sheet",
+    "category": "needs_work",
+    "monster": "ghost",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      47748.4,
+      53320.2,
+      55094.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v4/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 299,
+        "height": 277,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/ghost/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v4/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v4/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "ghost",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      41930.5,
+      43319.6,
+      47996
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v6/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 349,
+        "height": 290,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/ghost/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v6/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "ghost",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      37790,
+      39093.9,
+      43627
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 292,
+        "height": 279,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v10_sheet",
+    "category": "needs_work",
+    "monster": "ghost",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      44304.9,
+      50152.5,
+      46608.3
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v10/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 346,
+        "height": 293,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/ghost/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/ghost/v10/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "goose__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "goose",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      32660.1,
+      36513.9,
+      39358.7
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 354,
+        "height": 213,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "goose__monsters_v10_sheet",
+    "category": "needs_work",
+    "monster": "goose",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      27414.8,
+      29875,
+      29269.7
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 317,
+        "height": 234,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_sprites_sheet",
+    "category": "needs_work",
+    "monster": "mimic",
+    "version": "spr",
+    "sourceKey": "monsters_sprites_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      154735.4,
+      143123.7
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/spr/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 602,
+        "height": 455,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mimic/spr/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/spr/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/spr/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v1_sheet",
+    "category": "needs_work",
+    "monster": "mimic",
+    "version": "v1",
+    "sourceKey": "monsters_v1_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      45945,
+      49208,
+      50220.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 317,
+        "height": 223,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v4_sheet",
+    "category": "needs_work",
+    "monster": "mimic",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      34499,
+      39399.8,
+      40375.1
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v4/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 259,
+        "height": 199,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mimic/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v4/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v4/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v5_sheet",
+    "category": "needs_work",
+    "monster": "mimic",
+    "version": "v5",
+    "sourceKey": "monsters_v5_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      52719.1,
+      56369.2,
+      56910.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 336,
+        "height": 263,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "mimic",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      37873.7,
+      45824.4,
+      45491.3
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v6/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 251,
+        "height": 217,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mimic/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v6/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v7_sheet",
+    "category": "needs_work",
+    "monster": "mimic",
+    "version": "v7",
+    "sourceKey": "monsters_v7_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      39698.2,
+      44464.3,
+      45506.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v7/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 244,
+        "height": 234,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mimic/v7/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v7/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v7/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "mimic",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      46131.3,
+      53431.5,
+      53424.1
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v8/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 309,
+        "height": 239,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mimic/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mimic/v8/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v10_sheet",
+    "category": "ready",
+    "monster": "mimic",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      33959.7,
+      39944.7,
+      41263.1
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/mimic/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/mimic/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/mimic/v10/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 283,
+        "height": 209,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/mimic/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/mimic/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/mimic/v10/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v2_sheet",
+    "category": "ready",
+    "monster": "mother",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      42759.3,
+      43581.4,
+      42650.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/mother/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/mother/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/mother/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/mother/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 337,
+        "height": 224,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/mother/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/mother/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/mother/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/mother/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v3_sheet",
+    "category": "needs_work",
+    "monster": "mother",
+    "version": "v3",
+    "sourceKey": "monsters_v3_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      47425.6,
+      48079.8,
+      48605.6
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v3/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 314,
+        "height": 262,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mother/v3/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v3/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v3/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "mother",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      44933.9,
+      53372.7,
+      54086.6
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v6/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 339,
+        "height": 252,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mother/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v6/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v7_sheet",
+    "category": "needs_work",
+    "monster": "mother",
+    "version": "v7",
+    "sourceKey": "monsters_v7_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      54447.8,
+      60927.4,
+      63326.1
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v7/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 317,
+        "height": 252,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mother/v7/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v7/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v7/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "mother",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      50017.9,
+      53475.6,
+      44853.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v8/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 369,
+        "height": 276,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mother/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v8/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v10_sheet",
+    "category": "needs_work",
+    "monster": "mother",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      48699.2,
+      57601.8,
+      63487.3
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 338,
+        "height": 280,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "nibei__monsters_sprites_sheet",
+    "category": "needs_work",
+    "monster": "nibei",
+    "version": "spr",
+    "sourceKey": "monsters_sprites_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      169796.1,
+      166658.3
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/nibei/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/spr/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 702,
+        "height": 367,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/nibei/spr/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/nibei/spr/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/nibei/spr/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "nibei__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "nibei",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      44452.9,
+      44431.6,
+      44150.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/nibei/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/v6/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 324,
+        "height": 232,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/nibei/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/nibei/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/nibei/v6/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "nibei__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "nibei",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      45555.3,
+      47638.9,
+      48139.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/nibei/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/v8/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 348,
+        "height": 235,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/nibei/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/nibei/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/nibei/v8/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "panther__monsters_v1_sheet",
+    "category": "needs_work",
+    "monster": "panther",
+    "version": "v1",
+    "sourceKey": "monsters_v1_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      28939.1,
+      29962.7,
+      32359.6
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/panther/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v1/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 335,
+        "height": 177,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/panther/v1/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/panther/v1/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/panther/v1/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "panther__monsters_v2_sheet",
+    "category": "needs_work",
+    "monster": "panther",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      42554.6,
+      46202.6,
+      47860.1
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/panther/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v2/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 373,
+        "height": 231,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/panther/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/panther/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/panther/v2/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "panther__monsters_v7_sheet",
+    "category": "needs_work",
+    "monster": "panther",
+    "version": "v7",
+    "sourceKey": "monsters_v7_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      30422.6,
+      32005,
+      33354
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 339,
+        "height": 185,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "panther__monsters_v10_sheet",
+    "category": "needs_work",
+    "monster": "panther",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      33579.5,
+      35149.3,
+      35496.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/panther/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v10/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 349,
+        "height": 206,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/panther/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/panther/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/panther/v10/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v1_sheet",
+    "category": "needs_work",
+    "monster": "pigeon",
+    "version": "v1",
+    "sourceKey": "monsters_v1_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      42173.5,
+      37725.4,
+      39955.7
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 363,
+        "height": 276,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v2_sheet",
+    "category": "ready",
+    "monster": "pigeon",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      31921.5,
+      29591.6,
+      30660.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 342,
+        "height": 254,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v4_sheet",
+    "category": "ready",
+    "monster": "pigeon",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      25152.5,
+      24243.1,
+      25510.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 338,
+        "height": 191,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "pigeon",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      30319.3,
+      34398.1,
+      33963.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v6/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 284,
+        "height": 225,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v6/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v7_sheet",
+    "category": "needs_work",
+    "monster": "pigeon",
+    "version": "v7",
+    "sourceKey": "monsters_v7_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      40163.3,
+      41920.5,
+      39660.2
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v7/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 327,
+        "height": 250,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v7/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v7/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v7/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "pigeon",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      34374,
+      32242.9,
+      35423.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 316,
+        "height": 236,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v10_sheet",
+    "category": "needs_work",
+    "monster": "pigeon",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      41751.3,
+      48651.6,
+      41294.2
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v10/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 340,
+        "height": 276,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/pigeon/v10/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_sprites_sheet",
+    "category": "needs_work",
+    "monster": "rabbit2",
+    "version": "spr",
+    "sourceKey": "monsters_sprites_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      135096.8,
+      125787.1
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 648,
+        "height": 460,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v1_sheet",
+    "category": "needs_work",
+    "monster": "rabbit2",
+    "version": "v1",
+    "sourceKey": "monsters_v1_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      30592.2,
+      31994.2,
+      35746.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 269,
+        "height": 246,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v2_sheet",
+    "category": "ready",
+    "monster": "rabbit2",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      37006.7,
+      37734.4,
+      40340.6
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 326,
+        "height": 234,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v3_sheet",
+    "category": "needs_work",
+    "monster": "rabbit2",
+    "version": "v3",
+    "sourceKey": "monsters_v3_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      33898.8,
+      34525.7,
+      34718.2
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 303,
+        "height": 226,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v4_sheet",
+    "category": "needs_work",
+    "monster": "rabbit2",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      29670.5,
+      30840.3,
+      33330.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 279,
+        "height": 199,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "rabbit2",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      36096,
+      38639.3,
+      39594.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 316,
+        "height": 221,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "rabbit2",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      30440.7,
+      32113.5,
+      34046.6
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 279,
+        "height": 220,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v10_sheet",
+    "category": "ready",
+    "monster": "rabbit2",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      40394,
+      43779.1,
+      42341.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 308,
+        "height": 253,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snail__monsters_sprites_sheet",
+    "category": "ready",
+    "monster": "snail",
+    "version": "spr",
+    "sourceKey": "monsters_sprites_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      97949.8,
+      104414.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/spr/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/spr/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 646,
+        "height": 392,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/snail/spr/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/snail/spr/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/snail/spr/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/snail/spr/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v1_sheet",
+    "category": "needs_work",
+    "monster": "snail",
+    "version": "v1",
+    "sourceKey": "monsters_v1_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      32416.4,
+      31597.3,
+      31733.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 322,
+        "height": 181,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v2_sheet",
+    "category": "ready",
+    "monster": "snail",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      40423.3,
+      41229.5,
+      40992.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 315,
+        "height": 236,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/snail/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/snail/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/snail/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/snail/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v4_sheet",
+    "category": "needs_work",
+    "monster": "snail",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      40327.6,
+      44060.1,
+      43507.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 380,
+        "height": 235,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v6_sheet",
+    "category": "ready",
+    "monster": "snail",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      29151,
+      33352.6,
+      34220.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v6/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 272,
+        "height": 207,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/snail/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/snail/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/snail/v6/walk/f03.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v7_sheet",
+    "category": "ready",
+    "monster": "snail",
+    "version": "v7",
+    "sourceKey": "monsters_v7_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      41269.7,
+      42400.7,
+      42772.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/v7/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 342,
+        "height": 236,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/snail/v7/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/snail/v7/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/snail/v7/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/snail/v7/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v8_sheet",
+    "category": "ready",
+    "monster": "snail",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      38078.6,
+      41439.9,
+      41945.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/v8/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 310,
+        "height": 221,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/snail/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/snail/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/snail/v8/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/snail/v8/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v10_sheet",
+    "category": "ready",
+    "monster": "snail",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      35045.5,
+      37707.2,
+      41764.6
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/v10/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 319,
+        "height": 232,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/snail/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/snail/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/snail/v10/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/snail/v10/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v2_sheet",
+    "category": "needs_work",
+    "monster": "snake",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      30263.8,
+      29734.7,
+      32366.7
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 335,
+        "height": 257,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v3_sheet",
+    "category": "needs_work",
+    "monster": "snake",
+    "version": "v3",
+    "sourceKey": "monsters_v3_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      32923.7,
+      31741.5,
+      31843.1
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 369,
+        "height": 227,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v4_sheet",
+    "category": "needs_work",
+    "monster": "snake",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      30325.9,
+      29761.3,
+      33571.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 329,
+        "height": 178,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v7_sheet",
+    "category": "ready",
+    "monster": "snake",
+    "version": "v7",
+    "sourceKey": "monsters_v7_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      24711.4,
+      24278.3,
+      25033.8,
+      27941.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/snake/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snake/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snake/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snake/v7/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 312,
+        "height": 203,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/snake/v7/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/snake/v7/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/snake/v7/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/snake/v7/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v8_sheet",
+    "category": "ready",
+    "monster": "snake",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      27162.3,
+      28720.9,
+      30059.3
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/snake/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snake/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snake/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snake/v8/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 319,
+        "height": 201,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/snake/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/snake/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/snake/v8/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/snake/v8/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v10_sheet",
+    "category": "needs_work",
+    "monster": "snake",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      32890.8,
+      27727.9,
+      32567.4
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 327,
+        "height": 232,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "tiaotiao__monsters_v2_sheet",
+    "category": "ready",
+    "monster": "tiaotiao",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      29041.3,
+      36621.5,
+      40850.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 265,
+        "height": 293,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "tiaotiao__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "tiaotiao",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      37593.4,
+      44069.9,
+      50715.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 252,
+        "height": 336,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "tiaotiao__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "tiaotiao",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      34210.9,
+      36973,
+      40563.3
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 285,
+        "height": 255,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "wolf_king__monsters_v1_sheet",
+    "category": "needs_work",
+    "monster": "wolf_king",
+    "version": "v1",
+    "sourceKey": "monsters_v1_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      40477.6,
+      40164.9,
+      40664.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 387,
+        "height": 282,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "wolf_king__monsters_v2_sheet",
+    "category": "needs_work",
+    "monster": "wolf_king",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      42049.7,
+      47157.1,
+      51877
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 355,
+        "height": 271,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "wolf_king__monsters_v4_sheet",
+    "category": "needs_work",
+    "monster": "wolf_king",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      29404.4,
+      32918.8,
+      31766.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 321,
+        "height": 230,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "wolf_king__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "wolf_king",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      41838.5,
+      44592.1,
+      46946.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 338,
+        "height": 284,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v1_sheet",
+    "category": "needs_work",
+    "monster": "yinya",
+    "version": "v1",
+    "sourceKey": "monsters_v1_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      34224.9,
+      35085.3,
+      37725.6
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 353,
+        "height": 224,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v2_sheet",
+    "category": "needs_work",
+    "monster": "yinya",
+    "version": "v2",
+    "sourceKey": "monsters_v2_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      36458.8,
+      38327.2,
+      40872.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 360,
+        "height": 216,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v4_sheet",
+    "category": "needs_work",
+    "monster": "yinya",
+    "version": "v4",
+    "sourceKey": "monsters_v4_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      34175.3,
+      37068.9,
+      37440.5
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 325,
+        "height": 217,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v6_sheet",
+    "category": "needs_work",
+    "monster": "yinya",
+    "version": "v6",
+    "sourceKey": "monsters_v6_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      40092.9,
+      41994.4,
+      45173.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 359,
+        "height": 239,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v7_sheet",
+    "category": "ready",
+    "monster": "yinya",
+    "version": "v7",
+    "sourceKey": "monsters_v7_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      34870,
+      36207.9,
+      37139.8
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 334,
+        "height": 208,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f01.png",
+          "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f02.png",
+          "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f03.png",
+          "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v8_sheet",
+    "category": "needs_work",
+    "monster": "yinya",
+    "version": "v8",
+    "sourceKey": "monsters_v8_sheet",
+    "layout": "1x4",
+    "rowMeans": [
+      34681.7,
+      36337.5,
+      38064
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f04.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 4,
+        "width": 329,
+        "height": 219,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f03.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f04.png"
+        ]
+      }
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v10_sheet",
+    "category": "needs_work",
+    "monster": "yinya",
+    "version": "v10",
+    "sourceKey": "monsters_v10_sheet",
+    "layout": "1x3",
+    "rowMeans": [
+      30520.1,
+      33687.4,
+      34886.9
+    ],
+    "sourceFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v10/walk/f03.png"
+    ],
+    "behaviors": [
+      {
+        "name": "walk",
+        "label": "Walk",
+        "delayMs": 240,
+        "frameCount": 3,
+        "width": 321,
+        "height": 198,
+        "sourceFrameIndexes": [
+          1,
+          2,
+          3
+        ],
+        "frames": [
+          "generated_assets/monster_walk_curated/needs_work/yinya/v10/walk/f01.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v10/walk/f02.png",
+          "generated_assets/monster_walk_curated/needs_work/yinya/v10/walk/f03.png"
+        ]
+      }
+    ]
+  }
+]

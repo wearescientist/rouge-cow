@@ -1,0 +1,2338 @@
+[
+  {
+    "variantId": "bat__monsters_v2_sheet",
+    "monster": "bat",
+    "version": "v2",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      4,
+      2,
+      5,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/bat/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/bat/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/bat/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/bat/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "bat__monsters_v3_sheet",
+    "monster": "bat",
+    "version": "v3",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      2,
+      4,
+      1
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/bat/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v3/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "bat__monsters_v6_sheet",
+    "monster": "bat",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      2,
+      3,
+      1
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/bat/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v6/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "bat__monsters_v8_sheet",
+    "monster": "bat",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      10,
+      7,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/bat/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/bat/v8/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "bat__monsters_v9_sheet",
+    "monster": "bat",
+    "version": "v9",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      9,
+      6,
+      7,
+      2
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/bat/v9/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/bat/v9/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/bat/v9/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/bat/v9/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "bee__monsters_v6_sheet",
+    "monster": "bee",
+    "version": "v6",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      7,
+      8,
+      4,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/bee/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/bee/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/bee/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/bee/v6/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "chick__monsters_sprites_sheet",
+    "monster": "chick",
+    "version": "spr",
+    "category": "ready",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      1,
+      4,
+      3,
+      2
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/chick/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/chick/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/chick/spr/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/chick/spr/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "chick__monsters_v6_sheet",
+    "monster": "chick",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      2,
+      4,
+      3,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/chick/v6/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "crab__monsters_sprites_sheet",
+    "monster": "crab",
+    "version": "spr",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      3,
+      1,
+      2
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/crab/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/spr/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "crab__monsters_v2_sheet",
+    "monster": "crab",
+    "version": "v2",
+    "category": "ready",
+    "originalActiveCount": 12,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      4,
+      7,
+      10
+    ],
+    "originalSourceIndexes": [
+      10,
+      1,
+      11,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/crab/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/crab/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/crab/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/crab/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "crab__monsters_v4_sheet",
+    "monster": "crab",
+    "version": "v4",
+    "category": "needs_work",
+    "originalActiveCount": 2,
+    "keptCount": 2,
+    "keptOriginalOrder": [
+      1,
+      2
+    ],
+    "originalSourceIndexes": [
+      6,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/crab/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v4/walk/f02.png"
+    ]
+  },
+  {
+    "variantId": "crab__monsters_v6_sheet",
+    "monster": "crab",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      7,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v6/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "crab__monsters_v8_sheet",
+    "monster": "crab",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      3,
+      2,
+      7,
+      5
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/crab/v8/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v1_sheet",
+    "monster": "fox",
+    "version": "v1",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      8,
+      9,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v1/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v2_sheet",
+    "monster": "fox",
+    "version": "v2",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      2,
+      3,
+      4,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/fox/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/fox/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/fox/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/fox/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v3_sheet",
+    "monster": "fox",
+    "version": "v3",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      3,
+      6,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v3/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v4_sheet",
+    "monster": "fox",
+    "version": "v4",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      3,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v4/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v6_sheet",
+    "monster": "fox",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      8,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v6/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v7_sheet",
+    "monster": "fox",
+    "version": "v7",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      3,
+      6,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/fox/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/fox/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/fox/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/fox/v7/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v8_sheet",
+    "monster": "fox",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      5,
+      9,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/fox/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/fox/v8/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "fox__monsters_v10_sheet",
+    "monster": "fox",
+    "version": "v10",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      3,
+      1,
+      5,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/fox/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/fox/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/fox/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/fox/v10/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_sprites_sheet",
+    "monster": "ghost",
+    "version": "spr",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/spr/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v2_sheet",
+    "monster": "ghost",
+    "version": "v2",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      6,
+      1,
+      2,
+      5
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/ghost/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v3_sheet",
+    "monster": "ghost",
+    "version": "v3",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      2,
+      1,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v3/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v4_sheet",
+    "monster": "ghost",
+    "version": "v4",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v4/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v6_sheet",
+    "monster": "ghost",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      4,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v6/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v8_sheet",
+    "monster": "ghost",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      5,
+      3,
+      4,
+      2
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v8/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "ghost__monsters_v10_sheet",
+    "monster": "ghost",
+    "version": "v10",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      5,
+      6,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/ghost/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/ghost/v10/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "goose__monsters_v6_sheet",
+    "monster": "goose",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 6,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v6/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "goose__monsters_v10_sheet",
+    "monster": "goose",
+    "version": "v10",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      1,
+      3,
+      7,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/goose/v10/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_sprites_sheet",
+    "monster": "mimic",
+    "version": "spr",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      3,
+      2
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/spr/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v1_sheet",
+    "monster": "mimic",
+    "version": "v1",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v1/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v4_sheet",
+    "monster": "mimic",
+    "version": "v4",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v4/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v5_sheet",
+    "monster": "mimic",
+    "version": "v5",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      6,
+      8
+    ],
+    "originalSourceIndexes": [
+      1,
+      4,
+      5,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v5/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v6_sheet",
+    "monster": "mimic",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v6/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v7_sheet",
+    "monster": "mimic",
+    "version": "v7",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      2,
+      1,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v7/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v8_sheet",
+    "monster": "mimic",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mimic/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mimic/v8/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mimic__monsters_v10_sheet",
+    "monster": "mimic",
+    "version": "v10",
+    "category": "ready",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/mimic/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/mimic/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/mimic/v10/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v2_sheet",
+    "monster": "mother",
+    "version": "v2",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      9,
+      4,
+      6,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/mother/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/mother/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/mother/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/mother/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v3_sheet",
+    "monster": "mother",
+    "version": "v3",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      8,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v3/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v6_sheet",
+    "monster": "mother",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v6/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v7_sheet",
+    "monster": "mother",
+    "version": "v7",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v7/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v8_sheet",
+    "monster": "mother",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      8,
+      1,
+      2
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v8/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "mother__monsters_v10_sheet",
+    "monster": "mother",
+    "version": "v10",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/mother/v10/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "nibei__monsters_sprites_sheet",
+    "monster": "nibei",
+    "version": "spr",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      3,
+      1,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/nibei/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/spr/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "nibei__monsters_v6_sheet",
+    "monster": "nibei",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      2,
+      7,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/nibei/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/v6/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "nibei__monsters_v8_sheet",
+    "monster": "nibei",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      9,
+      8,
+      5
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/nibei/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/nibei/v8/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "panther__monsters_v1_sheet",
+    "monster": "panther",
+    "version": "v1",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      2,
+      4,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/panther/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v1/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "panther__monsters_v2_sheet",
+    "monster": "panther",
+    "version": "v2",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      3,
+      2,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/panther/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v2/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "panther__monsters_v7_sheet",
+    "monster": "panther",
+    "version": "v7",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      4,
+      5,
+      2,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v7/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "panther__monsters_v10_sheet",
+    "monster": "panther",
+    "version": "v10",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      5,
+      9,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/panther/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/panther/v10/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v1_sheet",
+    "monster": "pigeon",
+    "version": "v1",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      9,
+      2,
+      7,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v1/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v2_sheet",
+    "monster": "pigeon",
+    "version": "v2",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      6,
+      8,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v4_sheet",
+    "monster": "pigeon",
+    "version": "v4",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      7,
+      4,
+      6,
+      1
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/pigeon/v4/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v6_sheet",
+    "monster": "pigeon",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v6/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v7_sheet",
+    "monster": "pigeon",
+    "version": "v7",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      6,
+      3,
+      5
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v7/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v8_sheet",
+    "monster": "pigeon",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      4,
+      5,
+      3,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v8/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "pigeon__monsters_v10_sheet",
+    "monster": "pigeon",
+    "version": "v10",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      7,
+      9,
+      2
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/pigeon/v10/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_sprites_sheet",
+    "monster": "rabbit2",
+    "version": "spr",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      3,
+      4,
+      1,
+      2
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/spr/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v1_sheet",
+    "monster": "rabbit2",
+    "version": "v1",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      2,
+      1,
+      3,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v1/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v2_sheet",
+    "monster": "rabbit2",
+    "version": "v2",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      2,
+      4,
+      3,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v3_sheet",
+    "monster": "rabbit2",
+    "version": "v3",
+    "category": "needs_work",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      1,
+      8,
+      6,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v3/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v4_sheet",
+    "monster": "rabbit2",
+    "version": "v4",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      5,
+      2,
+      4,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v4/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v6_sheet",
+    "monster": "rabbit2",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      2,
+      4,
+      1,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v6/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v8_sheet",
+    "monster": "rabbit2",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      2,
+      5,
+      9,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/rabbit2/v8/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "rabbit2__monsters_v10_sheet",
+    "monster": "rabbit2",
+    "version": "v10",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      2,
+      9,
+      7,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/rabbit2/v10/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snail__monsters_sprites_sheet",
+    "monster": "snail",
+    "version": "spr",
+    "category": "ready",
+    "originalActiveCount": 4,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/spr/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/spr/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/spr/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/spr/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v1_sheet",
+    "monster": "snail",
+    "version": "v1",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      8,
+      1,
+      7,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v1/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v2_sheet",
+    "monster": "snail",
+    "version": "v2",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      7,
+      1,
+      5,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v4_sheet",
+    "monster": "snail",
+    "version": "v4",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      3,
+      6,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snail/v4/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v6_sheet",
+    "monster": "snail",
+    "version": "v6",
+    "category": "ready",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v6/walk/f03.png"
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v7_sheet",
+    "monster": "snail",
+    "version": "v7",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      7,
+      3,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/v7/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v8_sheet",
+    "monster": "snail",
+    "version": "v8",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      3,
+      9,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/v8/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snail__monsters_v10_sheet",
+    "monster": "snail",
+    "version": "v10",
+    "category": "ready",
+    "originalActiveCount": 6,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3,
+      4
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      4,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/snail/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snail/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snail/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snail/v10/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v2_sheet",
+    "monster": "snake",
+    "version": "v2",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      2,
+      6,
+      8,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v3_sheet",
+    "monster": "snake",
+    "version": "v3",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      4,
+      9,
+      2,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v3/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v4_sheet",
+    "monster": "snake",
+    "version": "v4",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      6,
+      1,
+      4,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v4/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v7_sheet",
+    "monster": "snake",
+    "version": "v7",
+    "category": "ready",
+    "originalActiveCount": 10,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      4,
+      7,
+      10
+    ],
+    "originalSourceIndexes": [
+      3,
+      7,
+      5,
+      1
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/snake/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snake/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snake/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snake/v7/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v8_sheet",
+    "monster": "snake",
+    "version": "v8",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      3,
+      4,
+      2,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/snake/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/snake/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/snake/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/snake/v8/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "snake__monsters_v10_sheet",
+    "monster": "snake",
+    "version": "v10",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      6,
+      3,
+      9,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/snake/v10/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "tiaotiao__monsters_v2_sheet",
+    "monster": "tiaotiao",
+    "version": "v2",
+    "category": "ready",
+    "originalActiveCount": 6,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "originalSourceIndexes": [
+      1,
+      3,
+      4,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/tiaotiao/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "tiaotiao__monsters_v6_sheet",
+    "monster": "tiaotiao",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 6,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "originalSourceIndexes": [
+      1,
+      3,
+      6,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v6/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "tiaotiao__monsters_v8_sheet",
+    "monster": "tiaotiao",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 6,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      3,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/tiaotiao/v8/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "wolf_king__monsters_v1_sheet",
+    "monster": "wolf_king",
+    "version": "v1",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      7,
+      6,
+      2,
+      9
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v1/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "wolf_king__monsters_v2_sheet",
+    "monster": "wolf_king",
+    "version": "v2",
+    "category": "needs_work",
+    "originalActiveCount": 6,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      2,
+      4,
+      5
+    ],
+    "originalSourceIndexes": [
+      2,
+      1,
+      5,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "wolf_king__monsters_v4_sheet",
+    "monster": "wolf_king",
+    "version": "v4",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      4,
+      8,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v4/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "wolf_king__monsters_v6_sheet",
+    "monster": "wolf_king",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      2,
+      1,
+      9,
+      4
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/wolf_king/v6/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v1_sheet",
+    "monster": "yinya",
+    "version": "v1",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      2,
+      5,
+      9,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v1/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v2_sheet",
+    "monster": "yinya",
+    "version": "v2",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      4,
+      8
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v2/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v4_sheet",
+    "monster": "yinya",
+    "version": "v4",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      3,
+      9,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v4/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v6_sheet",
+    "monster": "yinya",
+    "version": "v6",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      2,
+      9,
+      5
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v6/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v7_sheet",
+    "monster": "yinya",
+    "version": "v7",
+    "category": "ready",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      8,
+      4,
+      6
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f01.png",
+      "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f02.png",
+      "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f03.png",
+      "generated_assets/monster_walk_curated/ready/yinya/v7/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v8_sheet",
+    "monster": "yinya",
+    "version": "v8",
+    "category": "needs_work",
+    "originalActiveCount": 9,
+    "keptCount": 4,
+    "keptOriginalOrder": [
+      1,
+      3,
+      5,
+      7
+    ],
+    "originalSourceIndexes": [
+      1,
+      5,
+      6,
+      7
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f03.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v8/walk/f04.png"
+    ]
+  },
+  {
+    "variantId": "yinya__monsters_v10_sheet",
+    "monster": "yinya",
+    "version": "v10",
+    "category": "needs_work",
+    "originalActiveCount": 3,
+    "keptCount": 3,
+    "keptOriginalOrder": [
+      1,
+      2,
+      3
+    ],
+    "originalSourceIndexes": [
+      2,
+      1,
+      3
+    ],
+    "curatedFrames": [
+      "generated_assets/monster_walk_curated/needs_work/yinya/v10/walk/f01.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v10/walk/f02.png",
+      "generated_assets/monster_walk_curated/needs_work/yinya/v10/walk/f03.png"
+    ]
+  }
+]

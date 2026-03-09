@@ -1,0 +1,305 @@
+{
+  "weapon": {},
+  "hit": {},
+  "crit": {},
+  "sfx": {
+    "dash": {
+      "id": "dash_5",
+      "category": "sfx",
+      "subcategory": "dash",
+      "index": 4,
+      "waveform": "sine",
+      "freq": 422.8538286481005,
+      "freqEnd": 845.707657296201,
+      "duration": 0.11943502460506557,
+      "attack": 0.011943502460506558,
+      "decay": 0.10749152214455901,
+      "sweep": "up",
+      "noise": 0,
+      "vibrato": false,
+      "desc": "423Hz sine ↑"
+    },
+    "levelup": {
+      "id": "levelup_4",
+      "category": "sfx",
+      "subcategory": "levelup",
+      "index": 3,
+      "waveform": "triangle",
+      "freq": 623.0402558683257,
+      "freqEnd": 1246.0805117366515,
+      "duration": 0.3491598542704178,
+      "attack": 0.03491598542704178,
+      "decay": 0.314243868843376,
+      "sweep": "up",
+      "noise": 0,
+      "vibrato": true,
+      "desc": "623Hz tria ↑~"
+    },
+    "buy": {
+      "id": "buy_5",
+      "category": "sfx",
+      "subcategory": "buy",
+      "index": 4,
+      "waveform": "sine",
+      "freq": 1281.6235205143698,
+      "freqEnd": 1281.6235205143698,
+      "duration": 0.14648480114519996,
+      "attack": 0.014648480114519996,
+      "decay": 0.13183632103067996,
+      "sweep": "none",
+      "noise": 0,
+      "vibrato": false,
+      "desc": "1282Hz sine →"
+    },
+    "heal": {
+      "id": "heal_7",
+      "category": "sfx",
+      "subcategory": "heal",
+      "index": 6,
+      "waveform": "sine",
+      "freq": 409.874868694706,
+      "freqEnd": 819.749737389412,
+      "duration": 0.1,
+      "attack": 0.010000000000000002,
+      "decay": 0.09000000000000001,
+      "sweep": "up",
+      "noise": 0,
+      "vibrato": false,
+      "desc": "410Hz sine ↑"
+    },
+    "hurt": {
+      "id": "hurt_5",
+      "category": "sfx",
+      "subcategory": "hurt",
+      "index": 4,
+      "waveform": "triangle",
+      "freq": 180.65986784792304,
+      "freqEnd": 180.65986784792304,
+      "duration": 0.18540197385229246,
+      "attack": 0.018540197385229246,
+      "decay": 0.1668617764670632,
+      "sweep": "none",
+      "noise": 0,
+      "vibrato": false,
+      "desc": "181Hz tria →"
+    },
+    "step": {
+      "id": "step_10",
+      "category": "sfx",
+      "subcategory": "step",
+      "index": 9,
+      "waveform": "sine",
+      "freq": 168.5313317563597,
+      "freqEnd": 168.5313317563597,
+      "duration": 0.045328575714840585,
+      "attack": 0.004532857571484058,
+      "decay": 0.04079571814335653,
+      "sweep": "none",
+      "noise": 0.4,
+      "vibrato": false,
+      "desc": "169Hz sine →N"
+    },
+    "ui": {
+      "id": "ui_1",
+      "category": "sfx",
+      "subcategory": "ui",
+      "index": 0,
+      "waveform": "sine",
+      "freq": 954.599188434579,
+      "freqEnd": 954.599188434579,
+      "duration": 0.037806985635754436,
+      "attack": 0.003780698563575444,
+      "decay": 0.034026287072178994,
+      "sweep": "none",
+      "noise": 0,
+      "vibrato": false,
+      "desc": "955Hz sine →"
+    }
+  },
+  "bgm": {
+    "menu": {
+      "id": "menu_1",
+      "category": "bgm",
+      "subcategory": "menu",
+      "index": 0,
+      "waveform": "sawtooth",
+      "freq": 754.3893559404746,
+      "freqEnd": 754.3893559404746,
+      "duration": 55.079307958275685,
+      "attack": 5.507930795827569,
+      "decay": 49.571377162448115,
+      "sweep": "none",
+      "noise": 0,
+      "vibrato": false,
+      "tempo": 87.09746343935365,
+      "bars": 19,
+      "progression": [
+        0,
+        4,
+        6,
+        9
+      ],
+      "scale": [
+        0,
+        4,
+        6,
+        9
+      ],
+      "style": "ambient",
+      "instruments": [
+        "pad",
+        "bell",
+        "bass"
+      ],
+      "desc": "754Hz sawt →"
+    },
+    "normal": {
+      "id": "normal_8",
+      "category": "bgm",
+      "subcategory": "normal",
+      "index": 7,
+      "waveform": "sine",
+      "freq": 726.4268767680758,
+      "freqEnd": 726.4268767680758,
+      "duration": 53.03795188735452,
+      "attack": 5.303795188735452,
+      "decay": 47.73415669861907,
+      "sweep": "none",
+      "noise": 0,
+      "vibrato": false,
+      "tempo": 118.29897225210338,
+      "bars": 24,
+      "progression": [
+        0,
+        5,
+        7,
+        10
+      ],
+      "scale": [
+        0,
+        5,
+        7,
+        10
+      ],
+      "style": "groove",
+      "instruments": [
+        "drum",
+        "bass",
+        "chord",
+        "arp"
+      ],
+      "desc": "726Hz sine →"
+    },
+    "elite": {
+      "id": "elite_1",
+      "category": "bgm",
+      "subcategory": "elite",
+      "index": 0,
+      "waveform": "square",
+      "freq": 928.4774571758937,
+      "freqEnd": 928.4774571758937,
+      "duration": 59.53574307887648,
+      "attack": 5.953574307887648,
+      "decay": 53.58216877098883,
+      "sweep": "none",
+      "noise": 0,
+      "vibrato": false,
+      "tempo": 126.57261579690153,
+      "bars": 20,
+      "progression": [
+        0,
+        5,
+        7,
+        10
+      ],
+      "scale": [
+        0,
+        5,
+        7,
+        10
+      ],
+      "style": "intense",
+      "instruments": [
+        "drum_heavy",
+        "bass_aggressive",
+        "chord",
+        "lead"
+      ],
+      "desc": "928Hz squa →"
+    },
+    "boss": {
+      "id": "boss_9",
+      "category": "bgm",
+      "subcategory": "boss",
+      "index": 8,
+      "waveform": "sawtooth",
+      "freq": 404.4473498386868,
+      "freqEnd": 404.4473498386868,
+      "duration": 57.876147410488954,
+      "attack": 5.787614741048896,
+      "decay": 52.08853266944006,
+      "sweep": "none",
+      "noise": 0,
+      "vibrato": false,
+      "tempo": 142.91182694639207,
+      "bars": 31,
+      "progression": [
+        0,
+        4,
+        7,
+        9
+      ],
+      "scale": [
+        0,
+        4,
+        7,
+        9
+      ],
+      "style": "epic",
+      "instruments": [
+        "drum_epic",
+        "bass_dark",
+        "orch",
+        "choir"
+      ],
+      "desc": "404Hz sawt →"
+    },
+    "victory": {
+      "id": "victory_10",
+      "category": "bgm",
+      "subcategory": "victory",
+      "index": 9,
+      "waveform": "sawtooth",
+      "freq": 585.2708409280276,
+      "freqEnd": 585.2708409280276,
+      "duration": 37.70732169805718,
+      "attack": 3.770732169805718,
+      "decay": 33.93658952825146,
+      "sweep": "none",
+      "noise": 0,
+      "vibrato": false,
+      "tempo": 134.6036241570689,
+      "bars": 21,
+      "progression": [
+        0,
+        3,
+        5,
+        8
+      ],
+      "scale": [
+        0,
+        3,
+        5,
+        8
+      ],
+      "style": "celebration",
+      "instruments": [
+        "drum",
+        "bass",
+        "brass",
+        "bell"
+      ],
+      "desc": "585Hz sawt →"
+    }
+  }
+}
