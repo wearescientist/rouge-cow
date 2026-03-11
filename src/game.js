@@ -1,561 +1,310 @@
-// 肉鸽牛牛 - 核心游戏逻辑
-// Rougelike Cow - Core Game Logic
+/**
+ * Game - 游戏主类
+ * ECS 版本的游戏控制器
+ */
 
-const canvas = document.getElementById('gameCanvas');
-const ctx = canvas.getContext('2d');
-ctx.imageSmoothingEnabled = false;
-
-// 游戏配置
-const GAME_CONFIG = {
-    width: 800,
-    height: 600,
-    playerSpeed: 4,
-    bulletSpeed: 8,
-    bulletCooldown: 30, // 帧
-    enemySpawnRate: 60, // 帧
-    maxEnemies: 30,
-    expToLevel: [100, 150, 200, 250, 300, 350, 400, 500, 600, 800],
-};
-
-// 资源加载
-const Assets = {
-    images: {},
-    load(name, src) {
-        return new Promise((resolve) => {
-            const img = new Image();
-            img.onload = () => {
-                this.images[name] = img;
-                resolve(img);
-            };
-            img.src = src;
-        });
-    },
-    get(name) {
-        return this.images[name];
-    }
-};
-
-// 向量工具
-const Vector = {
-    distance(a, b) {
-        return Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2);
-    },
-    normalize(x, y) {
-        const len = Math.sqrt(x * x + y * y);
-        return len > 0 ? { x: x / len, y: y / len } : { x: 0, y: 0 };
-    }
-};
-
-// 玩家类
-class Player {
-    constructor() {
-        this.x = GAME_CONFIG.width / 2;
-        this.y = GAME_CONFIG.height / 2;
-        this.width = 60;
-        this.height = 60;
-        this.speed = GAME_CONFIG.playerSpeed;
-        this.hp = 3;
-        this.maxHp = 3;
-        this.level = 1;
-        this.exp = 0;
-        this.bulletCooldown = 0;
-        this.bulletDamage = 1;
-        this.bulletCount = 1;
-        this.bulletSize = 1;
-        this.attackSpeed = 1;
-    }
-
-    update(input, enemies, bullets) {
-        // 移动
-        let dx = 0, dy = 0;
-        if (input.keys['w'] || input.keys['arrowup']) dy = -1;
-        if (input.keys['s'] || input.keys['arrowdown']) dy = 1;
-        if (input.keys['a'] || input.keys['arrowleft']) dx = -1;
-        if (input.keys['d'] || input.keys['arrowright']) dx = 1;
-
-        if (dx !== 0 || dy !== 0) {
-            const norm = Vector.normalize(dx, dy);
-            this.x += norm.x * this.speed;
-            this.y += norm.y * this.speed;
-        }
-
-        // 边界限制
-        this.x = Math.max(this.width/2, Math.min(GAME_CONFIG.width - this.width/2, this.x));
-        this.y = Math.max(this.height/2, Math.min(GAME_CONFIG.height - this.height/2, this.y));
-
-        // 自动攻击
-        if (this.bulletCooldown > 0) this.bulletCooldown--;
-        if (this.bulletCooldown <= 0 && enemies.length > 0) {
-            this.attack(enemies, bullets);
-        }
-    }
-
-    attack(enemies, bullets) {
-        // 找到最近的敌人
-        let nearest = null;
-        let minDist = Infinity;
-        
-        for (const enemy of enemies) {
-            const dist = Vector.distance(this, enemy);
-            if (dist < minDist) {
-                minDist = dist;
-                nearest = enemy;
-            }
-        }
-
-        if (nearest) {
-            const dir = Vector.normalize(nearest.x - this.x, nearest.y - this.y);
-            
-            // 根据bulletCount发射多个子弹
-            for (let i = 0; i < this.bulletCount; i++) {
-                const angle = (i - (this.bulletCount - 1) / 2) * 0.3;
-                const cos = Math.cos(angle);
-                const sin = Math.sin(angle);
-                const rotatedDir = {
-                    x: dir.x * cos - dir.y * sin,
-                    y: dir.x * sin + dir.y * cos
-                };
-                
-                bullets.push(new Bullet(
-                    this.x, this.y,
-                    rotatedDir.x * GAME_CONFIG.bulletSpeed,
-                    rotatedDir.y * GAME_CONFIG.bulletSpeed,
-                    this.bulletDamage,
-                    this.bulletSize
-                ));
-            }
-            
-            this.bulletCooldown = GAME_CONFIG.bulletCooldown / this.attackSpeed;
-        }
-    }
-
-    gainExp(amount) {
-        this.exp += amount;
-        const needed = GAME_CONFIG.expToLevel[Math.min(this.level - 1, GAME_CONFIG.expToLevel.length - 1)];
-        if (this.exp >= needed) {
-            this.exp -= needed;
-            this.level++;
-            return true; // 升级了
-        }
-        return false;
-    }
-
-    heal(amount) {
-        this.hp = Math.min(this.maxHp, this.hp + amount);
-    }
-
-    draw(ctx) {
-        const img = Assets.get('player');
-        if (img) {
-            ctx.drawImage(img, this.x - this.width/2, this.y - this.height/2, this.width, this.height);
-        } else {
-            // 备用绘制
-            ctx.fillStyle = '#fff';
-            ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
-        }
-    }
-}
-
-// 子弹类
-class Bullet {
-    constructor(x, y, vx, vy, damage, size) {
-        this.x = x;
-        this.y = y;
-        this.vx = vx;
-        this.vy = vy;
-        this.damage = damage;
-        this.size = size;
-        this.radius = 8 * size;
-        this.active = true;
-    }
-
-    update() {
-        this.x += this.vx;
-        this.y += this.vy;
-
-        // 出界检查
-        if (this.x < 0 || this.x > GAME_CONFIG.width ||
-            this.y < 0 || this.y > GAME_CONFIG.height) {
-            this.active = false;
-        }
-    }
-
-    draw(ctx) {
-        const img = Assets.get('bullet');
-        const size = this.radius * 2;
-        if (img) {
-            ctx.drawImage(img, this.x - size/2, this.y - size/2, size, size);
-        } else {
-            ctx.fillStyle = '#FFF';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-}
-
-// 敌人类
-class Enemy {
-    constructor(type) {
-        this.type = type;
-        this.active = true;
-        
-        // 随机生成在屏幕边缘
-        const edge = Math.floor(Math.random() * 4);
-        switch(edge) {
-            case 0: this.x = Math.random() * GAME_CONFIG.width; this.y = -30; break;
-            case 1: this.x = GAME_CONFIG.width + 30; this.y = Math.random() * GAME_CONFIG.height; break;
-            case 2: this.x = Math.random() * GAME_CONFIG.width; this.y = GAME_CONFIG.height + 30; break;
-            case 3: this.x = -30; this.y = Math.random() * GAME_CONFIG.height; break;
-        }
-
-        if (type === 'chicken') {
-            this.hp = 2;
-            this.speed = 1.5;
-            this.expValue = 10;
-            this.width = 54;
-            this.height = 54;
-        } else if (type === 'pig') {
-            this.hp = 4;
-            this.speed = 1;
-            this.expValue = 20;
-            this.width = 60;
-            this.height = 48;
-        }
-    }
-
-    update(player) {
-        // 向玩家移动
-        const dir = Vector.normalize(player.x - this.x, player.y - this.y);
-        this.x += dir.x * this.speed;
-        this.y += dir.y * this.speed;
-    }
-
-    takeDamage(damage) {
-        this.hp -= damage;
-        if (this.hp <= 0) {
-            this.active = false;
-            return true; // 死亡
-        }
-        return false;
-    }
-
-    draw(ctx) {
-        const img = Assets.get(`enemy_${this.type}`);
-        if (img) {
-            ctx.drawImage(img, this.x - this.width/2, this.y - this.height/2, this.width, this.height);
-        } else {
-            ctx.fillStyle = this.type === 'chicken' ? '#F4D03F' : '#F5B7B1';
-            ctx.fillRect(this.x - this.width/2, this.y - this.height/2, this.width, this.height);
-        }
-    }
-}
-
-// 经验宝石类
-class ExpGem {
-    constructor(x, y, value) {
-        this.x = x;
-        this.y = y;
-        this.value = value;
-        this.radius = 12;
-        this.active = true;
-        this.magnetRange = 100;
-        this.speed = 0;
-        this.maxSpeed = 8;
-    }
-
-    update(player) {
-        const dist = Vector.distance(this, player);
-        
-        // 磁力吸引
-        if (dist < this.magnetRange) {
-            this.speed = Math.min(this.speed + 0.5, this.maxSpeed);
-            const dir = Vector.normalize(player.x - this.x, player.y - this.y);
-            this.x += dir.x * this.speed;
-            this.y += dir.y * this.speed;
-        }
-
-        // 拾取检测
-        if (dist < this.radius + player.width/4) {
-            this.active = false;
-            return true;
-        }
-        return false;
-    }
-
-    draw(ctx) {
-        const img = Assets.get('exp_gem');
-        if (img) {
-            ctx.drawImage(img, this.x - this.radius, this.y - this.radius, this.radius * 2, this.radius * 2);
-        } else {
-            ctx.fillStyle = '#3498DB';
-            ctx.beginPath();
-            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-            ctx.fill();
-        }
-    }
-}
-
-// 输入处理
-class Input {
-    constructor() {
-        this.keys = {};
-        window.addEventListener('keydown', (e) => {
-            this.keys[e.key.toLowerCase()] = true;
-        });
-        window.addEventListener('keyup', (e) => {
-            this.keys[e.key.toLowerCase()] = false;
-        });
-    }
-}
-
-// 升级选项
-const UPGRADES = [
-    {
-        id: 'damage_up',
-        name: '浓缩牛奶',
-        desc: '子弹伤害 +1',
-        apply(player) { player.bulletDamage += 1; }
-    },
-    {
-        id: 'speed_up',
-        name: '加速草料',
-        desc: '移动速度 +20%',
-        apply(player) { player.speed *= 1.2; }
-    },
-    {
-        id: 'attack_speed',
-        name: '双发奶嘴',
-        desc: '攻击速度 +25%',
-        apply(player) { player.attackSpeed *= 1.25; }
-    },
-    {
-        id: 'multi_shot',
-        name: '多重挤奶',
-        desc: '子弹数量 +1',
-        apply(player) { player.bulletCount += 1; }
-    },
-    {
-        id: 'max_hp',
-        name: '活力牧场',
-        desc: '最大生命值 +1，回复满血',
-        apply(player) { player.maxHp += 1; player.hp = player.maxHp; }
-    },
-    {
-        id: 'bullet_size',
-        name: '大奶瓶',
-        desc: '子弹尺寸 +50%，伤害 +20%',
-        apply(player) { player.bulletSize *= 1.5; player.bulletDamage *= 1.2; }
-    }
-];
-
-// 游戏主类
 class Game {
-    constructor() {
-        this.player = new Player();
-        this.input = new Input();
-        this.bullets = [];
-        this.enemies = [];
-        this.expGems = [];
-        this.particles = [];
+    constructor(canvas) {
+        this.canvas = canvas;
+        this.ctx = canvas.getContext('2d');
         
-        this.frame = 0;
-        this.spawnTimer = 0;
-        this.gameTime = 0;
-        this.paused = false;
-        this.levelUpPending = false;
+        // ECS 世界
+        this.world = new World();
         
-        this.ui = {
-            hp: document.getElementById('hpDisplay'),
-            level: document.getElementById('levelDisplay'),
-            exp: document.getElementById('expDisplay'),
-            time: document.getElementById('timeDisplay'),
-            levelUpMenu: document.getElementById('levelUpMenu'),
-            upgradeOptions: document.getElementById('upgradeOptions')
+        // 系统
+        this.systems = {};
+        
+        // 游戏状态
+        this.isRunning = false;
+        this.isPaused = false;
+        this.lastTime = 0;
+        this.deltaTime = 0;
+        this.timeScale = 1;
+        
+        // 输入
+        this.input = {
+            keys: new Set(),
+            mouse: { x: 0, y: 0, down: false },
+            mouseWorldPos: { x: 0, y: 0 }
         };
+        
+        // 游戏数据
+        this.player = null;
+        this.camera = { x: 0, y: 0 };
+        
+        // 初始化
+        this.init();
     }
-
+    
     async init() {
-        // 加载资源
-        await Promise.all([
-            Assets.load('player', 'assets/player.png'),
-            Assets.load('enemy_chicken', 'assets/enemy_chicken.png'),
-            Assets.load('enemy_pig', 'assets/enemy_pig.png'),
-            Assets.load('bullet', 'assets/bullet.png'),
-            Assets.load('exp_gem', 'assets/exp_gem.png'),
-        ]);
+        // 初始化系统
+        this.initSystems();
         
-        this.loop();
+        // 初始化输入
+        this.initInput();
+        
+        // 创建初始场景
+        await this.createScene();
+        
+        console.log('Game initialized');
+        console.log('World stats:', this.world.getStats());
     }
-
-    spawnEnemy() {
-        if (this.enemies.length >= GAME_CONFIG.maxEnemies) return;
+    
+    initSystems() {
+        // 移动系统
+        this.systems.movement = new MovementSystem(this.world);
+        this.world.addSystem(this.systems.movement);
         
-        // 根据游戏时间决定敌人类型
-        const type = Math.random() < 0.7 ? 'chicken' : 'pig';
-        this.enemies.push(new Enemy(type));
+        // 碰撞系统
+        this.systems.collision = new CollisionSystem(this.world);
+        this.world.addSystem(this.systems.collision);
+        
+        // 战斗系统
+        this.systems.combat = new CombatSystem(this.world);
+        this.world.addSystem(this.systems.combat);
+        
+        // 渲染系统
+        this.systems.render = new RenderSystem(this.world, this.canvas);
+        this.world.addSystem(this.systems.render);
+        
+        // 设置碰撞回调
+        this.systems.collision.onTrigger = (a, b) => this.handleTrigger(a, b);
     }
-
-    update() {
-        if (this.paused || this.levelUpPending) return;
-
-        this.frame++;
-        this.gameTime += 1/60;
-
-        // 生成敌人
-        this.spawnTimer++;
-        if (this.spawnTimer >= GAME_CONFIG.enemySpawnRate) {
-            this.spawnEnemy();
-            this.spawnTimer = 0;
-        }
-
-        // 更新玩家
-        this.player.update(this.input, this.enemies, this.bullets);
-
-        // 更新子弹
-        this.bullets = this.bullets.filter(b => b.active);
-        for (const bullet of this.bullets) {
-            bullet.update();
-        }
-
-        // 更新敌人
-        this.enemies = this.enemies.filter(e => e.active);
-        for (const enemy of this.enemies) {
-            enemy.update(this.player);
-
-            // 碰撞检测 - 敌人撞玩家
-            if (Vector.distance(enemy, this.player) < enemy.width/2 + this.player.width/4) {
-                this.player.hp -= 1;
-                enemy.active = false; // 敌人死亡
-                
-                if (this.player.hp <= 0) {
-                    this.gameOver();
-                }
-            }
-
-            // 子弹击中敌人
-            for (const bullet of this.bullets) {
-                if (Vector.distance(bullet, enemy) < bullet.radius + enemy.width/3) {
-                    bullet.active = false;
-                    if (enemy.takeDamage(bullet.damage)) {
-                        // 敌人死亡，掉落经验
-                        this.expGems.push(new ExpGem(enemy.x, enemy.y, enemy.expValue));
-                    }
-                    break;
-                }
-            }
-        }
-
-        // 更新经验宝石
-        this.expGems = this.expGems.filter(g => g.active);
-        for (const gem of this.expGems) {
-            if (gem.update(this.player)) {
-                // 拾取了经验
-                if (this.player.gainExp(gem.value)) {
-                    this.showLevelUp();
-                }
-            }
-        }
-
-        this.updateUI();
-    }
-
-    showLevelUp() {
-        this.levelUpPending = true;
-        this.ui.levelUpMenu.style.display = 'block';
+    
+    initInput() {
+        // 键盘输入
+        window.addEventListener('keydown', (e) => {
+            this.input.keys.add(e.code);
+            this.handleKeyDown(e);
+        });
         
-        // 随机选3个升级
-        const options = UPGRADES.sort(() => Math.random() - 0.5).slice(0, 3);
+        window.addEventListener('keyup', (e) => {
+            this.input.keys.delete(e.code);
+            this.handleKeyUp(e);
+        });
         
-        this.ui.upgradeOptions.innerHTML = options.map((upgrade, idx) => `
-            <div class="upgradeOption" data-idx="${idx}">
-                <div class="name">${upgrade.name}</div>
-                <div class="desc">${upgrade.desc}</div>
-            </div>
-        `).join('');
-
-        // 绑定点击事件
-        this.ui.upgradeOptions.querySelectorAll('.upgradeOption').forEach((el, idx) => {
-            el.addEventListener('click', () => {
-                options[idx].apply(this.player);
-                this.levelUpPending = false;
-                this.ui.levelUpMenu.style.display = 'none';
-            });
+        // 鼠标输入
+        this.canvas.addEventListener('mousemove', (e) => {
+            const rect = this.canvas.getBoundingClientRect();
+            this.input.mouse.x = e.clientX - rect.left;
+            this.input.mouse.y = e.clientY - rect.top;
+            
+            // 转换到世界坐标
+            const worldPos = this.systems.render.screenToWorld(
+                this.input.mouse.x,
+                this.input.mouse.y
+            );
+            this.input.mouseWorldPos = worldPos;
+        });
+        
+        this.canvas.addEventListener('mousedown', (e) => {
+            this.input.mouse.down = true;
+            this.handleMouseDown(e);
+        });
+        
+        this.canvas.addEventListener('mouseup', (e) => {
+            this.input.mouse.down = false;
         });
     }
-
-    updateUI() {
-        // 生命值显示
-        this.ui.hp.textContent = '❤️'.repeat(this.player.hp) + '🖤'.repeat(this.player.maxHp - this.player.hp);
+    
+    async createScene() {
+        // 创建玩家
+        this.player = this.world.createPlayer(0, 0, {
+            movement: { speed: 150, maxSpeed: 200, dashSpeed: 400 },
+            health: { maxHealth: 100 }
+        });
         
-        // 等级
-        this.ui.level.textContent = this.player.level;
+        // 设置相机跟随
+        this.systems.render.setCameraTarget(this.player);
         
-        // 经验
-        const needed = GAME_CONFIG.expToLevel[Math.min(this.player.level - 1, GAME_CONFIG.expToLevel.length - 1)];
-        this.ui.exp.textContent = `${Math.floor(this.player.exp)}/${needed}`;
+        // 创建测试敌人
+        for (let i = 0; i < 5; i++) {
+            const angle = (i / 5) * Math.PI * 2;
+            const dist = 200;
+            const x = Math.cos(angle) * dist;
+            const y = Math.sin(angle) * dist;
+            
+            this.world.createEnemy(x, y, 'basic', {
+                health: { maxHealth: 50 },
+                movement: { speed: 80 },
+                combat: { attackDamage: 10 },
+                enemy: { expValue: 20, dropTable: ['health_potion'] }
+            });
+        }
         
-        // 时间
-        const mins = Math.floor(this.gameTime / 60);
-        const secs = Math.floor(this.gameTime % 60);
-        this.ui.time.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+        // 启动世界
+        this.world.start();
     }
-
-    draw() {
-        // 清空画布
-        ctx.fillStyle = '#1a1a2e';
-        ctx.fillRect(0, 0, GAME_CONFIG.width, GAME_CONFIG.height);
-
-        // 绘制地板格子（装饰）
-        ctx.fillStyle = '#16213e';
-        for (let x = 0; x < GAME_CONFIG.width; x += 64) {
-            for (let y = 0; y < GAME_CONFIG.height; y += 64) {
-                if ((x + y) % 128 === 0) {
-                    ctx.fillRect(x, y, 64, 64);
+    
+    start() {
+        this.isRunning = true;
+        this.lastTime = performance.now();
+        this.gameLoop();
+    }
+    
+    pause() {
+        this.isPaused = !this.isPaused;
+        this.world.pause();
+    }
+    
+    stop() {
+        this.isRunning = false;
+    }
+    
+    gameLoop() {
+        if (!this.isRunning) return;
+        
+        const currentTime = performance.now();
+        this.deltaTime = (currentTime - this.lastTime) / 1000;
+        this.lastTime = currentTime;
+        
+        // 限制最大 deltaTime 防止卡顿后跳帧
+        this.deltaTime = Math.min(this.deltaTime, 0.1);
+        
+        if (!this.isPaused) {
+            this.update(this.deltaTime * this.timeScale);
+        }
+        
+        this.render();
+        
+        requestAnimationFrame(() => this.gameLoop());
+    }
+    
+    update(dt) {
+        // 更新输入
+        this.updateInput(dt);
+        
+        // 更新世界
+        this.world.update(dt);
+    }
+    
+    updateInput(dt) {
+        if (!this.player) return;
+        
+        // 移动输入
+        let dx = 0;
+        let dy = 0;
+        
+        if (this.input.keys.has('KeyW') || this.input.keys.has('ArrowUp')) dy -= 1;
+        if (this.input.keys.has('KeyS') || this.input.keys.has('ArrowDown')) dy += 1;
+        if (this.input.keys.has('KeyA') || this.input.keys.has('ArrowLeft')) dx -= 1;
+        if (this.input.keys.has('KeyD') || this.input.keys.has('ArrowRight')) dx += 1;
+        
+        if (dx !== 0 || dy !== 0) {
+            this.systems.movement.setInput(this.player, dx, dy);
+        }
+    }
+    
+    render() {
+        this.systems.render.render();
+        
+        // 渲染调试信息
+        this.renderDebug();
+    }
+    
+    renderDebug() {
+        const ctx = this.ctx;
+        const stats = this.world.getStats();
+        
+        ctx.fillStyle = '#0f0';
+        ctx.font = '14px monospace';
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        
+        let y = 20;
+        const lineHeight = 20;
+        
+        ctx.fillText(`Entities: ${stats.entityCount}`, 10, y);
+        y += lineHeight;
+        ctx.fillText(`Components: ${stats.componentTypes}`, 10, y);
+        y += lineHeight;
+        ctx.fillText(`Update: ${stats.updateTime.toFixed(2)}ms`, 10, y);
+        y += lineHeight;
+        ctx.fillText(`FPS: ${Math.round(1 / this.deltaTime)}`, 10, y);
+    }
+    
+    handleKeyDown(e) {
+        switch (e.code) {
+            case 'Space':
+                // 翻滚
+                if (this.player) {
+                    this.systems.movement.startDash(this.player);
                 }
+                break;
+            case 'Escape':
+                this.pause();
+                break;
+        }
+    }
+    
+    handleKeyUp(e) {}
+    
+    handleMouseDown(e) {
+        if (this.player && e.button === 0) {
+            // 攻击
+            const combat = this.systems.combat;
+            combat.performAttack(this.player, this.input.mouseWorldPos);
+        }
+    }
+    
+    handleTrigger(entityA, entityB) {
+        // 处理触发器碰撞
+        const item = entityA.has(ItemComponent) ? entityA : 
+                     entityB.has(ItemComponent) ? entityB : null;
+        const player = entityA.has(PlayerComponent) ? entityA : 
+                       entityB.has(PlayerComponent) ? entityB : null;
+        
+        if (item && player) {
+            // 拾取道具
+            this.collectItem(player, item);
+        }
+    }
+    
+    collectItem(player, item) {
+        const itemComp = item.get(ItemComponent);
+        const inventory = player.get(InventoryComponent);
+        
+        if (!itemComp || !inventory) return;
+        
+        // 添加到背包
+        if (inventory.addItem(itemComp)) {
+            // 应用效果
+            this.applyItemEffect(player, itemComp);
+            
+            // 销毁道具实体
+            item.destroy();
+            
+            // 更新统计
+            const playerComp = player.get(PlayerComponent);
+            if (playerComp) {
+                playerComp.itemsCollected++;
             }
         }
-
-        // 绘制经验宝石
-        for (const gem of this.expGems) {
-            gem.draw(ctx);
-        }
-
-        // 绘制子弹
-        for (const bullet of this.bullets) {
-            bullet.draw(ctx);
-        }
-
-        // 绘制敌人
-        for (const enemy of this.enemies) {
-            enemy.draw(ctx);
-        }
-
-        // 绘制玩家
-        this.player.draw(ctx);
     }
-
-    gameOver() {
-        this.paused = true;
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-        ctx.fillRect(0, 0, GAME_CONFIG.width, GAME_CONFIG.height);
-        ctx.fillStyle = '#e74c3c';
-        ctx.font = 'bold 48px Courier';
-        ctx.textAlign = 'center';
-        ctx.fillText('GAME OVER', GAME_CONFIG.width/2, GAME_CONFIG.height/2 - 30);
-        ctx.fillStyle = '#fff';
-        ctx.font = '24px Courier';
-        ctx.fillText(`存活时间: ${this.ui.time.textContent}`, GAME_CONFIG.width/2, GAME_CONFIG.height/2 + 20);
-        ctx.fillText('刷新页面重新开始', GAME_CONFIG.width/2, GAME_CONFIG.height/2 + 60);
+    
+    applyItemEffect(player, item) {
+        const health = player.get(HealthComponent);
+        
+        switch (item.effectType) {
+            case 'heal':
+                if (health) {
+                    this.systems.combat.heal(player, item.effectValue);
+                }
+                break;
+            case 'maxHealth':
+                if (health) {
+                    health.maxHealth += item.effectValue;
+                    health.currentHealth += item.effectValue;
+                }
+                break;
+            // 更多效果...
+        }
     }
-
-    loop() {
-        this.update();
-        this.draw();
-        requestAnimationFrame(() => this.loop());
+    
+    destroy() {
+        this.stop();
+        this.world.clear();
     }
 }
 
-// 启动游戏
-const game = new Game();
-game.init();
+window.Game = Game;

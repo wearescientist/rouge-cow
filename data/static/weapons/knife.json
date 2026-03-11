@@ -1,0 +1,63 @@
+{
+    "id": "knife",
+    "name": "飞刀",
+    "name_en": "Knife",
+    "description": "快速投掷多把飞刀，可穿透敌人",
+    "type": "ranged",
+    "subtype": "projectile",
+    "rarity": "common",
+    "unlock_level": 0,
+    "stats": {
+        "damage": 15,
+        "cooldown": 0.8,
+        "range": 150,
+        "projectile_speed": 200,
+        "burst_count": 3,
+        "burst_delay": 0.1,
+        "pierce": 1,
+        "spread": 15
+    },
+    "visual": {
+        "icon": "🔪",
+        "color": "#95a5a6",
+        "particle_color": "#bdc3c7",
+        "projectile_sprite": "knife",
+        "hit_effect": "metal_spark",
+        "sound": "knife_throw"
+    },
+    "upgrades": {
+        "max_level": 8,
+        "per_level": {
+            "damage_multiplier": 1.15,
+            "burst_count": 1,
+            "pierce": 0.5
+        },
+        "milestones": {
+            "4": {
+                "bonus": { "burst_count": 2 },
+                "description": "连射+2"
+            },
+            "8": {
+                "evolution": "thousand_blades",
+                "description": "进化为千刃"
+            }
+        }
+    },
+    "evolution": {
+        "target": "thousand_blades",
+        "requirements": [
+            { "type": "item", "id": "bracer", "count": 1 }
+        ],
+        "bonus": {
+            "infinite_pierce": true,
+            "damage_multiplier": 1.8
+        }
+    },
+    "projectile": {
+        "type": "linear",
+        "sprite": "knife",
+        "rotation": true,
+        "trail": false
+    },
+    "tags": ["ranged", "projectile", "burst", "pierce", "upgradeable", "evolvable"]
+}

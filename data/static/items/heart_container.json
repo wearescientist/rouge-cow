@@ -1,0 +1,37 @@
+{
+    "id": "heart_container",
+    "item_id": 1,
+    "name": "心之容器",
+    "name_en": "Heart Container",
+    "description": "最大生命值 +1",
+    "rarity": "common",
+    "category": "defense",
+    "subcategory": "hp",
+    "unlock_level": 0,
+    "effect": {
+        "type": "stat_modifier",
+        "target": "max_hp",
+        "value": 1,
+        "operation": "add",
+        "stack_type": "linear",
+        "max_stacks": 0
+    },
+    "visual": {
+        "icon": "❤️",
+        "color": "#ff4444",
+        "pickup_sound": "heart_pickup",
+        "spawn_effect": "heart_burst"
+    },
+    "price": {
+        "base": 20,
+        "scaling": 1.2
+    },
+    "synergies": [
+        {
+            "partner": "mom_knife",
+            "effect_id": "mad_chef",
+            "description": "伤害+20%"
+        }
+    ],
+    "tags": ["hp", "permanent", "stackable", "common"]
+}

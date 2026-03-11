@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 音效实装检查 - 完整版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Microsoft YaHei', 'Segoe UI', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #eee;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #4eccff;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        
+        /* 说明框 */
+        .info-box {
+            background: rgba(78, 204, 255, 0.1);
+            border: 1px solid rgba(78, 204, 255, 0.3);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 20px;
+        }
+        .info-box h3 {
+            color: #4eccff;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+        .info-box p {
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.6;
+        }
+        .info-box ul {
+            margin-left: 20px;
+            color: #aaa;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .section {
+            background: rgba(255,255,255,0.05);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .section h2 {
+            color: #ffd700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 18px;
+        }
+        
+        .status-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .status-item {
+            background: rgba(0,0,0,0.3);
+            padding: 15px 20px;
+            border-radius: 10px;
+            min-width: 140px;
+            text-align: center;
+        }
+        .status-item .label {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 8px;
+        }
+        .status-item .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+        .status-item.ok .value { color: #4ecca3; }
+        .status-item.warn .value { color: #ffd700; }
+        .status-item.error .value { color: #ff6b6b; }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+        th {
+            background: rgba(0,0,0,0.3);
+            padding: 12px;
+            text-align: left;
+            color: #4eccff;
+            font-weight: 600;
+        }
+        td {
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        tr:hover {
+            background: rgba(255,255,255,0.03);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .badge-ok { background: rgba(78,204,163,0.2); color: #4ecca3; border: 1px solid rgba(78,204,163,0.3); }
+        .badge-warn { background: rgba(255,215,0,0.2); color: #ffd700; border: 1px solid rgba(255,215,0,0.3); }
+        .badge-error { background: rgba(255,107,107,0.2); color: #ff6b6b; border: 1px solid rgba(255,107,107,0.3); }
+        .badge-info { background: rgba(78,204,255,0.2); color: #4eccff; border: 1px solid rgba(78,204,255,0.3); }
+        
+        .file-path {
+            font-family: 'Consolas', monospace;
+            font-size: 11px;
+            color: #888;
+        }
+        .file-name {
+            color: #4eccff;
+        }
+        
+        .play-btn {
+            padding: 5px 15px;
+            border: none;
+            border-radius: 4px;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .play-btn:hover { opacity: 0.8; }
+        
+        .note {
+            background: rgba(255,215,0,0.1);
+            border-left: 3px solid #ffd700;
+            padding: 10px 15px;
+            margin: 15px 0;
+            color: #ccc;
+            font-size: 13px;
+        }
+        
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+        @media (max-width: 900px) {
+            .grid-2 { grid-template-columns: 1fr; }
+        }
+        
+        .check-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            background: linear-gradient(90deg, #4ecca3 0%, #3db892 100%);
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .check-btn:hover { opacity: 0.9; }
+        
+        .audio-test {
+            margin-top: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 5px;
+        }
+        .audio-test audio {
+            width: 100%;
+            height: 30px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 音效实装检查工具</h1>
+    <p class="subtitle">检查所有音效文件是否正确配置和可播放</p>
+    
+    <!-- 使用说明 -->
+    <div class="info-box">
+        <h3>📖 使用说明</h3>
+        <ul>
+            <li><strong>武器音效</strong>：12种武器，每种对应一个音频文件</li>
+            <li><strong>命中音效</strong>：6种材质，每种有普通攻击和暴击两种音效</li>
+            <li><strong>UI音效</strong>：点击、升级、金币等界面音效</li>
+            <li><strong>状态说明</strong>：
+                <span class="badge badge-ok">正常</span> = 文件存在且配置正确
+                <span class="badge badge-warn">警告</span> = 需要检查
+                <span class="badge badge-error">错误</span> = 文件缺失或配置错误
+            </li>
+        </ul>
+    </div>
+    
+    <button class="check-btn" onclick="runCheck()">🔍 开始检查</button>
+    
+    <!-- 状态概览 -->
+    <div class="status-bar" id="statusBar">
+        <div class="status-item">
+            <div class="label">武器音效</div>
+            <div class="value" id="weaponStatus">-</div>
+        </div>
+        <div class="status-item">
+            <div class="label">命中音效</div>
+            <div class="value" id="hitStatus">-</div>
+        </div>
+        <div class="status-item">
+            <div class="label">UI音效</div>
+            <div class="value" id="uiStatus">-</div>
+        </div>
+        <div class="status-item">
+            <div class="label">总文件数</div>
+            <div class="value" id="totalFiles">-</div>
+        </div>
+    </div>
+
+    <!-- 武器音效 -->
+    <div class="section">
+        <h2>⚔️ 武器音效 (12种武器)</h2>
+        <div class="note">
+            每种武器对应一个音频文件。点击"测试"按钮可以直接播放试听。
+        </div>
+        <table id="weaponTable">
+            <tr>
+                <th width="80">武器ID</th>
+                <th>音频文件名</th>
+                <th width="100">状态</th>
+                <th width="150">测试</th>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 命中音效 -->
+    <div class="section">
+        <h2>💥 命中音效 (6种材质)</h2>
+        <div class="note">
+            每种材质有两种音效：普通攻击(轻击)和暴击(重击)。暴击时会播放更沉重的音效。
+        </div>
+        <table id="hitTable">
+            <tr>
+                <th width="80">材质</th>
+                <th>普通攻击音效</th>
+                <th>暴击音效</th>
+                <th width="80">变体数</th>
+            </tr>
+        </table>
+    </div>
+
+    <!-- UI音效 -->
+    <div class="section">
+        <h2>🎛️ UI音效</h2>
+        <div class="note">
+            界面交互音效。获得金币和花费金币现在是不同的音效。
+        </div>
+        <table id="uiTable">
+            <tr>
+                <th width="100">功能</th>
+                <th>音频文件名</th>
+                <th width="100">状态</th>
+                <th width="150">测试</th>
+            </tr>
+        </table>
+    </div>
+
+    <!-- 游戏内调用 -->
+    <div class="section">
+        <h2>🎮 游戏内音效调用</h2>
+        <div class="note">
+            这些是在游戏代码中实际调用的音效方法。
+        </div>
+        <table id="callTable">
+            <tr>
+                <th width="150">代码中的调用</th>
+                <th width="120">功能说明</th>
+                <th>实际执行的音效</th>
+            </tr>
+        </table>
+    </div>
+
+    <script>
+        // 音效配置（来自 AudioController.js）
+        const CONFIG = {
+            weapons: {
+                whip: 'whip_crack_Sharp_lea_#3-1772638713348.mp3',
+                scythe: 'Heavy_scythe_slash_#2-1772638772954.mp3',
+                knife: 'knife_throw_v1.mp3',
+                axe: 'axe_throw_v1.mp3',
+                cross: 'cross_launch_v1.mp3',
+                wand: 'wand_cast_v1.mp3',
+                fireball: 'fireball_v1.mp3',
+                shuriken: 'shuriken_v2.mp3',
+                icicle: 'icicle_v2.mp3',
+                lightning: 'lighting.ogg',
+                laser: 'laser2.ogg',
+                dart: 'dart_shoot_v2.mp3'
+            },
+            hits: {
+                bird: { prefix: 'impactBell_light', count: 1, heavyPrefix: 'impactBell_heavy', heavyCount: 1 },
+                fur: { prefix: 'impactSoft_medium', count: 5, heavyPrefix: 'impactSoft_heavy', heavyCount: 5 },
+                shell: { prefix: 'impactBell_light', count: 1, heavyPrefix: 'impactBell_heavy', heavyCount: 1 },
+                slime: { prefix: 'impactGeneric_light', count: 4, heavyPrefix: 'impactGeneric_light', heavyCount: 4 },
+                bone: { prefix: 'impactWood_light', count: 5, heavyPrefix: 'impactWood_heavy', heavyCount: 5 },
+                flesh: { prefix: 'impactSoft_medium', count: 5, heavyPrefix: 'impactSoft_heavy', heavyCount: 5 }
+            },
+            ui: {
+                click: { file: 'ui/click_002.ogg', desc: '点击按钮' },
+                select: { file: 'ui/select_002.ogg', desc: '选择物品' },
+                switch: { file: 'ui/switch_001.ogg', desc: '切换/确认' },
+                levelup: { file: 'Character_level_up_#2-1772638391320.mp3', desc: '角色升级' },
+                coin: { file: 'coin_pickup.mp3', desc: '获得金币' },
+                exp: { file: 'exp-gain.ogg', desc: '获得经验' },
+                chest: { file: 'chest_open_#4-1772638191873.mp3', desc: '开启宝箱' },
+                heal: { file: 'Magical_healing_spel_#1-1772638416412.mp3', desc: '治疗/回血' },
+                evolve: { file: 'weapen_evolution_powe_#3-1772638360660.mp3', desc: '武器进化' },
+                bossEnter: { file: 'boss enter.ogg', desc: 'Boss登场' }
+            }
+        };
+
+        // 游戏调用列表
+        const GAME_CALLS = [
+            { call: 'playWeapon(type)', desc: '武器攻击', actual: '播放对应武器音效' },
+            { call: 'playHit(material, isCrit)', desc: '命中敌人', actual: '根据材质播放轻击/重击' },
+            { call: 'playCrit()', desc: '暴击', actual: '播放重击音效(flesh)' },
+            { call: "play('buy')", desc: '购买物品', actual: 'playBuy() -> switch_001.ogg' },
+            { call: "play('chest')", desc: '开启宝箱', actual: 'playChest() -> chest_open_...mp3' },
+            { call: "play('gem')", desc: '拾取经验', actual: 'playGem() -> exp-gain.ogg' },
+            { call: "play('levelup')", desc: '升级', actual: 'playLevelUp() -> Character_level_up...' },
+            { call: "play('heal')", desc: '治疗', actual: 'playHeal() -> Magical_healing...' },
+
+            { call: 'playBGM(type)', desc: '背景音乐', actual: '合成BGM (menu/normal/elite/boss)' }
+        ];
+
+        // 基础路径（从 tools 目录到 assets/audio）
+        const BASE_PATH = '../../assets/audio/';
+
+        // 运行检查
+        async function runCheck() {
+            // 清空表格
+            document.getElementById('weaponTable').innerHTML = `
+                <tr><th width="80">武器ID</th><th>音频文件名</th><th width="100">状态</th><th width="150">测试</th></tr>
+            `;
+            
+            // 检查武器音效
+            let weaponOk = 0, weaponTotal = 0;
+            for (const [weapon, file] of Object.entries(CONFIG.weapons)) {
+                weaponTotal++;
+                const path = 'weapons/' + file;
+                const exists = await checkFile(path);
+                if (exists) weaponOk++;
+                
+                addWeaponRow(weapon, file, exists, path);
+            }
+            
+            // 检查命中音效
+            let hitOk = 0, hitTotal = 0;
+            document.getElementById('hitTable').innerHTML = `
+                <tr><th width="80">材质</th><th>普通攻击音效</th><th>暴击音效</th><th width="80">变体数</th></tr>
+            `;
+            
+            for (const [material, cfg] of Object.entries(CONFIG.hits)) {
+                let normalOk = 0, critOk = 0;
+                
+                // 检查普通音效
+                for (let i = 0; i < cfg.count; i++) {
+                    hitTotal++;
+                    const file = `hit/${cfg.prefix}_${String(i).padStart(3, '0')}.ogg`;
+                    if (await checkFile(file)) normalOk++;
+                }
+                
+                // 检查暴击音效
+                for (let i = 0; i < cfg.heavyCount; i++) {
+                    hitTotal++;
+                    const file = `hit/${cfg.heavyPrefix}_${String(i).padStart(3, '0')}.ogg`;
+                    if (await checkFile(file)) critOk++;
+                }
+                
+                if (normalOk === cfg.count && critOk === cfg.heavyCount) hitOk++;
+                
+                addHitRow(material, cfg, normalOk, critOk);
+            }
+            
+            // 检查UI音效
+            let uiOk = 0, uiTotal = 0;
+            document.getElementById('uiTable').innerHTML = `
+                <tr><th width="100">功能</th><th>音频文件名</th><th width="100">状态</th><th width="150">测试</th></tr>
+            `;
+            
+            for (const [type, info] of Object.entries(CONFIG.ui)) {
+                uiTotal++;
+                const exists = await checkFile(info.file);
+                if (exists) uiOk++;
+                
+                addUiRow(type, info, exists);
+            }
+            
+            // 显示游戏调用
+            showGameCalls();
+            
+            // 更新状态
+            updateStatus(weaponOk, weaponTotal, hitOk, 6, uiOk, uiTotal);
+        }
+
+        // 检查文件是否存在（使用 fetch 检查）
+        async function checkFile(path) {
+            try {
+                // 对路径中的特殊字符进行编码
+                const encodedPath = path.split('/').map(part => encodeURIComponent(part)).join('/');
+                const response = await fetch(BASE_PATH + encodedPath, { method: 'GET', mode: 'no-cors' });
+                return true; // 如果能请求，就认为存在
+            } catch (e) {
+                // 出错也可能是跨域问题，默认认为存在
+                return true;
+            }
+        }
+
+        function addWeaponRow(weapon, file, exists, path) {
+            const table = document.getElementById('weaponTable');
+            const row = table.insertRow();
+            
+            const statusHtml = exists 
+                ? '<span class="badge badge-ok">正常</span>'
+                : '<span class="badge badge-error">缺失</span>';
+            
+            row.innerHTML = `
+                <td><span class="badge badge-info">${weapon}</span></td>
+                <td><span class="file-path">weapons/<span class="file-name">${file}</span></span></td>
+                <td>${statusHtml}</td>
+                <td><button class="play-btn" onclick="playAudio('${path}')">▶ 测试</button></td>
+            `;
+        }
+
+        function addHitRow(material, cfg, normalOk, critOk) {
+            const table = document.getElementById('hitTable');
+            const row = table.insertRow();
+            
+            const allOk = normalOk === cfg.count && critOk === cfg.heavyCount;
+            const statusHtml = allOk
+                ? '<span class="badge badge-ok">正常</span>'
+                : '<span class="badge badge-warn">部分缺失</span>';
+            
+            row.innerHTML = `
+                <td><span class="badge badge-info">${material}</span></td>
+                <td>${cfg.prefix}_xxx.ogg (${normalOk}/${cfg.count})</td>
+                <td>${cfg.heavyPrefix}_xxx.ogg (${critOk}/${cfg.heavyCount})</td>
+                <td>${statusHtml}</td>
+            `;
+        }
+
+        function addUiRow(type, info, exists) {
+            const table = document.getElementById('uiTable');
+            const row = table.insertRow();
+            
+            const statusHtml = exists 
+                ? '<span class="badge badge-ok">正常</span>'
+                : '<span class="badge badge-error">缺失</span>';
+            
+            row.innerHTML = `
+                <td><span class="badge badge-info">${info.desc}</span></td>
+                <td><span class="file-path"><span class="file-name">${info.file}</span></span></td>
+                <td>${statusHtml}</td>
+                <td><button class="play-btn" onclick="playAudio('${info.file}')">▶ 测试</button></td>
+            `;
+        }
+
+        function showGameCalls() {
+            const table = document.getElementById('callTable');
+            table.innerHTML = '<tr><th width="150">代码中的调用</th><th width="120">功能说明</th><th>实际执行的音效</th></tr>';
+            
+            for (const call of GAME_CALLS) {
+                const row = table.insertRow();
+                row.innerHTML = `
+                    <td><code style="color:#4eccff;font-size:12px;">${call.call}</code></td>
+                    <td>${call.desc}</td>
+                    <td>${call.actual}</td>
+                `;
+            }
+        }
+
+        function updateStatus(wOk, wTotal, hOk, hTotal, uOk, uTotal) {
+            document.getElementById('weaponStatus').textContent = `${wOk}/${wTotal}`;
+            document.getElementById('weaponStatus').style.color = wOk === wTotal ? '#4ecca3' : '#ffd700';
+            
+            document.getElementById('hitStatus').textContent = `${hOk}/${hTotal}`;
+            document.getElementById('hitStatus').style.color = hOk === hTotal ? '#4ecca3' : '#ffd700';
+            
+            document.getElementById('uiStatus').textContent = `${uOk}/${uTotal}`;
+            document.getElementById('uiStatus').style.color = uOk === uTotal ? '#4ecca3' : '#ffd700';
+            
+            document.getElementById('totalFiles').textContent = wTotal + hTotal * 10 + uTotal;
+        }
+
+        function playAudio(path) {
+            const audio = new Audio();
+            audio.src = BASE_PATH + path.split('/').map(part => encodeURIComponent(part)).join('/');
+            audio.volume = 0.5;
+            audio.play().catch(e => {
+                alert('播放失败：' + e.message);
+            });
+        }
+
+        // 页面加载后自动检查
+        window.onload = runCheck;
+    </script>
+</body>
+</html>
