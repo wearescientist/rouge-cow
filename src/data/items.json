@@ -1,0 +1,333 @@
+{
+  "items": {
+    "consumables": {
+      "health_potion": {
+        "id": "health_potion",
+        "name": "生命药水",
+        "type": "consumable",
+        "rarity": "common",
+        "effect": {
+          "type": "heal",
+          "value": 30
+        },
+        "description": "恢复30点生命值",
+        "icon": "🧪",
+        "maxStack": 99,
+        "buyPrice": 10,
+        "sellPrice": 3
+      },
+      "large_health_potion": {
+        "id": "large_health_potion",
+        "name": "大生命药水",
+        "type": "consumable",
+        "rarity": "uncommon",
+        "effect": {
+          "type": "heal",
+          "value": 80
+        },
+        "description": "恢复80点生命值",
+        "icon": "🧫",
+        "maxStack": 99,
+        "buyPrice": 25,
+        "sellPrice": 8
+      },
+      "elixir": {
+        "id": "elixir",
+        "name": "万能药剂",
+        "type": "consumable",
+        "rarity": "rare",
+        "effect": {
+          "type": "heal",
+          "value": 999
+        },
+        "description": "恢复全部生命值",
+        "icon": "🧬",
+        "maxStack": 10,
+        "buyPrice": 100,
+        "sellPrice": 30
+      },
+      "stamina_potion": {
+        "id": "stamina_potion",
+        "name": "体力药水",
+        "type": "consumable",
+        "rarity": "uncommon",
+        "effect": {
+          "type": "restore_stamina",
+          "value": 100
+        },
+        "description": "立即重置翻滚冷却",
+        "icon": "⚡",
+        "maxStack": 50,
+        "buyPrice": 15,
+        "sellPrice": 5
+      }
+    },
+    "resources": {
+      "gold": {
+        "id": "gold",
+        "name": "金币",
+        "type": "resource",
+        "rarity": "common",
+        "description": "通用货币",
+        "icon": "🪙",
+        "maxStack": 9999,
+        "autoPickup": true
+      },
+      "exp_orb_small": {
+        "id": "exp_orb_small",
+        "name": "小型经验球",
+        "type": "resource",
+        "rarity": "common",
+        "effect": {
+          "type": "exp",
+          "value": 5
+        },
+        "description": "获得5点经验值",
+        "icon": "🔮",
+        "maxStack": 999,
+        "autoPickup": true
+      },
+      "exp_orb_medium": {
+        "id": "exp_orb_medium",
+        "name": "中型经验球",
+        "type": "resource",
+        "rarity": "uncommon",
+        "effect": {
+          "type": "exp",
+          "value": 15
+        },
+        "description": "获得15点经验值",
+        "icon": "🔮",
+        "maxStack": 999,
+        "autoPickup": true
+      },
+      "exp_orb_large": {
+        "id": "exp_orb_large",
+        "name": "大型经验球",
+        "type": "resource",
+        "rarity": "rare",
+        "effect": {
+          "type": "exp",
+          "value": 50
+        },
+        "description": "获得50点经验值",
+        "icon": "🔮",
+        "maxStack": 999,
+        "autoPickup": true
+      }
+    },
+    "permanent": {
+      "power_shard": {
+        "id": "power_shard",
+        "name": "力量碎片",
+        "type": "permanent",
+        "rarity": "rare",
+        "effect": {
+          "type": "max_damage",
+          "value": 5
+        },
+        "description": "永久提升5点攻击力",
+        "icon": "💎",
+        "maxStack": 1,
+        "buyPrice": 200,
+        "sellPrice": 50
+      },
+      "vitality_shard": {
+        "id": "vitality_shard",
+        "name": "活力碎片",
+        "type": "permanent",
+        "rarity": "rare",
+        "effect": {
+          "type": "max_health",
+          "value": 20
+        },
+        "description": "永久提升20点生命值",
+        "icon": "❤️",
+        "maxStack": 1,
+        "buyPrice": 200,
+        "sellPrice": 50
+      },
+      "agility_shard": {
+        "id": "agility_shard",
+        "name": "敏捷碎片",
+        "type": "permanent",
+        "rarity": "rare",
+        "effect": {
+          "type": "max_speed",
+          "value": 10
+        },
+        "description": "永久提升10点移速",
+        "icon": "💨",
+        "maxStack": 1,
+        "buyPrice": 200,
+        "sellPrice": 50
+      }
+    },
+    "special": {
+      "magic_scroll": {
+        "id": "magic_scroll",
+        "name": "魔法卷轴",
+        "type": "special",
+        "rarity": "rare",
+        "description": "可用于升级魔法武器",
+        "icon": "📜",
+        "maxStack": 10,
+        "buyPrice": 50,
+        "sellPrice": 15
+      },
+      "crown": {
+        "id": "crown",
+        "name": "哥布林王冠",
+        "type": "special",
+        "rarity": "legendary",
+        "description": "哥布林王的象征，可兑换稀有物品",
+        "icon": "👑",
+        "maxStack": 1,
+        "sellPrice": 500
+      },
+      "dragon_scale": {
+        "id": "dragon_scale",
+        "name": "龙鳞",
+        "type": "special",
+        "rarity": "legendary",
+        "description": "远古巨龙的鳞片，极其稀有",
+        "icon": "🐉",
+        "maxStack": 5,
+        "sellPrice": 1000
+      }
+    }
+  },
+  "passives": {
+    "power_glove": {
+      "id": "power_glove",
+      "name": "力量手套",
+      "description": "攻击力+10%",
+      "maxLevel": 5,
+      "effect": {
+        "type": "damage_multiplier",
+        "valuePerLevel": 0.1
+      },
+      "icon": "🥊"
+    },
+    "swift_boots": {
+      "id": "swift_boots",
+      "name": "迅捷之靴",
+      "description": "移动速度+10%",
+      "maxLevel": 5,
+      "effect": {
+        "type": "speed_multiplier",
+        "valuePerLevel": 0.1
+      },
+      "icon": "👢"
+    },
+    "vitality_amulet": {
+      "id": "vitality_amulet",
+      "name": "活力护符",
+      "description": "最大生命值+15%",
+      "maxLevel": 5,
+      "effect": {
+        "type": "health_multiplier",
+        "valuePerLevel": 0.15
+      },
+      "icon": "📿"
+    },
+    "magnet": {
+      "id": "magnet",
+      "name": "磁铁",
+      "description": "拾取范围+50%",
+      "maxLevel": 3,
+      "effect": {
+        "type": "pickup_range",
+        "valuePerLevel": 0.5
+      },
+      "icon": "🧲"
+    },
+    "critical_ring": {
+      "id": "critical_ring",
+      "name": "暴击戒指",
+      "description": "暴击率+5%",
+      "maxLevel": 5,
+      "effect": {
+        "type": "crit_chance",
+        "valuePerLevel": 0.05
+      },
+      "icon": "💍"
+    },
+    "life_steal_charm": {
+      "id": "life_steal_charm",
+      "name": "生命偷取护符",
+      "description": "生命偷取+5%",
+      "maxLevel": 5,
+      "effect": {
+        "type": "life_steal",
+        "valuePerLevel": 0.05
+      },
+      "icon": "🩸"
+    },
+    "berserker_mask": {
+      "id": "berserker_mask",
+      "name": "狂战士面具",
+      "description": "血量越低，伤害越高（最高+50%）",
+      "maxLevel": 3,
+      "effect": {
+        "type": "berserk",
+        "valuePerLevel": 0.5
+      },
+      "icon": "🎭"
+    },
+    "guardian_shield": {
+      "id": "guardian_shield",
+      "name": "守护盾牌",
+      "description": "受到伤害-10%",
+      "maxLevel": 5,
+      "effect": {
+        "type": "damage_reduction",
+        "valuePerLevel": 0.1
+      },
+      "icon": "🛡️"
+    },
+    "lucky_coin": {
+      "id": "lucky_coin",
+      "name": "幸运币",
+      "description": "掉宝率+10%",
+      "maxLevel": 3,
+      "effect": {
+        "type": "drop_rate",
+        "valuePerLevel": 0.1
+      },
+      "icon": "🍀"
+    },
+    "experience_gem": {
+      "id": "experience_gem",
+      "name": "经验宝石",
+      "description": "经验获取+15%",
+      "maxLevel": 5,
+      "effect": {
+        "type": "exp_multiplier",
+        "valuePerLevel": 0.15
+      },
+      "icon": "💠"
+    },
+    "iron_body": {
+      "id": "iron_body",
+      "name": "钢筋铁骨",
+      "description": "免疫击退",
+      "maxLevel": 1,
+      "effect": {
+        "type": "knockback_immunity"
+      },
+      "icon": "🦾"
+    },
+    "vampiric_touch": {
+      "id": "vampiric_touch",
+      "name": "吸血鬼之触",
+      "description": "击杀敌人时恢复5%生命",
+      "maxLevel": 3,
+      "effect": {
+        "type": "kill_heal",
+        "valuePerLevel": 0.05
+      },
+      "icon": "🦇"
+    }
+  }
+}

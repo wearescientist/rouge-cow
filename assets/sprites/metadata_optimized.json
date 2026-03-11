@@ -1,0 +1,309 @@
+{
+  "_comment": "Optimized sprite metadata based on ENEMY_TYPES size analysis",
+  "_version": "2.2",
+  "_schema": {
+    "size_category": "根据 ENEMY_TYPES.size 分类: small(<30), medium(30-42), large(42-55), boss(>60)",
+    "canvas_size": "画布尺寸 = 64x64 (标准精灵图)",
+    "model_ratio": "模型占画布比例: 小型0.4-0.5, 中型0.5-0.7, 大型0.7-0.85",
+    "hitbox_ratio": "碰撞箱占模型比例: 默认0.8x0.9, 飞行单位0.7x0.8, 肉盾0.85x0.95"
+  },
+
+  "_size_reference": {
+    "T1_small": ["snail(22)", "duck3(24)", "pigeon(28)"],
+    "T1_medium": ["bat(40)", "chick(48)", "mouse(50)"],
+    "T2_speed": ["rabbit2(30)", "panther(36)", "bee(40)", "tiaotiao(36)", "tiezhua(40)"],
+    "T2_tank": ["bear(42)", "crab(48)", "nibei(50)"],
+    "T2_ranged": ["goose(24)", "snake(48)", "fox(48)"],
+    "T2_assassin": ["yinya(22)"],
+    "T3_boss": ["ghost(30)", "mimic(42)", "turtle(50)"],
+    "T4_boss": ["mother(72)"]
+  },
+
+  "=========================": "T1: 普通怪 (白色)",
+
+  "chick": {
+    "src": "assets/sprites/chick.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 18, "modelOffsetY": 16,
+    "modelWidth": 28, "modelHeight": 32,
+    "anchor": { "center": { "x": 32, "y": 32 }, "feet": { "x": 32, "y": 48 } },
+    "hitboxRatio": { "w": 0.75, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 1, "size": 48, "type": "ground", "anim": "hop" }
+  },
+
+  "mouse": {
+    "src": "assets/sprites/mouse.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 20, "modelOffsetY": 22,
+    "modelWidth": 24, "modelHeight": 20,
+    "anchor": { "center": { "x": 32, "y": 32 }, "feet": { "x": 32, "y": 42 } },
+    "hitboxRatio": { "w": 0.75, "h": 0.9 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 1, "size": 50, "type": "ground", "anim": "scurry" }
+  },
+
+  "snail": {
+    "src": "assets/sprites/snail.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 18, "modelOffsetY": 24,
+    "modelWidth": 28, "modelHeight": 24,
+    "anchor": { "center": { "x": 32, "y": 36 }, "feet": { "x": 32, "y": 48 } },
+    "hitboxRatio": { "w": 0.85, "h": 0.9 },
+    "shadowOffsetY": 1,
+    "meta": { "tier": 1, "size": 22, "type": "ground", "anim": "slide" }
+  },
+
+  "pigeon": {
+    "src": "assets/sprites/pigeon.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 20, "modelOffsetY": 18,
+    "modelWidth": 24, "modelHeight": 28,
+    "anchor": { "center": { "x": 32, "y": 32 }, "feet": { "x": 32, "y": 46 } },
+    "hitboxRatio": { "w": 0.7, "h": 0.8 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 1, "size": 28, "type": "flying", "anim": "flutter" }
+  },
+
+  "duck3": {
+    "src": "assets/sprites/duck3.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 20, "modelOffsetY": 20,
+    "modelWidth": 24, "modelHeight": 26,
+    "anchor": { "center": { "x": 32, "y": 33 }, "feet": { "x": 32, "y": 46 } },
+    "hitboxRatio": { "w": 0.75, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 1, "size": 24, "type": "ground", "anim": "waddle" }
+  },
+
+  "bat": {
+    "src": "assets/sprites/bird.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 22, "modelOffsetY": 16,
+    "modelWidth": 20, "modelHeight": 24,
+    "anchor": { "center": { "x": 32, "y": 28 }, "feet": { "x": 32, "y": 40 } },
+    "hitboxRatio": { "w": 0.7, "h": 0.75 },
+    "shadowOffsetY": 1,
+    "meta": { "tier": 1, "size": 40, "type": "flying", "anim": "fly" }
+  },
+
+  "==========================": "T2: 精英怪 - 速度型 (蓝色)",
+
+  "rabbit2": {
+    "src": "assets/sprites/rabbit2.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 18, "modelOffsetY": 18,
+    "modelWidth": 28, "modelHeight": 32,
+    "anchor": { "center": { "x": 32, "y": 34 }, "feet": { "x": 32, "y": 50 } },
+    "hitboxRatio": { "w": 0.7, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 30, "type": "speed", "anim": "hopfast" }
+  },
+
+  "bee": {
+    "src": "assets/sprites/bird.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 22, "modelOffsetY": 16,
+    "modelWidth": 20, "modelHeight": 22,
+    "anchor": { "center": { "x": 32, "y": 27 }, "feet": { "x": 32, "y": 38 } },
+    "hitboxRatio": { "w": 0.65, "h": 0.75 },
+    "shadowOffsetY": 1,
+    "meta": { "tier": 2, "size": 40, "type": "flying_speed", "anim": "fly" }
+  },
+
+  "panther": {
+    "src": "assets/sprites/cat.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 16, "modelOffsetY": 18,
+    "modelWidth": 32, "modelHeight": 30,
+    "anchor": { "center": { "x": 32, "y": 33 }, "feet": { "x": 32, "y": 48 } },
+    "hitboxRatio": { "w": 0.75, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 36, "type": "speed", "anim": "prowl" }
+  },
+
+  "tiaotiao": {
+    "src": "assets/sprites/rabbit.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 18, "modelOffsetY": 18,
+    "modelWidth": 28, "modelHeight": 32,
+    "anchor": { "center": { "x": 32, "y": 34 }, "feet": { "x": 32, "y": 50 } },
+    "hitboxRatio": { "w": 0.7, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 36, "type": "assassin", "anim": "hop" }
+  },
+
+  "tiezhua": {
+    "src": "assets/sprites/bird.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 20, "modelOffsetY": 14,
+    "modelWidth": 24, "modelHeight": 28,
+    "anchor": { "center": { "x": 32, "y": 28 }, "feet": { "x": 32, "y": 42 } },
+    "hitboxRatio": { "w": 0.7, "h": 0.8 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 40, "type": "flying_assassin", "anim": "dive" }
+  },
+
+  "===========================": "T2: 精英怪 - 肉盾型 (绿色)",
+
+  "crab": {
+    "src": "assets/sprites/crab.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 16, "modelOffsetY": 22,
+    "modelWidth": 32, "modelHeight": 26,
+    "anchor": { "center": { "x": 32, "y": 35 }, "feet": { "x": 32, "y": 48 } },
+    "hitboxRatio": { "w": 0.85, "h": 0.9 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 48, "type": "tank", "anim": "sidle" }
+  },
+
+  "nibei": {
+    "src": "assets/sprites/turtle.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 14, "modelOffsetY": 16,
+    "modelWidth": 36, "modelHeight": 36,
+    "anchor": { "center": { "x": 32, "y": 34 }, "feet": { "x": 32, "y": 52 } },
+    "hitboxRatio": { "w": 0.9, "h": 0.95 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 50, "type": "tank", "anim": "crawl" }
+  },
+
+  "bear": {
+    "src": "assets/sprites/bear.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 12, "modelOffsetY": 12,
+    "modelWidth": 40, "modelHeight": 40,
+    "anchor": { "center": { "x": 32, "y": 32 }, "feet": { "x": 32, "y": 52 } },
+    "hitboxRatio": { "w": 0.85, "h": 0.9 },
+    "shadowOffsetY": 3,
+    "meta": { "tier": 2, "size": 42, "type": "tank", "anim": "heavy" }
+  },
+
+  "============================": "T2: 精英怪 - 射手型 (红色)",
+
+  "snake": {
+    "src": "assets/sprites/snake.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 18, "modelOffsetY": 24,
+    "modelWidth": 28, "modelHeight": 24,
+    "anchor": { "center": { "x": 32, "y": 36 }, "feet": { "x": 32, "y": 48 } },
+    "hitboxRatio": { "w": 0.8, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 48, "type": "ranged", "anim": "slither" }
+  },
+
+  "goose": {
+    "src": "assets/sprites/goose.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 18, "modelOffsetY": 18,
+    "modelWidth": 28, "modelHeight": 30,
+    "anchor": { "center": { "x": 32, "y": 33 }, "feet": { "x": 32, "y": 48 } },
+    "hitboxRatio": { "w": 0.75, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 24, "type": "ranged", "anim": "charge" }
+  },
+
+  "fox": {
+    "src": "assets/sprites/dog.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 16, "modelOffsetY": 18,
+    "modelWidth": 32, "modelHeight": 30,
+    "anchor": { "center": { "x": 32, "y": 33 }, "feet": { "x": 32, "y": 48 } },
+    "hitboxRatio": { "w": 0.75, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 48, "type": "ranged", "anim": "run" }
+  },
+
+  "=============================": "T2: 精英怪 - 刺客型 (紫色)",
+
+  "yinya": {
+    "src": "assets/sprites/dog2.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 20, "modelOffsetY": 22,
+    "modelWidth": 24, "modelHeight": 24,
+    "anchor": { "center": { "x": 32, "y": 34 }, "feet": { "x": 32, "y": 46 } },
+    "hitboxRatio": { "w": 0.7, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 2, "size": 22, "type": "assassin", "anim": "run" }
+  },
+
+  "==============================": "T3: 小Boss (金色)",
+
+  "wolf_king": {
+    "src": "assets/sprites/dog2.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 14, "modelOffsetY": 16,
+    "modelWidth": 36, "modelHeight": 36,
+    "anchor": { "center": { "x": 32, "y": 34 }, "feet": { "x": 32, "y": 52 } },
+    "hitboxRatio": { "w": 0.8, "h": 0.88 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 3, "size": 22, "type": "boss", "anim": "run" }
+  },
+
+  "turtle": {
+    "src": "assets/sprites/turtle.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 12, "modelOffsetY": 14,
+    "modelWidth": 40, "modelHeight": 38,
+    "anchor": { "center": { "x": 32, "y": 33 }, "feet": { "x": 32, "y": 52 } },
+    "hitboxRatio": { "w": 0.9, "h": 0.95 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 3, "size": 50, "type": "boss_tank", "anim": "crawl" }
+  },
+
+  "mimic": {
+    "src": "assets/sprites/bear.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 12, "modelOffsetY": 14,
+    "modelWidth": 40, "modelHeight": 38,
+    "anchor": { "center": { "x": 32, "y": 33 }, "feet": { "x": 32, "y": 52 } },
+    "hitboxRatio": { "w": 0.85, "h": 0.9 },
+    "shadowOffsetY": 2,
+    "meta": { "tier": 3, "size": 42, "type": "boss", "anim": "heavy" }
+  },
+
+  "ghost": {
+    "src": "assets/sprites/pigeon.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 20, "modelOffsetY": 16,
+    "modelWidth": 24, "modelHeight": 28,
+    "anchor": { "center": { "x": 32, "y": 30 }, "feet": { "x": 32, "y": 44 } },
+    "hitboxRatio": { "w": 0.65, "h": 0.75 },
+    "shadowOffsetY": 1,
+    "meta": { "tier": 3, "size": 30, "type": "boss_flying", "anim": "flutter" }
+  },
+
+  "===============================": "T4: Boss (深红)",
+
+  "mother": {
+    "src": "assets/sprites/bear.png",
+    "canvasWidth": 96, "canvasHeight": 96,
+    "modelOffsetX": 12, "modelOffsetY": 12,
+    "modelWidth": 72, "modelHeight": 72,
+    "anchor": { "center": { "x": 48, "y": 48 }, "feet": { "x": 48, "y": 84 } },
+    "hitboxRatio": { "w": 0.85, "h": 0.88 },
+    "shadowOffsetY": 4,
+    "meta": { "tier": 4, "size": 72, "type": "boss_final", "anim": "heavy" }
+  },
+
+  "================================": "玩家",
+
+  "player": {
+    "src": "assets/sprites/player/player_0.png",
+    "canvasWidth": 64, "canvasHeight": 64,
+    "modelOffsetX": 16, "modelOffsetY": 12,
+    "modelWidth": 32, "modelHeight": 40,
+    "anchor": { "center": { "x": 32, "y": 32 }, "feet": { "x": 32, "y": 52 } },
+    "hitboxRatio": { "w": 0.7, "h": 0.85 },
+    "shadowOffsetY": 2,
+    "animation": {
+      "type": "horizontal",
+      "frames": 8,
+      "frameOffsets": [
+        { "x": 0, "y": 0 }, { "x": 0, "y": 1 }, { "x": 0, "y": 0 }, { "x": 0, "y": -1 },
+        { "x": 0, "y": 0 }, { "x": 0, "y": 1 }, { "x": 0, "y": 0 }, { "x": 0, "y": -1 }
+      ]
+    },
+    "meta": { "tier": 0, "size": 48, "type": "player" }
+  }
+}

@@ -1,585 +1,673 @@
 /**
- * 武器系统 v0.16.0 - 支持新升级机制的投射物系统
- * 
- * 攻击子类型:
- * - arc: 扇形范围（鞭子、镰刀）
- * - circle: 圆形范围（战斧）
- * - homing: 追踪（魔杖、毒镖）
- * - rapid: 快速连发（飞刀、机关枪）
- * - boomerang: 回旋镖（斧头）
- * - bounce: 弹跳（十字架）
- * - explode: 爆炸（火球）
- * - fan: 扇形投射（手里剑）
- * - penetrate: 穿透（冰锥、激光）
- * - orbit_proj: 环绕投射（环刃）
- * - poison_homing: 追踪+中毒
- * - chain: 连锁（闪电）
- * - burn: 持续伤害
- * - aura: 光环（大蒜）
+ * WeaponSystem - 武器系统
+ * 管理所有武器逻辑：攻击、弹道、特效
  */
 
 class WeaponSystem {
-    constructor(game) {
-        this.game = game;
+    constructor(world) {
+        this.world = world;
+        this.priority = 25;
+        this.enabled = true;
+        
+        // 武器数据库
+        this.weaponDatabase = new Map();
+        
+        // 投射物管理
+        this.projectiles = [];
     }
-
-    /**
-     * 创建投射物 - 主分发函数
-     */
-    createProjectile(player, target, dmg, cfg) {
-        const bullets = [];
-        const subtype = cfg.subtype;
-        const count = cfg.count || 1;
-        const baseAngle = this.getBaseAngle(player, target);
-        
-        // 根据子类型分发到不同的创建函数
-        switch (subtype) {
-            case 'arc':
-                bullets.push(...this.createArcAttack(player, dmg, cfg, baseAngle));
-                break;
-            case 'circle':
-                bullets.push(...this.createCircleAttack(player, dmg, cfg));
-                break;
-            case 'homing':
-                bullets.push(...this.createHomingProjectiles(player, dmg, cfg, baseAngle, count));
-                break;
-            case 'rapid':
-                bullets.push(...this.createRapidFire(player, dmg, cfg, baseAngle, count));
-                break;
-            case 'boomerang':
-                bullets.push(...this.createBoomerangs(player, dmg, cfg, baseAngle, count));
-                break;
-            case 'bounce':
-                bullets.push(...this.createBouncingProjectiles(player, dmg, cfg, baseAngle, count));
-                break;
-            case 'explode':
-                bullets.push(...this.createExplosiveProjectiles(player, dmg, cfg, baseAngle, count));
-                break;
-            case 'fan':
-                bullets.push(...this.createFanProjectiles(player, dmg, cfg, baseAngle, count));
-                break;
-            case 'penetrate':
-                bullets.push(...this.createPenetratingProjectiles(player, dmg, cfg, baseAngle, count));
-                break;
-            case 'orbit_proj':
-                bullets.push(...this.createOrbitProjectiles(player, dmg, cfg, baseAngle, count));
-                break;
-            case 'poison_homing':
-                bullets.push(...this.createPoisonHoming(player, dmg, cfg, baseAngle, count));
-                break;
-            case 'chain':
-                bullets.push(...this.createChainLightning(player, dmg, cfg, target, count));
-                break;
-            default:
-                // 默认创建普通投射物
-                bullets.push(...this.createBasicProjectiles(player, dmg, cfg, baseAngle, count));
-        }
-        
-        return bullets;
+    
+    init() {
+        this.loadWeaponData();
     }
-
-    getBaseAngle(player, target) {
-        if (target) {
-            return Math.atan2(target.y - player.y, target.x - player.x);
-        }
-        return player.facingRight ? 0 : Math.PI;
-    }
-
-    // ========== 各类攻击创建函数 ==========
-
-    /**
-     * 扇形范围攻击（鞭子、镰刀）
-     */
-    createArcAttack(player, dmg, cfg, baseAngle) {
-        const bullets = [];
-        const arcAngle = cfg.arcAngle || 90;
-        const range = cfg.range || 120;
-        const count = cfg.count || 1;
-        
-        // 计算扇形起始角度
-        const startAngle = baseAngle - (arcAngle * Math.PI / 180) / 2;
-        
-        for (let i = 0; i < count; i++) {
-            const angleOffset = cfg.angleOffset || 0;
-            const angle = count > 1 
-                ? startAngle + (arcAngle * Math.PI / 180) * i / (count - 1)
-                : baseAngle;
-            
-            // 多重攻击的额外投射物
-            if (cfg.doubleStrike && i === 0) {
-                bullets.push(this.createDelayedStrike(player, dmg, cfg, baseAngle, 0.15));
-            }
-            if (cfg.tripleStrike && i === 0) {
-                bullets.push(this.createDelayedStrike(player, dmg, cfg, baseAngle, 0.1));
-                bullets.push(this.createDelayedStrike(player, dmg, cfg, baseAngle, 0.2));
-            }
-            
-            bullets.push({
-                x: player.x, y: player.y,
-                vx: 0, vy: 0,
-                range: range,
-                life: cfg.duration || 0.25,
-                dmg: dmg,
-                type: 'melee',
-                subtype: 'arc',
-                color: cfg.color,
-                knockback: cfg.knockback || 20,
-                lifeSteal: cfg.lifeSteal || 0,
-                crit: cfg.crit || 0,
-                critDmg: cfg.critDmg || 1.5,
-                execute: cfg.execute,
-                executeThreshold: cfg.executeThreshold,
-                arcAngle: arcAngle,
-                arcDirection: angle,
-                weapon: cfg,
-                // 多重攻击的ID用于区分
-                multiId: count > 1 ? i : 0
-            });
-        }
-        
-        return bullets;
-    }
-
-    createDelayedStrike(player, dmg, cfg, angle, delay) {
-        return {
-            x: player.x, y: player.y,
-            vx: 0, vy: 0,
-            range: cfg.range,
-            life: cfg.duration || 0.25,
-            delay: delay,  // 延迟激活
-            dmg: dmg * 0.8,
+    
+    loadWeaponData() {
+        // 内置武器数据 - 近战武器
+        this.weaponDatabase.set('sword', {
+            name: '铁剑',
             type: 'melee',
-            subtype: 'arc',
-            color: cfg.color,
-            isDelayed: true,
-            arcDirection: angle,
-            weapon: cfg,
-            hits: new Set()  // v0.16.1 fix: 添加 hits
-        };
-    }
-
-    /**
-     * 圆形范围攻击（战斧旋风）
-     */
-    createCircleAttack(player, dmg, cfg) {
-        const bullets = [];
-        const radius = cfg.range || 100;
-        
-        bullets.push({
-            x: player.x, y: player.y,
-            vx: 0, vy: 0,
-            range: radius,
-            life: cfg.duration || 0.3,
-            dmg: dmg,
-            type: 'melee',
-            subtype: 'circle',
-            color: cfg.color,
-            knockback: cfg.knockback || 30,
-            lifeSteal: cfg.lifeSteal || 0,
-            execute: cfg.execute,
-            executeThreshold: cfg.executeThreshold,
-            weapon: cfg
+            damage: 15,
+            cooldown: 0.5,
+            range: 60,
+            attackSpeed: 1,
+            description: '基础近战武器',
+            icon: '⚔️'
         });
         
-        return bullets;
-    }
-
-    /**
-     * 追踪投射物
-     */
-    createHomingProjectiles(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        const angleStep = count > 1 ? 0.15 : 0;
+        this.weaponDatabase.set('greatsword', {
+            name: '巨剑',
+            type: 'melee',
+            damage: 35,
+            cooldown: 0.9,
+            range: 80,
+            attackSpeed: 0.8,
+            knockback: 100,
+            description: '高伤害但攻速慢',
+            icon: '🗡️'
+        });
         
-        for (let i = 0; i < count; i++) {
-            const angle = baseAngle + (i - (count - 1) / 2) * angleStep;
-            const vx = Math.cos(angle) * cfg.speed;
-            const vy = Math.sin(angle) * cfg.speed;
+        this.weaponDatabase.set('dagger', {
+            name: '匕首',
+            type: 'melee',
+            damage: 8,
+            cooldown: 0.25,
+            range: 40,
+            attackSpeed: 1.5,
+            critChance: 0.2,
+            critDamage: 2,
+            description: '超快攻速，高暴击',
+            icon: '🗡️'
+        });
+        
+        this.weaponDatabase.set('spear', {
+            name: '长矛',
+            type: 'melee',
+            damage: 20,
+            cooldown: 0.6,
+            range: 100,
+            attackSpeed: 1,
+            pierce: 3,
+            description: '长距离，可穿透敌人',
+            icon: '🔱'
+        });
+        
+        this.weaponDatabase.set('whip', {
+            name: '鞭子',
+            type: 'melee',
+            damage: 28,
+            cooldown: 0.75,
+            range: 180,
+            attackSpeed: 1,
+            arcAngle: 140,
+            knockback: 30,
+            description: '弧形范围攻击，可同时命中多个敌人',
+            icon: '🪄'
+        });
+        
+        this.weaponDatabase.set('scythe', {
+            name: '镰刀',
+            type: 'melee',
+            damage: 45,
+            cooldown: 1.0,
+            range: 170,
+            attackSpeed: 0.8,
+            circleAttack: true,
+            knockback: 40,
+            description: '周身圆形攻击，范围大',
+            icon: '⚰️'
+        });
+        
+        // 远程武器
+        this.weaponDatabase.set('bow', {
+            name: '木弓',
+            type: 'ranged',
+            damage: 12,
+            cooldown: 0.7,
+            range: 300,
+            attackSpeed: 1.2,
+            projectileSpeed: 400,
+            description: '基础远程武器',
+            icon: '🏹'
+        });
+        
+        this.weaponDatabase.set('crossbow', {
+            name: '十字弩',
+            type: 'ranged',
+            damage: 25,
+            cooldown: 1.0,
+            range: 350,
+            attackSpeed: 0.9,
+            projectileSpeed: 500,
+            pierce: 1,
+            description: '高伤害，可穿透',
+            icon: '🏹'
+        });
+        
+        this.weaponDatabase.set('magicWand', {
+            name: '法杖',
+            type: 'ranged',
+            damage: 20,
+            cooldown: 0.8,
+            range: 250,
+            attackSpeed: 1,
+            projectileSpeed: 350,
+            homing: true,
+            homingRange: 150,
+            description: '自动追踪敌人的魔法弹',
+            icon: '🪄'
+        });
+        
+        this.weaponDatabase.set('fireStaff', {
+            name: '火焰法杖',
+            type: 'ranged',
+            damage: 15,
+            cooldown: 0.4,
+            range: 200,
+            attackSpeed: 1.3,
+            projectileSpeed: 300,
+            areaDamage: true,
+            areaRadius: 50,
+            burnDamage: 5,
+            burnDuration: 3,
+            description: '范围伤害，附带灼烧',
+            icon: '🔥'
+        });
+        
+        this.weaponDatabase.set('lightningRod', {
+            name: '雷电权杖',
+            type: 'ranged',
+            damage: 30,
+            cooldown: 1.2,
+            range: 400,
+            attackSpeed: 0.8,
+            projectileSpeed: 450,
+            chainCount: 3,
+            chainRange: 100,
+            chainDamageReduction: 0.3,
+            description: '弹射到附近敌人',
+            icon: '⚡'
+        });
+        
+        this.weaponDatabase.set('boomerang', {
+            name: '回旋镖',
+            type: 'ranged',
+            damage: 12,
+            cooldown: 0.9,
+            range: 250,
+            attackSpeed: 1,
+            projectileSpeed: 300,
+            returning: true,
+            pierce: 999,
+            description: '飞出后返回，可多次命中',
+            icon: '🪃'
+        });
+        
+        this.weaponDatabase.set('throwingKnife', {
+            name: '飞刀',
+            type: 'ranged',
+            damage: 12,
+            cooldown: 0.35,
+            range: 400,
+            attackSpeed: 1.5,
+            projectileSpeed: 520,
+            pierce: 3,
+            burst: 3,
+            description: '超快攻速，三连发',
+            icon: '🗡️'
+        });
+        
+        this.weaponDatabase.set('shuriken', {
+            name: '手里剑',
+            type: 'ranged',
+            damage: 15,
+            cooldown: 0.6,
+            range: 400,
+            attackSpeed: 1,
+            projectileSpeed: 480,
+            count: 3,
+            spread: 25,
+            description: '扇形发射三枚手里剑',
+            icon: '🎯'
+        });
+        
+        this.weaponDatabase.set('iceStaff', {
+            name: '冰霜法杖',
+            type: 'ranged',
+            damage: 24,
+            cooldown: 0.85,
+            range: 500,
+            attackSpeed: 1,
+            projectileSpeed: 400,
+            pierce: 99,
+            slow: 0.4,
+            slowDuration: 2,
+            description: '穿透敌人并减速',
+            icon: '❄️'
+        });
+    }
+    
+    update(dt) {
+        // 更新所有武器冷却
+        const weapons = this.world.getEntitiesWithComponents(WeaponComponent);
+        
+        for (const entity of weapons) {
+            const weapon = entity.get(WeaponComponent);
+            if (weapon.cooldownTimer > 0) {
+                weapon.cooldownTimer -= dt;
+            }
             
-            bullets.push({
-                x: player.x + Math.cos(angle) * 30,
-                y: player.y + Math.sin(angle) * 30,
-                vx, vy,
-                range: cfg.range || 400,
-                life: cfg.life || 2,
-                dmg: dmg,
-                type: 'proj',
-                subtype: 'homing',
-                color: cfg.color,
-                speed: cfg.speed,
-                homingStrength: cfg.homingStrength || 0.5,
-                pierce: cfg.pierce || 0,
-                chain: cfg.chain || 0,
-                chainRange: cfg.chainRange || 100,
-                crit: cfg.crit || 0,
-                critDmg: cfg.critDmg || 1.5,
-                weapon: cfg,
-                hits: new Set(),  // v0.16.1 fix: 统一使用 hits
-                targetsHit: new Set()
-            });
+            if (weapon.isAttacking) {
+                weapon.attackTimer -= dt;
+                if (weapon.attackTimer <= 0) {
+                    weapon.isAttacking = false;
+                }
+            }
         }
         
-        return bullets;
+        // 更新投射物
+        this.updateProjectiles(dt);
     }
-
+    
+    updateProjectiles(dt) {
+        const projectiles = this.world.getEntitiesWithTag('projectile');
+        
+        for (const projectile of projectiles) {
+            const proj = projectile.get(ProjectileComponent);
+            const transform = projectile.get(TransformComponent);
+            const movement = projectile.get(MovementComponent);
+            
+            if (!proj || !transform) continue;
+            
+            // 更新生命周期
+            proj.lifetime -= dt;
+            if (proj.lifetime <= 0) {
+                projectile.destroy();
+                continue;
+            }
+            
+            // 追踪逻辑
+            if (proj.isHoming && !proj.target) {
+                proj.target = this.findNearestEnemy(transform);
+            }
+            
+            if (proj.isHoming && proj.target && proj.target.active) {
+                const targetTransform = proj.target.get(TransformComponent);
+                if (targetTransform) {
+                    const dx = targetTransform.x - transform.x;
+                    const dy = targetTransform.y - transform.y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    
+                    if (dist > 0) {
+                        // 调整速度方向
+                        const turnRate = 5 * dt;
+                        const targetVx = (dx / dist) * proj.speed;
+                        const targetVy = (dy / dist) * proj.speed;
+                        
+                        movement.vx += (targetVx - movement.vx) * turnRate;
+                        movement.vy += (targetVy - movement.vy) * turnRate;
+                    }
+                }
+            }
+        }
+    }
+    
+    findNearestEnemy(fromTransform) {
+        const enemies = this.world.getEntitiesWithTag('enemy');
+        let nearest = null;
+        let nearestDist = Infinity;
+        
+        for (const enemy of enemies) {
+            const transform = enemy.get(TransformComponent);
+            if (!transform) continue;
+            
+            const dx = transform.x - fromTransform.x;
+            const dy = transform.y - fromTransform.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist < nearestDist) {
+                nearestDist = dist;
+                nearest = enemy;
+            }
+        }
+        
+        return nearest;
+    }
+    
     /**
-     * 快速连发（飞刀）
+     * 创建武器组件
      */
-    createRapidFire(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        const burst = cfg.burst || 1;
+    createWeapon(weaponId, level = 1) {
+        const data = this.weaponDatabase.get(weaponId);
+        if (!data) return null;
+        
+        const weapon = new WeaponComponent({
+            weaponId: weaponId,
+            damage: data.damage * Math.pow(1.2, level - 1),
+            cooldown: data.cooldown * Math.pow(0.95, level - 1),
+            range: data.range,
+            attackSpeed: data.attackSpeed,
+            projectileSpeed: data.projectileSpeed || 300,
+            pierce: data.pierce || 0,
+            level: level
+        });
+        
+        return weapon;
+    }
+    
+    /**
+     * 获取武器数据
+     */
+    getWeaponData(weaponId) {
+        return this.weaponDatabase.get(weaponId);
+    }
+    
+    /**
+     * 执行武器攻击
+     */
+    performAttack(entity, targetPos) {
+        const weapon = entity.get(WeaponComponent);
+        const transform = entity.get(TransformComponent);
+        
+        if (!weapon || !transform) return false;
+        if (weapon.cooldownTimer > 0) return false;
+        
+        const data = this.weaponDatabase.get(weapon.weaponId);
+        if (!data) return false;
+        
+        // 设置冷却
+        weapon.cooldownTimer = weapon.cooldown / weapon.attackSpeed;
+        weapon.isAttacking = true;
+        weapon.attackTimer = 0.3;
+        
+        // 计算方向
+        const dx = targetPos.x - transform.x;
+        const dy = targetPos.y - transform.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        if (dist === 0) return false;
+        
+        const dirX = dx / dist;
+        const dirY = dy / dist;
+        const direction = { x: dirX, y: dirY };
+        
+        // 根据武器ID执行特殊攻击逻辑
+        switch (weapon.weaponId) {
+            case 'whip':
+                this.performWhipAttack(entity, weapon, transform, direction, data);
+                break;
+            case 'scythe':
+                this.performScytheAttack(entity, weapon, transform, data);
+                break;
+            case 'throwingKnife':
+                this.performThrowingKnifeAttack(entity, weapon, transform, direction, data);
+                break;
+            case 'shuriken':
+                this.performShurikenAttack(entity, weapon, transform, direction, data);
+                break;
+            case 'iceStaff':
+                this.performIceStaffAttack(entity, weapon, transform, direction, data);
+                break;
+            default:
+                // 根据武器类型执行标准攻击
+                if (data.type === 'melee') {
+                    this.performMeleeAttack(entity, weapon, transform, direction, data);
+                } else {
+                    this.performRangedAttack(entity, weapon, transform, direction, data);
+                }
+        }
+        
+        return true;
+    }
+    
+    performMeleeAttack(entity, weapon, transform, direction, data) {
+        // 近战攻击：在扇形范围内造成伤害
+        const attackAngle = Math.PI / 3; // 60度扇形
+        const enemies = this.world.getEntitiesWithTag('enemy');
+        
+        for (const enemy of enemies) {
+            const enemyTransform = enemy.get(TransformComponent);
+            if (!enemyTransform) continue;
+            
+            const dx = enemyTransform.x - transform.x;
+            const dy = enemyTransform.y - transform.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist > weapon.range) continue;
+            
+            // 检查角度
+            const angle = Math.atan2(dy, dx);
+            const attackDirAngle = Math.atan2(direction.y, direction.x);
+            const angleDiff = Math.abs(this.normalizeAngle(angle - attackDirAngle));
+            
+            if (angleDiff <= attackAngle / 2) {
+                // 造成伤害
+                const combatSystem = this.world.getSystem(CombatSystem);
+                if (combatSystem) {
+                    combatSystem.dealDamage(entity, enemy, weapon.damage);
+                }
+            }
+        }
+    }
+    
+    performRangedAttack(entity, weapon, transform, direction, data) {
+        // 创建投射物
+        const startX = transform.x + direction.x * 20;
+        const startY = transform.y + direction.y * 20;
+        
+        const projectile = this.world.createProjectile(
+            startX,
+            startY,
+            direction,
+            entity.id,
+            {
+                damage: weapon.damage,
+                speed: weapon.projectileSpeed,
+                pierce: weapon.pierce,
+                lifetime: 3,
+                isHoming: data.homing || false
+            }
+        );
+    }
+    
+    normalizeAngle(angle) {
+        while (angle > Math.PI) angle -= Math.PI * 2;
+        while (angle < -Math.PI) angle += Math.PI * 2;
+        return angle;
+    }
+    
+    /**
+     * 鞭子攻击 - 弧形大范围
+     */
+    performWhipAttack(entity, weapon, transform, direction, data) {
+        const arcAngle = (data.arcAngle || 140) * Math.PI / 180;
+        const enemies = this.world.getEntitiesWithTag('enemy');
+        
+        for (const enemy of enemies) {
+            const enemyTransform = enemy.get(TransformComponent);
+            if (!enemyTransform) continue;
+            
+            const dx = enemyTransform.x - transform.x;
+            const dy = enemyTransform.y - transform.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist > weapon.range) continue;
+            
+            const angle = Math.atan2(dy, dx);
+            const attackDirAngle = Math.atan2(direction.y, direction.x);
+            const angleDiff = Math.abs(this.normalizeAngle(angle - attackDirAngle));
+            
+            if (angleDiff <= arcAngle / 2) {
+                const combatSystem = this.world.getSystem(CombatSystem);
+                if (combatSystem) {
+                    combatSystem.dealDamage(entity, enemy, weapon.damage);
+                }
+            }
+        }
+        
+        // 创建鞭子视觉效果
+        this.createWhipEffect(transform, direction, arcAngle, weapon.range);
+    }
+    
+    /**
+     * 镰刀攻击 - 周身圆形
+     */
+    performScytheAttack(entity, weapon, transform, data) {
+        const enemies = this.world.getEntitiesWithTag('enemy');
+        
+        for (const enemy of enemies) {
+            const enemyTransform = enemy.get(TransformComponent);
+            if (!enemyTransform) continue;
+            
+            const dx = enemyTransform.x - transform.x;
+            const dy = enemyTransform.y - transform.y;
+            const dist = Math.sqrt(dx * dx + dy * dy);
+            
+            if (dist <= weapon.range) {
+                const combatSystem = this.world.getSystem(CombatSystem);
+                if (combatSystem) {
+                    combatSystem.dealDamage(entity, enemy, weapon.damage);
+                }
+            }
+        }
+        
+        // 创建圆形攻击效果
+        this.createCircleEffect(transform, weapon.range);
+    }
+    
+    /**
+     * 飞刀攻击 - 三连发burst
+     */
+    performThrowingKnifeAttack(entity, weapon, transform, direction, data) {
+        const burstCount = data.burst || 3;
+        const burstDelay = 0.08; // 每发间隔
+        
+        for (let i = 0; i < burstCount; i++) {
+            setTimeout(() => {
+                if (!entity.active) return;
+                const startX = transform.x + direction.x * 20;
+                const startY = transform.y + direction.y * 20;
+                
+                this.world.createProjectile(
+                    startX,
+                    startY,
+                    direction,
+                    entity.id,
+                    {
+                        damage: weapon.damage,
+                        speed: weapon.projectileSpeed,
+                        pierce: data.pierce || 3,
+                        lifetime: 2.5,
+                        isHoming: false,
+                        size: 6
+                    }
+                );
+            }, i * burstDelay * 1000);
+        }
+    }
+    
+    /**
+     * 手里剑攻击 - 扇形多发
+     */
+    performShurikenAttack(entity, weapon, transform, direction, data) {
+        const count = data.count || 3;
+        const spreadAngle = (data.spread || 25) * Math.PI / 180;
+        const baseAngle = Math.atan2(direction.y, direction.x);
         
         for (let i = 0; i < count; i++) {
-            const angleOffset = count > 1 ? (i - (count - 1) / 2) * (cfg.angleOffset || 0) * Math.PI / 180 : 0;
+            const angleOffset = (i - (count - 1) / 2) * spreadAngle / (count - 1 || 1);
             const angle = baseAngle + angleOffset;
+            const dir = {
+                x: Math.cos(angle),
+                y: Math.sin(angle)
+            };
             
-            for (let j = 0; j < burst; j++) {
-                const burstDelay = j * 0.05;
-                const spread = (Math.random() - 0.5) * (cfg.spread || 0.1);
-                const finalAngle = angle + spread;
-                
-                bullets.push({
-                    x: player.x + Math.cos(finalAngle) * 30,
-                    y: player.y + Math.sin(finalAngle) * 30,
-                    vx: Math.cos(finalAngle) * cfg.speed,
-                    vy: Math.sin(finalAngle) * cfg.speed,
-                    range: cfg.range || 350,
-                    life: cfg.life || 1.5,
-                    delay: burstDelay,
-                    dmg: dmg,
-                    type: 'proj',
-                    subtype: 'rapid',
-                    color: cfg.color,
-                    pierce: cfg.pierce || 0, maxPierce: cfg.pierce || 0,
-                    bounce: cfg.bounce || 0,
-                    crit: cfg.crit || 0,
-                    critDmg: cfg.critDmg || 1.5,
-                    weapon: cfg,
-                    hits: new Set()  // v0.16.1 fix: 添加 hits
-                });
+            const startX = transform.x + dir.x * 20;
+            const startY = transform.y + dir.y * 20;
+            
+            this.world.createProjectile(
+                startX,
+                startY,
+                dir,
+                entity.id,
+                {
+                    damage: weapon.damage,
+                    speed: weapon.projectileSpeed,
+                    pierce: 0,
+                    lifetime: 2,
+                    isHoming: false,
+                    size: 8
+                }
+            );
+        }
+    }
+    
+    /**
+     * 冰杖攻击 - 穿透+减速
+     */
+    performIceStaffAttack(entity, weapon, transform, direction, data) {
+        const startX = transform.x + direction.x * 20;
+        const startY = transform.y + direction.y * 20;
+        
+        const projectile = this.world.createProjectile(
+            startX,
+            startY,
+            direction,
+            entity.id,
+            {
+                damage: weapon.damage,
+                speed: weapon.projectileSpeed,
+                pierce: data.pierce || 99,
+                lifetime: 3,
+                isHoming: false,
+                size: 10,
+                color: '#00ffff'
             }
+        );
+        
+        // 添加减速效果标记
+        const projComp = projectile.get(ProjectileComponent);
+        if (projComp) {
+            projComp.slow = data.slow || 0.4;
+            projComp.slowDuration = data.slowDuration || 2;
         }
-        
-        return bullets;
     }
-
+    
     /**
-     * 回旋镖
+     * 创建鞭子视觉效果
      */
-    createBoomerangs(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        const angleOffset = cfg.angleOffset || 40;
+    createWhipEffect(transform, direction, arcAngle, range) {
+        const particleSystem = this.world.getSystem(ParticleSystem);
+        if (!particleSystem) return;
         
-        for (let i = 0; i < count; i++) {
-            const angle = baseAngle + (count > 1 ? (i - (count - 1) / 2) * angleOffset * Math.PI / 180 : 0);
-            const speed = cfg.speed;
+        const baseAngle = Math.atan2(direction.y, direction.x);
+        const steps = 10;
+        
+        for (let i = 0; i <= steps; i++) {
+            const t = i / steps;
+            const angleOffset = (t - 0.5) * arcAngle;
+            const angle = baseAngle + angleOffset;
+            const dist = range * (0.5 + t * 0.5);
             
-            bullets.push({
-                x: player.x + Math.cos(angle) * 30,
-                y: player.y + Math.sin(angle) * 30,
-                vx: Math.cos(angle) * speed,
-                vy: Math.sin(angle) * speed,
-                range: cfg.range || 300,
-                life: cfg.life || 3,
-                dmg: dmg,
-                type: 'proj',
-                subtype: 'boomerang',
-                color: cfg.color,
-                pierce: cfg.pierce || 99,
-                returnDamage: cfg.returnDamage || false,
-                state: 'outbound',  // outbound | returning
-                originX: player.x,
-                originY: player.y,
-                size: cfg.axeSize || 1,
-                weapon: cfg
-            });
-        }
-        
-        return bullets;
-    }
-
-    /**
-     * 弹跳投射物
-     */
-    createBouncingProjectiles(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        
-        for (let i = 0; i < count; i++) {
-            const angle = baseAngle + (count > 1 ? (i - (count - 1) / 2) * 0.3 : 0);
+            const px = transform.x + Math.cos(angle) * dist;
+            const py = transform.y + Math.sin(angle) * dist;
             
-            bullets.push({
-                x: player.x + Math.cos(angle) * 30,
-                y: player.y + Math.sin(angle) * 30,
-                vx: Math.cos(angle) * cfg.speed,
-                vy: Math.sin(angle) * cfg.speed,
-                range: cfg.range || 500,
-                life: cfg.life || 5,
-                dmg: dmg,
-                type: 'proj',
-                subtype: 'bounce',
-                color: cfg.color,
-                bounce: cfg.bounce || 3,
-                pierce: 99,
-                explodeOnBounce: cfg.explodeOnBounce || false,
-                divineNova: cfg.divineNova || false,
-                crit: cfg.crit || 0,
-                critDmg: cfg.critDmg || 1.5,
-                holyDamage: cfg.holyDamage || 1,
-                weapon: cfg,
-                bounceCount: 0
+            particleSystem.createParticle({
+                x: px,
+                y: py,
+                vx: 0,
+                vy: 0,
+                life: 0.2,
+                color: '#ff6b6b',
+                size: 3
             });
         }
-        
-        return bullets;
     }
-
+    
     /**
-     * 爆炸投射物
+     * 创建圆形攻击效果
      */
-    createExplosiveProjectiles(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        const miniCount = cfg.miniFireballs || 0;
+    createCircleEffect(transform, range) {
+        const particleSystem = this.world.getSystem(ParticleSystem);
+        if (!particleSystem) return;
         
+        const count = 16;
         for (let i = 0; i < count; i++) {
-            const angle = baseAngle + (count > 1 ? (i - (count - 1) / 2) * 0.2 : 0);
+            const angle = (i / count) * Math.PI * 2;
+            const px = transform.x + Math.cos(angle) * range;
+            const py = transform.y + Math.sin(angle) * range;
             
-            bullets.push({
-                x: player.x + Math.cos(angle) * 30,
-                y: player.y + Math.sin(angle) * 30,
-                vx: Math.cos(angle) * cfg.speed,
-                vy: Math.sin(angle) * cfg.speed,
-                range: cfg.range || 300,
-                life: cfg.life || 2,
-                dmg: dmg,
-                type: 'proj',
-                subtype: 'explode',
-                color: cfg.color,
-                explodeRadius: (cfg.explodeRadius || 80) * (cfg.damageBoost || 1),
-                split: cfg.split || false,
-                miniCount: miniCount,
-                nova: cfg.nova || false,
-                burnSpread: cfg.burnSpread || false,
-                meteor: cfg.meteor || false,
-                weapon: cfg,
-                exploded: false
+            particleSystem.createParticle({
+                x: px,
+                y: py,
+                vx: -Math.cos(angle) * 50,
+                vy: -Math.sin(angle) * 50,
+                life: 0.3,
+                color: '#9c27b0',
+                size: 4
             });
         }
-        
-        return bullets;
     }
-
-    /**
-     * 扇形散射（手里剑）
-     */
-    createFanProjectiles(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        const spreadAngle = (cfg.spread || 30) * Math.PI / 180;
-        const startAngle = baseAngle - spreadAngle / 2;
-        
-        for (let i = 0; i < count; i++) {
-            const angle = startAngle + spreadAngle * i / (count - 1 || 1);
-            
-            bullets.push({
-                x: player.x + Math.cos(angle) * 30,
-                y: player.y + Math.sin(angle) * 30,
-                vx: Math.cos(angle) * cfg.speed,
-                vy: Math.sin(angle) * cfg.speed,
-                range: cfg.range || 400,
-                life: cfg.life || 3,
-                dmg: dmg,
-                type: 'proj',
-                subtype: 'fan',
-                color: cfg.color,
-                pierce: cfg.pierce || 0,
-                returnToPlayer: cfg.returnToPlayer || false,
-                weapon: cfg
-            });
-        }
-        
-        return bullets;
-    }
-
-    /**
-     * 穿透投射物
-     */
-    createPenetratingProjectiles(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        
-        for (let i = 0; i < count; i++) {
-            const angle = baseAngle + (count > 1 ? (i - (count - 1) / 2) * 0.1 : 0);
-            
-            bullets.push({
-                x: player.x + Math.cos(angle) * 30,
-                y: player.y + Math.sin(angle) * 30,
-                vx: Math.cos(angle) * cfg.speed,
-                vy: Math.sin(angle) * cfg.speed,
-                range: cfg.range || 500,
-                life: cfg.life || 4,
-                dmg: dmg,
-                type: 'proj',
-                subtype: 'penetrate',
-                color: cfg.color,
-                pierce: cfg.pierce || 99,
-                slow: cfg.slow || 0,
-                freezeChance: cfg.freezeChance || 0,
-                freezeDuration: cfg.freezeDuration || 0,
-                shatter: cfg.shatter || false,
-                aoeOnHit: cfg.aoeOnHit || false,
-                aoeRadius: cfg.aoeRadius || 0,
-                blizzardAOE: cfg.blizzardAOE || false,
-                weapon: cfg
-            });
-        }
-        
-        return bullets;
-    }
-
-    /**
-     * 环绕投射物
-     */
-    createOrbitProjectiles(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        const radius = cfg.orbitRadius || 100;
-        
-        // 检查是否使用双环或三环
-        const rings = cfg.doubleRing ? 2 : (cfg.tripleRing ? 3 : 1);
-        const ringSpacing = 30;
-        
-        for (let r = 0; r < rings; r++) {
-            for (let i = 0; i < count; i++) {
-                const angleOffset = (i / count) * Math.PI * 2;
-                const currentRadius = radius + r * ringSpacing;
-                
-                bullets.push({
-                    x: player.x + Math.cos(angleOffset) * currentRadius,
-                    y: player.y + Math.sin(angleOffset) * currentRadius,
-                    vx: 0, vy: 0,
-                    orbitCenter: { x: player.x, y: player.y },
-                    orbitAngle: angleOffset,
-                    orbitRadius: currentRadius,
-                    orbitSpeed: (cfg.orbitSpeed || 1) * (r % 2 === 0 ? 1 : -1), // 交替方向
-                    orbitDuration: cfg.orbitDuration || 2,
-                    dmg: dmg,
-                    type: 'proj',
-                    subtype: 'orbit_proj',
-                    color: cfg.color,
-                    pierce: cfg.pierce || 99, maxPierce: 99,
-                    blenderMode: cfg.blenderMode || false,
-                    damageTick: cfg.damageTick || 0.1,
-                    weapon: cfg,
-                    lastDamageTime: 0,
-                    hits: new Set()  // v0.16.1 fix: 添加 hits
-                });
-            }
-        }
-        
-        return bullets;
-    }
-
-    /**
-     * 追踪毒镖
-     */
-    createPoisonHoming(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        
-        for (let i = 0; i < count; i++) {
-            const angle = baseAngle + (count > 1 ? (i - (count - 1) / 2) * 0.2 : 0);
-            
-            bullets.push({
-                x: player.x + Math.cos(angle) * 30,
-                y: player.y + Math.sin(angle) * 30,
-                vx: Math.cos(angle) * cfg.speed,
-                vy: Math.sin(angle) * cfg.speed,
-                range: cfg.range || 400,
-                life: cfg.life || 3,
-                dmg: dmg,
-                type: 'proj',
-                subtype: 'poison_homing',
-                color: cfg.color,
-                homingStrength: cfg.homingStrength || 0.6,
-                poisonDmg: cfg.poisonDmg || 5,
-                spreadChance: cfg.spreadChance || 0,
-                spreadRange: cfg.spreadRange || 0,
-                burstOnDeath: cfg.burstOnDeath || false,
-                burstRadius: cfg.burstRadius || 0,
-                lingeringPoison: cfg.lingeringPoison || false,
-                groundDuration: cfg.groundDuration || 0,
-                plagueBurst: cfg.plagueBurst || false,
-                weapon: cfg,
-                hits: new Set()  // v0.16.1 fix: 添加 hits
-            });
-        }
-        
-        return bullets;
-    }
-
-    /**
-     * 连锁闪电
-     */
-    createChainLightning(player, dmg, cfg, target, count) {
-        const bullets = [];
-        
-        // 闪电不跟随鼠标，直接对目标或随机敌人施放
-        const firstTarget = target || this.findNearestEnemy(player);
-        
-        if (firstTarget) {
-            bullets.push({
-                x: player.x, y: player.y,
-                targetId: firstTarget.id,
-                dmg: dmg,
-                type: 'instant',
-                subtype: 'chain',
-                color: cfg.color,
-                chain: cfg.chain || 3,
-                chainRange: cfg.chainRange || 150,
-                stun: cfg.stun || 0,
-                fork: cfg.fork || false,
-                branches: cfg.branches || 0,
-                weapon: cfg,
-                chainCount: 0,
-                targetsHit: new Set([firstTarget.id]),
-                hits: new Set([firstTarget]),  // v0.16.1 fix: 添加 hits
-                lastTargetX: firstTarget.x,
-                lastTargetY: firstTarget.y
-            });
-        }
-        
-        return bullets;
-    }
-
-    createBasicProjectiles(player, dmg, cfg, baseAngle, count) {
-        const bullets = [];
-        
-        for (let i = 0; i < count; i++) {
-            const angle = baseAngle + (count > 1 ? (i - (count - 1) / 2) * 0.2 : 0);
-            
-            bullets.push({
-                x: player.x + Math.cos(angle) * 30,
-                y: player.y + Math.sin(angle) * 30,
-                vx: Math.cos(angle) * (cfg.speed || 200),
-                vy: Math.sin(angle) * (cfg.speed || 200),
-                range: cfg.range || 300,
-                life: cfg.life || 2,
-                dmg: dmg,
-                type: 'proj',
-                subtype: 'basic',
-                color: cfg.color,
-                pierce: cfg.pierce || 0, maxPierce: cfg.pierce || 0,
-                weapon: cfg,
-                hits: new Set()  // v0.16.1 fix: 添加 hits
-            });
-        }
-        
-        return bullets;
-    }
-
-    findNearestEnemy(player) {
-        // 简化版，实际应该从game.enemies中获取
-        return null;
-    }
+    
+    destroy() {}
 }
 
-// 导出
-if (typeof module !== 'undefined' && module.exports) {
-    module.exports = { WeaponSystem };
-}
+window.WeaponSystem = WeaponSystem;

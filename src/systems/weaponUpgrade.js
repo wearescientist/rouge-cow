@@ -11,27 +11,27 @@
 const WEAPON_UPGRADE_TABLE = {
     // ========== 近战类 ==========
     whip: {
-        name: '鞭子',
+        name: '圣剑',
         upgrades: [
-            { level: 2, dmg: 1.3, range: 1.15, desc: '伤害+30%，范围+15%' },
-            { level: 3, dmg: 1.2, arcAngle: 130, desc: '伤害+20%，角度130°' },
-            { level: 4, count: 2, dmg: 1.25, angleOffset: 25, desc: '双鞭+伤害+25%（质变）' },
-            { level: 5, dmg: 1.35, range: 1.2, desc: '伤害+35%，范围+20%' },
-            { level: 6, dmg: 1.3, knockback: 40, lifeSteal: 0.08, desc: '伤害+30%，击退40，吸血8%' },
+            { level: 2, dmg: 1.3, range: 1.15, desc: '伤害+30%，斩程+15%' },
+            { level: 3, dmg: 1.2, arcAngle: 130, desc: '伤害+20%，剑弧扩大到130°' },
+            { level: 4, count: 2, dmg: 1.25, angleOffset: 25, desc: '双圣剑斩+伤害+25%（质变）' },
+            { level: 5, dmg: 1.35, range: 1.2, desc: '伤害+35%，斩程+20%' },
+            { level: 6, dmg: 1.3, knockback: 40, lifeSteal: 0.08, desc: '伤害+30%，圣击退40，吸血8%' },
             { level: 7, dmg: 1.4, crit: 0.15, critDmg: 1.8, desc: '伤害+40%，暴击15%，暴伤1.8x' },
-            { level: 8, count: 3, dmg: 1.5, arcAngle: 160, lifeSteal: 0.15, desc: '三鞭+伤害+50%+吸血15%（完全体）' }
+            { level: 8, count: 3, dmg: 1.5, arcAngle: 160, lifeSteal: 0.15, desc: '三重圣剑扇斩+吸血15%（完全体）' }
         ]
     },
     scythe: {
         name: '镰刀',
         upgrades: [
-            { level: 2, dmg: 1.35, range: 1.15, desc: '伤害+35%，范围+15%' },
-            { level: 3, dmg: 1.25, execute: 0.15, executeThreshold: 0.15, desc: '伤害+25%，即死15%(<15%HP)' },
-            { level: 4, count: 2, dmg: 1.3, doubleStrike: true, delay: 0.12, desc: '双重斩击+伤害+30%（质变）' },
-            { level: 5, dmg: 1.4, range: 1.25, desc: '伤害+40%，范围+25%' },
-            { level: 6, dmg: 1.35, execute: 0.2, executeThreshold: 0.2, desc: '伤害+35%，即死20%(<20%HP)' },
-            { level: 7, dmg: 1.45, knockback: 60, lifeSteal: 0.12, desc: '伤害+45%，击退60，吸血12%' },
-            { level: 8, count: 3, dmg: 1.6, tripleStrike: true, execute: 0.3, executeThreshold: 0.3, desc: '三重斩击+即死30%（完全体）' }
+            { level: 2, dmg: 1.4, range: 1.2, desc: '伤害+40%，范围+20%' },
+            { level: 3, dmg: 1.3, execute: 0.18, executeThreshold: 0.18, desc: '伤害+30%，即死18%(<18%HP)' },
+            { level: 4, count: 3, dmg: 1.35, doubleStrike: true, delay: 0.1, desc: '三重斩击+伤害+35%（质变）' },
+            { level: 5, dmg: 1.48, range: 1.3, desc: '伤害+48%，范围+30%' },
+            { level: 6, dmg: 1.4, execute: 0.24, executeThreshold: 0.24, desc: '伤害+40%，即死24%(<24%HP)' },
+            { level: 7, dmg: 1.55, knockback: 72, lifeSteal: 0.15, desc: '伤害+55%，击退72，吸血15%' },
+            { level: 8, count: 5, dmg: 1.85, tripleStrike: true, execute: 0.4, executeThreshold: 0.4, desc: '五重斩击+即死40%（完全体）' }
         ]
     },
     
@@ -51,13 +51,13 @@ const WEAPON_UPGRADE_TABLE = {
     knife: {
         name: '飞刀',
         upgrades: [
-            { level: 2, count: 2, burst: 4, dmg: 1.2, desc: '双重连射+4枚+伤害+20%' },
-            { level: 3, count: 2, burst: 5, pierce: 5, dmg: 1.15, desc: '5连发+穿透+伤害+15%' },
-            { level: 4, count: 3, burst: 6, dmg: 1.3, desc: '三重连射6枚+伤害+30%（质变）' },
-            { level: 5, count: 3, burst: 8, dmg: 1.35, speed: 1.25, desc: '8连发+伤害+35%，速度+25%' },
-            { level: 6, count: 4, burst: 8, dmg: 1.25, bounce: 2, desc: '四重8枚+弹跳2次+伤害+25%' },
-            { level: 7, count: 4, burst: 10, dmg: 1.4, pierce: 99, desc: '10连发+无限穿透+伤害+40%' },
-            { level: 8, count: 5, burst: 12, dmg: 1.6, ricochet: true, desc: '五重12枚+伤害+60%+分裂（完全体）' }
+            { level: 2, count: 2, burst: 4, dmg: 1.25, desc: '双重连射+4枚+伤害+25%' },
+            { level: 3, count: 2, burst: 5, pierce: 5, dmg: 1.2, desc: '5连发+穿透+伤害+20%' },
+            { level: 4, count: 3, burst: 7, dmg: 1.35, desc: '三重连射7枚+伤害+35%（质变）' },
+            { level: 5, count: 3, burst: 9, dmg: 1.45, speed: 1.3, desc: '9连发+伤害+45%，速度+30%' },
+            { level: 6, count: 4, burst: 10, dmg: 1.35, bounce: 3, desc: '四重10枚+弹跳3次+伤害+35%' },
+            { level: 7, count: 5, burst: 12, dmg: 1.5, pierce: 99, desc: '五重12连发+无限穿透+伤害+50%' },
+            { level: 8, count: 6, burst: 14, dmg: 1.75, ricochet: true, desc: '六重14枚+伤害+75%+裂射（完全体）' }
         ]
     },
     axe: {
@@ -87,13 +87,13 @@ const WEAPON_UPGRADE_TABLE = {
     fireball: {
         name: '火球',
         upgrades: [
-            { level: 2, count: 2, dmg: 1.3, explodeRadius: 1.25, desc: '双发+伤害+30%，范围+25%' },
-            { level: 3, count: 2, dmg: 1.25, burn: { duration: 4, dmg: 10 }, desc: '双发+伤害+25%，燃烧4秒' },
-            { level: 4, count: 3, dmg: 1.4, split: true, miniFireballs: 3, desc: '三发+伤害+40%+分裂3个（质变）' },
-            { level: 5, count: 3, dmg: 1.5, explodeRadius: 1.5, desc: '三发+伤害+50%，范围+50%' },
-            { level: 6, count: 4, dmg: 1.35, nova: true, secondaryExplosion: true, desc: '四发+二段大爆炸+伤害+35%' },
-            { level: 7, count: 4, dmg: 1.45, burnSpread: true, desc: '四发+伤害+45%，燃烧蔓延' },
-            { level: 8, count: 5, dmg: 2.0, meteor: true, damageBoost: 3, explodeRadius: 2.5, desc: '五发+伤害+100%+陨石+大范围（完全体）' }
+            { level: 2, count: 2, dmg: 1.35, explodeRadius: 1.45, desc: '双发+伤害+35%，范围+45%' },
+            { level: 3, count: 2, dmg: 1.3, burn: { duration: 4, dmg: 12 }, desc: '双发+伤害+30%，燃烧4秒' },
+            { level: 4, count: 3, dmg: 1.45, split: true, miniFireballs: 5, desc: '三发+伤害+45%+分裂5个（质变）' },
+            { level: 5, count: 4, dmg: 1.6, explodeRadius: 1.85, desc: '四发+伤害+60%，范围+85%' },
+            { level: 6, count: 4, dmg: 1.45, nova: true, secondaryExplosion: true, desc: '四发+二段大爆炸+伤害+45%' },
+            { level: 7, count: 4, dmg: 1.6, burnSpread: true, desc: '四发+伤害+60%，燃烧蔓延' },
+            { level: 8, count: 6, dmg: 2.2, meteor: true, damageBoost: 3.4, explodeRadius: 3.2, desc: '六发+伤害+120%+陨石火雨（完全体）' }
         ]
     },
     shuriken: {
@@ -111,25 +111,25 @@ const WEAPON_UPGRADE_TABLE = {
     icicle: {
         name: '冰锥',
         upgrades: [
-            { level: 2, count: 2, dmg: 1.3, slow: 0.5, desc: '双重+伤害+30%，减速50%' },
-            { level: 3, count: 2, dmg: 1.25, freezeChance: 0.15, freezeDuration: 1.2, desc: '双重+伤害+25%，冻结15%/1.2秒' },
-            { level: 4, count: 3, dmg: 1.35, shatter: true, aoeOnHit: true, desc: '三重+伤害+35%+范围冰冻（质变）' },
-            { level: 5, count: 3, dmg: 1.45, slow: 0.6, desc: '三重+伤害+45%，减速60%' },
-            { level: 6, count: 4, dmg: 1.3, freezeChance: 0.25, freezeDuration: 1.8, desc: '四重+伤害+30%，冻结25%/1.8秒' },
-            { level: 7, count: 4, dmg: 1.55, pierce: 99, desc: '四重+伤害+55%，无限穿透' },
-            { level: 8, count: 5, dmg: 1.9, blizzard: true, aoeRadius: 200, desc: '五重+伤害+90%+暴风雪（完全体）' }
+            { level: 2, count: 2, dmg: 1.35, slow: 0.55, desc: '双重+伤害+35%，减速55%' },
+            { level: 3, count: 2, dmg: 1.3, freezeChance: 0.18, freezeDuration: 1.4, desc: '双重+伤害+30%，冻结18%/1.4秒' },
+            { level: 4, count: 3, dmg: 1.4, shatter: true, aoeOnHit: true, desc: '三重+伤害+40%+范围冰冻（质变）' },
+            { level: 5, count: 3, dmg: 1.55, slow: 0.65, desc: '三重+伤害+55%，减速65%' },
+            { level: 6, count: 4, dmg: 1.4, freezeChance: 0.3, freezeDuration: 2.1, desc: '四重+伤害+40%，冻结30%/2.1秒' },
+            { level: 7, count: 5, dmg: 1.65, pierce: 99, desc: '五重+伤害+65%，无限穿透' },
+            { level: 8, count: 6, dmg: 2.0, blizzard: true, aoeRadius: 240, desc: '六重+伤害+100%+暴风雪（完全体）' }
         ]
     },
-    chakram: {
-        name: '环刃',
+    laser: {
+        name: '激光',
         upgrades: [
-            { level: 2, count: 3, dmg: 1.3, orbitDuration: 3, desc: '三环+伤害+30%，持续3秒' },
-            { level: 3, count: 3, dmg: 1.25, orbitRadius: 140, desc: '三环+伤害+25%，半径140' },
-            { level: 4, count: 4, dmg: 1.4, doubleRing: true, desc: '四环+伤害+40%（质变）' },
-            { level: 5, count: 4, dmg: 1.5, orbitSpeed: 1.4, desc: '四环+伤害+50%，速度+40%' },
-            { level: 6, count: 5, dmg: 1.35, orbitDuration: 4.5, desc: '五环+伤害+35%，持续4.5秒' },
-            { level: 7, count: 5, dmg: 1.6, pierce: 99, desc: '五环+伤害+60%，无限穿透' },
-            { level: 8, count: 6, dmg: 2.0, blenderMode: true, damageTick: 0.06, desc: '六环+伤害+100%+极速切割（完全体）' }
+            { level: 2, dmg: 1.3, width: 14, beamLife: 0.26, desc: '伤害+30%，束宽14，持续0.26秒' },
+            { level: 3, dmg: 1.45, width: 17, beamLife: 0.3, desc: '伤害+45%，束宽17，持续0.30秒' },
+            { level: 4, dmg: 1.3, width: 20, tickCooldown: 0.11, desc: '束宽20，命中频率提升（质变）' },
+            { level: 5, dmg: 1.5, width: 23, beamLife: 0.36, desc: '伤害+50%，束宽23，持续0.36秒' },
+            { level: 6, dmg: 1.6, tickCooldown: 0.09, desc: '伤害+60%，持续伤害更密集' },
+            { level: 7, dmg: 1.75, width: 27, beamLife: 0.42, desc: '束宽27，持续0.42秒，压制更强' },
+            { level: 8, dmg: 2.0, width: 32, beamLife: 0.5, tickCooldown: 0.08, desc: '超宽圣焰束+高频灼烧（完全体）' }
         ]
     },
     poison_dart: {
@@ -149,37 +149,49 @@ const WEAPON_UPGRADE_TABLE = {
     bible: {
         name: '圣经',
         upgrades: [
-            { level: 2, count: 4, dmg: 1.3, desc: '4本+伤害+30%' },
-            { level: 3, count: 4, dmg: 1.25, range: 1.3, desc: '4本+伤害+25%，范围+30%' },
-            { level: 4, count: 5, dmg: 1.4, duration: 8, rotationSpeed: 1.3, desc: '5本+伤害+40%，持续8秒（质变）' },
-            { level: 5, count: 5, dmg: 1.5, range: 1.5, desc: '5本+伤害+50%，范围+50%' },
-            { level: 6, count: 6, dmg: 1.35, duration: 12, desc: '6本+伤害+35%，持续12秒' },
-            { level: 7, count: 6, dmg: 1.65, range: 1.7, desc: '6本+伤害+65%，范围+70%' },
-            { level: 8, count: 8, dmg: 2.0, eternal: true, range: 2.0, desc: '8本+伤害+100%+永久环绕（完全体）' }
+            { level: 2, count: 8, dmg: 1.52, duration: 10.5, desc: '8本+伤害+52%+续航提升' },
+            { level: 3, count: 8, dmg: 1.45, range: 1.58, rotationSpeed: 1.36, desc: '8本+伤害+45%，半径+58%' },
+            { level: 4, count: 9, dmg: 1.68, duration: 13, rotationSpeed: 1.78, desc: '9本+伤害+68%，持续13秒（质变）' },
+            { level: 5, count: 10, dmg: 1.82, range: 2.05, desc: '10本+伤害+82%，范围+105%' },
+            { level: 6, count: 11, dmg: 1.76, duration: 20, rotationSpeed: 2.02, desc: '11本+伤害+76%，持续20秒' },
+            { level: 7, count: 13, dmg: 2.05, range: 2.32, desc: '13本+伤害+105%，范围+132%' },
+            { level: 8, count: 16, dmg: 2.65, eternal: true, range: 2.65, rotationSpeed: 2.4, desc: '16本+伤害+165%+永久圣环（完全体）' }
         ]
     },
     lightning: {
         name: '闪电',
         upgrades: [
-            { level: 2, count: 2, dmg: 1.3, chain: 6, desc: '双发+伤害+30%，连锁6次' },
-            { level: 3, count: 2, dmg: 1.25, chainRange: 200, desc: '双发+伤害+25%，范围200' },
-            { level: 4, count: 3, dmg: 1.4, fork: true, branches: 3, desc: '三重+伤害+40%+分叉（质变）' },
-            { level: 5, count: 3, dmg: 1.5, chain: 8, stun: 0.4, desc: '三重+伤害+50%，连锁8次，麻痹0.4秒' },
-            { level: 6, count: 4, dmg: 1.35, randomStrikes: true, strikeInterval: 1.5, desc: '四重+伤害+35%，随机落雷' },
-            { level: 7, count: 4, dmg: 1.7, chain: 12, desc: '四重+伤害+70%，连锁12次' },
-            { level: 8, count: 5, dmg: 2.2, thunderStorm: true, chain: 15, desc: '五重+伤害+120%+雷暴15连（完全体）' }
+            { level: 2, count: 2, dmg: 1.35, chain: 7, desc: '双发+伤害+35%，连锁7次' },
+            { level: 3, count: 2, dmg: 1.3, chainRange: 230, desc: '双发+伤害+30%，范围230' },
+            { level: 4, count: 3, dmg: 1.45, fork: true, branches: 4, desc: '三重+伤害+45%+四向分叉（质变）' },
+            { level: 5, count: 3, dmg: 1.6, chain: 10, stun: 0.45, desc: '三重+伤害+60%，连锁10次，麻痹0.45秒' },
+            { level: 6, count: 4, dmg: 1.45, randomStrikes: true, strikeInterval: 1.2, desc: '四重+伤害+45%，随机落雷强化' },
+            { level: 7, count: 5, dmg: 1.8, chain: 14, desc: '五重+伤害+80%，连锁14次' },
+            { level: 8, count: 6, dmg: 2.35, thunderStorm: true, chain: 18, branches: 5, desc: '六重+伤害+135%+雷暴18连（完全体）' }
         ]
     },
     holy_water: {
         name: '圣水',
         upgrades: [
-            { level: 2, count: 2, dmg: 1.35, range: 1.3, duration: 6, desc: '双区域+伤害+35%，范围+30%，持续6秒' },
-            { level: 3, count: 2, dmg: 1.25, healOnStay: 3, desc: '双区域+伤害+25%，回血+3' },
-            { level: 4, count: 3, dmg: 1.45, duration: 8, desc: '三区域+伤害+45%，持续8秒（质变）' },
-            { level: 5, count: 3, dmg: 1.55, range: 1.5, slow: 0.4, desc: '三区域+伤害+55%，减速40%' },
-            { level: 6, count: 4, dmg: 1.4, armorBoost: 12, desc: '四区域+伤害+40%，护甲+12' },
-            { level: 7, count: 4, dmg: 1.7, duration: 10, tickRate: 0.25, desc: '四区域+伤害+70%，持续10秒' },
-            { level: 8, count: 5, dmg: 2.0, sanctuary: true, dmgReduction: 0.6, desc: '五区域+伤害+100%+庇护所（完全体）' }
+            { level: 2, dmg: 1.45, cd: 0.8, duration: 8.1, desc: '伤害+45%，CD-20%，持续更久' },
+            { level: 3, count: 4, dmg: 1.38, range: 1.36, desc: '四瓶+伤害+38%+范围提升' },
+            { level: 4, count: 5, dmg: 1.58, range: 1.45, cd: 0.68, tickRate: 0.2, desc: '五瓶+伤害+58%，范围+45%，滴落更密（质变）' },
+            { level: 5, count: 6, dmg: 1.54, duration: 10.8, desc: '六瓶+伤害+54%+持续10.8秒' },
+            { level: 6, dmg: 1.72, cd: 0.58, tickRate: 0.16, desc: '伤害+72%，CD-42%，高频腐蚀' },
+            { level: 7, count: 7, dmg: 1.62, range: 1.76, desc: '七瓶+伤害+62%+大范围圣池' },
+            { level: 8, count: 8, dmg: 2.0, range: 1.95, cd: 0.5, duration: 13, tickRate: 0.12, sanctuary: true, desc: '八瓶+伤害+100%+广域圣池（完全体）' }
+        ]
+    },
+    radiance: {
+        name: '辉耀',
+        upgrades: [
+            { level: 2, dmg: 1.25, range: 1.14, desc: '伤害+25%，领域+14%' },
+            { level: 3, dmg: 1.3, tickRate: 0.18, desc: '伤害+30%，灼烧更频繁' },
+            { level: 4, dmg: 1.45, range: 1.22, desc: '伤害+45%，领域+22%（质变）' },
+            { level: 5, dmg: 1.55, tickRate: 0.16, desc: '伤害+55%，灼烧节奏提升' },
+            { level: 6, dmg: 1.65, range: 1.3, desc: '伤害+65%，领域+30%' },
+            { level: 7, dmg: 1.8, tickRate: 0.14, desc: '伤害+80%，持续压制更强' },
+            { level: 8, dmg: 2.1, range: 1.42, tickRate: 0.12, desc: '伤害+110%+超广域高频灼烧（完全体）' }
         ]
     },
     // v0.16.3: 大蒜每级+100范围
@@ -259,6 +271,12 @@ function applyUpgrade(weapon, newLevel) {
     if (upgrade.orbitSpeed !== undefined) weapon.cfg.orbitSpeed = upgrade.orbitSpeed;
     if (upgrade.duration !== undefined) weapon.cfg.duration = upgrade.duration;
     if (upgrade.tickRate !== undefined) weapon.cfg.tickRate = upgrade.tickRate;
+    if (upgrade.width !== undefined) weapon.cfg.width = upgrade.width;
+    if (upgrade.beamLife !== undefined) weapon.cfg.beamLife = upgrade.beamLife;
+    if (upgrade.tickCooldown !== undefined) weapon.cfg.tickCooldown = upgrade.tickCooldown;
+    if (upgrade.rotationSpeed !== undefined) weapon.cfg.rotationSpeed = upgrade.rotationSpeed;
+    if (upgrade.branches !== undefined) weapon.cfg.branches = upgrade.branches;
+    if (upgrade.burstRadius !== undefined) weapon.cfg.burstRadius = upgrade.burstRadius;
     
     // 应用布尔标志
     // v0.16.1 fix: 统一属性名，将Strike/Throw映射到Attack

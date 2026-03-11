@@ -1,4 +1,4 @@
-/**
+﻿/**
  * 存档管理系统 - v0.14.0
  * 第4轮迭代：存档系统优化
  * 
@@ -19,7 +19,7 @@ class SaveManager {
         this.currentSlot = 1;
         
         // 存档版本（用于迁移）
-        this.version = '0.14.0';
+        this.version = window.AppVersion?.saveVersion || window.AppVersion?.number || '0.33.1';
     }
     
     // ========== 基础存档操作 ==========
@@ -77,11 +77,11 @@ class SaveManager {
             const saveData = JSON.parse(saveJson);
             
             // 版本检查与迁移
-            if (saveData.version !== this.version) {
+            if ((saveData.version || saveData.saveVersion) !== this.version) {
                 return this.migrate(saveData);
             }
             
-            return this.decompress(saveData.data);
+            return this.normalizeData(this.decompress(saveData.data));
         } catch (e) {
             console.error('读档失败:', e);
             return null;
@@ -234,9 +234,28 @@ class SaveManager {
     }
     
     decompress(data) {
-        return data;
+        return this.normalizeData(data);
     }
-    
+
+    normalizeData(data = {}) {
+        return {
+            player: {
+                hp: data.player?.hp ?? data.playerHp ?? 100,
+                maxHp: data.player?.maxHp ?? data.playerMaxHp ?? 100,
+                exp: data.player?.exp ?? 0,
+                lv: data.player?.lv ?? data.player?.level ?? 1,
+                gold: data.player?.gold ?? data.gold ?? 0
+            },
+            items: data.items || {},
+            weapons: Array.isArray(data.weapons) ? data.weapons : [],
+            currentFloor: data.currentFloor || data.floor || 1,
+            currentRoom: data.currentRoom ?? null,
+            playTime: data.playTime || 0,
+            score: data.score || 0,
+            totems: Array.isArray(data.totems) ? data.totems : []
+        };
+    }
+
     // ========== 版本迁移 ==========
     
     migrate(saveData) {
@@ -258,7 +277,7 @@ class SaveManager {
         };
         
         let data = this.decompress(saveData.data);
-        const fromVersion = saveData.version || '0.12.0';
+        const fromVersion = saveData.version || saveData.saveVersion || '0.12.0';
         
         if (migrations[fromVersion]) {
             data = migrations[fromVersion](data);

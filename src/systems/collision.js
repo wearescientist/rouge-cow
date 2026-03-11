@@ -56,7 +56,7 @@ class CollisionSystem {
         }
         
         // T1 - 根据类型区分大小
-        const smallTypes = ['chick', 'mouse', 'bat'];
+        const smallTypes = ['chick', 'snail', 'bat'];
         if (smallTypes.includes(entity.typeKey)) {
             return this.sizeConfig.t1_small.physics;
         }

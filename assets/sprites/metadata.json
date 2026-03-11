@@ -1,0 +1,777 @@
+{
+  "_version": "2.0-pixel-perfect",
+  "_description": "基于非透明像素边界的精确贴图数据",
+  "player": {
+    "canvasWidth": 48,
+    "canvasHeight": 60,
+    "bounds": {
+      "x": 4,
+      "y": 6,
+      "width": 44,
+      "height": 51
+    },
+    "meta": {
+      "tier": 0,
+      "size": 48,
+      "type": "player"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/player/player_0.png",
+    "anchor": {
+      "center": {
+        "x": 26,
+        "y": 32
+      },
+      "feet": {
+        "x": 26,
+        "y": 57
+      }
+    }
+  },
+  "npc_shopkeeper": {
+    "canvasWidth": 1024,
+    "canvasHeight": 1024,
+    "bounds": {
+      "x": 93,
+      "y": 163,
+      "width": 844,
+      "height": 742
+    },
+    "meta": {
+      "tier": 0,
+      "size": 60,
+      "type": "npc"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/misc/npc_shopkeeper.png",
+    "anchor": {
+      "center": {
+        "x": 515,
+        "y": 534
+      },
+      "feet": {
+        "x": 515,
+        "y": 905
+      }
+    }
+  },
+  "chick": {
+    "canvasWidth": 61,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 1,
+      "y": 1,
+      "width": 59,
+      "height": 62
+    },
+    "meta": {
+      "tier": 1,
+      "size": 48,
+      "type": "ground",
+      "anim": "hop"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/chick.png",
+    "anchor": {
+      "center": {
+        "x": 30,
+        "y": 32
+      },
+      "feet": {
+        "x": 30,
+        "y": 63
+      }
+    }
+  },
+  "mouse": {
+    "canvasWidth": 40,
+    "canvasHeight": 32,
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 40,
+      "height": 32
+    },
+    "meta": {
+      "tier": 1,
+      "size": 32,
+      "type": "ground",
+      "anim": "scurry"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/bear.png",
+    "anchor": {
+      "center": {
+        "x": 20,
+        "y": 16
+      },
+      "feet": {
+        "x": 20,
+        "y": 32
+      }
+    }
+  },
+  "snail": {
+    "canvasWidth": 42,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 6,
+      "y": 21,
+      "width": 29,
+      "height": 21
+    },
+    "meta": {
+      "tier": 1,
+      "size": 22,
+      "type": "ground",
+      "anim": "slide"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/snail.png",
+    "anchor": {
+      "center": {
+        "x": 20,
+        "y": 32
+      },
+      "feet": {
+        "x": 20,
+        "y": 42
+      }
+    }
+  },
+  "pigeon": {
+    "canvasWidth": 37,
+    "canvasHeight": 30,
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 37,
+      "height": 30
+    },
+    "meta": {
+      "tier": 1,
+      "size": 28,
+      "type": "flying",
+      "anim": "flutter"
+    },
+    "hitboxRatio": {
+      "w": 0.85,
+      "h": 0.85
+    },
+    "src": "assets/sprites/pigeon.png",
+    "anchor": {
+      "center": {
+        "x": 18,
+        "y": 15
+      },
+      "feet": {
+        "x": 18,
+        "y": 30
+      }
+    }
+  },
+  "duck3": {
+    "canvasWidth": 42,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 8,
+      "y": 16,
+      "width": 25,
+      "height": 32
+    },
+    "meta": {
+      "tier": 1,
+      "size": 24,
+      "type": "ground",
+      "anim": "waddle"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/duck3.png",
+    "anchor": {
+      "center": {
+        "x": 20,
+        "y": 32
+      },
+      "feet": {
+        "x": 20,
+        "y": 48
+      }
+    }
+  },
+  "bat": {
+    "canvasWidth": 50,
+    "canvasHeight": 49,
+    "bounds": {
+      "x": 0,
+      "y": 2,
+      "width": 50,
+      "height": 44
+    },
+    "meta": {
+      "tier": 1,
+      "size": 40,
+      "type": "flying",
+      "anim": "fly"
+    },
+    "hitboxRatio": {
+      "w": 0.85,
+      "h": 0.85
+    },
+    "src": "assets/sprites/bird.png",
+    "anchor": {
+      "center": {
+        "x": 25,
+        "y": 24
+      },
+      "feet": {
+        "x": 25,
+        "y": 46
+      }
+    }
+  },
+  "rabbit2": {
+    "canvasWidth": 42,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 9,
+      "y": 13,
+      "width": 24,
+      "height": 38
+    },
+    "meta": {
+      "tier": 2,
+      "size": 30,
+      "type": "speed",
+      "anim": "hopfast"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/rabbit2.png",
+    "anchor": {
+      "center": {
+        "x": 21,
+        "y": 32
+      },
+      "feet": {
+        "x": 21,
+        "y": 51
+      }
+    }
+  },
+  "bee": {
+    "canvasWidth": 50,
+    "canvasHeight": 49,
+    "bounds": {
+      "x": 0,
+      "y": 2,
+      "width": 50,
+      "height": 44
+    },
+    "meta": {
+      "tier": 2,
+      "size": 40,
+      "type": "flying_speed",
+      "anim": "fly"
+    },
+    "hitboxRatio": {
+      "w": 0.85,
+      "h": 0.85
+    },
+    "src": "assets/sprites/bird.png",
+    "anchor": {
+      "center": {
+        "x": 25,
+        "y": 24
+      },
+      "feet": {
+        "x": 25,
+        "y": 46
+      }
+    }
+  },
+  "panther": {
+    "canvasWidth": 53,
+    "canvasHeight": 51,
+    "bounds": {
+      "x": 3,
+      "y": 3,
+      "width": 46,
+      "height": 44
+    },
+    "meta": {
+      "tier": 2,
+      "size": 36,
+      "type": "speed",
+      "anim": "prowl"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/cat.png",
+    "anchor": {
+      "center": {
+        "x": 26,
+        "y": 25
+      },
+      "feet": {
+        "x": 26,
+        "y": 47
+      }
+    }
+  },
+  "tiaotiao": {
+    "canvasWidth": 50,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 6,
+      "y": 9,
+      "width": 37,
+      "height": 46
+    },
+    "meta": {
+      "tier": 2,
+      "size": 36,
+      "type": "assassin",
+      "anim": "hop"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/rabbit.png",
+    "anchor": {
+      "center": {
+        "x": 24,
+        "y": 32
+      },
+      "feet": {
+        "x": 24,
+        "y": 55
+      }
+    }
+  },
+  "tiezhua": {
+    "canvasWidth": 50,
+    "canvasHeight": 49,
+    "bounds": {
+      "x": 0,
+      "y": 2,
+      "width": 50,
+      "height": 44
+    },
+    "meta": {
+      "tier": 2,
+      "size": 40,
+      "type": "flying_assassin",
+      "anim": "dive"
+    },
+    "hitboxRatio": {
+      "w": 0.85,
+      "h": 0.85
+    },
+    "src": "assets/sprites/bird.png",
+    "anchor": {
+      "center": {
+        "x": 25,
+        "y": 24
+      },
+      "feet": {
+        "x": 25,
+        "y": 46
+      }
+    }
+  },
+  "crab": {
+    "canvasWidth": 62,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 0,
+      "y": 12,
+      "width": 62,
+      "height": 39
+    },
+    "meta": {
+      "tier": 2,
+      "size": 48,
+      "type": "tank",
+      "anim": "sidle"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/crab.png",
+    "anchor": {
+      "center": {
+        "x": 31,
+        "y": 32
+      },
+      "feet": {
+        "x": 31,
+        "y": 51
+      }
+    }
+  },
+  "nibei": {
+    "canvasWidth": 64,
+    "canvasHeight": 46,
+    "bounds": {
+      "x": 0,
+      "y": 6,
+      "width": 63,
+      "height": 34
+    },
+    "meta": {
+      "tier": 2,
+      "size": 50,
+      "type": "tank",
+      "anim": "crawl"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/turtle.png",
+    "anchor": {
+      "center": {
+        "x": 32,
+        "y": 23
+      },
+      "feet": {
+        "x": 32,
+        "y": 40
+      }
+    }
+  },
+  "bear": {
+    "canvasWidth": 58,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 2,
+      "y": 11,
+      "width": 53,
+      "height": 42
+    },
+    "meta": {
+      "tier": 2,
+      "size": 42,
+      "type": "tank",
+      "anim": "heavy"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/bear.png",
+    "anchor": {
+      "center": {
+        "x": 28,
+        "y": 32
+      },
+      "feet": {
+        "x": 28,
+        "y": 53
+      }
+    }
+  },
+  "snake": {
+    "canvasWidth": 64,
+    "canvasHeight": 51,
+    "bounds": {
+      "x": 1,
+      "y": 6,
+      "width": 61,
+      "height": 38
+    },
+    "meta": {
+      "tier": 2,
+      "size": 48,
+      "type": "ranged",
+      "anim": "slither"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/snake.png",
+    "anchor": {
+      "center": {
+        "x": 32,
+        "y": 25
+      },
+      "feet": {
+        "x": 32,
+        "y": 44
+      }
+    }
+  },
+  "goose": {
+    "canvasWidth": 42,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 7,
+      "y": 17,
+      "width": 28,
+      "height": 30
+    },
+    "meta": {
+      "tier": 2,
+      "size": 24,
+      "type": "ranged",
+      "anim": "charge"
+    },
+    "hitboxRatio": {
+      "w": 0.85,
+      "h": 0.85
+    },
+    "src": "assets/sprites/goose.png",
+    "anchor": {
+      "center": {
+        "x": 21,
+        "y": 32
+      },
+      "feet": {
+        "x": 21,
+        "y": 47
+      }
+    }
+  },
+  "fox": {
+    "canvasWidth": 64,
+    "canvasHeight": 62,
+    "bounds": {
+      "x": 1,
+      "y": 1,
+      "width": 61,
+      "height": 60
+    },
+    "meta": {
+      "tier": 2,
+      "size": 48,
+      "type": "ranged",
+      "anim": "run"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/dog.png",
+    "anchor": {
+      "center": {
+        "x": 32,
+        "y": 31
+      },
+      "feet": {
+        "x": 32,
+        "y": 61
+      }
+    }
+  },
+  "yinya": {
+    "canvasWidth": 42,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 6,
+      "y": 18,
+      "width": 29,
+      "height": 27
+    },
+    "meta": {
+      "tier": 2,
+      "size": 22,
+      "type": "assassin",
+      "anim": "run"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/dog2.png",
+    "anchor": {
+      "center": {
+        "x": 20,
+        "y": 32
+      },
+      "feet": {
+        "x": 20,
+        "y": 45
+      }
+    }
+  },
+  "wolf_king": {
+    "canvasWidth": 42,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 6,
+      "y": 18,
+      "width": 29,
+      "height": 27
+    },
+    "meta": {
+      "tier": 3,
+      "size": 22,
+      "type": "boss",
+      "anim": "run"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/dog2.png",
+    "anchor": {
+      "center": {
+        "x": 20,
+        "y": 32
+      },
+      "feet": {
+        "x": 20,
+        "y": 45
+      }
+    }
+  },
+  "turtle": {
+    "canvasWidth": 64,
+    "canvasHeight": 46,
+    "bounds": {
+      "x": 0,
+      "y": 6,
+      "width": 63,
+      "height": 34
+    },
+    "meta": {
+      "tier": 3,
+      "size": 50,
+      "type": "boss_tank",
+      "anim": "crawl"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/turtle.png",
+    "anchor": {
+      "center": {
+        "x": 32,
+        "y": 23
+      },
+      "feet": {
+        "x": 32,
+        "y": 40
+      }
+    }
+  },
+  "mimic": {
+    "canvasWidth": 58,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 2,
+      "y": 11,
+      "width": 53,
+      "height": 42
+    },
+    "meta": {
+      "tier": 3,
+      "size": 42,
+      "type": "boss",
+      "anim": "heavy"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/bear.png",
+    "anchor": {
+      "center": {
+        "x": 28,
+        "y": 32
+      },
+      "feet": {
+        "x": 28,
+        "y": 53
+      }
+    }
+  },
+  "ghost": {
+    "canvasWidth": 37,
+    "canvasHeight": 30,
+    "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 37,
+      "height": 30
+    },
+    "meta": {
+      "tier": 3,
+      "size": 30,
+      "type": "boss_flying",
+      "anim": "flutter"
+    },
+    "hitboxRatio": {
+      "w": 0.85,
+      "h": 0.85
+    },
+    "src": "assets/sprites/pigeon.png",
+    "anchor": {
+      "center": {
+        "x": 18,
+        "y": 15
+      },
+      "feet": {
+        "x": 18,
+        "y": 30
+      }
+    }
+  },
+  "mother": {
+    "canvasWidth": 58,
+    "canvasHeight": 64,
+    "bounds": {
+      "x": 2,
+      "y": 11,
+      "width": 53,
+      "height": 42
+    },
+    "meta": {
+      "tier": 4,
+      "size": 72,
+      "type": "boss_final",
+      "anim": "heavy"
+    },
+    "hitboxRatio": {
+      "w": 0.95,
+      "h": 0.95
+    },
+    "src": "assets/sprites/bear.png",
+    "anchor": {
+      "center": {
+        "x": 28,
+        "y": 32
+      },
+      "feet": {
+        "x": 28,
+        "y": 53
+      }
+    }
+  }
+}

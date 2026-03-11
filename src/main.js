@@ -1,4 +1,4 @@
-/**
+﻿/**
  * main.js - 游戏入口文件
  * 模块加载和游戏初始化
  * v0.22.1 - Phase 2 重构
@@ -8,7 +8,7 @@
     'use strict';
 
     // 游戏版本
-    const VERSION = '0.22.1';
+    const VERSION = window.AppVersion?.number || '0.33.1';
     
     // 加载状态
     const loadState = {
@@ -205,6 +205,7 @@
      */
     window.RogueCow = {
         version: VERSION,
+        displayVersion: window.AppVersion?.display || `v${VERSION}`,
         loadState: loadState,
         init: init,
         

@@ -66,6 +66,7 @@ class EnemyAI {
     update(dt, player) {
         this.context.dt = dt;
         this.context.player = player;
+        this.context.obstacles = this.resolveObstacles();
         this.context.distanceToPlayer = this.calculateDistanceToPlayer(player);
         this.context.canSeePlayer = this.checkLineOfSight(player);
         
@@ -89,9 +90,98 @@ class EnemyAI {
     checkLineOfSight(player) {
         const sightRange = this.enemy.aiConfig?.sightRange || 200;
         if (this.context.distanceToPlayer > sightRange) return false;
-        
-        // TODO: 射线检测障碍物
+
+        const obstacles = this.context.obstacles || [];
+        if (!Array.isArray(obstacles) || obstacles.length === 0) {
+            return true;
+        }
+
+        for (const obstacle of obstacles) {
+            const rect = this.normalizeObstacleRect(obstacle);
+            if (!rect) continue;
+            if (this.lineIntersectsRect(this.enemy.x, this.enemy.y, player.x, player.y, rect)) {
+                return false;
+            }
+        }
+
         return true;
+    }
+
+    resolveObstacles() {
+        const sources = [
+            this.context.obstacles,
+            this.enemy.obstacles,
+            this.enemy.room?.obstacles,
+            this.enemy.game?.obstacles,
+            window.currentRoom?.obstacles
+        ];
+
+        for (const source of sources) {
+            if (Array.isArray(source) && source.length > 0) {
+                return source;
+            }
+        }
+        return [];
+    }
+
+    normalizeObstacleRect(obstacle) {
+        if (!obstacle || typeof obstacle !== 'object') return null;
+
+        if (
+            Number.isFinite(obstacle.x) &&
+            Number.isFinite(obstacle.y) &&
+            Number.isFinite(obstacle.width) &&
+            Number.isFinite(obstacle.height)
+        ) {
+            return obstacle;
+        }
+
+        if (
+            Number.isFinite(obstacle.left) &&
+            Number.isFinite(obstacle.top) &&
+            Number.isFinite(obstacle.right) &&
+            Number.isFinite(obstacle.bottom)
+        ) {
+            return {
+                x: obstacle.left,
+                y: obstacle.top,
+                width: obstacle.right - obstacle.left,
+                height: obstacle.bottom - obstacle.top
+            };
+        }
+
+        return null;
+    }
+
+    lineIntersectsRect(x1, y1, x2, y2, rect) {
+        const left = rect.x;
+        const right = rect.x + rect.width;
+        const top = rect.y;
+        const bottom = rect.y + rect.height;
+
+        if (this.pointInRect(x1, y1, left, top, right, bottom) || this.pointInRect(x2, y2, left, top, right, bottom)) {
+            return true;
+        }
+
+        return (
+            this.linesIntersect(x1, y1, x2, y2, left, top, right, top) ||
+            this.linesIntersect(x1, y1, x2, y2, right, top, right, bottom) ||
+            this.linesIntersect(x1, y1, x2, y2, right, bottom, left, bottom) ||
+            this.linesIntersect(x1, y1, x2, y2, left, bottom, left, top)
+        );
+    }
+
+    pointInRect(px, py, left, top, right, bottom) {
+        return px >= left && px <= right && py >= top && py <= bottom;
+    }
+
+    linesIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
+        const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
+        if (denom === 0) return false;
+
+        const ua = ((x4 - x3) * (y1 - y3) - (y4 - y3) * (x1 - x3)) / denom;
+        const ub = ((x2 - x1) * (y1 - y3) - (y2 - y1) * (x1 - x3)) / denom;
+        return ua >= 0 && ua <= 1 && ub >= 0 && ub <= 1;
     }
 
     /**
