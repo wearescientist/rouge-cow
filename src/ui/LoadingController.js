@@ -5,6 +5,8 @@ class LoadingController {
         this.percent = document.getElementById('loadingPercent');
         this.current = document.getElementById('loadingCurrent');
         this.tip = document.getElementById('loadingTip');
+        this.status = document.getElementById('loadingStatus');
+        this.text = document.getElementById('loadingText');
         this.tips = [
             '💡 击败敌人获得经验，升级解锁新武器',
             '💡 武器8级+对应被动可以合成超武',
@@ -17,22 +19,46 @@ class LoadingController {
         ];
     }
 
-    async showWhile(task) {
+    show(options = {}) {
+        if (!this.root) return;
+        this.configure(options);
+        this.root.style.display = 'flex';
+        this.root.style.opacity = '1';
+    }
+
+    configure(options = {}) {
+        if (this.status && options.status) this.status.textContent = options.status;
+        if (this.text && options.text) this.text.textContent = options.text;
+        if (this.current && options.current) this.current.textContent = options.current;
+        if (this.tip && options.tip) this.tip.textContent = options.tip;
+        if (options.progress !== undefined) {
+            this.updateProgress(options.progress, options.taskName || '');
+        }
+    }
+
+    reset(options = {}) {
+        this.configure({
+            status: options.status || '洞穴勘探中',
+            text: options.text || '正在整理装备与地图...',
+            current: options.current || '准备中...',
+            tip: options.tip || this.tips[0],
+            progress: options.progress !== undefined ? options.progress : 0,
+            taskName: options.taskName || ''
+        });
+    }
+
+    async showWhile(task, options = {}) {
         if (!this.root) {
             return task();
         }
 
-        this.root.style.display = 'flex';
-        this.root.style.opacity = '1';
+        this.reset(options);
+        this.show(options);
 
         try {
             return await task();
         } finally {
-            this.root.style.opacity = '0';
-            this.root.style.transition = 'opacity 0.5s';
-            setTimeout(() => {
-                this.root.style.display = 'none';
-            }, 500);
+            this.hide();
         }
     }
 
@@ -54,7 +80,11 @@ class LoadingController {
 
     hide() {
         if (!this.root) return;
-        this.root.style.display = 'none';
+        this.root.style.opacity = '0';
+        this.root.style.transition = 'opacity 0.5s';
+        setTimeout(() => {
+            this.root.style.display = 'none';
+        }, 500);
     }
 }
 

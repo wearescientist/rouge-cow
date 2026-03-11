@@ -3,6 +3,7 @@
 <html lang="zh-CN">
 
 <head>
+    <link rel="preload" href="assets/fonts/_vendor/zcool-kuaile-main/fonts/ttf/ZCOOLKuaiLe-Regular.ttf" as="font" type="font/ttf" crossorigin>
     <link rel="stylesheet" href="src/core/animation.css">
     <link rel="stylesheet" href="src/styles/floor-scene-shell.css">
     
@@ -2813,7 +2814,7 @@
         
         <!-- 主要内容 -->
         <div class="loading-content ui-panel loading-panel">
-            <div class="loading-status">洞穴勘探中</div>
+            <div id="loadingStatus" class="loading-status">洞穴勘探中</div>
             <div id="loadingCow" class="loading-cow">牛</div>
             <div id="loadingText" class="loading-text-main">正在整理装备与地图...</div>
             <div id="loadingCurrent" class="loading-current">准备中...</div>
@@ -6254,6 +6255,12 @@ class Game {
         this.runtimeSettings = this.settingsStore.load();
         this.autoPauseOnBlur = this.runtimeSettings.autoPauseOnBlur;
         this.loadingController = new LoadingController();
+        this.assetLoadState = {
+            activeOverlayStage: null,
+            entryPromise: null,
+            runCore: { promise: null, loaded: false, progress: 0, currentTask: '' },
+            deferred: { promise: null, loaded: false, progress: 0, currentTask: '' }
+        };
         this.screenFlow = null;
         this.seamlessPrologue = null;
         this.menuOverlay = null;
@@ -7814,9 +7821,13 @@ class Game {
         }
         
         this.screenFlow?.hideMainMenu();
-        
-        // 显示加载页面
-        await this.showLoadingScreen();
+        await this.ensureRunCoreAssetsReady({
+            showOverlay: true,
+            status: '正在恢复洞穴',
+            text: '正在补齐当前存档所需素材...'
+        });
+        this.screenFlow?.showGameplay();
+        this.kickOffDeferredWarmup();
         
         // 设置游戏状态
         this.isRestarting = false;
@@ -7867,7 +7878,11 @@ class Game {
     
     // v0.22: 显示加载页面
     async showLoadingScreen() {
-        return this.loadingController.showWhile(() => this.loadSprites());
+        return this.ensureRunCoreAssetsReady({
+            showOverlay: true,
+            status: '洞口正在开启',
+            text: '正在装填首层战斗素材...'
+        });
     }
     
     // v0.22: 初始化菜单装饰动画
@@ -8210,97 +8225,223 @@ class Game {
 
     // 已访问房间=实心，未访问房间=轮廓
 
-    async loadSprites() {
-        // v0.18.0: 并行加载+真实进度
+    getSpriteLoadContext() {
         const isLocal = location.hostname === 'localhost' || 
                         location.hostname === '127.0.0.1' || 
                         location.protocol === 'file:';
-        
         const localPath = './assets/sprites/';
         const remotePath = 'https://wearescientist.github.io/rouge-cow/assets/sprites/';
         const basePath = isLocal ? localPath : remotePath;
         const v = isLocal ? '?local=' + Date.now() : '?v=096';
-        
-        // 收集所有加载任务
+        return { isLocal, basePath, v };
+    }
+
+    pushSpriteTask(tasks, seen, name, src) {
+        if (!name || !src || seen.has(name) || this.sprites.get(name)) return;
+        seen.add(name);
+        tasks.push({ name, src });
+    }
+
+    buildSpriteTasks(stageKey = 'runCore') {
+        const { basePath, v } = this.getSpriteLoadContext();
         const tasks = [];
-        const addTask = (name, src) => tasks.push({ name, src });
-        
-        // ===== 1. 主角正式动画状态帧 =====
-        [
-            'player_idle_0',
-            'player_idle_1',
-            'player_blink_0',
-            'player_walk_0',
-            'player_walk_1',
-            'player_walk_2',
-            'player_walk_3',
-            'player_dash_0',
-            'player_hit_0',
-            'player_eat_0',
-            'player_eat_1',
-            'player_eat_2',
-            'player_eat_3'
-        ].forEach(name => addTask(name, basePath + 'player/variants_40x40/' + name + '_crop_40.png' + v));
-        
-        // ===== 2. 敌人精灵 =====
+        const seen = new Set();
+        const addTask = (name, src) => this.pushSpriteTask(tasks, seen, name, src);
         const allEnemies = ['chick','snail','pigeon','duck3','rabbit','rabbit2','bird','duck2','pig2','cat','duck','squirrel','goose','dog','pig','sheep','snake','bear','crab','dog2','turtle','boss6'];
-        for (const name of allEnemies) addTask(name, basePath + name + '.png' + v);
-        
-        // 描边颜色贴图
         const outlineColors = ['white','red','pink','orange','purple','gold','blue','cyan','green','lime','magenta','yellow'];
-        for (const color of outlineColors) {
-            for (const name of allEnemies) {
-                if (name === 'boss6' && color !== 'yellow') continue;
-                addTask(name + '_' + color, basePath + 'outlined_by_color/' + color + '/' + name + '.png' + v);
+        const loadEnemySet = (enemyNames) => {
+            for (const name of enemyNames) addTask(name, basePath + name + '.png' + v);
+            for (const color of outlineColors) {
+                for (const name of enemyNames) {
+                    if (name === 'boss6' && color !== 'yellow') continue;
+                    addTask(name + '_' + color, basePath + 'outlined_by_color/' + color + '/' + name + '.png' + v);
+                }
+            }
+        };
+
+        if (stageKey === 'runCore') {
+            // ===== 1. 主角正式动画状态帧 =====
+            [
+                'player_idle_0',
+                'player_idle_1',
+                'player_blink_0',
+                'player_walk_0',
+                'player_walk_1',
+                'player_walk_2',
+                'player_walk_3',
+                'player_dash_0',
+                'player_hit_0',
+                'player_eat_0',
+                'player_eat_1',
+                'player_eat_2',
+                'player_eat_3'
+            ].forEach(name => addTask(name, basePath + 'player/variants_40x40/' + name + '_crop_40.png' + v));
+
+            // ===== 2. 敌人精灵 =====
+            loadEnemySet(allEnemies);
+
+            // ===== 3. 武器贴图 =====
+            ['weapon_whip','weapon_scythe','weapon_wand','weapon_knife','weapon_axe','weapon_bible','weapon_fireball','weapon_lightning','weapon_holywater']
+                .forEach(name => addTask(name, basePath + 'weapons/' + name + '.png' + v));
+
+            // ===== 4. 道具贴图 =====
+            for (let i = 1; i <= 16; i++) addTask('item_' + String(i).padStart(2,'0'), basePath + 'items/item_' + String(i).padStart(2,'0') + '.png' + v);
+
+            // ===== 5. 首层地形贴图 =====
+            addTask('layer1_floor_mycelium', basePath + 'tiles/floors/layer1_floor_mycelium.png' + v);
+            addTask('layer1_wall', basePath + 'tiles/layer1/wall/layer1_wall_base.png' + v);
+            addTask('layer1_door_closed', basePath + 'tiles/layer1/door/layer1_door_normal_closed.png' + v);
+            addTask('layer1_door_open', basePath + 'tiles/layer1/door/layer1_door_normal_open.png' + v);
+            const cornerMap = {1:'tr',2:'br',3:'bl',4:'tl'};
+            for (let i = 1; i <= 4; i++) addTask('layer1_corner_' + cornerMap[i], basePath + 'tiles/walls/layer1_corner_' + cornerMap[i] + '.png' + v);
+
+            // ===== 6. 特效贴图 =====
+            ['bullet_arrow','bullet_fireball','bullet_ice','bullet_lightning','effect_coin','effect_explosion_large','effect_explosion_small','effect_gem_blue','effect_gem_gold','effect_gem_red','effect_hit_pierce','effect_hit_slash','effect_particle_blood','effect_particle_glow','effect_particle_smoke','effect_particle_spark','status_buff','status_burn','status_poison','status_slow','status_stun']
+                .forEach(name => addTask(name, basePath + 'effects/' + name + '.png' + v));
+
+            // ===== 7. UI贴图 =====
+            ['ui_bar_exp_bg','ui_bar_exp_fill','ui_bar_hp_bg','ui_bar_hp_fill','ui_button_hover','ui_button_normal','ui_button_pressed','ui_heart_empty','ui_heart_full','ui_heart_gold','ui_heart_half','ui_icon_coin','ui_icon_gem','ui_icon_level','ui_icon_time','ui_minimap_current','ui_minimap_room','ui_minimap_secret','ui_minimap_visited','ui_panel_9slice','ui_slot_item','ui_slot_passive','ui_slot_weapon','ui_slot_weapon_active']
+                .forEach(name => addTask(name, basePath + 'ui/' + name + '.png' + v));
+
+            // ===== 8. 杂项贴图 =====
+            ['chest_closed','chest_glowing','chest_open','deco_bone','deco_crystal','deco_egg','deco_mushroom','npc_healer','npc_shopkeeper','totem_attack','totem_defense','totem_speed']
+                .forEach(name => addTask(name, basePath + 'misc/' + name + '.png' + v));
+        } else if (stageKey === 'deferred') {
+            // 后续楼层房间外壳可以延迟到首局开始后继续预热
+            ['layer2_floor_greenhouse','layer3_floor_nerve','layer4_floor_furnace','layer5_floor_courtyard','layer6_floor_core']
+                .forEach(name => addTask(name, basePath + 'tiles/floors/' + name + '.png' + v));
+            for (let layer = 2; layer <= 6; layer++) {
+                addTask('layer' + layer + '_wall', basePath + 'tiles/layer' + layer + '/set1/layer' + layer + '_set1_wall_base.png' + v);
+                addTask('layer' + layer + '_door_closed', basePath + 'tiles/layer' + layer + '/set1/layer' + layer + '_set1_door_normal_closed.png' + v);
+                addTask('layer' + layer + '_door_open', basePath + 'tiles/layer' + layer + '/set1/layer' + layer + '_set1_door_normal_open.png' + v);
+            }
+            const cornerMap = {1:'tr',2:'br',3:'bl',4:'tl'};
+            for (let layer = 2; layer <= 6; layer++) {
+                for (let i = 1; i <= 4; i++) addTask('layer' + layer + '_corner_' + cornerMap[i], basePath + 'tiles/walls/layer' + layer + '_corner_' + cornerMap[i] + '.png' + v);
             }
         }
-        
-        // ===== 3. 武器贴图 =====
-        ['weapon_whip','weapon_scythe','weapon_wand','weapon_knife','weapon_axe','weapon_bible','weapon_fireball','weapon_lightning','weapon_holywater']
-            .forEach(name => addTask(name, basePath + 'weapons/' + name + '.png' + v));
-        
-        // ===== 4. 道具贴图 =====
-        for (let i = 1; i <= 16; i++) addTask('item_' + String(i).padStart(2,'0'), basePath + 'items/item_' + String(i).padStart(2,'0') + '.png' + v);
-        
-        // ===== 5. 地形贴图 =====
-        ['layer1_floor_mycelium','layer2_floor_greenhouse','layer3_floor_nerve','layer4_floor_furnace','layer5_floor_courtyard','layer6_floor_core']
-            .forEach(name => addTask(name, basePath + 'tiles/floors/' + name + '.png' + v));
-        for (let layer = 1; layer <= 6; layer++) {
-            addTask('layer' + layer + '_wall', basePath + 'tiles/walls/layer' + layer + '_wall.png' + v);
-            addTask('layer' + layer + '_door_closed', basePath + 'tiles/walls/layer' + layer + '_door_closed.png' + v);
-            addTask('layer' + layer + '_door_open', basePath + 'tiles/walls/layer' + layer + '_door_open.png' + v);
+
+        return tasks;
+    }
+
+    async runSpriteLoadStage(stageKey, options = {}) {
+        const state = this.assetLoadState[stageKey];
+        if (!state) return;
+        if (state.loaded) return;
+        if (state.promise) return state.promise;
+
+        const tasks = this.buildSpriteTasks(stageKey);
+        if (!tasks.length) {
+            state.loaded = true;
+            state.progress = 100;
+            return;
         }
-        const cornerMap = {1:'tr',2:'br',3:'bl',4:'tl'};
-        for (let layer = 1; layer <= 6; layer++) {
-            for (let i = 1; i <= 4; i++) addTask('layer' + layer + '_corner_' + cornerMap[i], basePath + 'tiles/corner/layer' + layer + '_v3_gradient_corner' + i + '.png' + v);
+
+        state.promise = (async () => {
+            const total = tasks.length;
+            let loaded = 0;
+            const batchSize = options.batchSize || 10;
+            const reportProgress = (taskName = '') => {
+                loaded++;
+                state.currentTask = taskName;
+                state.progress = (loaded / total) * 100;
+                if (this.assetLoadState.activeOverlayStage === stageKey) {
+                    this.loadingController.updateProgress(state.progress, taskName);
+                }
+            };
+
+            for (let i = 0; i < tasks.length; i += batchSize) {
+                const batch = tasks.slice(i, i + batchSize);
+                await Promise.all(batch.map(t => this.sprites.load(t.name, t.src).then(() => reportProgress(t.name))));
+            }
+
+            state.loaded = true;
+            state.progress = 100;
+            state.currentTask = '';
+            if (this.assetLoadState.activeOverlayStage === stageKey) {
+                this.loadingController.updateProgress(100, '');
+            }
+        })();
+
+        return state.promise;
+    }
+
+    preloadImageAsset(src) {
+        return new Promise((resolve) => {
+            const img = new Image();
+            img.onload = () => resolve(img);
+            img.onerror = () => resolve(null);
+            img.src = src;
+        });
+    }
+
+    preloadEntryAssets() {
+        if (this.assetLoadState.entryPromise) return this.assetLoadState.entryPromise;
+        this.assetLoadState.entryPromise = Promise.allSettled([
+            document.fonts?.load ? document.fonts.load('1em "ZCOOL KuaiLe Local"') : Promise.resolve(),
+            this.preloadImageAsset('assets/sprites/ui/ChatGPT Image.png?v=menu_static2'),
+            this.preloadImageAsset('assets/sprites/story/start2.png'),
+            this.preloadImageAsset('assets/sprites/story/start3.png'),
+            this.preloadImageAsset('assets/sprites/story/start4.png')
+        ]);
+        return this.assetLoadState.entryPromise;
+    }
+
+    kickOffRunCoreWarmup() {
+        this.preloadEntryAssets();
+        return this.runSpriteLoadStage('runCore');
+    }
+
+    async ensureRunCoreAssetsReady(options = {}) {
+        const stageKey = 'runCore';
+        const state = this.assetLoadState[stageKey];
+        const promise = this.kickOffRunCoreWarmup();
+        if (!options.showOverlay) {
+            await promise;
+            return;
         }
-        
-        // ===== 6. 特效贴图 =====
-        ['bullet_arrow','bullet_fireball','bullet_ice','bullet_lightning','effect_coin','effect_explosion_large','effect_explosion_small','effect_gem_blue','effect_gem_gold','effect_gem_red','effect_hit_pierce','effect_hit_slash','effect_particle_blood','effect_particle_glow','effect_particle_smoke','effect_particle_spark','status_buff','status_burn','status_poison','status_slow','status_stun']
-            .forEach(name => addTask(name, basePath + 'effects/' + name + '.png' + v));
-        
-        // ===== 7. UI贴图 =====
-        ['ui_bar_exp_bg','ui_bar_exp_fill','ui_bar_hp_bg','ui_bar_hp_fill','ui_button_hover','ui_button_normal','ui_button_pressed','ui_heart_empty','ui_heart_full','ui_heart_gold','ui_heart_half','ui_icon_coin','ui_icon_gem','ui_icon_level','ui_icon_time','ui_minimap_current','ui_minimap_room','ui_minimap_secret','ui_minimap_visited','ui_panel_9slice','ui_slot_item','ui_slot_passive','ui_slot_weapon','ui_slot_weapon_active']
-            .forEach(name => addTask(name, basePath + 'ui/' + name + '.png' + v));
-        
-        // ===== 8. 杂项贴图 =====
-        ['chest_closed','chest_glowing','chest_open','deco_bone','deco_crystal','deco_egg','deco_mushroom','npc_healer','npc_shopkeeper','totem_attack','totem_defense','totem_speed']
-            .forEach(name => addTask(name, basePath + 'misc/' + name + '.png' + v));
-        
-        // ===== 并行加载所有资源 =====
-        const total = tasks.length;
-        let loaded = 0;
-        const updateProgress = (taskName) => {
-            loaded++;
-            const progress = (loaded / total) * 100;
-            this.loadingController.updateProgress(progress, taskName);
-        };
-        
-        // 每10个一批并行加载
-        const batchSize = 10;
-        for (let i = 0; i < tasks.length; i += batchSize) {
-            const batch = tasks.slice(i, i + batchSize);
-            await Promise.all(batch.map(t => this.sprites.load(t.name, t.src).then(() => updateProgress(t.name))));
+
+        this.assetLoadState.activeOverlayStage = stageKey;
+        this.loadingController.reset({
+            status: options.status || '洞口正在开启',
+            text: options.text || '正在装填首层战斗素材...',
+            current: state.currentTask ? `正在整理: ${state.currentTask}` : '准备中...',
+            progress: state.progress || 0,
+            taskName: state.currentTask || ''
+        });
+        this.loadingController.show();
+        try {
+            await promise;
+        } finally {
+            this.assetLoadState.activeOverlayStage = null;
+            this.loadingController.hide();
+        }
+    }
+
+    kickOffDeferredWarmup() {
+        const state = this.assetLoadState.deferred;
+        if (state.loaded || state.promise) return state.promise;
+        return this.runSpriteLoadStage('deferred', { batchSize: 8 });
+    }
+
+    async loadSprites(stageKey = 'runCore') {
+        return this.runSpriteLoadStage(stageKey);
+    }
+
+    async loadAllGameplaySprites() {
+        await this.runSpriteLoadStage('runCore');
+        await this.runSpriteLoadStage('deferred');
+    }
+
+    async loadLegacySpriteBundleWithOverlay() {
+        this.assetLoadState.activeOverlayStage = 'runCore';
+        this.loadingController.reset();
+        this.loadingController.show();
+        try {
+            await this.loadAllGameplaySprites();
+        } finally {
+            this.assetLoadState.activeOverlayStage = null;
+            this.loadingController.hide();
         }
     }
 
@@ -10655,8 +10796,6 @@ class Game {
 
         
 
-        await this.loadSprites();
-
         // v0.20.0: 初始化音频系统
         if (this.audio) {
             this.audio.init();
@@ -10668,6 +10807,8 @@ class Game {
 
         const loadingEl = document.getElementById('loading') || document.getElementById('loadingScreen');
         if (loadingEl) loadingEl.classList.add('hidden');
+        this.preloadEntryAssets();
+        this.kickOffRunCoreWarmup();
 
         
 
@@ -10768,84 +10909,69 @@ class Game {
 
         
 
-        // v0.17.2: 首次游戏需要生成地图（构造函数中不再预生成）
-        // v0.22-fix: 先检查并生成地图，避免restartGame显示主菜单中断流程
+        const finalizeSelection = async () => {
+            await this.ensureRunCoreAssetsReady({
+                showOverlay: true,
+                status: '洞口正在开启',
+                text: '正在装填首层战斗素材...'
+            });
 
-        if (!this.curRoom || !this.allRooms) {
-
-            this.regenerateMap();
-
-        }
-
-        
-
-        // v0.17.2: 移除调试日志
-        // console.log(`[开局状态] roomType=${this.curRoom?.type}, enemies=${this.curRoom?.enemies?.length}, cleared=${this.curRoom?.cleared}`);
-
-        
-
-        // 初始化武器
-
-        this.weapons = [new Weapon(weaponKey, 1)];
-
-        // 强制重置武器CD，确保可以立即攻击
-
-        this.weapons[0].cd = 0;
-
-        // v0.17.2: 移除调试日志
-        // console.log(`⚔️ 选择了武器: ${weaponKey}, cd=${this.weapons[0].cd}`);
-
-        
-
-        // 初始房间(start)不生成敌人，玩家需要移动到其他房间战斗
-
-        
-
-        // 隐藏武器选择界面
-
-        this.screenFlow?.showGameplay();
-        requestAnimationFrame(() => this.refreshInkStageDecor(true));
-
-        
-
-        // 延迟清除重启标志，解除后游戏才真正开始
-        // v0.11.2 - 缩短保护时间，玩家可以移动但不能攻击
-        
-        // 显示提示
-        this.showRestartProtectionTip();
-        
-        // 初始化相机视野
-        this.camera.updateViewport();
-        
-        // 初始化道具格子
-        this.initItemGrid();
-        
-        // 启动游戏循环（先绘制画面）
-        this.loop(0);
-        
-        // 延迟后统一启动游戏逻辑（缩短为300ms提升体验）
-        setTimeout(() => {
-            this.isRestarting = false;
-            this.godMode = false;
-            this.paused = false;
-            this.state = 'playing';
-            this.hideRestartProtectionTip();
-            
-            // 启动分数系统（与状态同步）
-            this.scoreManager.start();
-            this.updateScoreDisplay();
-            
-            // v0.20.0: 播放普通房间BGM
-            if (this.audio) {
-                this.audio.playBGM('normal');
+            // v0.17.2: 首次游戏需要生成地图（构造函数中不再预生成）
+            // v0.22-fix: 先检查并生成地图，避免restartGame显示主菜单中断流程
+            if (!this.curRoom || !this.allRooms) {
+                this.regenerateMap();
             }
-            
-            // v0.17.2: 移除调试日志
-            // 重启保护解除，游戏正常进行
-        }, 300);
-        
-        // 重置武器选择标志，允许下次选择
-        this._weaponSelecting = false;
+
+            // 初始化武器
+            this.weapons = [new Weapon(weaponKey, 1)];
+
+            // 强制重置武器CD，确保可以立即攻击
+            this.weapons[0].cd = 0;
+
+            // 隐藏武器选择界面
+            this.screenFlow?.showGameplay();
+            requestAnimationFrame(() => this.refreshInkStageDecor(true));
+
+            // 延迟清除重启标志，解除后游戏才真正开始
+            this.showRestartProtectionTip();
+
+            // 初始化相机视野
+            this.camera.updateViewport();
+
+            // 初始化道具格子
+            this.initItemGrid();
+
+            // 启动游戏循环（先绘制画面）
+            this.loop(0);
+
+            // 首局落地后继续后台预热后续楼层素材
+            this.kickOffDeferredWarmup();
+
+            // 延迟后统一启动游戏逻辑（缩短为300ms提升体验）
+            setTimeout(() => {
+                this.isRestarting = false;
+                this.godMode = false;
+                this.paused = false;
+                this.state = 'playing';
+                this.hideRestartProtectionTip();
+                
+                // 启动分数系统（与状态同步）
+                this.scoreManager.start();
+                this.updateScoreDisplay();
+                
+                // v0.20.0: 播放普通房间BGM
+                if (this.audio) {
+                    this.audio.playBGM('normal');
+                }
+            }, 300);
+        };
+
+        finalizeSelection().catch((err) => {
+            console.error('[Game] failed to finalize weapon selection', err);
+            this.showToast('进入洞穴失败，请重试。', { tone: 'error', duration: 2200 });
+        }).finally(() => {
+            this._weaponSelecting = false;
+        });
     }
 
     
