@@ -155,7 +155,7 @@ class OverlayCanvasRenderer {
             paper: tones.paper,
             muted: tones.muted,
             title: '盲眼的商店',
-            subtitle: '按 1-3 购买 | 按 E 关闭'
+            subtitle: 'WASD 切换 | 空格确认 | E / Esc 关闭'
         });
         ctx.fillStyle = tones.gold;
         ctx.font = '24px ZCOOL KuaiLe Local';
@@ -167,10 +167,12 @@ class OverlayCanvasRenderer {
         game.shopItems.forEach((item, i) => {
             const ix = startX + i * (itemWidth + 28);
             const iy = boxY + 200;
+            const isSelected = game.shopSelected === i;
             this.drawOverlayCard(ctx, ix - itemWidth / 2, iy - itemHeight / 2, itemWidth, itemHeight, {
-                accent: item.sold ? tones.statusLocked : (game.player.gold >= item.price ? tones.passive : tones.statusWarning),
+                accent: isSelected ? tones.gold : (item.sold ? tones.statusLocked : (game.player.gold >= item.price ? tones.passive : tones.statusWarning)),
                 fill: item.sold ? 'rgba(20, 18, 17, 0.9)' : tones.ink,
-                highlight: 'rgba(255, 244, 220, 0.03)'
+                highlight: isSelected ? 'rgba(255, 226, 140, 0.12)' : 'rgba(255, 244, 220, 0.03)',
+                lineWidth: isSelected ? 3 : 2
             });
             if (item.sold) {
                 ctx.fillStyle = tones.statusLocked;
@@ -199,7 +201,7 @@ class OverlayCanvasRenderer {
         const refreshPrice = 10 * Math.pow(2, game.shopRefreshCount);
         const canRefresh = game.player.gold >= refreshPrice;
         this.drawOverlayButton(ctx, centerX - 105, boxY + boxHeight - 76, 210, 44, `刷新  ${refreshPrice}`, {
-            hovered: false,
+            hovered: game.shopSelected === game.shopItems.length,
             accent: canRefresh ? tones.passive : tones.statusWarning
         });
     }
@@ -223,7 +225,7 @@ class OverlayCanvasRenderer {
             paper: tones.paper,
             muted: tones.muted,
             title: '发现宝箱',
-            subtitle: '按 1-3 选择物品 | 按 E 关闭宝箱'
+            subtitle: 'WASD 切换 | 空格确认 | E / Esc 关闭'
         });
         const itemWidth = 180;
         const itemHeight = 220;
@@ -231,10 +233,12 @@ class OverlayCanvasRenderer {
         game.chestItems.forEach((item, i) => {
             const ix = startX + i * (itemWidth + 28);
             const iy = boxY + 195;
+            const isSelected = game.chestSelected === i;
             this.drawOverlayCard(ctx, ix - itemWidth / 2, iy - itemHeight / 2, itemWidth, itemHeight, {
-                accent: tones.gold,
+                accent: isSelected ? tones.statusPrice : tones.gold,
                 fill: tones.ink,
-                highlight: 'rgba(255, 236, 192, 0.05)'
+                highlight: isSelected ? 'rgba(255, 226, 140, 0.12)' : 'rgba(255, 236, 192, 0.05)',
+                lineWidth: isSelected ? 3 : 2
             });
             ctx.font = '66px ZCOOL KuaiLe Local';
             ctx.textAlign = 'center';
@@ -286,7 +290,7 @@ class OverlayCanvasRenderer {
             paper: tones.paper,
             muted: tones.muted,
             title: '神秘武器箱',
-            subtitle: '按 1-3 选择武器 | 按 E 或 Esc 关闭'
+            subtitle: 'WASD 切换 | 空格确认 | E / Esc 关闭'
         });
         const itemWidth = 190;
         const itemHeight = 230;
@@ -294,10 +298,12 @@ class OverlayCanvasRenderer {
         game.weaponBoxOptions.forEach((option, i) => {
             const ix = startX + i * (itemWidth + 28);
             const iy = boxY + 200;
+            const isSelected = game.weaponBoxSelected === i;
             this.drawOverlayCard(ctx, ix - itemWidth / 2, iy - itemHeight / 2, itemWidth, itemHeight, {
-                accent: option.isNew ? tones.passive : tones.weapon,
+                accent: isSelected ? tones.gold : (option.isNew ? tones.passive : tones.weapon),
                 fill: tones.ink,
-                highlight: 'rgba(255, 244, 220, 0.04)'
+                highlight: isSelected ? 'rgba(255, 226, 140, 0.12)' : 'rgba(255, 244, 220, 0.04)',
+                lineWidth: isSelected ? 3 : 2
             });
             ctx.textAlign = 'center';
             if (option.isNew) {
@@ -341,7 +347,7 @@ class OverlayCanvasRenderer {
             paper: tones.paper,
             muted: tones.muted,
             title: '升级抉择',
-            subtitle: '按 1-4 选择'
+            subtitle: 'WASD 切换 | 空格确认'
         });
         const padding = 28;
         const bottomBarHeight = 52;
@@ -359,12 +365,13 @@ class OverlayCanvasRenderer {
             const cardX = startX + col * (cardWidth + gapX);
             const cardY = startY + row * (cardHeight + gapY);
             const isWeapon = option.type === 'weapon';
+            const isSelected = game.levelUpSelected === i;
             const borderColor = isWeapon ? tones.weapon : tones.passive;
             this.drawOverlayCard(ctx, cardX, cardY, cardWidth, cardHeight, {
-                accent: borderColor,
+                accent: isSelected ? tones.gold : borderColor,
                 fill: tones.ink,
-                highlight: isWeapon ? 'rgba(195, 218, 244, 0.05)' : 'rgba(220, 240, 197, 0.04)',
-                lineWidth: 2
+                highlight: isSelected ? 'rgba(255, 226, 140, 0.12)' : (isWeapon ? 'rgba(195, 218, 244, 0.05)' : 'rgba(220, 240, 197, 0.04)'),
+                lineWidth: isSelected ? 3 : 2
             });
             const headerHeight = Math.max(28, cardHeight * 0.15);
             ctx.fillStyle = borderColor;

@@ -6515,9 +6515,12 @@ class Game {
         this.chestOpen = false; // 宝箱选择框是否打开
         this.chestItems = []; // 宝箱中的3个可选物品
         this.chestRoom = null; // 当前宝箱所在的房间
+        this.chestSelected = -1;
 
         this.levelUpOpen = false; // 4选1升级选择界面（2武器+2被动）
+        this.levelUpSelected = -1;
         this.weaponBoxOpen = false; // v0.9.5 - 武器箱3选1界面
+        this.weaponBoxSelected = -1;
         this.activeUIWindow = null; // v0.22: 当前活动的UI窗口（用于层级管理）
         this.bossChestLottery = null; // 👑 金色Boss宝箱抽奖系统
         this._weaponSelecting = false; // 防止武器选择重复点击
@@ -8239,23 +8242,48 @@ class Game {
             'player_eat_3'
         ].forEach(name => addTask(name, basePath + 'player/variants_40x40/' + name + '_crop_40.png' + v));
         
-        // ===== 2. 武器贴图 =====
+        // ===== 2. 敌人精灵 =====
+        const allEnemies = ['chick','snail','pigeon','duck3','rabbit','rabbit2','bird','duck2','pig2','cat','duck','squirrel','goose','dog','pig','sheep','snake','bear','crab','dog2','turtle','boss6'];
+        for (const name of allEnemies) addTask(name, basePath + name + '.png' + v);
+        
+        // 描边颜色贴图
+        const outlineColors = ['white','red','pink','orange','purple','gold','blue','cyan','green','lime','magenta','yellow'];
+        for (const color of outlineColors) {
+            for (const name of allEnemies) {
+                if (name === 'boss6' && color !== 'yellow') continue;
+                addTask(name + '_' + color, basePath + 'outlined_by_color/' + color + '/' + name + '.png' + v);
+            }
+        }
+        
+        // ===== 3. 武器贴图 =====
         ['weapon_whip','weapon_scythe','weapon_wand','weapon_knife','weapon_axe','weapon_bible','weapon_fireball','weapon_lightning','weapon_holywater']
             .forEach(name => addTask(name, basePath + 'weapons/' + name + '.png' + v));
         
-        // ===== 3. 地形贴图 =====
+        // ===== 4. 道具贴图 =====
+        for (let i = 1; i <= 16; i++) addTask('item_' + String(i).padStart(2,'0'), basePath + 'items/item_' + String(i).padStart(2,'0') + '.png' + v);
+        
+        // ===== 5. 地形贴图 =====
         ['layer1_floor_mycelium','layer2_floor_greenhouse','layer3_floor_nerve','layer4_floor_furnace','layer5_floor_courtyard','layer6_floor_core']
             .forEach(name => addTask(name, basePath + 'tiles/floors/' + name + '.png' + v));
+        for (let layer = 1; layer <= 6; layer++) {
+            addTask('layer' + layer + '_wall', basePath + 'tiles/walls/layer' + layer + '_wall.png' + v);
+            addTask('layer' + layer + '_door_closed', basePath + 'tiles/walls/layer' + layer + '_door_closed.png' + v);
+            addTask('layer' + layer + '_door_open', basePath + 'tiles/walls/layer' + layer + '_door_open.png' + v);
+        }
+        const cornerMap = {1:'tr',2:'br',3:'bl',4:'tl'};
+        for (let layer = 1; layer <= 6; layer++) {
+            for (let i = 1; i <= 4; i++) addTask('layer' + layer + '_corner_' + cornerMap[i], basePath + 'tiles/corner/layer' + layer + '_v3_gradient_corner' + i + '.png' + v);
+        }
         
-        // ===== 4. 特效贴图 =====
+        // ===== 6. 特效贴图 =====
         ['bullet_arrow','bullet_fireball','bullet_ice','bullet_lightning','effect_coin','effect_explosion_large','effect_explosion_small','effect_gem_blue','effect_gem_gold','effect_gem_red','effect_hit_pierce','effect_hit_slash','effect_particle_blood','effect_particle_glow','effect_particle_smoke','effect_particle_spark','status_buff','status_burn','status_poison','status_slow','status_stun']
             .forEach(name => addTask(name, basePath + 'effects/' + name + '.png' + v));
         
-        // ===== 5. UI贴图 =====
+        // ===== 7. UI贴图 =====
         ['ui_bar_exp_bg','ui_bar_exp_fill','ui_bar_hp_bg','ui_bar_hp_fill','ui_button_hover','ui_button_normal','ui_button_pressed','ui_heart_empty','ui_heart_full','ui_heart_gold','ui_heart_half','ui_icon_coin','ui_icon_gem','ui_icon_level','ui_icon_time','ui_minimap_current','ui_minimap_room','ui_minimap_secret','ui_minimap_visited','ui_panel_9slice','ui_slot_item','ui_slot_passive','ui_slot_weapon','ui_slot_weapon_active']
             .forEach(name => addTask(name, basePath + 'ui/' + name + '.png' + v));
         
-        // ===== 6. 杂项贴图 =====
+        // ===== 8. 杂项贴图 =====
         ['chest_closed','chest_glowing','chest_open','deco_bone','deco_crystal','deco_egg','deco_mushroom','npc_healer','npc_shopkeeper','totem_attack','totem_defense','totem_speed']
             .forEach(name => addTask(name, basePath + 'misc/' + name + '.png' + v));
         
@@ -8411,11 +8439,16 @@ class Game {
             // 升级选择界面操作（4选1）
 
             if (this.levelUpOpen) {
-
-                if (e.key >= '1' && e.key <= '4') {
-
-                    this.selectLevelUpOption(parseInt(e.key, 10) - 1);
-
+                if (e.key === 'a' || e.key === 'A') {
+                    this.levelUpSelected = this.moveGridSelection(this.levelUpSelected, this.levelUpOptions.length, 2, -1, 0);
+                } else if (e.key === 'd' || e.key === 'D') {
+                    this.levelUpSelected = this.moveGridSelection(this.levelUpSelected, this.levelUpOptions.length, 2, 1, 0);
+                } else if (e.key === 'w' || e.key === 'W') {
+                    this.levelUpSelected = this.moveGridSelection(this.levelUpSelected, this.levelUpOptions.length, 2, 0, -1);
+                } else if (e.key === 's' || e.key === 'S') {
+                    this.levelUpSelected = this.moveGridSelection(this.levelUpSelected, this.levelUpOptions.length, 2, 0, 1);
+                } else if (e.key === ' ' || e.key === 'Enter') {
+                    this.selectLevelUpOption(this.levelUpSelected >= 0 ? this.levelUpSelected : 0);
                 }
 
                 return;
@@ -8478,13 +8511,31 @@ class Game {
             
 
             if (this.shopOpen) {
-
-                if (e.key >= '1' && e.key <= '3') {
-
-                    this.buyItem(parseInt(e.key, 10) - 1);
-
-                } else if (e.key === 'r' || e.key === 'R') {
-                    this.refreshShop();
+                const shopChoiceCount = this.shopItems.length + 1;
+                if (e.key === 'a' || e.key === 'A') {
+                    if (this.shopSelected === this.shopItems.length) {
+                        this.shopSelected = this.shopItems.length - 1;
+                    } else {
+                        this.shopSelected = this.moveLinearSelection(this.shopSelected, this.shopItems.length, -1);
+                    }
+                } else if (e.key === 'd' || e.key === 'D') {
+                    if (this.shopSelected === this.shopItems.length) {
+                        this.shopSelected = 0;
+                    } else {
+                        this.shopSelected = this.moveLinearSelection(this.shopSelected, this.shopItems.length, 1);
+                    }
+                } else if (e.key === 'w' || e.key === 'W' || e.key === 's' || e.key === 'S') {
+                    const refreshIndex = this.shopItems.length;
+                    this.shopSelected = this.shopSelected === refreshIndex ? 0 : refreshIndex;
+                } else if (e.key === ' ' || e.key === 'Enter') {
+                    const target = this.shopSelected >= 0 ? this.shopSelected : 0;
+                    if (target === this.shopItems.length) {
+                        this.refreshShop();
+                    } else {
+                        this.buyItem(target);
+                    }
+                } else if (e.key === 'e' || e.key === 'E' || e.key === 'Escape') {
+                    this.closeShop();
                 }
 
                 return;
@@ -8495,8 +8546,12 @@ class Game {
 
             // 宝箱选择框按键处理
             if (this.chestOpen) {
-                if (e.key >= '1' && e.key <= '3') {
-                    this.selectChestItem(parseInt(e.key, 10) - 1);
+                if (e.key === 'a' || e.key === 'A' || e.key === 'w' || e.key === 'W') {
+                    this.chestSelected = this.moveLinearSelection(this.chestSelected, this.chestItems.length, -1);
+                } else if (e.key === 'd' || e.key === 'D' || e.key === 's' || e.key === 'S') {
+                    this.chestSelected = this.moveLinearSelection(this.chestSelected, this.chestItems.length, 1);
+                } else if (e.key === ' ' || e.key === 'Enter') {
+                    this.selectChestItem(this.chestSelected >= 0 ? this.chestSelected : 0);
                 } else if (e.key === 'e' || e.key === 'E' || e.key === 'Escape') {
                     this.closeChestSelect();
                 }
@@ -8505,8 +8560,12 @@ class Game {
             
             // v0.9.5 - 武器箱选择框按键处理
             if (this.weaponBoxOpen) {
-                if (e.key >= '1' && e.key <= '3') {
-                    this.selectWeaponBoxOption(parseInt(e.key, 10) - 1);
+                if (e.key === 'a' || e.key === 'A' || e.key === 'w' || e.key === 'W') {
+                    this.weaponBoxSelected = this.moveLinearSelection(this.weaponBoxSelected, this.weaponBoxOptions.length, -1);
+                } else if (e.key === 'd' || e.key === 'D' || e.key === 's' || e.key === 'S') {
+                    this.weaponBoxSelected = this.moveLinearSelection(this.weaponBoxSelected, this.weaponBoxOptions.length, 1);
+                } else if (e.key === ' ' || e.key === 'Enter') {
+                    this.selectWeaponBoxOption(this.weaponBoxSelected >= 0 ? this.weaponBoxSelected : 0);
                 } else if (e.key === 'e' || e.key === 'E' || e.key === 'Escape') {
                     this.closeWeaponBoxSelect();
                 }
@@ -9062,6 +9121,31 @@ class Game {
         });
     }
 
+    moveLinearSelection(current, count, delta) {
+        if (count <= 0) return -1;
+        const base = current >= 0 ? current : 0;
+        return (base + delta + count) % count;
+    }
+
+    moveGridSelection(current, count, columns, dx, dy) {
+        if (count <= 0) return -1;
+        const safeColumns = Math.max(1, columns || 1);
+        const base = current >= 0 ? current : 0;
+        let row = Math.floor(base / safeColumns);
+        let col = base % safeColumns;
+        const maxRow = Math.floor((count - 1) / safeColumns);
+
+        row = Math.max(0, Math.min(maxRow, row + dy));
+        col = Math.max(0, Math.min(safeColumns - 1, col + dx));
+
+        let next = row * safeColumns + col;
+        while (next >= count && col > 0) {
+            col--;
+            next = row * safeColumns + col;
+        }
+        return Math.max(0, Math.min(count - 1, next));
+    }
+
     
 
     // 处理点击事件
@@ -9152,9 +9236,11 @@ class Game {
 
                 const cy = startY + row * (cardHeight + gapY);
 
-                if (x > cx - cardWidth/2 && x < cx + cardWidth/2 &&
+                    if (x > cx - cardWidth/2 && x < cx + cardWidth/2 &&
 
-                    y > cy - cardHeight/2 && y < cy + cardHeight/2) {
+                        y > cy - cardHeight/2 && y < cy + cardHeight/2) {
+
+                    this.levelUpSelected = i;
 
                     this.selectLevelUpOption(i);
 
@@ -9202,9 +9288,19 @@ class Game {
 
             const itemHeight = 210;
 
+            const itemGap = 28;
+
             const startX = centerX - (this.shopItems.length * itemWidth) / 2 + itemWidth / 2;
 
             const itemY = boxY + 200;
+
+            const refreshWidth = 210;
+
+            const refreshHeight = 44;
+
+            const refreshX = centerX - refreshWidth / 2;
+
+            const refreshY = boxY + boxHeight - 76;
 
             
 
@@ -9220,13 +9316,27 @@ class Game {
 
             
 
+            if (x >= refreshX && x <= refreshX + refreshWidth &&
+
+                y >= refreshY && y <= refreshY + refreshHeight) {
+
+                this.shopSelected = this.shopItems.length;
+
+                this.refreshShop();
+
+                return;
+
+            }
+
             for (let i = 0; i < this.shopItems.length; i++) {
 
-                const ix = startX + i * (itemWidth + 20);
+                const ix = startX + i * (itemWidth + itemGap);
 
                 if (x > ix - itemWidth/2 && x < ix + itemWidth/2 &&
 
                     y > itemY - itemHeight/2 && y < itemY + itemHeight/2) {
+
+                    this.shopSelected = i;
 
                     this.buyItem(i);
 
@@ -9261,13 +9371,15 @@ class Game {
             
             const itemWidth = 180;
             const itemHeight = 220;
+            const itemGap = 28;
             const startX = centerX - (this.chestItems.length * itemWidth) / 2 + itemWidth / 2;
             const iy = boxY + 195;
             
             for (let i = 0; i < this.chestItems.length; i++) {
-                const ix = startX + i * (itemWidth + 20);
+                const ix = startX + i * (itemWidth + itemGap);
                 if (x > ix - itemWidth/2 && x < ix + itemWidth/2 &&
                     y > iy - itemHeight/2 && y < iy + itemHeight/2) {
+                    this.chestSelected = i;
                     this.selectChestItem(i);
                     return;
                 }
@@ -9297,13 +9409,15 @@ class Game {
             
             const itemWidth = 190;
             const itemHeight = 230;
+            const itemGap = 28;
             const startX = centerX - (this.weaponBoxOptions.length * itemWidth) / 2 + itemWidth / 2;
             const iy = boxY + 200;
             
             for (let i = 0; i < this.weaponBoxOptions.length; i++) {
-                const ix = startX + i * (itemWidth + 20);
+                const ix = startX + i * (itemWidth + itemGap);
                 if (x > ix - itemWidth/2 && x < ix + itemWidth/2 &&
                     y > iy - itemHeight/2 && y < iy + itemHeight/2) {
+                    this.weaponBoxSelected = i;
                     this.selectWeaponBoxOption(i);
                     return;
                 }
@@ -9382,6 +9496,7 @@ class Game {
         this.levelUpOpen = true;
         this.activeUIWindow = 'levelUp'; // v0.22: 设为活动窗口
         this.levelUpOptions = [];
+        this.levelUpSelected = 0;
         
         // 升级特效 - v0.16.3: 使用中心点
         this.particles.explosion(this.player.cx, this.player.cy, '#ff0', 40);
@@ -9513,6 +9628,7 @@ class Game {
     closeLevelUpSelect() {
         this.levelUpOpen = false;
         this.levelUpOptions = [];
+        this.levelUpSelected = -1;
         if (this.activeUIWindow === 'levelUp') this.activeUIWindow = null; // v0.22
         this.refreshPauseState();
     }
@@ -9522,6 +9638,7 @@ class Game {
         this.weaponBoxOpen = true;
         this.activeUIWindow = 'weaponBox'; // v0.22: 设为活动窗口
         this.weaponBoxOptions = [];
+        this.weaponBoxSelected = 0;
         
         // 生成3个武器选项
         // 70% = 已有武器等级+1, 20% = 已有武器超级版, 10% = 新武器
@@ -9596,6 +9713,7 @@ class Game {
     closeWeaponBoxSelect() {
         this.weaponBoxOpen = false;
         this.weaponBoxOptions = [];
+        this.weaponBoxSelected = -1;
         if (this.activeUIWindow === 'weaponBox') this.activeUIWindow = null; // v0.22
         this.refreshPauseState();
     }
@@ -10271,6 +10389,7 @@ class Game {
         }
 
         this.shopOpen = true;
+        this.shopSelected = 0;
         this.activeUIWindow = 'shop'; // v0.22: 设为活动窗口
         
         // 隐藏交互提示
@@ -10339,6 +10458,7 @@ class Game {
             }
         }
         this.shopItems = selected;
+        this.shopSelected = 0;
         this.audioCtrl.play('buy');
         // v0.17.2: 移除调试日志
         // console.log('商店已刷新，花费:', refreshPrice);
@@ -10353,6 +10473,7 @@ class Game {
         this.chestItems = this.curRoom.chest.items;
         this.chestRoom = this.curRoom;
         this.chestOpen = true;
+        this.chestSelected = 0;
         this.activeUIWindow = 'chest'; // v0.22: 设为活动窗口
         this.audioCtrl.play('chest');
         // v0.17.2: 移除调试日志
@@ -10367,6 +10488,7 @@ class Game {
         this.chestOpen = false;
         this.chestItems = [];
         this.chestRoom = null;
+        this.chestSelected = -1;
         if (this.activeUIWindow === 'chest') this.activeUIWindow = null; // v0.22
         this.refreshPauseState();
     }
@@ -10393,6 +10515,7 @@ class Game {
         this.chestOpen = false;
         this.chestItems = [];
         this.chestRoom = null;
+        this.chestSelected = -1;
         if (this.activeUIWindow === 'chest') this.activeUIWindow = null;
         
         // v0.17.2: 移除调试日志
@@ -10540,6 +10663,7 @@ class Game {
             this.settingsStore.applyToGame(this, this.runtimeSettings);
             // 预加载常用音效
             this.audio.preloadSFX(['shoot', 'hit', 'crit', 'dash', 'explosion', 'levelup']);
+            if (this.audioCtrl) this.audioCtrl.preload();
         }
 
         const loadingEl = document.getElementById('loading') || document.getElementById('loadingScreen');
@@ -10924,6 +11048,14 @@ class Game {
     update(dt) {
 
         
+
+        const bossChestAnimating = !!(this.bossChestLottery && this.bossChestLottery.active);
+        if (bossChestAnimating) {
+            this.particles.update(dt);
+            this.damageNumbers.update(dt);
+            this.updateBossChestLottery(dt);
+            return;
+        }
 
         if (this.shopOpen || this.levelUpOpen || this.paused) return;
 
@@ -12238,9 +12370,6 @@ class Game {
         if (window.weaponVisuals) {
             window.weaponVisuals.update(dt);
         }
-        
-        // 👑 更新金色宝箱抽奖动画
-        this.updateBossChestLottery(dt);
         
         // v0.18.4 fix: 处理regen效果（每秒回血）
         if (this.player && this.items) {
