@@ -11246,8 +11246,8 @@ class Game {
     getTreasureChestProfile(quality = 'common') {
         const profileMap = {
             common: { label: '普通宝箱', accent: '#8bd0ff', draws: 1 },
-            rare: { label: '稀有宝箱', accent: '#ffd24d', draws: 2 },
-            legendary: { label: '传奇宝箱', accent: '#ff8a3d', draws: 3 }
+            rare: { label: '稀有宝箱', accent: '#ffd24d', draws: 1 },
+            legendary: { label: '传奇宝箱', accent: '#ff8a3d', draws: 1 }
         };
         return profileMap[quality] || profileMap.common;
     }
@@ -11287,14 +11287,9 @@ class Game {
     }
 
     generateTreasureChestRewardsByQuality(quality = 'common') {
-        const profile = this.getTreasureChestProfile(quality);
-        const rewards = [];
-        for (let i = 0; i < profile.draws; i++) {
-            const tier = this.rollTreasureTierForChest(quality, i);
-            const rewardType = this.rollTreasureRewardType();
-            rewards.push(this.buildTreasureRewardByTierAndType(tier, rewardType));
-        }
-        return rewards;
+        const tier = this.rollTreasureTierForChest(quality, 0);
+        const rewardType = this.rollTreasureRewardType();
+        return [this.buildTreasureRewardByTierAndType(tier, rewardType)];
     }
 
     generateTreasureChestChoices() {
@@ -11469,7 +11464,7 @@ class Game {
             mode: 'treasure_bundle',
             items: rewards,
             title: `${profile.label}抽奖`,
-            subtitle: `抽奖揭示后领取全部 ${rewards.length} 项奖励`,
+            subtitle: `抽奖揭示后领取该箱奖励`,
             allowOpened: true
         });
     }
