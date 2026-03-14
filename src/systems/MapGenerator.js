@@ -107,7 +107,7 @@
 
         this.fixDoorConnections(rooms);
         
-        // 确保每层至少有1个商店和1个宝箱
+        // 确保每层至少有1个商店、1个宝箱和1个隐藏房
         this.ensureSpecialRooms(rooms, start);
 
         
@@ -192,13 +192,14 @@
 
     }
     
-    // 确保每层至少有1个商店和1个宝箱
+    // 确保每层至少有1个商店、1个宝箱和1个隐藏房
     ensureSpecialRooms(rooms, start) {
         const roomList = Array.from(rooms.values());
         
         // 检查是否已有商店和宝箱
         const hasShop = roomList.some(r => r.type === 'shop');
         const hasTreasure = roomList.some(r => r.type === 'treasure');
+        const hasHidden = roomList.some(r => r.type === 'hidden');
         
         // 获取非起点、非boss的普通房间列表
         const normalRooms = roomList.filter(r => 
@@ -232,6 +233,21 @@
                 shopRoom.npc = new ShopNPC(shopRoom.centerX, shopRoom.centerY);
             // v0.17.2: 移除调试日志
             // console.log(`商店房强制添加在 (${shopRoom.gx}, ${shopRoom.gy})`);
+            }
+        }
+
+        // 如果没有隐藏房，从剩余普通房中改造一个隐藏房
+        if (!hasHidden) {
+            const hiddenCandidates = roomList.filter(r =>
+                r.type === 'normal' &&
+                r !== start &&
+                !r.bossRoom
+            );
+            const hiddenRoom = hiddenCandidates[hiddenCandidates.length - 1] || hiddenCandidates[0];
+            if (hiddenRoom) {
+                hiddenRoom.type = 'hidden';
+                hiddenRoom.cleared = true;
+                hiddenRoom.spawnRoomItems();
             }
         }
     }

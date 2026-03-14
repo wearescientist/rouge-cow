@@ -29,7 +29,8 @@ class AudioController {
             'hit_shell': 30,
             'hit_slime': 30,
             'hit_fur': 30,
-            'hit_bird': 30
+            'hit_bird': 30,
+            'knife_whistle': 90
         };
         
         // ==========================================
@@ -38,11 +39,25 @@ class AudioController {
         this.registry = {
             // ===== 武器类 (WEAPON) - 直接映射 =====
             // 武器音效 - 统一较低音量 (v0.30: 重新平衡)
-            'whip':     { type: 'file', file: 'weapons/whip_crack_Sharp_lea_3-1772638713348.mp3', vol: 0.18 },
-            'scythe':   { type: 'file', file: 'weapons/Heavy_scythe_slash_2-1772638772954.mp3', vol: 0.18 },
+            'whip':     { type: 'file', file: 'weapons/whip_crack_Sharp_lea_#3-1772638713348.mp3', vol: 0.18 },
+            'blood_whip': { type: 'file', file: 'weapons/whip_crack_Sharp_lea_#3-1772638713348.mp3', vol: 0.2 },
+            'scythe':   { type: 'file', file: 'weapons/Heavy_scythe_slash_#2-1772638772954.mp3', vol: 0.18 },
+            'death_scythe': { type: 'file', file: 'weapons/Heavy_scythe_slash_#2-1772638772954.mp3', vol: 0.2 },
             'knife':    { type: 'file', file: 'weapons/knife_throw_v1.mp3', vol: 0.20 },
+            'knife_whistle': { type: 'files', files: [
+                'weapons/whistling/whistle_01.mp3',
+                'weapons/whistling/whistle_02.mp3',
+                'weapons/whistling/whistle_03.mp3',
+                'weapons/whistling/whistle_04.mp3',
+                'weapons/whistling/whistle_05.mp3',
+                'weapons/whistling/whistle_06.mp3',
+                'weapons/whistling/whistle_07.mp3',
+                'weapons/whistling/whistle_08.mp3',
+                'weapons/whistling/whistle_09.mp3'
+            ], vol: 0.18 },
             'axe':      { type: 'file', file: 'weapons/axe_throw_v1.mp3', vol: 0.18 },
             'cross':    { type: 'file', file: 'weapons/cross_launch_v1.mp3', vol: 0.18 },
+            'heaven_sword': { type: 'file', file: 'weapons/cross_launch_v1.mp3', vol: 0.2 },
             'wand':     { type: 'file', file: 'weapons/wand_cast_v1.mp3', vol: 0.16 },
             'fireball': { type: 'file', file: 'weapons/fireball_v1.mp3', vol: 0.15 },
             'fireball_pet': { type: 'file', file: 'weapons/fireball_v1.mp3', vol: 0.08 }, // 宠物专用低音量火球
@@ -148,6 +163,9 @@ class AudioController {
             case 'random':
                 this._playRandom(cfg);
                 break;
+            case 'files':
+                this._playFromFiles(cfg);
+                break;
             case 'mute':
                 // 无声，直接返回
                 break;
@@ -217,6 +235,13 @@ class AudioController {
         const file = `${prefix}_${String(idx).padStart(3, '0')}.ogg`;
         this._playFile(file, vol);
     }
+
+    _playFromFiles(cfg) {
+        const files = Array.isArray(cfg.files) ? cfg.files : [];
+        if (files.length === 0) return;
+        const file = files[Math.floor(Math.random() * files.length)];
+        this._playFile(file, cfg.vol);
+    }
     
     /**
      * 播放音频缓冲区
@@ -282,8 +307,12 @@ class AudioController {
      */
     preload() {
         const criticalSounds = [
-            'weapons/whip_crack_Sharp_lea_3-1772638713348.mp3',
+            'weapons/whip_crack_Sharp_lea_#3-1772638713348.mp3',
+            'weapons/Heavy_scythe_slash_#2-1772638772954.mp3',
+            'weapons/cross_launch_v1.mp3',
             'weapons/knife_throw_v1.mp3',
+            'weapons/whistling/whistle_01.mp3',
+            'weapons/whistling/whistle_02.mp3',
             'weapons/laser2.ogg',
             'coin_pickup.mp3',
             'exp-gain.ogg'

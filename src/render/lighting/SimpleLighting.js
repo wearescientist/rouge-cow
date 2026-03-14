@@ -18,7 +18,7 @@ class SimpleLighting {
         this.enabled = true;
         
         // 环境光基础亮度 - v0.32-fix: 提高到 0.75，multiply 混合会压暗画面
-        this.ambientLight = 0.66;
+        this.ambientLight = 0.74;
     }
 
     /**

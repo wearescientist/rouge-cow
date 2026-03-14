@@ -947,17 +947,18 @@
         return this.getRenderScale(sprites);
     }
 
-    getTargetHeight(sprites) {
+    getTargetHeight(sprites, screenScale = null) {
         const { height } = this.getSpriteDimensions(sprites);
         const canvasScale = typeof window !== 'undefined' && window.game && typeof window.game.getCanvasScale === 'function'
             ? window.game.getCanvasScale()
             : 1;
-        return Math.round(height * this.getRenderScale(sprites) * canvasScale);
+        const appliedScale = Number.isFinite(screenScale) ? screenScale : canvasScale;
+        return Math.round(height * this.getRenderScale(sprites) * appliedScale);
     }
 
     // 使用世界坐标绘制（在Room.draw中使用）
-    draw(ctx, sprites) {
-        const targetHeight = this.getTargetHeight(sprites);
+    draw(ctx, sprites, screenScale = null) {
+        const targetHeight = this.getTargetHeight(sprites, screenScale);
         const size = targetHeight / 2;  // 用于特效的参考尺寸
 
         
@@ -1297,9 +1298,9 @@
         return prefix ? `[${prefix}] ${this.typeKey}` : this.typeKey;
     }
 
-    drawWithOffset(ctx, sprites, floor) {
+    drawWithOffset(ctx, sprites, floor, screenScale = null) {
         // v0.33: 统一使用 getTargetHeight 计算目标高度（传入sprites获取贴图尺寸）
-        const targetHeight = this.getTargetHeight(sprites);
+        const targetHeight = this.getTargetHeight(sprites, screenScale);
         
         // 绘制敌人精灵（带动画效果）- 已经在(0,0)位置
         // 优先使用描边贴图（根据类型：white普通/red精英/goldBOSS）

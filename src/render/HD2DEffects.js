@@ -29,7 +29,7 @@ const HD2DEffects = {
             groundGlow: { coreAlpha: 0.4, radiusX: 35 },
             backlight: { alpha: 0.35, radius: 60 },
             shadow: { alpha: 0.58, radiusX: 17.5, radiusY: 7.6, blur: 3.2 },
-            colorGrading: { warmth: 0.28, tintAlpha: 0.18 }
+            colorGrading: { warmth: 0.22, tintAlpha: 0.11 }
         }
     }
 };

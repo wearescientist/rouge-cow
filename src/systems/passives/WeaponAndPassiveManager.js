@@ -18,6 +18,57 @@ function getPassiveTotalValue(passive, level) {
     return total;
 }
 
+window.WEAPON_DAMAGE_MODEL = Object.freeze({
+    baseAttackPower: 24,
+    superCoeffCarryPerLevel: 0.04,
+    levelGrowthByType: Object.freeze({
+        melee: 1.27,
+        proj: 1.17,
+        orbit: 1.1,
+        instant: 1.14,
+        area: 1.09,
+        aura: 1.08,
+        laser: 1.14
+    }),
+    levelGrowthByKey: Object.freeze({
+        whip: 1.2,
+        scythe: 1.16,
+        wand: 1.22,
+        knife: 1.14,
+        axe: 1.18,
+        cross: 1.18,
+        fireball: 1.21,
+        shuriken: 1.19,
+        icicle: 1.18,
+        laser: 1.1,
+        poison_dart: 1.22,
+        bible: 1.1,
+        lightning: 1.15,
+        holy_water: 1.09,
+        radiance: 1.08
+    })
+});
+
+function roundWeaponCoeff(value) {
+    return Math.round(value * 1000) / 1000;
+}
+
+function attachWeaponDamageCoefficients(configMap) {
+    const attackBase = window.WEAPON_DAMAGE_MODEL?.baseAttackPower || 24;
+    for (const cfg of Object.values(configMap || {})) {
+        if (!cfg) continue;
+        if (!Number.isFinite(cfg.attackCoeff) && Number.isFinite(cfg.dmg)) {
+            cfg.attackCoeff = roundWeaponCoeff(cfg.dmg / attackBase);
+        }
+        if (!Number.isFinite(cfg.poisonCoeff) && Number.isFinite(cfg.poison)) {
+            cfg.poisonCoeff = roundWeaponCoeff(cfg.poison / attackBase);
+        }
+        if (!Number.isFinite(cfg.poisonDmgCoeff) && Number.isFinite(cfg.poisonDmg)) {
+            cfg.poisonDmgCoeff = roundWeaponCoeff(cfg.poisonDmg / attackBase);
+        }
+    }
+}
+
 class PassiveManager {
 
     constructor(player) {
@@ -382,7 +433,7 @@ const WEAPONS = {
     
     // 投射类 - v0.16.3: 自带多重的降低单个伤害
     wand: { key: 'wand', name: '魔杖', icon: '🔮', dmg: 18, cd: 0.6, speed: 380, range: 450, type: 'proj', subtype: 'homing', color: '#4488ff', homingStrength: 0.8, count: 1, maxLevel: 8 },
-    knife: { key: 'knife', name: '飞刀', icon: '🗡️', dmg: 13, cd: 0.33, speed: 540, range: 420, pierce: 3, type: 'proj', subtype: 'rapid', color: '#cccccc', burst: 3, count: 1, maxLevel: 8 },
+    knife: { key: 'knife', name: '飞刀', icon: '🗡️', dmg: 32, cd: 0.3, speed: 860, range: 560, type: 'proj', subtype: 'guardian_knife', color: '#ff5252', count: 1, searchRadius: 620, returnSpeed: 1180, idleRadius: 42, passThroughDistance: 128, curveRadius: 118, hitCooldown: 0.26, maxLevel: 8 },
     axe: { key: 'axe', name: '斧头', icon: '🪓', dmg: 31, cd: 1.1, speed: 320, range: 360, type: 'proj', subtype: 'boomerang', color: '#8b4513', count: 1, maxLevel: 8 },
     cross: { key: 'cross', name: '十字架', icon: '✝️', dmg: 22, cd: 1.0, speed: 360, range: 450, type: 'proj', subtype: 'bounce', color: '#dddddd', bounce: 3, count: 1, maxLevel: 8 },
     fireball: { key: 'fireball', name: '火球', icon: '🔥', dmg: 31, cd: 1.28, speed: 420, range: 520, type: 'proj', subtype: 'explode', color: '#ff4500', explodeRadius: 175, count: 1, maxLevel: 8 },
@@ -392,7 +443,7 @@ const WEAPONS = {
     poison_dart: { key: 'poison_dart', name: '毒镖', icon: '📍', dmg: 14, cd: 0.45, speed: 460, range: 450, type: 'proj', subtype: 'poison_homing', color: '#44aa44', homingStrength: 1.0, poison: 6, count: 1, maxLevel: 8 },
     
     // 特殊类 - v0.16.3: AOE武器降低基础伤害
-    bible: { key: 'bible', name: '圣经', icon: '📖', dmg: 24, cd: 4.9, range: 320, count: 7, duration: 10, orbitRadius: 320, orbitSpeed: 4.5, type: 'orbit', color: '#ffd700', maxLevel: 8 },
+    bible: { key: 'bible', name: '圣经', icon: '📖', dmg: 24, cd: 4.9, range: 300, count: 3, duration: 9.6, orbitRadius: 300, orbitSpeed: 1.6, orbitalDrawSize: 60, orbitHitPadding: 44, orbitVisualSpinSpeed: 2.1, type: 'orbit', color: '#ffd700', maxLevel: 8 },
     lightning: { key: 'lightning', name: '闪电', icon: '⚡', dmg: 18, cd: 0.54, range: 680, chain: 5, chainRange: 420, type: 'instant', subtype: 'chain', color: '#ffff00', count: 1, maxLevel: 8 },
     holy_water: { key: 'holy_water', name: '圣水', icon: '💧', dmg: 18, cd: 2.5, range: 560, duration: 8.2, tickRate: 0.18, slow: 0.5, type: 'area', color: '#00bfff', count: 3, maxLevel: 8 },
     // v0.18.0: 辉耀 - 参考DOTA，持续灼烧周围敌人
@@ -471,10 +522,10 @@ const WEAPON_EVOLUTIONS = {
     knife: { 
         requires: 'bracer', 
         result: 'thousand_blade',
-        name: '千刃',
+        name: '御刃',
         icon: '💠',
-        desc: '极速连射',
-        bonus: { cd: 0.1, burst: 5, speed: 1.25 }
+        desc: '三刃永久追猎',
+        bonus: { speed: 1.22, dmg: 1.4, searchRadius: 1.2 }
     },
 
     axe: { 
@@ -500,8 +551,8 @@ const WEAPON_EVOLUTIONS = {
         result: 'unholy_vespers',
         name: '邪恶晚祷',
         icon: '📿',
-        desc: '高速圣环压场',
-        bonus: { duration: 2.2, count: 5, range: 1.35 }
+        desc: '低速厚重圣环压场',
+        bonus: { duration: 1.6, count: 0, range: 1.12 }
     },
 
     fireball: { 
@@ -643,7 +694,7 @@ const SUPER_WEAPONS = {
         count: 4, crit: 0.35, critDmg: 2.8, special: '四重圣裁剑弧+暴击吸血'
     },
     death_scythe: { 
-        name: '死神镰刀', icon: '💀', iconSprite: 'weapon_scythe', dmg: 178, cd: 0.62, range: 560, 
+        name: '死神镰刀', icon: '💀', iconSprite: 'weapon_death_scythe', dmg: 178, cd: 0.62, range: 560, 
         type: 'melee', subtype: 'circle', color: '#440044', knockback: 96,
         count: 5, execute: { chance: 0.5, threshold: 0.5 }, special: '五重收割+半血处决'
     },
@@ -655,9 +706,9 @@ const SUPER_WEAPONS = {
         count: 4, pierce: 5, chain: 5, special: '四连发+高伤害+连锁'
     },
     thousand_blade: { 
-        name: '千刃', icon: '💠', dmg: 40, cd: 0.07, speed: 680, range: 560,
-        type: 'proj', subtype: 'rapid', color: '#00ffff', burst: 5, pierce: 5, bounce: 3,
-        count: 4, special: '4重千刃连发风暴'
+        name: '御刃', icon: '💠', dmg: 58, cd: 0.24, speed: 980, range: 660,
+        type: 'proj', subtype: 'guardian_knife', color: '#ff7a5c',
+        count: 3, searchRadius: 760, returnSpeed: 1320, idleRadius: 50, passThroughDistance: 138, curveRadius: 132, hitCooldown: 0.18, special: '三刃永久追猎穿刺'
     },
     death_spiral: { 
         name: '死亡螺旋', icon: '🌀', dmg: 100, cd: 0.7, speed: 350, range: 450, 
@@ -665,7 +716,7 @@ const SUPER_WEAPONS = {
         count: 6, tripleThrow: true, returnDamage: true, special: '六重回旋镖+去回双伤'
     },
     heaven_sword: { 
-        name: '天穹十字', icon: '✝️', iconSprite: 'weapon_whip', dmg: 110, cd: 0.8, speed: 450, range: 550,
+        name: '天穹十字', icon: '✝️', iconSprite: 'weapon_heaven_sword', dmg: 110, cd: 0.8, speed: 450, range: 550,
         type: 'proj', subtype: 'bounce', color: '#ffee00', bounce: 99, crit: 0.65, critDmg: 4,
         count: 4, divineNova: true, special: '四重神圣弹跳+暴击新星'
     },
@@ -686,10 +737,10 @@ const SUPER_WEAPONS = {
         count: 6, freezeChance: 0.4, freezeDuration: 3, blizzardAOE: true, special: '六重+冻结3秒'
     },
     prism_beam: { 
-        name: '炽天使硫磺', icon: '🔴', dmg: 65, cd: 0.3, range: 3000,
-        type: 'laser', color: '#ff2f6d', width: 28, beamLife: 0.72, tickCooldown: 0.05,
-        homingCurve: true, preferMoveDirection: true, turnRate: 2.35, maxTrackAngle: 0.48, segmentLength: 52,
-        special: '沿走位喷射，在扇区内曲线索敌贯穿'
+        name: '炽天使硫磺', icon: '🔴', dmg: 96, cd: 1.02, range: 3000,
+        type: 'laser', color: '#ff2f6d', width: 34, beamLife: 0.96, tickCooldown: 0.04,
+        homingCurve: true, turnRate: 2.35, maxTrackAngle: 0.48, segmentLength: 52, lockTrackToFireAngle: true, uniqueBeam: true,
+        special: '单条重型圣焰束，沿发射方向锥体内曲线索敌贯穿'
     },
     toxic_strike: { 
         name: '剧毒打击', icon: '☠️', dmg: 45, cd: 0.2, speed: 550, range: 600,
@@ -699,9 +750,9 @@ const SUPER_WEAPONS = {
     
     // 特殊超武
     unholy_vespers: { 
-        name: '邪恶晚祷', icon: '📿', dmg: 106, cd: 0.82, range: 620, 
-        type: 'orbit', color: '#ff6600', count: 14, duration: 24,
-        rotationSpeed: 6.1, special: '十四重永续圣环+高速碾压'
+        name: '邪恶晚祷', icon: '📿', dmg: 106, cd: 0.82, range: 520, 
+        type: 'orbit', color: '#ff6600', count: 6, duration: 24,
+        rotationSpeed: 1.95, orbitalDrawSize: 76, orbitHitPadding: 58, orbitVisualSpinSpeed: 2.4, special: '六重永续巨型圣环+低速稳压'
     },
     la_borra: { 
         name: '拉博拉', icon: '💦', dmg: 76, cd: 0.72, range: 1080, duration: 20, 
@@ -722,5 +773,5 @@ const SUPER_WEAPONS = {
     }
 };
 
-
-
+attachWeaponDamageCoefficients(WEAPONS);
+attachWeaponDamageCoefficients(SUPER_WEAPONS);

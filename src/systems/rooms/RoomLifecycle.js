@@ -13,34 +13,56 @@
 
     Room.prototype.spawnRoomItems = function() {
         if (this.type === 'treasure') {
-            // 宝箱房：放置一个宝箱，触碰后弹出3选1选择框
+            const createQuality = () => {
+                if (window.game && typeof window.game.rollTreasureChestQuality === 'function') {
+                    return window.game.rollTreasureChestQuality();
+                }
+                const roll = Math.random();
+                if (roll < 0.05) return 'legendary';
+                if (roll < 0.20) return 'rare';
+                return 'common';
+            };
+            const positions = [-96, 0, 96];
+            this.chest = null;
+            this.chests = positions.map(offsetX => {
+                const quality = createQuality();
+                return {
+                    x: this.centerX + offsetX,
+                    y: this.centerY,
+                    opened: false,
+                    disabled: false,
+                    quality,
+                    rewards: window.game && typeof window.game.generateTreasureChestRewardsByQuality === 'function'
+                        ? window.game.generateTreasureChestRewardsByQuality(quality)
+                        : []
+                };
+            });
+
+        } else if (this.type === 'hidden') {
+            // 隐藏房：每层固定一个，进房即给隐藏奖励
+            this.cleared = true;
+            this.chests = [];
             this.chest = {
                 x: this.centerX,
                 y: this.centerY,
                 opened: false,
-                items: [] // 待选择的3个物品
+                items: []
             };
-            // v0.26: 使用层数过滤的道具列表
-            const availableItems = window.game ? window.game.getAvailableItemsByFloor() : Object.values(ITEMS);
-            const selected = [];
-            while (selected.length < 3 && availableItems.length > 0) {
-                const idx = Math.floor(Math.random() * availableItems.length);
-                const item = availableItems.splice(idx, 1)[0];
-                selected.push({
-                    id: item.id,
-                    icon: item.icon,
-                    name: item.name,
-                    desc: item.desc,
-                    rarity: item.rarity
-                });
+            const secretPool = window.game && typeof window.game.getAvailableItemsByFloor === 'function'
+                ? window.game.getAvailableItemsByFloor()
+                : Object.values(ITEMS || {});
+            if (secretPool.length > 0) {
+                const selected = secretPool[Math.floor(Math.random() * secretPool.length)];
+                if (selected) {
+                    this.chest.items = [{
+                        id: selected.id,
+                        icon: selected.icon,
+                        name: selected.name,
+                        desc: selected.desc,
+                        rarity: selected.rarity
+                    }];
+                }
             }
-            this.chest.items = selected;
-
-        } else if (this.type === 'hidden') {
-
-            // hidden房已禁用 - 直接标记为已清理，不生成物品和怪物
-
-            this.cleared = true;
 
         }
 

@@ -28,6 +28,8 @@
 
         }
 
+        this.baseAttackCoeff = Number.isFinite(this.cfg?.attackCoeff) ? this.cfg.attackCoeff : null;
+        this.superAttackCoeffBonus = 1;
         
 
         this.cd = 0;
@@ -36,13 +38,52 @@
 
         this.xpToNext = 100;
 
+        if (window.game && this.cfg?.subtype === 'guardian_knife' && typeof window.game.spawnGuardianKnives === 'function') {
+            const initStats = window.game.currentCombatStats || window.game.passiveManager?.getStats?.() || null;
+            const knifeCfg = this.buildGuardianKnifeSpawnConfig(window.game.player, null, initStats);
+            if (knifeCfg) {
+                window.game.spawnGuardianKnives(knifeCfg);
+            }
+        }
+
+    }
+
+    buildGuardianKnifeSpawnConfig(player = null, dmg = null, stats = null) {
+        const owner = player || window.game?.player || null;
+        if (!owner) return null;
+        const combatStats = stats || window.game?.currentCombatStats || window.game?.passiveManager?.getStats?.() || {};
+        const projSpeedMul = 1 + (combatStats?.projSpeed || 0);
+        const rangeBonus = Math.max(0, combatStats?.range || 0);
+        const speed = (this.cfg.speed || 240) * projSpeedMul;
+        const returnSpeed = (this.cfg.returnSpeed || speed * 1.25) * (1 + (combatStats?.projSpeed || 0) * 0.5);
+        const finalDmg = dmg ?? this.getDamage(combatStats);
+        return this.applyCombatStats({
+            x: owner.cx, y: owner.cy,
+            type: 'guardian_knife_spawn',
+            dmg: finalDmg,
+            color: this.cfg.color,
+            icon: this.cfg.icon,
+            count: this.getProjectileCount(),
+            speed,
+            returnSpeed,
+            searchRadius: (this.cfg.searchRadius || this.getRange()) * (1 + rangeBonus),
+            range: this.getRange() * (1 + rangeBonus),
+            idleRadius: this.cfg.idleRadius || 42,
+            passThroughDistance: this.cfg.passThroughDistance || 72,
+            curveRadius: this.cfg.curveRadius || 108,
+            hitCooldown: this.cfg.hitCooldown || 0.26,
+            weaponKey: this.baseKey,
+            weaponSprite: this.getWeaponSpriteKey(),
+            isSuper: !!this.isSuper,
+            hits: new Set()
+        }, combatStats);
     }
 
     
 
     // 进化成超武
 
-    evolveToSuper(evoKey) {
+    evolveToSuper(evoKey, stats = null) {
 
         if (!SUPER_WEAPONS[evoKey]) return false;
 
@@ -58,6 +99,8 @@
         this.isSuper = true;
         this.baseKey = evoKey;
         this.cfg = { ...SUPER_WEAPONS[evoKey] };
+        this.baseAttackCoeff = Number.isFinite(this.cfg.attackCoeff) ? this.cfg.attackCoeff : this.baseAttackCoeff;
+        this.superAttackCoeffBonus = 1;
         
         // v0.16.1 fix: 继承原武器属性
         if (!this.cfg.range && oldRange) this.cfg.range = oldRange * 1.2;
@@ -67,8 +110,9 @@
         // v0.30: 保存原始等级供激光等武器使用
         this.originalLevel = this.level;
         if (this.originalLevel >= 4) {
-            // 4级以上进化获得额外增强
-            this.cfg.dmg = Math.floor(this.cfg.dmg * (1 + (this.originalLevel - 4) * 0.1));
+            // 4级以上进化保留一部分等级成长，让超武手感不断档
+            const carryPerLevel = window.WEAPON_DAMAGE_MODEL?.superCoeffCarryPerLevel || 0.05;
+            this.superAttackCoeffBonus = 1 + (this.originalLevel - 4) * carryPerLevel;
             if (this.cfg.range) {
                 this.cfg.range = Math.floor(this.cfg.range * (1 + (this.originalLevel - 4) * 0.05));
             }
@@ -84,7 +128,27 @@
         
         // v0.18.3: 环绕类超武立即生成永久环绕物
         if (window.game && (this.cfg.type === 'orbit' || this.cfg.subtype === 'orbit_proj')) {
-            window.game.spawnPermanentOrbitals(this.applyCombatStats({ ...this.cfg }));
+            const evolvedStats = stats || window.game.currentCombatStats || null;
+            const orbitCfg = this.applyCombatStats({ ...this.cfg, dmg: this.getDamage(evolvedStats) }, evolvedStats);
+            window.game.spawnPermanentOrbitals(orbitCfg);
+        } else if (window.game && this.cfg.subtype === 'guardian_knife') {
+            const evolvedStats = stats || window.game.currentCombatStats || null;
+            const knifeCfg = this.applyCombatStats({
+                ...this.cfg,
+                dmg: this.getDamage(evolvedStats),
+                type: 'guardian_knife_spawn',
+                count: this.getProjectileCount(),
+                searchRadius: this.cfg.searchRadius || this.getRange(),
+                returnSpeed: this.cfg.returnSpeed || this.cfg.speed || 360,
+                idleRadius: this.cfg.idleRadius || 50,
+                passThroughDistance: this.cfg.passThroughDistance || 92,
+                curveRadius: this.cfg.curveRadius || 124,
+                hitCooldown: this.cfg.hitCooldown || 0.2,
+                weaponKey: this.baseKey,
+                weaponSprite: this.getWeaponSpriteKey(),
+                isSuper: true
+            }, evolvedStats);
+            window.game.spawnGuardianKnives(knifeCfg);
         }
 
         return true;
@@ -136,17 +200,48 @@
     
 
     // v0.18.0: 完整的武器升级系统 - 每级都有明显提升
-    getDamage(stats) { 
-        // v0.16.1 fix: 使用 baseDmg 避免重复计算
-        if (this.isSuper) {
-            const superDmg = this.cfg.dmg * (stats?.dmg || 1);
-            return Math.floor(superDmg);
+    getAttackPower(stats) {
+        const baseAttack = stats?.attackPower ?? window.WEAPON_DAMAGE_MODEL?.baseAttackPower ?? 24;
+        return Math.max(1, baseAttack);
+    }
+
+    getAttackCoeff() {
+        if (Number.isFinite(this.baseAttackCoeff)) return this.baseAttackCoeff;
+        if (Number.isFinite(this.cfg?.attackCoeff)) return this.cfg.attackCoeff;
+        const fallbackBase = window.WEAPON_DAMAGE_MODEL?.baseAttackPower || 24;
+        const legacyDmg = this.baseDmg || this.cfg?.dmg;
+        return Number.isFinite(legacyDmg) ? (legacyDmg / fallbackBase) : 1;
+    }
+
+    getLevelDamageGrowth() {
+        const model = window.WEAPON_DAMAGE_MODEL || {};
+        const keyGrowth = model.levelGrowthByKey?.[this.originKey || this.baseKey];
+        if (Number.isFinite(keyGrowth)) return keyGrowth;
+        const typeGrowth = model.levelGrowthByType?.[this.cfg?.type];
+        if (Number.isFinite(typeGrowth)) return typeGrowth;
+        return 1.2;
+    }
+
+    getLevelDamageMultiplier(level = this.level) {
+        if (this.isSuper) return 1;
+        return Math.pow(this.getLevelDamageGrowth(), Math.max(0, level - 1));
+    }
+
+    getScaledCombatValue(coeffKey, legacyKey, stats) {
+        if (Number.isFinite(this.cfg?.[coeffKey])) {
+            return Math.max(0, Math.floor(this.getAttackPower(stats) * this.cfg[coeffKey]));
         }
-        
-        const baseDmg = this.baseDmg || this.cfg.dmg;
-        // v0.18.0: 增强升级曲线 - 1级:100%, 2级:120%, 3级:145%, 4级:175%, 5级:210%...
-        const levelMultiplier = 1 + (this.level - 1) * 0.20 + Math.pow(this.level - 1, 2) * 0.015;
-        let dmg = baseDmg * levelMultiplier;
+        return this.cfg?.[legacyKey] || 0;
+    }
+
+    getDamage(stats) { 
+        const attackPower = this.getAttackPower(stats);
+        let dmg = attackPower * this.getAttackCoeff();
+        if (this.isSuper) {
+            dmg *= this.superAttackCoeffBonus || 1;
+        } else {
+            dmg *= this.getLevelDamageMultiplier();
+        }
         dmg *= this.getBalanceDamageMultiplier();
         dmg *= stats?.dmg || 1;
 
@@ -211,9 +306,11 @@
             case 'poison_dart':
                 return count + Math.floor((this.level - 1) / 3);
             case 'knife':
+                return count;
             case 'cross':
-            case 'bible':
                 return count + Math.floor((this.level - 1) / 2);
+            case 'bible':
+                return count;
             case 'shuriken':
                 return count + Math.floor((this.level - 1) / 3);
             case 'holy_water':
@@ -305,30 +402,30 @@
     getUpgradeDescription() {
         const nextLevel = this.level + 1;
         if (nextLevel > this.maxLevel) return '已满级';
-        const dmgIncrease = Math.round((0.20 + (nextLevel - 2) * 0.03) * 100);
+        const damageGrowthText = `伤害x${this.getLevelDamageGrowth().toFixed(2)}`;
         const descriptions = {
-            whip: [`伤害+${dmgIncrease}%`, '剑弧更宽', '斩程提升'],
-            scythe: [`伤害+${dmgIncrease}%`, '斩环扩大', nextLevel >= 4 ? '处决线提高' : '击退增强'],
-            wand: [`伤害+${dmgIncrease}%`, '追踪更强', nextLevel % 3 === 0 ? '数量+1' : '飞行更稳'],
-            knife: [`伤害+${dmgIncrease}%`, '射速提升', nextLevel % 2 === 1 ? '穿透/刀雨增强' : '弹速提升'],
-            axe: [`伤害+${dmgIncrease}%`, '回旋更远', nextLevel % 2 === 1 ? '数量+1' : '回返重击增强'],
-            cross: [`伤害+${dmgIncrease}%`, '弹跳更强', nextLevel % 2 === 1 ? '数量+1' : '回返更稳'],
-            fireball: [`伤害+${dmgIncrease}%`, '爆炸范围扩大', nextLevel % 3 === 0 ? '火球+1' : '燃烧增强'],
-            shuriken: [`伤害+${dmgIncrease}%`, '散射切割增强', nextLevel % 3 === 0 ? '手里剑+1' : '回收更快'],
-            icicle: [`伤害+${dmgIncrease}%`, '冻结更强', nextLevel % 2 === 1 ? '穿透压制增强' : '射程提升'],
-            laser: [`伤害+${dmgIncrease}%`, '激光更粗', '持续时间提升'],
-            poison_dart: [`伤害+${dmgIncrease}%`, '毒性增强', nextLevel % 3 === 0 ? '毒镖+1' : '追踪更强'],
-            bible: [`伤害+${dmgIncrease}%`, '圣环持续更久', nextLevel % 2 === 1 ? '圣环+1' : '旋转更快'],
-            lightning: [`伤害+${dmgIncrease}%`, '连锁数提升', '链距扩大'],
-            holy_water: [`伤害+${dmgIncrease}%`, '圣池更大', '残留更久'],
-            radiance: [`伤害+${dmgIncrease}%`, '领域扩大', '灼烧更强']
+            whip: [damageGrowthText, '剑弧更宽', '斩程提升'],
+            scythe: [damageGrowthText, '斩环扩大', nextLevel >= 4 ? '处决线提高' : '击退增强'],
+            wand: [damageGrowthText, '追踪更强', nextLevel % 3 === 0 ? '数量+1' : '飞行更稳'],
+            knife: [damageGrowthText, '猎刀飞行更快', nextLevel === 4 ? '飞刀+1' : '追猎范围提升'],
+            axe: [damageGrowthText, '回旋更远', nextLevel % 2 === 1 ? '数量+1' : '回返重击增强'],
+            cross: [damageGrowthText, '弹跳更强', nextLevel % 2 === 1 ? '数量+1' : '回返更稳'],
+            fireball: [damageGrowthText, '爆炸范围扩大', nextLevel % 3 === 0 ? '火球+1' : '燃烧增强'],
+            shuriken: [damageGrowthText, '散射切割增强', nextLevel % 3 === 0 ? '手里剑+1' : '回收更快'],
+            icicle: [damageGrowthText, '冻结更强', nextLevel % 2 === 1 ? '穿透压制增强' : '射程提升'],
+            laser: [damageGrowthText, '激光更粗', '持续时间提升'],
+            poison_dart: [damageGrowthText, '毒性增强', nextLevel % 3 === 0 ? '毒镖+1' : '追踪更强'],
+            bible: [damageGrowthText, '圣环持续更久', nextLevel % 2 === 1 ? '圣环+1' : '旋转更快'],
+            lightning: [damageGrowthText, '连锁数提升', '链距扩大'],
+            holy_water: [damageGrowthText, '圣池更大', '残留更久'],
+            radiance: [damageGrowthText, '领域扩大', '灼烧更强']
         };
-        const effects = descriptions[this.baseKey] || [`伤害+${dmgIncrease}%`, '范围提升'];
+        const effects = descriptions[this.baseKey] || [damageGrowthText, '范围提升'];
         if (nextLevel === 8) effects.push('★ 满级');
         return effects.join(' ');
     }
 
-    getCombatStats() {
+    getCombatStats(stats = null) {
         const cfg = this.cfg || {};
         const executeChance = typeof cfg.execute === 'object' ? (cfg.execute.chance || 0) : (cfg.execute || 0);
         const executeThreshold = typeof cfg.execute === 'object'
@@ -342,7 +439,7 @@
             executeThreshold: executeThreshold,
             freezeChance: cfg.freezeChance || 0,
             freezeDuration: cfg.freezeDuration || 0,
-            poisonDmg: cfg.poisonDmg || 0,
+            poisonDmg: this.getScaledCombatValue('poisonDmgCoeff', 'poisonDmg', stats),
             blind: !!cfg.blind,
             knockback: cfg.knockback || 0,
             burnSpread: !!cfg.burnSpread,
@@ -358,8 +455,9 @@
         };
     }
 
-    applyCombatStats(target) {
-        target.combat = { ...this.getCombatStats() };
+    applyCombatStats(target, stats = null) {
+        const combatStats = stats || window.game?.currentCombatStats || null;
+        target.combat = { ...this.getCombatStats(combatStats) };
         return target;
     }
 
@@ -505,6 +603,9 @@
     
     // 投射攻击 - v0.18.0: 使用升级后的数量和范围
     fireProjectile(player, target, dmg, subtype, stats) {
+        if (subtype === 'guardian_knife') {
+            return this.fireGuardianKnife(player, dmg, stats);
+        }
         let bullets = [];
         const speed = (this.cfg.speed || 300) * (1 + (stats.projSpeed || 0));
         // 如果没有目标，根据玩家朝向发射
@@ -553,6 +654,11 @@
         
         return bullets;
     }
+
+    fireGuardianKnife(player, dmg, stats) {
+        const spawnCfg = this.buildGuardianKnifeSpawnConfig(player, dmg, stats);
+        return spawnCfg ? [spawnCfg] : [];
+    }
     
     // 辅助方法：创建单个投射物
     createProjectile(player, baseAngle, speed, dmg, subtype, stats, count = 1, target = null) {
@@ -573,8 +679,8 @@
                         life: 3, pierce: this.getPierce(), maxPierce: this.getPierce(),
                         homing: true, homingStrength: this.cfg.homingStrength || 0.5,
                         target: target, hits: new Set(),
-                        poison: this.cfg.poison || 0
-                    }));
+                        poison: this.getScaledCombatValue('poisonCoeff', 'poison', stats)
+                    }, stats));
                 }
                 break;
                 
@@ -739,7 +845,7 @@
     }
     
     getWeaponSpriteKey() {
-        const spriteMap = {
+        const fallbackMap = {
             whip: 'weapon_whip',
             scythe: 'weapon_scythe',
             wand: 'weapon_wand',
@@ -750,7 +856,10 @@
             lightning: 'weapon_lightning',
             holy_water: 'weapon_holywater'
         };
-        return spriteMap[this.baseKey] || null;
+        const spriteMap = (typeof window !== 'undefined' && window.WEAPON_WEAPONKEY_TO_SPRITEKEY)
+            ? window.WEAPON_WEAPONKEY_TO_SPRITEKEY
+            : fallbackMap;
+        return spriteMap[this.baseKey] || fallbackMap[this.baseKey] || null;
     }
     
     applyProjectileVisualConfig(b) {
@@ -759,18 +868,19 @@
             homing: { sprite: 'bullet_lightning', size: 9, hitRadius: 6, renderStyle: 'magic_orb' },
             poison_homing: { sprite: 'bullet_lightning', size: 8.5, hitRadius: 5, renderStyle: 'poison_dart' },
             rapid: { sprite: 'bullet_arrow', size: 7.2, hitRadius: 4.4, renderStyle: 'knife_throw' },
+            guardian_knife: { sprite: 'weapon_knife', size: 22, hitRadius: 10, renderStyle: 'knife_guardian' },
             boomerang: { sprite: 'bullet_arrow', size: 12, hitRadius: 7.8, renderStyle: 'axe_spin' },
             bounce: { sprite: 'bullet_lightning', size: 10, hitRadius: 6, renderStyle: 'cross_bounce' },
             explode: { sprite: 'weapon_fireball', size: 12, hitRadius: 6.5, renderStyle: 'fireball' },
             fan: { sprite: 'bullet_arrow', size: 9, hitRadius: 5.2, renderStyle: 'shuriken' },
             penetrate: { sprite: 'bullet_ice', size: 12, hitRadius: 7, renderStyle: 'icicle' },
-            orbit_proj: { sprite: 'bullet_lightning', size: 16, hitRadius: 8, renderStyle: 'orbit_bible' }
+            orbit_proj: { sprite: 'bullet_lightning', size: 40, hitRadius: 11, renderStyle: 'orbit_bible' }
         };
         const cfg = { ...(configMap[subtype] || { sprite: 'bullet_arrow', size: 10, hitRadius: 6 }) };
         const scale = b.scale || 1;
         
         // 武器优先级修正：按武器逻辑使用对应贴图
-        if (b.weaponKey === 'knife' && subtype === 'rapid') {
+        if (b.weaponKey === 'knife' && (subtype === 'rapid' || subtype === 'guardian_knife')) {
             cfg.sprite = 'weapon_knife';
         } else if (b.weaponKey === 'axe' && subtype === 'boomerang') {
             cfg.sprite = 'weapon_axe';
@@ -803,6 +913,9 @@
             eternal: !!this.cfg.eternal,
             doubleRing: !!this.cfg.doubleRing,
             rotationSpeed: (this.cfg.rotationSpeed || this.cfg.orbitSpeed || 2) * (1 + (stats.lingeringFieldScale || 0) * 0.12),
+            orbitalDrawSize: this.cfg.orbitalDrawSize || 30,
+            orbitHitPadding: this.cfg.orbitHitPadding || 44,
+            orbitVisualSpinSpeed: this.cfg.orbitVisualSpinSpeed || 2,
             hits: new Set(),
             weaponKey: this.baseKey,
             weaponSprite: this.getWeaponSpriteKey()
@@ -925,6 +1038,35 @@
         if (window.game && window.game.camera) {
             window.game.camera.addShake(this.isSuper ? 2 : 1);
         }
+
+        if (this.cfg.uniqueBeam && window.game && Array.isArray(window.game.bullets)) {
+            const existing = window.game.bullets.find(b =>
+                b &&
+                (b.type === 'laser_beam' || b.isLaser) &&
+                b.weaponKey === this.baseKey &&
+                b.sourceOwner === player &&
+                (b.life || 0) > 0
+            );
+            if (existing) {
+                existing.x = player.cx;
+                existing.y = player.cy;
+                existing.angle = baseAngle;
+                existing.width = width;
+                existing.range = range;
+                existing.dmg = dmg;
+                existing.color = this.cfg.color || existing.color || '#ff0044';
+                existing.life = Math.max(existing.life || 0, life);
+                existing.maxLife = Math.max(existing.maxLife || 0, life);
+                existing.tickCooldown = tickCooldown;
+                existing.curved = !!this.cfg.homingCurve;
+                existing.turnRate = (this.cfg.turnRate || 0) + (isMoving ? (stats.moveConduction || 0) : 0);
+                existing.maxTrackAngle = (this.cfg.maxTrackAngle || 0) + (isMoving ? (stats.moveConduction || 0) * 0.4 : 0);
+                existing.trackReferenceAngle = baseAngle;
+                existing.lockTrackToFireAngle = !!this.cfg.lockTrackToFireAngle;
+                existing.segmentLength = this.cfg.segmentLength || 60;
+                return [];
+            }
+        }
         
         return [this.applyCombatStats({
             x: player.cx, y: player.cy,
@@ -951,6 +1093,8 @@
             preferMoveDirection: !!this.cfg.preferMoveDirection,
             turnRate: (this.cfg.turnRate || 0) + (isMoving ? (stats.moveConduction || 0) : 0),
             maxTrackAngle: (this.cfg.maxTrackAngle || 0) + (isMoving ? (stats.moveConduction || 0) * 0.4 : 0),
+            trackReferenceAngle: baseAngle,
+            lockTrackToFireAngle: !!this.cfg.lockTrackToFireAngle,
             segmentLength: this.cfg.segmentLength || 60,
             statsSnapshot: { ...(stats || {}) },
             weaponKey: this.baseKey,
@@ -972,7 +1116,7 @@
                 existing.tickRate = (this.cfg.tickRate || 0.3) * (stats.lingeringTickRateMul || 1);
                 existing.life = Math.max(existing.life || 0, 0.5);
                 existing.lastTick = Math.min(existing.lastTick || 0, existing.tickRate * 0.5);
-                existing.combat = { ...this.getCombatStats(), ...existing.combat };
+                existing.combat = { ...this.getCombatStats(stats), ...existing.combat };
                 return [];
             }
         }

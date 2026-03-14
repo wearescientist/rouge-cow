@@ -14,6 +14,10 @@
 
         this.enemies = [];
 
+        this.spawnStats = {
+            eliteTier3Spawned: 0
+        };
+
         this.maxActiveEnemies = 80;
 
         
@@ -47,6 +51,10 @@
     setupRoomType() {
 
         const type = this.room.type;
+
+        this.bossRoom = false;
+        this.eliteRoom = false;
+        this.eliteOnly = false;
 
         
 
@@ -206,7 +214,11 @@
 
         const difficultyMultiplier = 1 + (this.wave - 1) * 0.2;
 
-        this.targetCount = Math.floor(this.baseEnemyCount * difficultyMultiplier);
+        if (this.eliteRoom || this.eliteOnly) {
+            this.targetCount = this.baseEnemyCount;
+        } else {
+            this.targetCount = Math.floor(this.baseEnemyCount * difficultyMultiplier);
+        }
 
         this.spawnedThisWave = 0;
 
@@ -366,28 +378,31 @@
             }
         }
         
-        // 精英房 - T2 + T3混合
-        if (this.eliteRoom || this.eliteOnly) {
-            // 精英房T2替换率：70%
-            const t2Rate = 0.7;
-            
-            if (this.eliteRoom && this.wave >= 3) {
-                // 第3波开始出T3
-                const t2Count = this.enemies.filter(e => e.tier === 2 && e.hp > 0).length;
-                const t3Count = this.enemies.filter(e => e.tier === 3 && e.hp > 0).length;
-                // 如果有T3配额且还没出够，出T3
-                if (t3Count === 0 && t2Count >= 5 && t3Pool.length > 0) {
-                    const t3 = randChoice(t3Pool);
-                    return { typeKey: buildTypeKey(t3), tier: 3, isElite: true };
-                }
+        // 精英房 - 前两波只出 T2，第三波仅最后 1 只为 T3
+        if (this.eliteRoom) {
+            const remainingSpawns = this.targetCount - this.spawnedThisWave;
+            if (this.wave >= 3 && this.spawnStats.eliteTier3Spawned < 1 && remainingSpawns <= 1 && t3Pool.length > 0) {
+                const t3 = randChoice(t3Pool);
+                this.spawnStats.eliteTier3Spawned += 1;
+                return { typeKey: buildTypeKey(t3), tier: 3, isElite: true };
             }
-            
-            // 出T2
-            if (t2Pool.length > 0 && Math.random() < t2Rate) {
+            if (t2Pool.length > 0) {
                 const t2 = randChoice(t2Pool);
                 return { typeKey: buildTypeKey(t2), tier: 2, isElite: true };
             }
-            // 否则出T3（如果有）
+            if (this.wave >= 3 && t3Pool.length > 0 && this.spawnStats.eliteTier3Spawned < 1) {
+                const t3Fallback = randChoice(t3Pool);
+                this.spawnStats.eliteTier3Spawned += 1;
+                return { typeKey: buildTypeKey(t3Fallback), tier: 3, isElite: true };
+            }
+        }
+
+        // 隐藏房等高阶模式：T2 优先，缺池时才回退到 T3
+        if (this.eliteOnly) {
+            if (t2Pool.length > 0) {
+                const t2 = randChoice(t2Pool);
+                return { typeKey: buildTypeKey(t2), tier: 2, isElite: true };
+            }
             if (t3Pool.length > 0) {
                 const t3 = randChoice(t3Pool);
                 return { typeKey: buildTypeKey(t3), tier: 3, isElite: true };

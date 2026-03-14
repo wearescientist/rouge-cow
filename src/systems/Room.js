@@ -1,5 +1,31 @@
 ﻿class Room {
 
+    getLayer1FullSceneBackdropUrl() {
+        return 'none';
+    }
+
+    syncStageShellBackdrop() {
+        const mainLayout = document.getElementById('mainLayout');
+        if (!mainLayout) return;
+
+        const nextValue = this.getLayer1FullSceneBackdropUrl();
+        if (Room._activeStageShellBackdrop !== nextValue) {
+            mainLayout.style.setProperty('--stage-shell-bg', nextValue);
+            Room._activeStageShellBackdrop = nextValue;
+        }
+
+        const shouldUseSceneShell = Number.isFinite(this.floor) && this.floor >= 1 && this.floor <= 6;
+        if (shouldUseSceneShell) {
+            mainLayout.dataset.sceneShell = 'layer1';
+            this.applyLayer1ShellRuntimeVars(mainLayout);
+            this.logLayer1ShellDebug(mainLayout);
+            return;
+        }
+
+        delete mainLayout.dataset.sceneShell;
+        this.clearLayer1ShellRuntimeVars(mainLayout);
+    }
+
     getLayer1EnvelopeTextures() {
         if (this.floor !== 1) return null;
 
@@ -18,6 +44,7 @@
             };
 
             Room._layer1EnvelopeTextures = {
+                roomShellTrial: createImage(basePath + 'background/layer1_room_shell_trial.png'),
                 floorBase: createImage(basePath + 'tiles/layer1/set1/layer1_set1_floor_base.png'),
                 floorDetail: createImage(basePath + 'tiles/layer1/set2/layer1_set2_floor_detail.png'),
                 floorCrack: createImage(basePath + 'tiles/layer1/set2/layer1_set2_floor_crack.png'),
@@ -87,6 +114,281 @@
         ctx.restore();
     }
 
+    getDoorPositions() {
+        const doorPositions = {};
+        const wallT = SURVIVOR_CONFIG.WALL_THICKNESS;
+        const doorSize = 180;
+        const doorOffset = (doorSize - wallT) / 2;
+
+        for (const [dir, door] of Object.entries(this.doors)) {
+            if (!door) continue;
+
+            let doorX;
+            let doorY;
+            let doorW;
+            let doorH;
+            let doorRotation;
+
+            switch (dir) {
+                case 'up':
+                    doorX = this.centerX - doorSize / 2;
+                    doorY = -doorOffset;
+                    doorW = doorSize;
+                    doorH = doorSize;
+                    doorRotation = 0;
+                    break;
+                case 'down':
+                    doorX = this.centerX - doorSize / 2;
+                    doorY = this.height - wallT - doorOffset;
+                    doorW = doorSize;
+                    doorH = doorSize;
+                    doorRotation = Math.PI;
+                    break;
+                case 'left':
+                    doorX = -doorOffset;
+                    doorY = this.centerY - doorSize / 2;
+                    doorW = doorSize;
+                    doorH = doorSize;
+                    doorRotation = -Math.PI / 2;
+                    break;
+                case 'right':
+                    doorX = this.width - wallT - doorOffset;
+                    doorY = this.centerY - doorSize / 2;
+                    doorW = doorSize;
+                    doorH = doorSize;
+                    doorRotation = Math.PI / 2;
+                    break;
+                default:
+                    continue;
+            }
+
+            doorPositions[dir] = { x: doorX, y: doorY, w: doorW, h: doorH, rotation: doorRotation };
+        }
+
+        return doorPositions;
+    }
+
+    getDoorLightColor(door) {
+        switch (door?.target?.type) {
+            case 'start':
+                return { r: 126, g: 214, b: 255 };
+            case 'normal':
+                return { r: 244, g: 238, b: 210 };
+            case 'boss':
+                return { r: 255, g: 82, b: 68 };
+            case 'treasure':
+                return { r: 255, g: 214, b: 92 };
+            case 'shop':
+                return { r: 205, g: 122, b: 255 };
+            case 'elite':
+                return { r: 108, g: 255, b: 132 };
+            case 'hidden':
+                return { r: 120, g: 236, b: 220 };
+            default:
+                return { r: 245, g: 245, b: 255 };
+        }
+    }
+
+    drawDoorLightBeams(ctx, camera, doorPositions, viewLeft, viewTop, viewRight, viewBottom) {
+        const time = Date.now() / 1000;
+
+        for (const [dir, door] of Object.entries(this.doors)) {
+            if (!door || !door.open) continue;
+
+            const pos = doorPositions[dir];
+            if (!pos) continue;
+
+            const color = this.getDoorLightColor(door);
+            const config = {
+                color,
+                intensity: door?.target?.type === 'boss' ? 4.5 : 4,
+                opacity: door?.target?.type === 'hidden' ? 0.82 : 0.9,
+                length: door?.target?.type === 'boss' ? 114 : 100,
+                spread: door?.target?.type === 'shop' ? 1.92 : 1.85,
+                softness: 11,
+                lip: 2
+            };
+
+            if (pos.x >= viewRight || pos.x + pos.w <= viewLeft || pos.y >= viewBottom || pos.y + pos.h <= viewTop) {
+                continue;
+            }
+
+            const pulse = 0.94 + Math.sin(time * 2.2 + pos.x * 0.01 + pos.y * 0.01) * 0.06;
+            const openingWidth = 100;
+            const beamLength = config.length;
+            const farWidth = openingWidth * config.spread;
+            const lipThickness = 12;
+
+            let originX = this.centerX;
+            let originY = this.centerY;
+            let angle = 0;
+
+            switch (dir) {
+                case 'up':
+                    originY = SURVIVOR_CONFIG.floorTop;
+                    angle = 0;
+                    break;
+                case 'down':
+                    originY = SURVIVOR_CONFIG.floorBottom;
+                    angle = Math.PI;
+                    break;
+                case 'left':
+                    originX = SURVIVOR_CONFIG.floorLeft;
+                    angle = -Math.PI / 2;
+                    break;
+                case 'right':
+                    originX = SURVIVOR_CONFIG.floorRight;
+                    angle = Math.PI / 2;
+                    break;
+            }
+
+            const screenOrigin = camera.worldToScreen(originX, originY);
+            const screenScale = Number.isFinite(screenOrigin?.scale) ? screenOrigin.scale : (camera.zoom || 1);
+            const doorScreenStart = camera.worldToScreen(pos.x, pos.y);
+            const doorScreenEnd = camera.worldToScreen(pos.x + pos.w, pos.y + pos.h);
+            const sourceScreenW = Math.max(
+                Math.abs(doorScreenEnd.x - doorScreenStart.x),
+                Math.abs(doorScreenEnd.y - doorScreenStart.y),
+                openingWidth * screenScale
+            );
+            const beamScreenH = beamLength * screenScale;
+            const farScreenW = Math.max(sourceScreenW * config.spread, farWidth * screenScale);
+            const lipScreenThickness = Math.max(2, lipThickness * screenScale);
+            const blurPx = Math.max(0, config.softness * screenScale);
+            const darkFloorFactor = this.floor >= 6 ? 0.68 : 0.82;
+            const beamNear = Math.min(1, config.opacity * 0.16 * config.intensity * pulse * darkFloorFactor);
+            const beamMid = Math.min(1, config.opacity * 0.085 * config.intensity * pulse * darkFloorFactor);
+            const beamFar = Math.min(1, config.opacity * 0.022 * config.intensity * pulse * darkFloorFactor);
+            const lipA = Math.min(1, config.opacity * 0.12 * config.lip * pulse * darkFloorFactor);
+            const lipB = Math.min(1, config.opacity * 0.075 * config.lip * pulse * darkFloorFactor);
+            const glowAlpha = Math.min(1, config.opacity * 0.05 * config.intensity * pulse * darkFloorFactor);
+
+            ctx.save();
+            ctx.translate(screenOrigin.x, screenOrigin.y);
+            ctx.rotate(angle);
+            ctx.globalCompositeOperation = 'screen';
+            ctx.filter = `blur(${blurPx}px)`;
+
+            const beamGradient = ctx.createLinearGradient(0, 0, 0, beamScreenH);
+            beamGradient.addColorStop(0, `rgba(${config.color.r}, ${config.color.g}, ${config.color.b}, ${beamNear})`);
+            beamGradient.addColorStop(0.42, `rgba(${config.color.r}, ${config.color.g}, ${config.color.b}, ${beamMid})`);
+            beamGradient.addColorStop(0.78, `rgba(${config.color.r}, ${config.color.g}, ${config.color.b}, ${beamFar})`);
+            beamGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = beamGradient;
+            ctx.beginPath();
+            ctx.moveTo(-sourceScreenW / 2, 0);
+            ctx.lineTo(sourceScreenW / 2, 0);
+            ctx.lineTo(farScreenW / 2, beamScreenH);
+            ctx.lineTo(-farScreenW / 2, beamScreenH);
+            ctx.closePath();
+            ctx.fill();
+
+            ctx.filter = 'none';
+            ctx.shadowBlur = Math.max(8, blurPx * 1.6);
+            ctx.shadowColor = `rgba(${config.color.r}, ${config.color.g}, ${config.color.b}, ${glowAlpha})`;
+
+            const lipGradient = ctx.createLinearGradient(0, 0, 0, lipScreenThickness);
+            lipGradient.addColorStop(0, `rgba(${Math.round(config.color.r * 0.38)}, ${Math.round(config.color.g * 0.34)}, ${Math.round(config.color.b * 0.3)}, ${lipA})`);
+            lipGradient.addColorStop(0.45, `rgba(${Math.round(config.color.r * 0.72)}, ${Math.round(config.color.g * 0.66)}, ${Math.round(config.color.b * 0.58)}, ${lipB})`);
+            lipGradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            ctx.fillStyle = lipGradient;
+            ctx.fillRect(-sourceScreenW / 2, -lipScreenThickness * 0.2, sourceScreenW, lipScreenThickness);
+
+            ctx.restore();
+        }
+    }
+
+    drawLayer1ForegroundOcclusion(ctx, camera) {
+        if (this.floor !== 1) return;
+
+        const scene = this.getLayer1SceneLayout(ctx, camera);
+        const floorRect = scene.floorRect;
+        const shellDepthX = floorRect.width * 0.085;
+        const shellDepthY = floorRect.height * 0.085;
+        const centerX = (floorRect.left + floorRect.right) * 0.5;
+        const centerY = (floorRect.top + floorRect.bottom) * 0.5;
+
+        const fillSoftBand = (points, fillStyle, blur = 0, alpha = 1) => {
+            ctx.save();
+            if (blur > 0) ctx.filter = `blur(${blur}px)`;
+            ctx.globalAlpha = alpha;
+            ctx.fillStyle = fillStyle;
+            ctx.beginPath();
+            ctx.moveTo(points[0].x, points[0].y);
+            for (let i = 1; i < points.length; i++) {
+                ctx.lineTo(points[i].x, points[i].y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.restore();
+        };
+
+        const topBand = [
+            { x: floorRect.left + floorRect.width * 0.08, y: floorRect.top },
+            { x: centerX - floorRect.width * 0.18, y: floorRect.top },
+            { x: centerX - floorRect.width * 0.1, y: floorRect.top + shellDepthY * 0.95 },
+            { x: centerX, y: floorRect.top + shellDepthY * 1.12 },
+            { x: centerX + floorRect.width * 0.1, y: floorRect.top + shellDepthY * 0.95 },
+            { x: centerX + floorRect.width * 0.18, y: floorRect.top },
+            { x: floorRect.right - floorRect.width * 0.08, y: floorRect.top },
+            { x: floorRect.right - floorRect.width * 0.08, y: floorRect.top + shellDepthY * 0.32 },
+            { x: floorRect.left + floorRect.width * 0.08, y: floorRect.top + shellDepthY * 0.32 }
+        ];
+        const leftBand = [
+            { x: floorRect.left, y: floorRect.top + floorRect.height * 0.12 },
+            { x: floorRect.left + shellDepthX * 0.34, y: floorRect.top + floorRect.height * 0.16 },
+            { x: floorRect.left + shellDepthX * 0.82, y: centerY - floorRect.height * 0.16 },
+            { x: floorRect.left + shellDepthX * 1.04, y: centerY },
+            { x: floorRect.left + shellDepthX * 0.82, y: centerY + floorRect.height * 0.16 },
+            { x: floorRect.left + shellDepthX * 0.34, y: floorRect.bottom - floorRect.height * 0.16 },
+            { x: floorRect.left, y: floorRect.bottom - floorRect.height * 0.12 }
+        ];
+        const rightBand = [
+            { x: floorRect.right, y: floorRect.top + floorRect.height * 0.12 },
+            { x: floorRect.right - shellDepthX * 0.34, y: floorRect.top + floorRect.height * 0.16 },
+            { x: floorRect.right - shellDepthX * 0.82, y: centerY - floorRect.height * 0.16 },
+            { x: floorRect.right - shellDepthX * 1.04, y: centerY },
+            { x: floorRect.right - shellDepthX * 0.82, y: centerY + floorRect.height * 0.16 },
+            { x: floorRect.right - shellDepthX * 0.34, y: floorRect.bottom - floorRect.height * 0.16 },
+            { x: floorRect.right, y: floorRect.bottom - floorRect.height * 0.12 }
+        ];
+        const bottomBand = [
+            { x: floorRect.left + floorRect.width * 0.12, y: floorRect.bottom },
+            { x: centerX - floorRect.width * 0.17, y: floorRect.bottom },
+            { x: centerX - floorRect.width * 0.09, y: floorRect.bottom - shellDepthY * 0.66 },
+            { x: centerX, y: floorRect.bottom - shellDepthY * 0.78 },
+            { x: centerX + floorRect.width * 0.09, y: floorRect.bottom - shellDepthY * 0.66 },
+            { x: centerX + floorRect.width * 0.17, y: floorRect.bottom },
+            { x: floorRect.right - floorRect.width * 0.12, y: floorRect.bottom },
+            { x: floorRect.right - floorRect.width * 0.12, y: floorRect.bottom - shellDepthY * 0.22 },
+            { x: floorRect.left + floorRect.width * 0.12, y: floorRect.bottom - shellDepthY * 0.22 }
+        ];
+
+        const topGrad = ctx.createLinearGradient(0, floorRect.top, 0, floorRect.top + shellDepthY * 1.18);
+        topGrad.addColorStop(0, 'rgba(4, 5, 7, 0.98)');
+        topGrad.addColorStop(0.34, 'rgba(6, 7, 9, 0.92)');
+        topGrad.addColorStop(1, 'rgba(6, 7, 9, 0)');
+        fillSoftBand(topBand, topGrad, 8, 1);
+
+        const leftGrad = ctx.createLinearGradient(floorRect.left, 0, floorRect.left + shellDepthX * 1.18, 0);
+        leftGrad.addColorStop(0, 'rgba(4, 5, 7, 0.98)');
+        leftGrad.addColorStop(0.36, 'rgba(6, 7, 9, 0.9)');
+        leftGrad.addColorStop(1, 'rgba(6, 7, 9, 0)');
+        fillSoftBand(leftBand, leftGrad, 7, 1);
+
+        const rightGrad = ctx.createLinearGradient(floorRect.right, 0, floorRect.right - shellDepthX * 1.18, 0);
+        rightGrad.addColorStop(0, 'rgba(4, 5, 7, 0.98)');
+        rightGrad.addColorStop(0.36, 'rgba(6, 7, 9, 0.9)');
+        rightGrad.addColorStop(1, 'rgba(6, 7, 9, 0)');
+        fillSoftBand(rightBand, rightGrad, 7, 1);
+
+        const bottomGrad = ctx.createLinearGradient(0, floorRect.bottom, 0, floorRect.bottom - shellDepthY * 0.92);
+        bottomGrad.addColorStop(0, 'rgba(4, 5, 7, 0.96)');
+        bottomGrad.addColorStop(0.34, 'rgba(6, 7, 9, 0.84)');
+        bottomGrad.addColorStop(1, 'rgba(6, 7, 9, 0)');
+        fillSoftBand(bottomBand, bottomGrad, 7, 1);
+    }
+
     getLayer1SceneLayout(ctx, camera) {
         const wallT = SURVIVOR_CONFIG.WALL_THICKNESS;
         const roomTopLeft = camera.worldToScreen(0, 0);
@@ -124,35 +426,32 @@
         const roomSeed = ((this.gx + 11) * 31 + (this.gy + 7) * 17 + this.floor * 13) & 0xffff;
         const baseFloorSprite = sprites ? sprites.get('layer1_floor_mycelium') : null;
         const scene = this.getLayer1SceneLayout(ctx, camera);
-        const center = scene.center;
         const floorX = scene.floorRect.left;
         const floorY = scene.floorRect.top;
         const floorW = scene.floorRect.width;
         const floorH = scene.floorRect.height;
-        const floorBottom = scene.floorRect.bottom;
-        const floorRight = scene.floorRect.right;
-        const thresholdSize = Math.max(72, floorW * 0.12);
-
-        this.drawLayer1FullSceneEnvelope(ctx, scene, time);
 
         ctx.save();
         ctx.beginPath();
         ctx.rect(floorX, floorY, floorW, floorH);
         ctx.clip();
-        ctx.fillStyle = '#54514b';
+        ctx.fillStyle = '#282826';
         ctx.fillRect(floorX, floorY, floorW, floorH);
         if (baseFloorSprite) {
-            ctx.globalAlpha = 0.96;
+            ctx.globalAlpha = 0.66;
             ctx.drawImage(baseFloorSprite, floorX, floorY, floorW, floorH);
         }
         if (this.isEnvelopeTextureReady(textures?.floorBase)) {
-            ctx.globalAlpha = 0.16;
+            ctx.globalAlpha = 0.05;
             ctx.drawImage(textures.floorBase, floorX, floorY, floorW, floorH);
         }
         if (this.isEnvelopeTextureReady(textures?.floorDetail)) {
-            ctx.globalAlpha = 0.05;
+            ctx.globalAlpha = 0.02;
             ctx.drawImage(textures.floorDetail, floorX, floorY, floorW, floorH);
         }
+        ctx.globalAlpha = 0.4;
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(floorX, floorY, floorW, floorH);
         ctx.restore();
 
         if (this.isEnvelopeTextureReady(textures?.floorCrack)) {
@@ -165,49 +464,6 @@
                 const crackH = floorH * 0.09;
                 ctx.drawImage(textures.floorCrack, px, py, crackW, crackH);
             }
-            ctx.restore();
-        }
-
-        const floorCenterGlow = ctx.createRadialGradient(center.x, center.y, floorW * 0.02, center.x, center.y, floorW * 0.48);
-        floorCenterGlow.addColorStop(0, 'rgba(196, 192, 182, 0.12)');
-        floorCenterGlow.addColorStop(0.55, 'rgba(120, 122, 118, 0.04)');
-        floorCenterGlow.addColorStop(1, 'rgba(0, 0, 0, 0.24)');
-        ctx.fillStyle = floorCenterGlow;
-        ctx.fillRect(floorX, floorY, floorW, floorH);
-
-        const edgeFadeTop = ctx.createLinearGradient(0, floorY - thresholdSize * 0.6, 0, floorY + thresholdSize);
-        edgeFadeTop.addColorStop(0, 'rgba(0, 0, 0, 0.62)');
-        edgeFadeTop.addColorStop(0.45, 'rgba(20, 22, 24, 0.18)');
-        edgeFadeTop.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        ctx.fillStyle = edgeFadeTop;
-        ctx.fillRect(floorX - 6, floorY - thresholdSize * 0.7, floorW + 12, thresholdSize * 1.7);
-
-        const edgeFadeBottom = ctx.createLinearGradient(0, floorBottom - thresholdSize, 0, floorBottom + thresholdSize * 0.7);
-        edgeFadeBottom.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        edgeFadeBottom.addColorStop(0.55, 'rgba(18, 20, 22, 0.24)');
-        edgeFadeBottom.addColorStop(1, 'rgba(0, 0, 0, 0.68)');
-        ctx.fillStyle = edgeFadeBottom;
-        ctx.fillRect(floorX - 6, floorBottom - thresholdSize, floorW + 12, thresholdSize * 1.8);
-
-        const edgeFadeLeft = ctx.createLinearGradient(floorX - thresholdSize * 0.7, 0, floorX + thresholdSize, 0);
-        edgeFadeLeft.addColorStop(0, 'rgba(0, 0, 0, 0.7)');
-        edgeFadeLeft.addColorStop(0.45, 'rgba(18, 20, 22, 0.2)');
-        edgeFadeLeft.addColorStop(1, 'rgba(0, 0, 0, 0)');
-        ctx.fillStyle = edgeFadeLeft;
-        ctx.fillRect(floorX - thresholdSize * 0.8, floorY - 6, thresholdSize * 1.8, floorH + 12);
-
-        const edgeFadeRight = ctx.createLinearGradient(floorRight - thresholdSize, 0, floorRight + thresholdSize * 0.7, 0);
-        edgeFadeRight.addColorStop(0, 'rgba(0, 0, 0, 0)');
-        edgeFadeRight.addColorStop(0.55, 'rgba(18, 20, 22, 0.2)');
-        edgeFadeRight.addColorStop(1, 'rgba(0, 0, 0, 0.7)');
-        ctx.fillStyle = edgeFadeRight;
-        ctx.fillRect(floorRight - thresholdSize, floorY - 6, thresholdSize * 1.8, floorH + 12);
-
-        if (this.isEnvelopeTextureReady(textures?.wallGlowing)) {
-            ctx.save();
-            ctx.globalAlpha = 0.1;
-            ctx.drawImage(textures.wallGlowing, floorX + floorW * 0.04, floorY + floorH * 0.08, floorW * 0.12, floorH * 0.16);
-            ctx.drawImage(textures.wallGlowing, floorX + floorW * 0.82, floorY + floorH * 0.7, floorW * 0.1, floorH * 0.14);
             ctx.restore();
         }
 
@@ -301,34 +557,56 @@
 
     spawnRoomItems() {
         if (this.type === 'treasure') {
-            // 宝箱房：放置一个宝箱，触碰后弹出3选1选择框
+            const createQuality = () => {
+                if (window.game && typeof window.game.rollTreasureChestQuality === 'function') {
+                    return window.game.rollTreasureChestQuality();
+                }
+                const roll = Math.random();
+                if (roll < 0.05) return 'legendary';
+                if (roll < 0.20) return 'rare';
+                return 'common';
+            };
+            const positions = [-200, 0, 200];
+            this.chest = null;
+            this.chests = positions.map(offsetX => {
+                const quality = createQuality();
+                return {
+                    x: this.centerX + offsetX,
+                    y: this.centerY - 8,
+                    opened: false,
+                    disabled: false,
+                    quality,
+                    rewards: window.game && typeof window.game.generateTreasureChestRewardsByQuality === 'function'
+                        ? window.game.generateTreasureChestRewardsByQuality(quality)
+                        : []
+                };
+            });
+
+        } else if (this.type === 'hidden') {
+            // 隐藏房：每层固定一个，进房即给隐藏奖励
+            this.cleared = true;
+            this.chests = [];
             this.chest = {
                 x: this.centerX,
                 y: this.centerY,
                 opened: false,
-                items: [] // 待选择的3个物品
+                items: []
             };
-            // v0.26: 使用层数过滤的道具列表
-            const availableItems = window.game ? window.game.getAvailableItemsByFloor() : Object.values(ITEMS);
-            const selected = [];
-            while (selected.length < 3 && availableItems.length > 0) {
-                const idx = Math.floor(Math.random() * availableItems.length);
-                const item = availableItems.splice(idx, 1)[0];
-                selected.push({
-                    id: item.id,
-                    icon: item.icon,
-                    name: item.name,
-                    desc: item.desc,
-                    rarity: item.rarity
-                });
+            const secretPool = window.game && typeof window.game.getAvailableItemsByFloor === 'function'
+                ? window.game.getAvailableItemsByFloor()
+                : Object.values(ITEMS || {});
+            if (secretPool.length > 0) {
+                const selected = secretPool[Math.floor(Math.random() * secretPool.length)];
+                if (selected) {
+                    this.chest.items = [{
+                        id: selected.id,
+                        icon: selected.icon,
+                        name: selected.name,
+                        desc: selected.desc,
+                        rarity: selected.rarity
+                    }];
+                }
             }
-            this.chest.items = selected;
-
-        } else if (this.type === 'hidden') {
-
-            // hidden房已禁用 - 直接标记为已清理，不生成物品和怪物
-
-            this.cleared = true;
 
         }
 
@@ -526,6 +804,8 @@
 
 
     draw(ctx, camera, sprites) {
+        this.syncStageShellBackdrop();
+
         // 楼层到地板贴图的映射
         const FLOOR_SPRITE_MAP = [
             'layer1_floor_mycelium',    // 第1层 - 菌丝区
@@ -757,49 +1037,7 @@
         
 
         // 绘制门（门180x180，完整覆盖120厚的墙）
-        const doorPositions = {};
-        const wallT = SURVIVOR_CONFIG.WALL_THICKNESS;
-        const doorSize = 180; // 比墙厚大，完整覆盖
-        const doorOffset = (doorSize - wallT) / 2; // 30px 向外延伸
-        
-        for (const [dir, door] of Object.entries(this.doors)) {
-            if (!door) continue;
-            
-            let doorX, doorY, doorW, doorH, doorRotation;
-            
-            switch(dir) {
-                case 'up': 
-                    doorX = this.centerX - doorSize/2; 
-                    doorY = -doorOffset; // 向外延伸
-                    doorW = doorSize; 
-                    doorH = doorSize;
-                    doorRotation = 0; // 正常
-                    break;
-                case 'down': 
-                    doorX = this.centerX - doorSize/2; 
-                    doorY = this.height - wallT - doorOffset; // 向外延伸
-                    doorW = doorSize; 
-                    doorH = doorSize;
-                    doorRotation = Math.PI; // 180度
-                    break;
-                case 'left': 
-                    doorX = -doorOffset; // 向外延伸
-                    doorY = this.centerY - doorSize/2; 
-                    doorW = doorSize; 
-                    doorH = doorSize;
-                    doorRotation = -Math.PI / 2; // 逆时针90度
-                    break;
-                case 'right': 
-                    doorX = this.width - wallT - doorOffset; // 向外延伸
-                    doorY = this.centerY - doorSize/2; 
-                    doorW = doorSize; 
-                    doorH = doorSize;
-                    doorRotation = Math.PI / 2; // 顺时针90度
-                    break;
-            }
-
-            doorPositions[dir] = { x: doorX, y: doorY, w: doorW, h: doorH, rotation: doorRotation };
-        }
+        const doorPositions = this.getDoorPositions();
 
         // 绘制门 - 使用贴图（根据方向旋转）
         for (const [dir, door] of Object.entries(this.doors)) {
@@ -974,25 +1212,28 @@
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, camera.viewWidth, camera.viewHeight);
                 
-                // 绘制宝箱贴图在房间中央
-                if (sprites && this.chest) {
+                if (sprites && Array.isArray(this.chests) && this.chests.length > 0) {
+                    this.chests.forEach(chest => {
+                        if (chest.disabled) return;
+                        const pos = camera.worldToScreen(chest.x, chest.y);
+                        if (!chest.opened && window.game && window.game.player) {
+                            const d = Math.hypot(window.game.player.x - chest.x, window.game.player.y - chest.y);
+                            if (d < 60) {
+                                const label = chest.quality === 'legendary' ? '传奇宝箱' : (chest.quality === 'rare' ? '稀有宝箱' : '普通宝箱');
+                                ctx.fillStyle = '#4f4';
+                                ctx.font = '12px Arial';
+                                ctx.textAlign = 'center';
+                                ctx.fillText(`按E打开${label}`, pos.x, pos.y - 40);
+                            }
+                        }
+                    });
+                } else if (sprites && this.chest) {
                     const chestSpriteName = this.chest.opened ? 'chest_open' : 'chest_closed';
                     const chestSprite = sprites.get(chestSpriteName);
                     if (chestSprite) {
                         const pos = camera.worldToScreen(this.chest.x, this.chest.y);
                         const size = 32;
                         ctx.drawImage(chestSprite, pos.x - size, pos.y - size, size * 2, size * 2);
-                        
-                        // 绘制交互提示
-                        if (!this.chest.opened && window.game && window.game.player) {
-                            const d = Math.hypot(window.game.player.x - this.chest.x, window.game.player.y - this.chest.y);
-                            if (d < 60) {
-                                ctx.fillStyle = '#4f4';
-                                ctx.font = '12px Arial';
-                                ctx.textAlign = 'center';
-                                ctx.fillText('按E打开', pos.x, pos.y - 40);
-                            }
-                        }
                     }
                 }
                 break;
@@ -1148,6 +1389,25 @@
         ctx.fillStyle = '#0b0c0e';
         ctx.fillRect(0, 0, width, height);
 
+        if (this.isEnvelopeTextureReady(textures?.roomShellTrial)) {
+            ctx.drawImage(
+                textures.roomShellTrial,
+                roomRect.left,
+                roomRect.top,
+                roomRect.width,
+                roomRect.height
+            );
+
+            const shellShade = ctx.createLinearGradient(0, roomRect.top, 0, roomRect.bottom);
+            shellShade.addColorStop(0, 'rgba(8, 10, 12, 0.14)');
+            shellShade.addColorStop(0.45, 'rgba(0, 0, 0, 0)');
+            shellShade.addColorStop(1, 'rgba(0, 0, 0, 0.22)');
+            ctx.fillStyle = shellShade;
+            ctx.fillRect(roomRect.left, roomRect.top, roomRect.width, roomRect.height);
+            ctx.restore();
+            return;
+        }
+
         let grad = ctx.createRadialGradient(center.x, center.y, floorRect.width * 0.18, center.x, center.y, width * 0.58);
         grad.addColorStop(0, 'rgba(128, 136, 146, 0.12)');
         grad.addColorStop(0.48, 'rgba(54, 58, 63, 0.14)');
@@ -1282,6 +1542,329 @@
         }
 
         ctx.restore();
+    }
+
+    getLayer1ShellRuntimeBasePath() {
+        const isLocal = location.hostname === 'localhost' ||
+            location.hostname === '127.0.0.1' ||
+            location.protocol === 'file:';
+        return isLocal
+            ? '/assets/sprites/'
+            : 'https://wearescientist.github.io/rouge-cow/assets/sprites/';
+    }
+
+    getSceneShellAssetPaths() {
+        const floor = Number.isFinite(this.floor) ? this.floor : 1;
+        const themed = {
+            2: {
+                far: 'tiles/floor_shells/floor2_shell_greenhouse_far.png',
+                mid: 'tiles/floor_shells/floor2_shell_greenhouse_mid.png',
+                primary: 'tiles/floor_shells/floor2_shell_greenhouse_primary.png'
+            },
+            3: {
+                far: 'tiles/floor_shells/floor3_shell_nerve_far.png',
+                mid: 'tiles/floor_shells/floor3_shell_nerve_mid.png',
+                primary: 'tiles/floor_shells/floor3_shell_nerve_primary.png'
+            },
+            4: {
+                far: 'tiles/floor_shells/floor4_shell_furnace_far.png',
+                mid: 'tiles/floor_shells/floor4_shell_furnace_mid.png',
+                primary: 'tiles/floor_shells/floor4_shell_furnace_primary.png'
+            },
+            5: {
+                far: 'tiles/floor_shells/floor5_shell_courtyard_far.png',
+                mid: 'tiles/floor_shells/floor5_shell_courtyard_mid.png',
+                primary: 'tiles/floor_shells/floor5_shell_courtyard_primary.png'
+            },
+            6: {
+                far: 'tiles/floor_shells/floor6_shell_core_far.png',
+                mid: 'tiles/floor_shells/floor6_shell_core_mid.png',
+                primary: 'tiles/floor_shells/floor6_shell_core_primary.png'
+            }
+        };
+        return themed[floor] || {
+            far: 'tiles/back_organic_far.png',
+            mid: 'tiles/back_organic_mid.png',
+            primary: 'tiles/back_organic_primary.png'
+        };
+    }
+
+    getSceneShellToneProfile() {
+        return {
+            primary: { brightness: 0.9, contrast: 1 },
+            mid: { brightness: 0.5, contrast: 1 },
+            far: { brightness: 0.4, contrast: 1 }
+        };
+    }
+
+    getLayer1ShellRuntimeConfig() {
+        if (!Room._layer1ShellRuntimeConfigBase) {
+            Room._layer1ShellRuntimeConfigBase = {
+                viewport: { width: 1706, height: 960 },
+                roomFrame: { x: 469.15, y: 96.15, size: 767.7 },
+                layers: {
+                    primary: {
+                        assetPath: 'tiles/back_organic_primary.png',
+                        x: -849.5,
+                        y: -1359,
+                        width: 3405.3,
+                        height: 3678.4,
+                        rotation: 0,
+                        parallax: 0.18,
+                        opacity: 1,
+                        brightness: 0.9,
+                        contrast: 1
+                    },
+                    mid: {
+                        assetPath: 'tiles/back_organic_mid.png',
+                        x: -547.8,
+                        y: -1103.3,
+                        width: 2773,
+                        height: 3192.9,
+                        rotation: -176,
+                        parallax: 0.18,
+                        opacity: 1,
+                        brightness: 0.5,
+                        contrast: 1
+                    },
+                    far: {
+                        assetPath: 'tiles/back_organic_far.png',
+                        x: -228.2,
+                        y: -843.3,
+                        width: 2189.9,
+                        height: 2621.3,
+                        rotation: 1,
+                        parallax: 0.18,
+                        opacity: 1,
+                        brightness: 0.4,
+                        contrast: 1
+                    }
+                }
+            };
+        }
+        const base = Room._layer1ShellRuntimeConfigBase;
+        const assetPaths = this.getSceneShellAssetPaths();
+        const tones = this.getSceneShellToneProfile();
+        return {
+            viewport: { ...base.viewport },
+            roomFrame: { ...base.roomFrame },
+            layers: {
+                primary: { ...base.layers.primary, assetPath: assetPaths.primary, ...tones.primary },
+                mid: { ...base.layers.mid, assetPath: assetPaths.mid, ...tones.mid },
+                far: { ...base.layers.far, assetPath: assetPaths.far, ...tones.far }
+            }
+        };
+    }
+
+    getLayer1ShellRuntimeImages() {
+        if (!Room._layer1ShellRuntimeImages) {
+            Room._layer1ShellRuntimeImages = {};
+        }
+        const basePath = this.getLayer1ShellRuntimeBasePath();
+        const config = this.getLayer1ShellRuntimeConfig();
+        const images = {};
+        Object.entries(config.layers).forEach(([key, layer]) => {
+            const src = basePath + layer.assetPath;
+            if (!Room._layer1ShellRuntimeImages[src]) {
+                const image = new Image();
+                image.decoding = 'async';
+                image.onload = () => {
+                    console.info('[Layer1ShellImageLoaded]', key, image.naturalWidth, image.naturalHeight, image.src);
+                };
+                image.onerror = () => {
+                    console.error('[Layer1ShellImageError]', key, image.src);
+                };
+                image.src = src;
+                Room._layer1ShellRuntimeImages[src] = image;
+            }
+            images[key] = Room._layer1ShellRuntimeImages[src];
+        });
+        return images;
+    }
+
+    getLayer1ShellDestRect(scene, layerKey) {
+        const config = this.getLayer1ShellRuntimeConfig();
+        const layer = config.layers[layerKey];
+        if (!layer) return null;
+
+        const roomCenterX = this.width * 0.5;
+        const roomCenterY = this.height * 0.5;
+        const viewportW = config.viewport.width;
+        const viewportH = config.viewport.height;
+        const playableHalfW = Math.max(this.width * 0.5 - SURVIVOR_CONFIG.WALL_THICKNESS, 1);
+        const playableHalfH = Math.max(this.height * 0.5 - SURVIVOR_CONFIG.WALL_THICKNESS, 1);
+        const anchorX = Number.isFinite(scene?.player?.x)
+            ? scene.player.x
+            : (Number.isFinite(scene?.camera?.x) ? scene.camera.x : roomCenterX);
+        const anchorY = Number.isFinite(scene?.player?.y)
+            ? scene.player.y
+            : (Number.isFinite(scene?.camera?.y) ? scene.camera.y : roomCenterY);
+        const nx = Math.max(-1, Math.min(1, (anchorX - roomCenterX) / playableHalfW));
+        const ny = Math.max(-1, Math.min(1, (anchorY - roomCenterY) / playableHalfH));
+        const roleMotion = { primary: 1.18, mid: 0.7, far: 0.34 };
+        const parallaxScale = Math.max(0.35, (Number.isFinite(layer.parallax) ? layer.parallax : 0.18) / 0.18);
+        const motionScale = (roleMotion[layerKey] || 0.5) * parallaxScale;
+        const spareX = Math.max(0, (layer.width - viewportW) * 0.5);
+        const spareY = Math.max(0, (layer.height - viewportH) * 0.5);
+        const maxTravelX = Math.min(spareX * 0.24, viewportW * 0.14) * motionScale * 0.25;
+        const maxTravelY = Math.min(spareY * 0.2, viewportH * 0.11) * motionScale * 0.25;
+        const offsetX = -nx * maxTravelX;
+        const offsetY = -ny * maxTravelY;
+
+        return {
+            x: (layer.x / viewportW) * 100,
+            y: (layer.y / viewportH) * 100,
+            width: (layer.width / viewportW) * 100,
+            height: (layer.height / viewportH) * 100,
+            offsetX,
+            offsetY,
+            rotation: layer.rotation,
+            opacity: layer.opacity,
+            brightness: layer.brightness,
+            contrast: layer.contrast,
+            imageUrl: `url("${this.getLayer1ShellRuntimeBasePath()}${layer.assetPath}")`
+        };
+    }
+
+    applyLayer1ShellRuntimeVars(mainLayout) {
+        const camera = window.game?.camera || null;
+        const player = window.game?.player || null;
+        const scene = (camera || player) ? { camera, player } : null;
+        const far = this.getLayer1ShellDestRect(scene, 'far');
+        const mid = this.getLayer1ShellDestRect(scene, 'mid');
+        const primary = this.getLayer1ShellDestRect(scene, 'primary');
+        const applyVars = (prefix, layer) => {
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-left`, `${layer.x}%`);
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-top`, `${layer.y}%`);
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-width`, `${layer.width}%`);
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-height`, `${layer.height}%`);
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-offset-x`, `${layer.offsetX}px`);
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-offset-y`, `${layer.offsetY}px`);
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-rotation`, `${layer.rotation}deg`);
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-opacity`, String(layer.opacity));
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-brightness`, String(layer.brightness));
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-contrast`, String(layer.contrast));
+            mainLayout.style.setProperty(`--scene-shell-${prefix}-image`, layer.imageUrl);
+        };
+
+        applyVars('far', far);
+        applyVars('mid', mid);
+        applyVars('primary', primary);
+    }
+
+    logLayer1ShellDebug(mainLayout) {
+        const debugKey = `${this.id}:${this.floor}`;
+        if (Room._lastLayer1ShellDebugKey === debugKey) return;
+        Room._lastLayer1ShellDebugKey = debugKey;
+
+        const images = this.getLayer1ShellRuntimeImages();
+        const computed = getComputedStyle(mainLayout);
+        const backdrop = mainLayout.querySelector('.scene-shell-backdrop');
+        const foreground = mainLayout.querySelector('.scene-shell-foreground');
+        const farEl = mainLayout.querySelector('.scene-shell-runtime-far');
+        const midEl = mainLayout.querySelector('.scene-shell-runtime-mid');
+        const primaryEl = mainLayout.querySelector('.scene-shell-runtime-primary');
+        const payload = {
+            roomId: this.id,
+            floor: this.floor,
+            sceneShell: mainLayout.dataset.sceneShell || '(none)',
+            shellVars: {
+                far: {
+                    left: computed.getPropertyValue('--scene-shell-far-left').trim(),
+                    top: computed.getPropertyValue('--scene-shell-far-top').trim(),
+                    width: computed.getPropertyValue('--scene-shell-far-width').trim(),
+                    height: computed.getPropertyValue('--scene-shell-far-height').trim(),
+                    image: computed.getPropertyValue('--scene-shell-far-image').trim()
+                },
+                mid: {
+                    left: computed.getPropertyValue('--scene-shell-mid-left').trim(),
+                    top: computed.getPropertyValue('--scene-shell-mid-top').trim(),
+                    width: computed.getPropertyValue('--scene-shell-mid-width').trim(),
+                    height: computed.getPropertyValue('--scene-shell-mid-height').trim(),
+                    image: computed.getPropertyValue('--scene-shell-mid-image').trim()
+                },
+                primary: {
+                    left: computed.getPropertyValue('--scene-shell-primary-left').trim(),
+                    top: computed.getPropertyValue('--scene-shell-primary-top').trim(),
+                    width: computed.getPropertyValue('--scene-shell-primary-width').trim(),
+                    height: computed.getPropertyValue('--scene-shell-primary-height').trim(),
+                    image: computed.getPropertyValue('--scene-shell-primary-image').trim()
+                }
+            },
+            dom: {
+                backdropDisplay: backdrop ? getComputedStyle(backdrop).display : '(missing)',
+                foregroundDisplay: foreground ? getComputedStyle(foreground).display : '(missing)',
+                farDisplay: farEl ? getComputedStyle(farEl).display : '(missing)',
+                midDisplay: midEl ? getComputedStyle(midEl).display : '(missing)',
+                primaryDisplay: primaryEl ? getComputedStyle(primaryEl).display : '(missing)'
+            },
+            rects: {
+                centerGame: document.getElementById('centerGame')?.getBoundingClientRect?.() || null,
+                backdrop: backdrop?.getBoundingClientRect?.() || null,
+                foreground: foreground?.getBoundingClientRect?.() || null,
+                far: farEl?.getBoundingClientRect?.() || null,
+                mid: midEl?.getBoundingClientRect?.() || null,
+                primary: primaryEl?.getBoundingClientRect?.() || null
+            },
+            imageState: {
+                far: images.far ? { src: images.far.src, complete: images.far.complete, width: images.far.naturalWidth, height: images.far.naturalHeight } : null,
+                mid: images.mid ? { src: images.mid.src, complete: images.mid.complete, width: images.mid.naturalWidth, height: images.mid.naturalHeight } : null,
+                primary: images.primary ? { src: images.primary.src, complete: images.primary.complete, width: images.primary.naturalWidth, height: images.primary.naturalHeight } : null
+            }
+        };
+
+        console.groupCollapsed('[Layer1ShellDebug]');
+        console.log(payload);
+        console.warn(
+            '[Layer1ShellDebugSummary]',
+            'sceneShell=', payload.sceneShell,
+            'far=', payload.shellVars.far.left, payload.shellVars.far.top, payload.shellVars.far.width, payload.shellVars.far.height,
+            'mid=', payload.shellVars.mid.left, payload.shellVars.mid.top, payload.shellVars.mid.width, payload.shellVars.mid.height,
+            'primary=', payload.shellVars.primary.left, payload.shellVars.primary.top, payload.shellVars.primary.width, payload.shellVars.primary.height,
+            'farLoaded=', payload.imageState.far?.complete, payload.imageState.far?.width, payload.imageState.far?.height,
+            'midLoaded=', payload.imageState.mid?.complete, payload.imageState.mid?.width, payload.imageState.mid?.height,
+            'primaryLoaded=', payload.imageState.primary?.complete, payload.imageState.primary?.width, payload.imageState.primary?.height
+        );
+        console.groupEnd();
+        window.__layer1ShellDebug = payload;
+    }
+
+    clearLayer1ShellRuntimeVars(mainLayout) {
+        [
+            '--scene-shell-far-left',
+            '--scene-shell-far-top',
+            '--scene-shell-far-width',
+            '--scene-shell-far-height',
+            '--scene-shell-far-offset-x',
+            '--scene-shell-far-offset-y',
+            '--scene-shell-far-rotation',
+            '--scene-shell-far-opacity',
+            '--scene-shell-far-brightness',
+            '--scene-shell-far-contrast',
+            '--scene-shell-far-image',
+            '--scene-shell-mid-left',
+            '--scene-shell-mid-top',
+            '--scene-shell-mid-width',
+            '--scene-shell-mid-height',
+            '--scene-shell-mid-offset-x',
+            '--scene-shell-mid-offset-y',
+            '--scene-shell-mid-rotation',
+            '--scene-shell-mid-opacity',
+            '--scene-shell-mid-brightness',
+            '--scene-shell-mid-contrast',
+            '--scene-shell-mid-image',
+            '--scene-shell-primary-left',
+            '--scene-shell-primary-top',
+            '--scene-shell-primary-width',
+            '--scene-shell-primary-height',
+            '--scene-shell-primary-offset-x',
+            '--scene-shell-primary-offset-y',
+            '--scene-shell-primary-rotation',
+            '--scene-shell-primary-opacity',
+            '--scene-shell-primary-brightness',
+            '--scene-shell-primary-contrast',
+            '--scene-shell-primary-image'
+        ].forEach((key) => mainLayout.style.removeProperty(key));
     }
 
 }

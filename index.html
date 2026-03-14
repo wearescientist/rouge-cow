@@ -790,6 +790,10 @@
             overflow: hidden;
             aspect-ratio: 16 / 9;
             background: transparent;
+            background-image: var(--stage-shell-bg, none);
+            background-position: center center;
+            background-repeat: no-repeat;
+            background-size: 100% 100%;
             border: none;
             border-radius: 0;
             box-shadow: none;
@@ -811,6 +815,12 @@
         #mainLayout.active {
             display: block;
 
+        }
+
+        #stageViewport {
+            position: absolute;
+            inset: 0;
+            overflow: visible;
         }
 
         
@@ -917,6 +927,15 @@
             height: 100%;
             z-index: 0;
 
+        }
+
+        #gameOverlayCanvas {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 60;
+            pointer-events: none;
         }
 
         
@@ -1622,26 +1641,30 @@
         }
 
         .sidebar-stack {
-            position: relative;
+            position: absolute;
             display: flex;
             flex-direction: column;
             gap: 10px;
             width: min(calc(100% - 20px), var(--hud-column-width));
-            height: min(var(--arena-core-size), calc(100% - 24px));
+            height: auto;
             margin: 0;
+            top: 0;
             padding: 18px 14px 26px;
             pointer-events: auto;
             z-index: 1;
+            transform: none;
         }
 
         #leftSidebar .sidebar-stack {
-            margin-left: auto;
-            margin-right: 0;
+            left: 0;
+            right: auto;
+            transform-origin: top left;
         }
 
         #rightSidebar .sidebar-stack {
-            margin-left: 0;
-            margin-right: auto;
+            left: 0;
+            right: auto;
+            transform-origin: top left;
         }
 
         .sidebar-stack::before {
@@ -2268,6 +2291,17 @@
 
         /* 移动端触控层 */
         #mobileControls {
+            --mobile-control-side-pad: max(14px, calc(env(safe-area-inset-left) + 4px));
+            --mobile-control-right-pad: max(14px, calc(env(safe-area-inset-right) + 4px));
+            --mobile-control-bottom-pad: max(12px, calc(env(safe-area-inset-bottom) + 4px));
+            --mobile-control-panel-height: clamp(176px, 24vh, 228px);
+            --mobile-control-panel-top: calc(100dvh - var(--mobile-control-bottom-pad) - var(--mobile-control-panel-height));
+            --mobile-control-panel-left: var(--mobile-control-side-pad);
+            --mobile-control-panel-right-gap: var(--mobile-control-right-pad);
+            --mobile-control-panel-inset: 18px;
+            --mobile-control-joystick-size: 140px;
+            --mobile-control-pad-size: 180px;
+            --mobile-control-center-gap: 8px;
             position: fixed;
             inset: 0;
             z-index: 520;
@@ -2279,11 +2313,49 @@
             display: block;
         }
 
+        #mobileControls::before,
+        #mobileControls::after {
+            content: "";
+            position: absolute;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 140ms ease;
+        }
+
+        #mobileControls.active::before,
+        #mobileControls.active::after {
+            opacity: 1;
+        }
+
+        #mobileControls::before {
+            left: var(--mobile-control-side-pad);
+            right: var(--mobile-control-right-gap);
+            top: var(--mobile-control-panel-top);
+            height: var(--mobile-control-panel-height);
+            border-radius: 22px 22px 18px 18px;
+            border: 1px solid var(--hud-border-soft);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.03), transparent 24%),
+                linear-gradient(180deg, var(--hud-mobile-card-1), var(--hud-mobile-card-2));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                0 12px 28px rgba(0,0,0,0.32);
+            backdrop-filter: blur(6px);
+        }
+
+        #mobileControls::after {
+            left: calc(var(--mobile-control-side-pad) + 14px);
+            right: calc(var(--mobile-control-right-gap) + 14px);
+            top: calc(var(--mobile-control-panel-top) + 1px);
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(226, 213, 189, 0.24), transparent);
+        }
+
         .mobile-top-hud {
             position: absolute;
-            top: 10px;
-            left: 10px;
-            right: 10px;
+            top: max(10px, env(safe-area-inset-top));
+            left: max(10px, env(safe-area-inset-left));
+            right: max(10px, env(safe-area-inset-right));
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
@@ -2303,6 +2375,34 @@
         .mobile-vitals {
             min-width: min(48vw, 220px);
             padding: 10px 12px 11px;
+        }
+
+        .mobile-meta-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 6px;
+            margin-top: 8px;
+        }
+
+        .mobile-meta-cell {
+            padding: 6px 7px 7px;
+            border-radius: 10px;
+            background: rgba(0, 0, 0, 0.18);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .mobile-meta-label {
+            color: var(--hud-muted);
+            font-size: 9px;
+            line-height: 1;
+            margin-bottom: 4px;
+        }
+
+        .mobile-meta-value {
+            color: var(--hud-ink);
+            font-size: 12px;
+            font-weight: 800;
+            line-height: 1.1;
         }
 
         .mobile-hearts {
@@ -2367,18 +2467,53 @@
 
         .mobile-joystick {
             position: absolute;
-            left: 16px;
-            bottom: 18px;
-            width: 140px;
-            height: 140px;
+            left: calc(var(--mobile-control-panel-left) + var(--mobile-control-panel-inset) + 10px);
+            top: calc(var(--mobile-control-panel-top) + (var(--mobile-control-panel-height) - var(--mobile-control-joystick-size)) / 2);
+            width: var(--mobile-control-joystick-size);
+            height: var(--mobile-control-joystick-size);
             border-radius: 50%;
-            border: 1px solid var(--hud-border-strong);
+            border: 1px solid color-mix(in srgb, var(--hud-gold) 24%, var(--hud-border-strong));
             background:
-                radial-gradient(circle at 35% 30%, rgba(255,242,221,0.12), rgba(0,0,0,0.42)),
-                linear-gradient(180deg, color-mix(in srgb, var(--hud-surface-hero-1) 90%, transparent), color-mix(in srgb, var(--hud-surface-2) 96%, transparent));
-            box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 6px 18px rgba(0,0,0,0.35);
+                radial-gradient(circle at 50% 50%, rgba(0,0,0,0.08) 0 28%, transparent 29%),
+                radial-gradient(circle at 30% 28%, color-mix(in srgb, var(--scene-shell-top-light) 75%, rgba(255,240,214,0.14)) 0, transparent 52%),
+                radial-gradient(circle at 70% 74%, rgba(0,0,0,0.34), transparent 46%),
+                linear-gradient(180deg, color-mix(in srgb, var(--hud-button-1) 72%, rgba(12,11,10,0.92)), color-mix(in srgb, var(--hud-button-2) 88%, rgba(5,5,5,0.96)));
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 0 0 8px rgba(8,8,8,0.18),
+                inset 0 -18px 28px rgba(0,0,0,0.28),
+                0 12px 24px rgba(0,0,0,0.34);
             pointer-events: auto;
             touch-action: none;
+            overflow: hidden;
+            transition: transform 120ms ease, box-shadow 120ms ease;
+        }
+
+        .mobile-joystick::before,
+        .mobile-joystick::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .mobile-joystick::before {
+            inset: 10px;
+            border: 1px solid rgba(222, 205, 173, 0.14);
+            box-shadow:
+                inset 0 0 0 1px rgba(0,0,0,0.2),
+                inset 0 18px 28px rgba(255,244,220,0.035),
+                inset 0 -20px 24px rgba(0,0,0,0.22);
+            opacity: 0.95;
+        }
+
+        .mobile-joystick::after {
+            inset: 18px;
+            background:
+                radial-gradient(circle, transparent 0 58%, rgba(216, 196, 161, 0.13) 59%, rgba(216, 196, 161, 0.13) 61%, transparent 62%),
+                radial-gradient(circle at 50% 50%, rgba(0,0,0,0.26) 0 42%, transparent 43%);
+            opacity: 0.9;
         }
 
         .mobile-stick {
@@ -2388,74 +2523,166 @@
             width: 50px;
             height: 50px;
             border-radius: 50%;
-            border: 1px solid color-mix(in srgb, var(--hud-title) 34%, transparent);
-            background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--hud-title) 96%, transparent), color-mix(in srgb, var(--hud-gold) 28%, transparent));
-            box-shadow: 0 4px 12px rgba(0,0,0,0.35);
+            border: 1px solid color-mix(in srgb, var(--hud-gold) 36%, transparent);
+            background:
+                radial-gradient(circle at 34% 28%, rgba(255,243,220,0.64), transparent 34%),
+                radial-gradient(circle at 50% 42%, color-mix(in srgb, var(--hud-title) 70%, rgba(255,236,204,0.72)), color-mix(in srgb, var(--hud-button-primary-1) 42%, rgba(92,74,49,0.88)) 56%, color-mix(in srgb, var(--hud-button-2) 94%, rgba(14,12,10,0.98)) 100%);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.18),
+                inset 0 -8px 10px rgba(0,0,0,0.18),
+                0 6px 16px rgba(0,0,0,0.35);
             transform: translate3d(0, 0, 0);
+            transition: box-shadow 120ms ease;
         }
 
-        .mobile-actions {
+        .mobile-right-pad {
             position: absolute;
-            right: 16px;
-            bottom: 18px;
-            width: 176px;
+            right: calc(var(--mobile-control-panel-right-gap) + var(--mobile-control-panel-inset) + 10px);
+            top: calc(var(--mobile-control-panel-top) + (var(--mobile-control-panel-height) - var(--mobile-control-pad-size)) / 2);
+            width: var(--mobile-control-pad-size);
+            height: var(--mobile-control-pad-size);
             display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(3, 1fr);
+            pointer-events: auto;
+            align-items: center;
+            justify-items: center;
+        }
+
+        .mobile-center-actions {
+            position: absolute;
+            left: 50%;
+            top: calc(var(--mobile-control-panel-top) + (var(--mobile-control-panel-height) - 40px) / 2 + 26px);
+            transform: translateX(-50%);
+            display: flex;
+            align-items: center;
+            gap: var(--mobile-control-center-gap);
             pointer-events: auto;
         }
 
         .mobile-btn {
+            position: relative;
             min-width: 68px;
             height: 58px;
             border-radius: 18px;
-            border: 1px solid var(--hud-border-strong);
+            border: 1px solid color-mix(in srgb, var(--hud-gold) 20%, var(--hud-border-strong));
             background:
-                linear-gradient(180deg, var(--hud-button-1), var(--hud-button-2)),
-                linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0));
+                linear-gradient(180deg, rgba(255,255,255,0.03), transparent 24%),
+                linear-gradient(180deg, color-mix(in srgb, var(--hud-button-1) 92%, rgba(90,72,45,0.26)), color-mix(in srgb, var(--hud-button-2) 96%, rgba(6,6,5,0.98)));
             color: var(--hud-ink);
             font-size: 12px;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.35), inset 0 1px 0 rgba(255,255,255,0.08);
+            font-weight: 800;
+            letter-spacing: 0.8px;
+            text-shadow: 0 1px 0 rgba(0,0,0,0.42);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 0 0 1px rgba(0,0,0,0.16),
+                inset 0 -10px 16px rgba(0,0,0,0.22),
+                0 10px 20px rgba(0,0,0,0.32);
             pointer-events: auto;
             touch-action: manipulation;
             user-select: none;
+            overflow: hidden;
+            transition: transform 120ms ease, box-shadow 120ms ease, border-color 120ms ease, color 120ms ease;
+        }
+
+        .mobile-btn::before,
+        .mobile-btn::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .mobile-btn::before {
+            inset: 4px;
+            border-radius: inherit;
+            border: 1px solid rgba(227, 211, 179, 0.08);
+            opacity: 0.9;
+        }
+
+        .mobile-btn::after {
+            background:
+                linear-gradient(135deg, rgba(255,246,226,0.08), transparent 42%),
+                linear-gradient(315deg, rgba(0,0,0,0.18), transparent 36%);
+            mix-blend-mode: screen;
+            opacity: 0.65;
         }
 
         .mobile-btn:active {
-            transform: scale(0.96);
+            transform: translateY(2px) scale(0.97);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.05),
+                inset 0 0 0 1px rgba(0,0,0,0.2),
+                inset 0 -6px 10px rgba(0,0,0,0.26),
+                0 4px 10px rgba(0,0,0,0.28);
         }
 
         .mobile-btn.primary {
+            border-color: color-mix(in srgb, var(--hud-gold) 36%, transparent);
             background:
-                linear-gradient(180deg, var(--hud-button-primary-1), var(--hud-button-primary-2)),
-                linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0));
+                linear-gradient(180deg, rgba(255,255,255,0.05), transparent 22%),
+                linear-gradient(180deg, color-mix(in srgb, var(--hud-button-primary-1) 92%, rgba(160,129,72,0.38)), color-mix(in srgb, var(--hud-button-primary-2) 94%, rgba(30,24,17,0.94)));
+            color: color-mix(in srgb, var(--hud-title) 88%, white 12%);
         }
 
         .mobile-btn.contextual {
-            border-color: var(--hud-button-context);
+            border-color: color-mix(in srgb, var(--hud-button-context) 68%, rgba(185, 201, 174, 0.24));
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.04), transparent 22%),
+                linear-gradient(180deg, color-mix(in srgb, var(--hud-button-1) 86%, var(--scene-shell-side-light)), color-mix(in srgb, var(--hud-button-2) 92%, rgba(9,18,12,0.96)));
             color: color-mix(in srgb, var(--hud-title-right) 92%, white 8%);
         }
 
         .mobile-btn.system {
             color: var(--hud-muted);
+            border-color: color-mix(in srgb, var(--hud-border-soft) 90%, rgba(118, 112, 102, 0.14));
         }
 
         .mobile-btn.dash {
             font-size: 14px;
             color: color-mix(in srgb, var(--hud-title) 88%, white 12%);
             border-color: color-mix(in srgb, var(--hud-gold) 42%, transparent);
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.05), transparent 22%),
+                linear-gradient(180deg, color-mix(in srgb, var(--hud-button-primary-1) 84%, rgba(138,103,54,0.42)), color-mix(in srgb, var(--hud-button-2) 94%, rgba(18,13,10,0.98)));
         }
 
         .mobile-btn.hidden {
             visibility: hidden;
         }
 
+        .mobile-pad-btn {
+            width: 62px;
+            min-width: 62px;
+            height: 62px;
+            border-radius: 50%;
+            padding: 0;
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 0 0 1px rgba(0,0,0,0.16),
+                inset 0 -12px 18px rgba(0,0,0,0.24),
+                0 12px 18px rgba(0,0,0,0.28);
+        }
+
+        .mobile-pad-up { grid-column: 2; grid-row: 1; }
+        .mobile-pad-left { grid-column: 1; grid-row: 2; }
+        .mobile-pad-right { grid-column: 3; grid-row: 2; }
+        .mobile-pad-down { grid-column: 2; grid-row: 3; }
+
+        .mobile-chip-btn {
+            min-width: 58px;
+            height: 40px;
+            border-radius: 13px;
+            padding: 0 12px;
+            font-size: 11px;
+            letter-spacing: 1px;
+        }
+
         .mobile-choice-strip {
             position: absolute;
             left: 50%;
-            bottom: 94px;
+            bottom: max(104px, calc(env(safe-area-inset-bottom) + 94px));
             transform: translateX(-50%);
             display: flex;
             gap: 8px;
@@ -2470,12 +2697,17 @@
             min-width: 46px;
             height: 36px;
             border-radius: 12px;
-            border: 1px solid var(--hud-border-soft);
-            background: linear-gradient(180deg, var(--hud-button-1), var(--hud-button-2));
+            border: 1px solid color-mix(in srgb, var(--hud-gold) 20%, var(--hud-border-soft));
+            background:
+                linear-gradient(180deg, rgba(255,255,255,0.04), transparent 22%),
+                linear-gradient(180deg, color-mix(in srgb, var(--hud-button-1) 92%, rgba(90,72,45,0.22)), color-mix(in srgb, var(--hud-button-2) 96%, rgba(8,7,6,0.98)));
             color: var(--hud-ink);
             font-size: 13px;
             font-weight: 700;
-            box-shadow: 0 8px 16px rgba(0,0,0,0.28);
+            box-shadow:
+                inset 0 1px 0 rgba(255,255,255,0.08),
+                inset 0 -8px 12px rgba(0,0,0,0.2),
+                0 8px 16px rgba(0,0,0,0.28);
         }
 
         .mobile-choice-btn:active {
@@ -2649,11 +2881,120 @@
             #weaponOptions .weapon-option { min-height: 0; }
         }
 
+        @media (max-width: 900px) and (orientation: portrait) {
+            :root {
+                --mobile-stage-top: clamp(104px, 16vh, 156px);
+                --mobile-stage-bottom: clamp(184px, 28vh, 244px);
+                --mobile-stage-side-gap: max(24px, calc(env(safe-area-inset-left) + env(safe-area-inset-right) + 24px));
+                --mobile-stage-size: min(
+                    calc(100vw - var(--mobile-stage-side-gap)),
+                    calc(100vh - var(--mobile-stage-top) - var(--mobile-stage-bottom))
+                );
+            }
+
+            #mainLayout {
+                top: var(--mobile-stage-top);
+                left: 50%;
+                transform: translateX(-50%);
+                width: var(--mobile-stage-size);
+                height: var(--mobile-stage-size);
+                aspect-ratio: 1 / 1;
+                max-width: none;
+                max-height: none;
+                background-image: none;
+            }
+
+            #stageViewport {
+                top: 0;
+                left: 50%;
+                width: calc(100% * 16 / 9);
+                height: 100%;
+                transform: translateX(-50%);
+                background-image: var(--stage-shell-bg, none);
+                background-position: center center;
+                background-repeat: no-repeat;
+                background-size: 100% 100%;
+            }
+
+            #mainLayout[data-scene-shell] .scene-shell-backdrop,
+            #mainLayout[data-scene-shell] .scene-shell-foreground {
+                display: block;
+                opacity: 1;
+            }
+
+            #gameOverlayCanvas {
+                left: 0;
+                top: 0;
+                width: 100%;
+                height: 100%;
+                inset: auto;
+            }
+
+            #mainLayout[data-scene-shell] .scene-shell-runtime {
+                background-size: 100% 100%;
+                background-position: center center;
+            }
+
+            #centerGame {
+                left: var(--side-zone-width);
+                top: 0;
+                bottom: 0;
+                width: var(--arena-width);
+                height: 100%;
+                justify-content: center;
+                align-items: center;
+            }
+
+            #arenaCore {
+                width: var(--arena-core-size);
+                max-width: 100%;
+                max-height: 100%;
+            }
+
+            #gameCanvas {
+                position: relative;
+                left: auto;
+                top: auto;
+                width: 100%;
+                height: 100%;
+                transform: none;
+            }
+
+            .mobile-top-hud {
+                gap: 8px;
+                align-items: stretch;
+            }
+
+            .mobile-vitals {
+                flex: 1 1 auto;
+                min-width: 0;
+            }
+
+            .mobile-map-shell {
+                flex: 0 0 auto;
+            }
+
+            #gameOverlayCanvas {
+                transform: none;
+            }
+        }
+
         
 
         /* 手机设备 */
 
         @media (max-width: 600px) {
+
+            #mobileControls {
+                --mobile-control-side-pad: max(10px, env(safe-area-inset-left));
+                --mobile-control-right-pad: max(10px, env(safe-area-inset-right));
+                --mobile-control-bottom-pad: max(8px, env(safe-area-inset-bottom));
+                --mobile-control-panel-height: clamp(152px, 22vh, 188px);
+                --mobile-control-panel-inset: 10px;
+                --mobile-control-joystick-size: 126px;
+                --mobile-control-pad-size: 156px;
+                --mobile-control-center-gap: 6px;
+            }
 
             #speedControl {
 
@@ -2728,14 +3069,11 @@
             .mobile-map-frame { width: 92px; height: 92px; }
             .mobile-map-shell { padding: 6px; }
             .mobile-map-label { font-size: 10px; margin-top: 5px; }
+            .mobile-meta-grid { gap: 5px; }
+            .mobile-meta-cell { padding: 5px 6px 6px; }
+            .mobile-meta-label { font-size: 8px; }
+            .mobile-meta-value { font-size: 11px; }
             
-            .mobile-joystick {
-                left: 10px;
-                bottom: 10px;
-                width: 126px;
-                height: 126px;
-            }
-
             .mobile-stick {
                 left: 38px;
                 top: 38px;
@@ -2743,18 +3081,26 @@
                 height: 46px;
             }
 
-            .mobile-actions {
-                right: 10px;
-                bottom: 10px;
-                width: 164px;
-                gap: 8px;
-            }
-
             .mobile-btn {
                 min-width: 64px;
                 height: 52px;
                 font-size: 11px;
                 border-radius: 16px;
+            }
+
+            .mobile-pad-btn {
+                width: 56px;
+                min-width: 56px;
+                height: 56px;
+                border-radius: 50%;
+            }
+
+            .mobile-chip-btn {
+                min-width: 52px;
+                height: 36px;
+                font-size: 10px;
+                border-radius: 12px;
+                padding: 0 10px;
             }
 
             .mobile-btn.dash {
@@ -3014,6 +3360,7 @@
     <!-- 主游戏布局（三栏） -->
 
     <div id="mainLayout">
+        <div id="stageViewport">
 
         <!-- 左侧边栏 -->
 
@@ -3111,29 +3458,35 @@
             </div>
             </div>
         </div>
-        
+        <div class="scene-shell scene-shell-backdrop" aria-hidden="true">
+            <div class="scene-shell-runtime scene-shell-runtime-far"></div>
+            <div class="shell-band shell-band-top"></div>
+            <div class="shell-band shell-band-left"></div>
+            <div class="shell-band shell-band-right"></div>
+            <div class="shell-band shell-band-bottom"></div>
+            <div class="shell-band shell-band-safe shell-band-safe-left"></div>
+            <div class="shell-band shell-band-safe shell-band-safe-right"></div>
+        </div>
+
         <!-- 中间游戏区域 -->
 
         <div id="centerGame">
-            <div class="scene-shell scene-shell-backdrop" aria-hidden="true">
-                <div class="shell-band shell-band-top"></div>
-                <div class="shell-band shell-band-left"></div>
-                <div class="shell-band shell-band-right"></div>
-                <div class="shell-band shell-band-bottom"></div>
-                <div class="shell-band shell-band-safe shell-band-safe-left"></div>
-                <div class="shell-band shell-band-safe shell-band-safe-right"></div>
-            </div>
             <div id="arenaCore">
                 <div class="stage-divider left"></div>
                 <div class="stage-divider right"></div>
                 <canvas id="gameCanvas"></canvas>
             </div>
-            <div class="scene-shell scene-shell-foreground" aria-hidden="true">
-                <div class="shell-foreground shell-foreground-bottom"></div>
-                <div class="shell-foreground shell-foreground-left"></div>
-                <div class="shell-foreground shell-foreground-right"></div>
-            </div>
         </div>
+
+        <div class="scene-shell scene-shell-foreground" aria-hidden="true">
+            <div class="scene-shell-runtime scene-shell-runtime-mid"></div>
+            <div class="scene-shell-runtime scene-shell-runtime-primary"></div>
+            <div class="shell-foreground shell-foreground-bottom"></div>
+            <div class="shell-foreground shell-foreground-left"></div>
+            <div class="shell-foreground shell-foreground-right"></div>
+        </div>
+
+        <canvas id="gameOverlayCanvas"></canvas>
 
         
 
@@ -3198,6 +3551,8 @@
 
         </div>
 
+        </div>
+
     </div>
 
     <!-- 移动端触控操作层 -->
@@ -3211,6 +3566,20 @@
                 </div>
                 <div class="mobile-exp-track">
                     <div id="mobileExpBar" class="mobile-exp-fill"></div>
+                </div>
+                <div class="mobile-meta-grid">
+                    <div class="mobile-meta-cell">
+                        <div class="mobile-meta-label">金币</div>
+                        <div id="mobileGold" class="mobile-meta-value">100</div>
+                    </div>
+                    <div class="mobile-meta-cell">
+                        <div class="mobile-meta-label">层数</div>
+                        <div id="mobileFloor" class="mobile-meta-value">1/6</div>
+                    </div>
+                    <div class="mobile-meta-cell">
+                        <div class="mobile-meta-label">存活</div>
+                        <div id="mobileTime" class="mobile-meta-value">00:00</div>
+                    </div>
                 </div>
             </div>
             <div class="mobile-hud-card mobile-map-shell">
@@ -3228,11 +3597,16 @@
             <button id="mobileChoice2" class="mobile-choice-btn">2</button>
             <button id="mobileChoice3" class="mobile-choice-btn">3</button>
         </div>
-        <div class="mobile-actions">
-            <button id="mobileTalkBtn" class="mobile-btn">对话</button>
-            <button id="mobileInteractBtn" class="mobile-btn primary contextual">交互</button>
-            <button id="mobilePauseBtn" class="mobile-btn system">暂停</button>
-            <button id="mobileDashBtn" class="mobile-btn dash">冲刺</button>
+        <div class="mobile-center-actions">
+            <button id="mobileTalkBtn" class="mobile-btn mobile-chip-btn">对话</button>
+            <button id="mobilePauseBtn" class="mobile-btn mobile-chip-btn system">暂停</button>
+            <button id="mobileCancelBtn" class="mobile-btn mobile-chip-btn system">取消</button>
+        </div>
+        <div class="mobile-right-pad">
+            <button id="mobileConfirmBtn" class="mobile-btn mobile-pad-btn mobile-pad-up primary">确认</button>
+            <button id="mobileAuxBtn" class="mobile-btn mobile-pad-btn mobile-pad-left hidden">功能</button>
+            <button id="mobileDashBtn" class="mobile-btn mobile-pad-btn mobile-pad-right dash">冲刺</button>
+            <button id="mobileInteractBtn" class="mobile-btn mobile-pad-btn mobile-pad-down contextual">交互</button>
         </div>
     </div>
 
@@ -3278,7 +3652,8 @@
 
 
 
-<script src="src/systems/weapons/Weapon.js"></script>
+<script src="src/data/weapon_visual_data.js?v=20260311d"></script>
+<script src="src/systems/weapons/Weapon.js?v=20260314b"></script>
 <script src="src/systems/enemies/Enemy.js?v=0359"></script>
 <script src="floor-data.js"></script>
 <script src="src/data/enemy-types-new.js"></script>
@@ -3287,7 +3662,7 @@
 <script src="src/ai/EnemyAI.js"></script>
 
 <script src="src/systems/items/ItemManager.js"></script>
-<script src="src/systems/passives/WeaponAndPassiveManager.js"></script>
+<script src="src/systems/passives/WeaponAndPassiveManager.js?v=20260314b"></script>
 <script src="src/systems/PetManager.js?v=20260307_2"></script>
 <script src="src/systems/SynergyManager.js"></script>
 <script src="src/systems/TotemManager.js"></script>
@@ -5664,7 +6039,7 @@ class SurvivorCamera {
 
         const container = document.getElementById('centerGame');
 
-        let maxSize = 960; // 默认最大尺寸
+        let displaySize = 960; // 默认显示尺寸
 
         if (container) {
 
@@ -5672,19 +6047,21 @@ class SurvivorCamera {
 
             // 保持正方形，取较小的边作为尺寸
 
-            maxSize = Math.min(rect.width, rect.height);
+            displaySize = Math.min(rect.width, rect.height);
 
         }
 
-        // 确保不小于最小尺寸
+        const canvasW = 960;
 
-        const canvasW = Math.max(360, Math.floor(maxSize));
+        const canvasH = 960;
 
-        const canvasH = canvasW; // 正方形
+        const cssSize = Math.max(360, Math.floor(displaySize));
 
         
 
         const canvas = document.getElementById('gameCanvas');
+        const overlayCanvas = document.getElementById('gameOverlayCanvas');
+        const stageViewport = document.getElementById('stageViewport');
 
         if (canvas) {
 
@@ -5694,10 +6071,20 @@ class SurvivorCamera {
 
             // 设置 canvas 样式尺寸
 
-            canvas.style.width = canvasW + 'px';
+            canvas.style.width = cssSize + 'px';
 
-            canvas.style.height = canvasH + 'px';
+            canvas.style.height = cssSize + 'px';
 
+        }
+
+        if (overlayCanvas && stageViewport) {
+            const stageRect = stageViewport.getBoundingClientRect();
+            const overlayW = Math.max(360, Math.floor(stageRect.width || canvasW));
+            const overlayH = Math.max(360, Math.floor(stageRect.height || canvasH));
+            overlayCanvas.width = overlayW;
+            overlayCanvas.height = overlayH;
+            overlayCanvas.style.width = overlayW + 'px';
+            overlayCanvas.style.height = overlayH + 'px';
         }
 
         
@@ -6027,6 +6414,9 @@ class PerformanceMonitor {
 
         this.visible = false;
 
+        this.overlayCanvas = null;
+        this.overlayCtx = null;
+
     }
 
     
@@ -6073,48 +6463,115 @@ class PerformanceMonitor {
 
     }
 
+    getSummary() {
+        const room = window.game?.curRoom;
+        const hordeEnemies = room?.hordeManager?.getActiveEnemies?.();
+        const enemyCount = Array.isArray(hordeEnemies)
+            ? hordeEnemies.length
+            : Array.isArray(room?.enemies)
+                ? room.enemies.filter((enemy) => enemy && enemy.hp > 0).length
+                : 0;
+        const particles = window.game?.particles;
+        const particleCount = Array.isArray(particles?.active)
+            ? particles.active.length
+            : Array.isArray(particles?.particles)
+                ? particles.particles.length
+                : 0;
+        return {
+            fps: this.fps,
+            avgFps: this.avgFps,
+            frameTime: this.frameTime,
+            worstFrameTime: this.frames.length > 0
+                ? Math.max(...this.frames.map((fps) => 1000 / Math.max(fps, 1)))
+                : this.frameTime,
+            minFps: this.frames.length > 0
+                ? Math.round(Math.min(...this.frames))
+                : this.fps,
+            bullets: window.game?.bullets?.length || 0,
+            particles: particleCount,
+            enemies: enemyCount
+        };
+    }
+
     
 
     draw(ctx, x, y) {
 
         if (!this.visible) return;
 
-        
+        const targetCtx = this.ensureOverlayCanvas() || ctx;
 
-        ctx.fillStyle = 'rgba(0,0,0,0.8)';
+        if (!targetCtx) return;
 
-        ctx.fillRect(x, y, 150, 80);
+        const drawX = targetCtx === this.overlayCtx ? 0 : x;
+        const drawY = targetCtx === this.overlayCtx ? 0 : y;
 
-        
-
-        ctx.strokeStyle = '#333';
-
-        ctx.lineWidth = 1;
-
-        ctx.strokeRect(x, y, 150, 80);
+        if (targetCtx === this.overlayCtx) {
+            targetCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+        }
 
         
 
-        ctx.fillStyle = this.avgFps >= 55 ? '#4f4' : this.avgFps >= 30 ? '#ff0' : '#f44';
+        targetCtx.fillStyle = 'rgba(0,0,0,0.86)';
 
-        ctx.font = 'bold 14px ZCOOL KuaiLe Local';
-
-        ctx.textAlign = 'left';
-
-        ctx.fillText(`FPS: ${this.avgFps}`, x + 10, y + 20);
+        targetCtx.fillRect(drawX, drawY, 170, 84);
 
         
 
-        ctx.fillStyle = '#fff';
+        targetCtx.strokeStyle = '#333';
 
-        ctx.font = '12px ZCOOL KuaiLe Local';
+        targetCtx.lineWidth = 1;
 
-        ctx.fillText(`Frame: ${this.frameTime.toFixed(1)}ms`, x + 10, y + 38);
+        targetCtx.strokeRect(drawX, drawY, 170, 84);
 
-        ctx.fillText(`Objects: ${window.game?.bullets?.length || 0}B ${window.game?.particles?.active?.length || 0}P`, x + 10, y + 56);
+        
 
-        ctx.fillText(`Enemies: ${window.game?.hordeManager?.enemies?.length || 0}`, x + 10, y + 72);
+        targetCtx.fillStyle = this.fps >= 55 ? '#4f4' : this.fps >= 30 ? '#ff0' : '#f44';
 
+        targetCtx.font = 'bold 14px ZCOOL KuaiLe Local';
+
+        targetCtx.textAlign = 'left';
+
+        targetCtx.fillText(`FPS: ${this.fps} (${this.avgFps})`, drawX + 10, drawY + 20);
+
+        
+
+        targetCtx.fillStyle = '#fff';
+
+        targetCtx.font = '12px ZCOOL KuaiLe Local';
+
+        const summary = this.getSummary();
+
+        targetCtx.fillText(`Frame: ${summary.frameTime.toFixed(1)}ms`, drawX + 10, drawY + 38);
+
+        targetCtx.fillText(`Low: ${summary.minFps} / ${summary.worstFrameTime.toFixed(1)}ms`, drawX + 10, drawY + 56);
+
+        targetCtx.fillText(`Obj: ${summary.bullets}B ${summary.particles}P E:${summary.enemies}`, drawX + 10, drawY + 72);
+
+    }
+
+    ensureOverlayCanvas() {
+        if (this.overlayCtx && this.overlayCanvas?.isConnected) {
+            return this.overlayCtx;
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = 170;
+        canvas.height = 84;
+        canvas.id = 'perfMonitorOverlay';
+        canvas.style.cssText = [
+            'position:fixed',
+            'top:16px',
+            'left:16px',
+            'width:170px',
+            'height:84px',
+            'z-index:100001',
+            'pointer-events:none',
+            'display:none'
+        ].join(';');
+        document.body.appendChild(canvas);
+        this.overlayCanvas = canvas;
+        this.overlayCtx = canvas.getContext('2d');
+        return this.overlayCtx;
     }
 
     
@@ -6122,6 +6579,16 @@ class PerformanceMonitor {
     toggle() {
 
         this.visible = !this.visible;
+
+        if (this.visible) {
+            this.ensureOverlayCanvas();
+        }
+        if (this.overlayCanvas) {
+            this.overlayCanvas.style.display = this.visible ? 'block' : 'none';
+            if (!this.visible && this.overlayCtx) {
+                this.overlayCtx.clearRect(0, 0, this.overlayCanvas.width, this.overlayCanvas.height);
+            }
+        }
 
         return this.visible;
 
@@ -6455,6 +6922,8 @@ class Game {
 
         this.bullets = [];
         this.orbitals = [];  // v0.15.0 环绕物
+        this.guardianKnives = [];  // v0.34 常驻追猎飞刀
+        this.lastGuardianKnifeWhistleAt = 0;
         this.lightningEffects = [];  // v0.15.0 闪电效果
         this.petLaserEffects = [];   // v0.22 宠物激光效果
 
@@ -6523,6 +6992,12 @@ class Game {
         this.chestItems = []; // 宝箱中的3个可选物品
         this.chestRoom = null; // 当前宝箱所在的房间
         this.chestSelected = -1;
+        this.activeChestSource = null;
+        this.activeTreasureRewardOrigin = null;
+        this.chestUiMode = 'choice';
+        this.chestUiTitle = '幸运抽奖宝箱';
+        this.chestUiSubtitle = '三选一奖励包 | WASD 切换 | 空格确认 | E / Esc 关闭';
+        this.chestRollState = null;
 
         this.levelUpOpen = false; // 4选1升级选择界面（2武器+2被动）
         this.levelUpSelected = -1;
@@ -6532,6 +7007,9 @@ class Game {
         this.bossChestLottery = null; // 👑 金色Boss宝箱抽奖系统
         this._weaponSelecting = false; // 防止武器选择重复点击
         this.themeToneResolver = new ThemeToneResolver();
+        this.overlayCanvas = document.getElementById('gameOverlayCanvas');
+        this.overlayCtx = this.overlayCanvas ? this.overlayCanvas.getContext('2d') : null;
+        this.overlayHitRegions = {};
         this.overlayCanvasRenderer = new OverlayCanvasRenderer(this);
         this.sidebarHudPresenter = new SidebarHudPresenter(this);
 
@@ -6592,6 +7070,28 @@ class Game {
         const width = canvas?.width || baseSize;
         const height = canvas?.height || baseSize;
         return Math.min(width, height) / baseSize;
+    }
+
+    getWorldRenderScale() {
+        const canvas = this.canvas || document.getElementById('gameCanvas');
+        const canvasW = canvas?.width || SURVIVOR_CONFIG.VIEW_WIDTH || 960;
+        const canvasH = canvas?.height || SURVIVOR_CONFIG.VIEW_HEIGHT || 960;
+        if (this.camera?.showFullRoom) {
+            return Math.min(
+                canvasW / Math.max(SURVIVOR_CONFIG.ROOM_WIDTH, 1),
+                canvasH / Math.max(SURVIVOR_CONFIG.ROOM_HEIGHT, 1)
+            );
+        }
+        return this.camera?.zoom || 1;
+    }
+
+    getEntityRenderScale() {
+        const canvasScale = this.getCanvasScale();
+        const worldScale = this.getWorldRenderScale();
+        if (this.camera?.showFullRoom) {
+            return Math.max(canvasScale, worldScale);
+        }
+        return worldScale;
     }
 
     
@@ -6683,16 +7183,166 @@ class Game {
     toggleDebugPanel() {
         this.debugPanel?.toggle();
     }
+
+    getBulletDebugCollision(bullet) {
+        if (!bullet) return null;
+        if (bullet.type === 'melee') {
+            return {
+                kind: 'arc',
+                radius: bullet.range || 100,
+                color: '#ff4df1',
+                label: `近战 ${Math.round(bullet.range || 100)}`,
+                angle: bullet.angle || 0,
+                arcAngle: bullet.arcAngle || 90
+            };
+        }
+        if (bullet.type === 'area') {
+            return {
+                kind: 'circle',
+                radius: bullet.range || 100,
+                color: '#36e1ff',
+                label: `区域 ${Math.round(bullet.range || 100)}`
+            };
+        }
+        if (bullet.type === 'aura') {
+            return {
+                kind: 'circle',
+                radius: bullet.range || 100,
+                color: '#52ff84',
+                label: `光环 ${Math.round(bullet.range || 100)}`
+            };
+        }
+
+        let radius = bullet.hitRadius || 8;
+        let color = '#7dff8a';
+        let label = '子弹';
+        if (bullet.subtype === 'explode') {
+            radius = bullet.explodeRadius || 80;
+            color = '#ff9b47';
+            label = `爆炸 ${Math.round(radius)}`;
+        } else if (bullet.subtype === 'homing' || bullet.subtype === 'poison_homing') {
+            radius = bullet.hitRadius || 10;
+            color = '#9f8cff';
+            label = `追踪 ${Math.round(radius)}`;
+        } else if (bullet.subtype === 'boomerang') {
+            radius = bullet.hitRadius || 15;
+            color = '#ffd166';
+            label = `回旋 ${Math.round(radius)}`;
+        } else if (bullet.subtype === 'orbit_proj') {
+            radius = bullet.hitRadius || 12;
+            color = '#ffe15c';
+            label = `环绕 ${Math.round(radius)}`;
+        } else if (bullet.type === 'laser_beam' || bullet.isLaser) {
+            radius = bullet.radius || 20;
+            color = '#ff5b7f';
+            label = `激光 ${Math.round(radius)}`;
+        } else if (bullet.hitRadius) {
+            label = `${bullet.weaponKey || '子弹'} ${Math.round(radius)}`;
+        }
+
+        return { kind: 'circle', radius, color, label };
+    }
+
+    drawDebugCircle(screenX, screenY, radius, color, label = '') {
+        if (!Number.isFinite(radius) || radius <= 0) return;
+        this.ctx.save();
+        this.ctx.translate(screenX, screenY);
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = 1.5;
+        this.ctx.setLineDash([4, 4]);
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, radius, 0, Math.PI * 2);
+        this.ctx.stroke();
+        this.ctx.fillStyle = color;
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+        this.ctx.fill();
+        if (label) {
+            this.ctx.fillStyle = color;
+            this.ctx.font = '10px ZCOOL KuaiLe Local';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(label, 0, -radius - 6);
+        }
+        this.ctx.restore();
+    }
+
+    drawDebugArc(screenX, screenY, radius, angle, arcAngleDeg, color, label = '') {
+        if (!Number.isFinite(radius) || radius <= 0) return;
+        this.ctx.save();
+        this.ctx.translate(screenX, screenY);
+        this.ctx.strokeStyle = color;
+        this.ctx.lineWidth = 1.5;
+        this.ctx.setLineDash([5, 5]);
+        const arcRad = (arcAngleDeg || 90) * Math.PI / 360;
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, radius, angle - arcRad, angle + arcRad);
+        this.ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.moveTo(0, 0);
+        this.ctx.lineTo(Math.cos(angle - arcRad) * radius, Math.sin(angle - arcRad) * radius);
+        this.ctx.moveTo(0, 0);
+        this.ctx.lineTo(Math.cos(angle + arcRad) * radius, Math.sin(angle + arcRad) * radius);
+        this.ctx.stroke();
+        this.ctx.fillStyle = color;
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+        this.ctx.fill();
+        if (label) {
+            this.ctx.fillStyle = color;
+            this.ctx.font = '10px ZCOOL KuaiLe Local';
+            this.ctx.textAlign = 'center';
+            this.ctx.fillText(label, 0, -radius - 6);
+        }
+        this.ctx.restore();
+    }
+
+    drawDebugOrbitalRange(orb) {
+        if (!orb || !this.player || !this.camera) return;
+        const center = this.camera.worldToScreen(this.player.cx, this.player.cy);
+        const orbitRadius = (orb.radius || 80) * this.camera.zoom;
+        const hitPadding = (orb.hitPadding || 30) * this.camera.zoom;
+        const inner = Math.max(2, orbitRadius - hitPadding);
+        const outer = orbitRadius + hitPadding;
+        this.ctx.save();
+        this.ctx.translate(center.x, center.y);
+        this.ctx.strokeStyle = 'rgba(255, 225, 92, 0.9)';
+        this.ctx.lineWidth = 1.5;
+        this.ctx.setLineDash([6, 5]);
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, inner, 0, Math.PI * 2);
+        this.ctx.stroke();
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, outer, 0, Math.PI * 2);
+        this.ctx.stroke();
+        this.ctx.fillStyle = 'rgba(255, 225, 92, 0.08)';
+        this.ctx.beginPath();
+        this.ctx.arc(0, 0, outer, 0, Math.PI * 2);
+        this.ctx.arc(0, 0, inner, 0, Math.PI * 2, true);
+        this.ctx.fill();
+        this.ctx.fillStyle = '#ffe15c';
+        this.ctx.font = '10px ZCOOL KuaiLe Local';
+        this.ctx.textAlign = 'center';
+        this.ctx.fillText(`环轨 ${Math.round(orb.radius || 80)} ± ${Math.round(orb.hitPadding || 30)}`, 0, -outer - 6);
+        this.ctx.restore();
+    }
+
+    drawDebugGuardianKnifeRange(knife) {
+        if (!knife || !this.camera) return;
+        const pos = this.camera.worldToScreen(knife.x, knife.y);
+        const targetSize = knife.target?.size || 24;
+        const radius = ((knife.drawSize || 26) * 0.3 + targetSize * 0.45) * this.camera.zoom;
+        this.drawDebugCircle(pos.x, pos.y, radius, '#ff7a7a', `飞刀 ${Math.round(radius / Math.max(this.camera.zoom, 0.001))}`);
+    }
     
     // 初始化光照系统
     initLighting() {
-        // 添加玩家身边的光源 - v0.32-fix: 增大范围和提高亮度
+        // 添加玩家身边的光源：保留暖色聚焦，但避免把角色本体洗白
         if (this.player) {
             this.lighting.addLight(this.player.x, this.player.y, {
-                range: 168,
-                intensity: 0.88,
-                color: { r: 255, g: 230, b: 200 },  // 更暖的色调
-                flicker: true
+                range: 136,
+                intensity: 0.52,
+                color: { r: 255, g: 224, b: 188 },
+                flicker: false
             });
         }
         
@@ -6767,7 +7417,11 @@ class Game {
             this.damageNumbers.spawn(this.player.cx, this.player.cy - 40, '武器栏满!', {color: '#f44', size: 14, life: 1});
             return;
         }
-        this.weapons.push(new Weapon(key, 1));
+        const weapon = new Weapon(key, 1);
+        this.weapons.push(weapon);
+        if (key === 'knife' || key === 'bible') {
+            window.__knifeDebugState = window.__knifeDebugState || {};
+        }
         this.damageNumbers.spawn(this.player.cx, this.player.cy - 40, `+ ${WEAPONS[key]?.name || key}`, {color: '#4f4', size: 14, life: 1.5});
     }
     
@@ -7352,6 +8006,8 @@ class Game {
 
         this.bullets = [];
         this.orbitals = [];
+        this.guardianKnives = [];
+        this.lastGuardianKnifeWhistleAt = 0;
         this.lightningEffects = [];
 
         this.particles = new ParticleSystem();
@@ -7404,6 +8060,12 @@ class Game {
         this.shopItems = [];
 
         this.chestItems = [];
+        this.activeChestSource = null;
+        this.activeTreasureRewardOrigin = null;
+        this.chestUiMode = 'choice';
+        this.chestUiTitle = '幸运抽奖宝箱';
+        this.chestUiSubtitle = '三选一奖励包 | WASD 切换 | 空格确认 | E / Esc 关闭';
+        this.chestRollState = null;
 
         this.levelUpOptions = [];
 
@@ -8281,8 +8943,20 @@ class Game {
             loadEnemySet(allEnemies);
 
             // ===== 3. 武器贴图 =====
-            ['weapon_whip','weapon_scythe','weapon_wand','weapon_knife','weapon_axe','weapon_bible','weapon_fireball','weapon_lightning','weapon_holywater']
-                .forEach(name => addTask(name, basePath + 'weapons/' + name + '.png' + v));
+            const runtimeWeaponSprites = (typeof window !== 'undefined' && window.WEAPON_RUNTIME_SPRITES)
+                ? window.WEAPON_RUNTIME_SPRITES
+                : {
+                    weapon_whip: basePath + 'weapons/weapon_whip.png',
+                    weapon_scythe: basePath + 'weapons/weapon_scythe.png',
+                    weapon_wand: basePath + 'weapons/weapon_wand.png',
+                    weapon_knife: basePath + 'weapons/weapon_knife.png',
+                    weapon_axe: basePath + 'weapons/weapon_axe.png',
+                    weapon_bible: basePath + 'weapons/weapon_bible.png',
+                    weapon_fireball: basePath + 'weapons/weapon_fireball.png',
+                    weapon_lightning: basePath + 'weapons/weapon_lightning.png',
+                    weapon_holywater: basePath + 'weapons/weapon_holywater.png'
+                };
+            Object.entries(runtimeWeaponSprites).forEach(([name, path]) => addTask(name, path + v));
 
             // ===== 4. 道具贴图 =====
             for (let i = 1; i <= 16; i++) addTask('item_' + String(i).padStart(2,'0'), basePath + 'items/item_' + String(i).padStart(2,'0') + '.png' + v);
@@ -8606,13 +9280,12 @@ class Game {
                     return;
                 }
                 
-                // 宝箱交互
-                if (this.curRoom && this.curRoom.type === 'treasure' && this.curRoom.chest && !this.curRoom.chest.opened) {
-                    const dx = this.player.x - this.curRoom.chest.x;
-                    const dy = this.player.y - this.curRoom.chest.y;
-                    const d = Math.sqrt(dx*dx + dy*dy);
-                    if (d < 80) {
-                        this.openChestSelect();
+                const chest = this.getNearestInteractableChest();
+                if (chest) {
+                    if (this.curRoom?.type === 'treasure' && Array.isArray(this.curRoom.chests)) {
+                        this.openTreasureChest(chest);
+                    } else {
+                        this.openChestSelect(chest);
                     }
                     return;
                 }
@@ -8687,11 +9360,12 @@ class Game {
 
             // 宝箱选择框按键处理
             if (this.chestOpen) {
-                if (e.key === 'a' || e.key === 'A' || e.key === 'w' || e.key === 'W') {
+                const chestRolling = this.isChestRolling();
+                if (!chestRolling && (e.key === 'a' || e.key === 'A' || e.key === 'w' || e.key === 'W')) {
                     this.chestSelected = this.moveLinearSelection(this.chestSelected, this.chestItems.length, -1);
-                } else if (e.key === 'd' || e.key === 'D' || e.key === 's' || e.key === 'S') {
+                } else if (!chestRolling && (e.key === 'd' || e.key === 'D' || e.key === 's' || e.key === 'S')) {
                     this.chestSelected = this.moveLinearSelection(this.chestSelected, this.chestItems.length, 1);
-                } else if (e.key === ' ' || e.key === 'Enter') {
+                } else if (!chestRolling && (e.key === ' ' || e.key === 'Enter')) {
                     this.selectChestItem(this.chestSelected >= 0 ? this.chestSelected : 0);
                 } else if (e.key === 'e' || e.key === 'E' || e.key === 'Escape') {
                     this.closeChestSelect();
@@ -8995,8 +9669,11 @@ class Game {
         const stick = document.getElementById('mobileStick');
         const dashBtn = document.getElementById('mobileDashBtn');
         const interactBtn = document.getElementById('mobileInteractBtn');
+        const confirmBtn = document.getElementById('mobileConfirmBtn');
         const talkBtn = document.getElementById('mobileTalkBtn');
         const pauseBtn = document.getElementById('mobilePauseBtn');
+        const cancelBtn = document.getElementById('mobileCancelBtn');
+        const auxBtn = document.getElementById('mobileAuxBtn');
         const choiceButtons = [
             document.getElementById('mobileChoice1'),
             document.getElementById('mobileChoice2'),
@@ -9004,7 +9681,7 @@ class Game {
         ].filter(Boolean);
         if (!root || !joystick || !stick) return;
         this.mobileControlsRoot = root;
-        this.mobileButtons = { dashBtn, interactBtn, talkBtn, pauseBtn, choiceButtons };
+        this.mobileButtons = { dashBtn, interactBtn, confirmBtn, talkBtn, pauseBtn, cancelBtn, auxBtn, choiceButtons };
 
         const updateEnabled = () => {
             const bySize = window.innerWidth <= 900 || window.innerHeight <= 620;
@@ -9116,6 +9793,10 @@ class Game {
             interactBtn.addEventListener('pointerdown', tapAction(() => this.triggerPrimaryInteraction()), { passive: false });
             if (!window.PointerEvent) interactBtn.addEventListener('touchstart', tapAction(() => this.triggerPrimaryInteraction()), { passive: false });
         }
+        if (confirmBtn) {
+            confirmBtn.addEventListener('pointerdown', tapAction(() => this.triggerMobileConfirm()), { passive: false });
+            if (!window.PointerEvent) confirmBtn.addEventListener('touchstart', tapAction(() => this.triggerMobileConfirm()), { passive: false });
+        }
         if (talkBtn) {
             talkBtn.addEventListener('pointerdown', tapAction(() => this.triggerTalkInteraction()), { passive: false });
             if (!window.PointerEvent) talkBtn.addEventListener('touchstart', tapAction(() => this.triggerTalkInteraction()), { passive: false });
@@ -9123,6 +9804,14 @@ class Game {
         if (pauseBtn) {
             pauseBtn.addEventListener('pointerdown', tapAction(() => this.togglePause()), { passive: false });
             if (!window.PointerEvent) pauseBtn.addEventListener('touchstart', tapAction(() => this.togglePause()), { passive: false });
+        }
+        if (cancelBtn) {
+            cancelBtn.addEventListener('pointerdown', tapAction(() => this.triggerMobileCancel()), { passive: false });
+            if (!window.PointerEvent) cancelBtn.addEventListener('touchstart', tapAction(() => this.triggerMobileCancel()), { passive: false });
+        }
+        if (auxBtn) {
+            auxBtn.addEventListener('pointerdown', tapAction(() => this.handleMobileChoice(0)), { passive: false });
+            if (!window.PointerEvent) auxBtn.addEventListener('touchstart', tapAction(() => this.handleMobileChoice(0)), { passive: false });
         }
         choiceButtons.forEach((button, index) => {
             button.addEventListener('pointerdown', tapAction(() => this.handleMobileChoice(index)), { passive: false });
@@ -9140,6 +9829,63 @@ class Game {
         setTimeout(() => { this.keys[key] = false; }, 90);
     }
 
+    triggerMobileConfirm() {
+        if (this.showResultScreen) {
+            this.returnToMainMenu();
+            return;
+        }
+        if (this.bossChestLottery && this.bossChestLottery.active && this.bossChestLottery.phase === 'done') {
+            this.closeBossChestLottery();
+            return;
+        }
+        if (this.levelUpOpen) {
+            this.selectLevelUpOption(this.levelUpSelected >= 0 ? this.levelUpSelected : 0);
+            return;
+        }
+        if (this.shopOpen) {
+            const target = this.shopSelected >= 0 ? this.shopSelected : 0;
+            if (target === this.shopItems.length) this.refreshShop();
+            else this.buyItem(target);
+            return;
+        }
+        if (this.chestOpen) {
+            this.selectChestItem(this.chestSelected >= 0 ? this.chestSelected : 0);
+            return;
+        }
+        if (this.weaponBoxOpen) {
+            this.selectWeaponBoxOption(this.weaponBoxSelected >= 0 ? this.weaponBoxSelected : 0);
+            return;
+        }
+        if (this.paused && !this.hasBlockingOverlayOpen()) {
+            this.executePauseButton('resume');
+            return;
+        }
+        this.triggerPrimaryInteraction();
+    }
+
+    triggerMobileCancel() {
+        if (this.showResultScreen) return;
+        if (this.bossChestLottery && this.bossChestLottery.active && this.bossChestLottery.phase === 'done') {
+            this.closeBossChestLottery();
+            return;
+        }
+        if (this.shopOpen) {
+            this.closeShop();
+            return;
+        }
+        if (this.chestOpen) {
+            this.closeChestSelect();
+            return;
+        }
+        if (this.weaponBoxOpen) {
+            this.closeWeaponBoxSelect();
+            return;
+        }
+        if (this.manualPaused && !this.hasBlockingOverlayOpen()) {
+            this.togglePause();
+        }
+    }
+
     getInteractionContext() {
         if (!this.player) {
             return { type: 'interact', label: '交互' };
@@ -9153,12 +9899,13 @@ class Game {
         if (this.chestOpen) {
             return { type: 'chest_close', label: '关闭' };
         }
-        if (this.curRoom && this.curRoom.type === 'treasure' && this.curRoom.chest && !this.curRoom.chest.opened) {
-            const dx = this.player.x - this.curRoom.chest.x;
-            const dy = this.player.y - this.curRoom.chest.y;
-            if (Math.sqrt(dx * dx + dy * dy) < 80) {
-                return { type: 'chest_open', label: '开箱' };
+        const chest = this.getNearestInteractableChest();
+        if (chest) {
+            if (this.curRoom?.type === 'treasure' && Array.isArray(this.curRoom.chests)) {
+                const profile = this.getTreasureChestProfile(chest.quality);
+                return { type: 'chest_open', label: `开${profile.label}` };
             }
+            return { type: 'chest_open', label: this.curRoom.type === 'hidden' ? '开启密藏' : '开箱' };
         }
         if (this.curRoom && this.curRoom.type === 'shop' && this.curRoom.npc) {
             const dx = this.player.x - this.curRoom.npc.x;
@@ -9183,7 +9930,14 @@ class Game {
                 this.closeChestSelect();
                 break;
             case 'chest_open':
-                this.openChestSelect();
+                const chest = this.getNearestInteractableChest();
+                if (chest) {
+                    if (this.curRoom?.type === 'treasure' && Array.isArray(this.curRoom.chests)) {
+                        this.openTreasureChest(chest);
+                    } else {
+                        this.openChestSelect(chest);
+                    }
+                }
                 break;
             case 'shop_open':
                 if (!this.shopOpen) this.openShop();
@@ -9243,7 +9997,42 @@ class Game {
             !this.showResultScreen
         );
         root.classList.toggle('active', shouldShow);
-        if (shouldShow) this.updateMobileActionState();
+        if (shouldShow) {
+            this.updateMobileControlsLayout();
+            this.updateMobileActionState();
+        }
+    }
+
+    updateMobileControlsLayout() {
+        const root = this.mobileControlsRoot || document.getElementById('mobileControls');
+        const centerGame = document.getElementById('centerGame');
+        if (!root || !centerGame) return;
+
+        const centerRect = centerGame.getBoundingClientRect();
+        if (!centerRect || centerRect.width <= 0 || centerRect.height <= 0) return;
+
+        const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 0;
+        const viewportHeight = window.innerHeight || document.documentElement.clientHeight || 0;
+        if (!viewportWidth || !viewportHeight) return;
+
+        const compact = viewportWidth <= 600;
+        const panelGap = compact ? 10 : 14;
+        const bottomPad = compact ? 8 : 12;
+        const minHeight = compact ? 148 : 166;
+        const maxHeight = compact ? 196 : 236;
+        const availableHeight = Math.max(0, viewportHeight - centerRect.bottom - panelGap - bottomPad);
+        const panelHeight = Math.max(minHeight, Math.min(maxHeight, availableHeight));
+        const panelTop = Math.min(viewportHeight - bottomPad - panelHeight, centerRect.bottom + panelGap);
+        const panelLeft = Math.max(compact ? 12 : 16, centerRect.left);
+        const panelRightGap = Math.max(compact ? 12 : 16, viewportWidth - centerRect.right);
+
+        root.style.setProperty('--mobile-control-side-pad', `${Math.round(panelLeft)}px`);
+        root.style.setProperty('--mobile-control-panel-left', `${Math.round(panelLeft)}px`);
+        root.style.setProperty('--mobile-control-right-gap', `${Math.round(panelRightGap)}px`);
+        root.style.setProperty('--mobile-control-panel-right-gap', `${Math.round(panelRightGap)}px`);
+        root.style.setProperty('--mobile-control-bottom-pad', `${bottomPad}px`);
+        root.style.setProperty('--mobile-control-panel-top', `${Math.round(panelTop)}px`);
+        root.style.setProperty('--mobile-control-panel-height', `${Math.round(panelHeight)}px`);
     }
 
     updateMobileActionState() {
@@ -9294,7 +10083,8 @@ class Game {
     handleClick(x, y) {
         // v0.22.1: 暂停菜单点击处理
         if (this.manualPaused && !this.hasBlockingOverlayOpen()) {
-            this.handlePauseCanvasClick(x, y);
+            const pausePoint = this.toOverlayPoint(x, y);
+            this.handlePauseCanvasClick(pausePoint.x, pausePoint.y);
             return;
         }
         
@@ -9305,7 +10095,8 @@ class Game {
         }
 
         // v0.22: 检测点击的UI窗口并设为活动窗口
-        const clickedUI = this.detectClickedUI(x, y);
+        const overlayPoint = this.toOverlayPoint(x, y);
+        const clickedUI = this.detectClickedUI(overlayPoint.x, overlayPoint.y);
         if (clickedUI) {
             this.activeUIWindow = clickedUI;
         }
@@ -9318,7 +10109,7 @@ class Game {
 
             const btn = this.resultBtnRect;
 
-            if (btn && x > btn.x && x < btn.x + btn.w && y > btn.y && y < btn.y + btn.h) {
+            if (btn && overlayPoint.x > btn.x && overlayPoint.x < btn.x + btn.w && overlayPoint.y > btn.y && overlayPoint.y < btn.y + btn.h) {
 
                 this.returnToMainMenu();
 
@@ -9333,64 +10124,15 @@ class Game {
         // 升级选择界面点击处理（4选1）
 
         if (this.levelUpOpen) {
-
-            const canvas = document.getElementById('gameCanvas');
-
-            if (!canvas) return;
-
-            const cw = canvas.width;
-
-            const ch = canvas.height;
-
-            
-
-            // 计算四个选项的位置（2x2网格）
-
-            const boxWidth = 760;
-
-            const boxHeight = 540;
-
-            const boxX = (cw - boxWidth) / 2;
-
-            const boxY = (ch - boxHeight) / 2;
-
-            const padding = 28;
-            const bottomBarHeight = 52;
-            const gapX = 28;
-            const gapY = 28;
-            const contentWidth = boxWidth - padding * 2;
-            const contentHeight = boxHeight - 64 - bottomBarHeight;
-            const cardWidth = (contentWidth - gapX) / 2;
-            const cardHeight = (contentHeight - gapY) / 2;
-            const startX = boxX + padding + cardWidth / 2;
-            const startY = boxY + 68 + cardHeight / 2;
-
-            
-
-            for (let i = 0; i < 4; i++) {
-
-                const row = Math.floor(i / 2);
-
-                const col = i % 2;
-
-                const cx = startX + col * (cardWidth + gapX);
-
-                const cy = startY + row * (cardHeight + gapY);
-
-                    if (x > cx - cardWidth/2 && x < cx + cardWidth/2 &&
-
-                        y > cy - cardHeight/2 && y < cy + cardHeight/2) {
-
+            const cards = this.overlayHitRegions?.levelUp?.cards || [];
+            for (let i = 0; i < cards.length; i++) {
+                const card = cards[i];
+                if (overlayPoint.x > card.x && overlayPoint.x < card.x + card.w && overlayPoint.y > card.y && overlayPoint.y < card.y + card.h) {
                     this.levelUpSelected = i;
-
                     this.selectLevelUpOption(i);
-
                     return;
-
                 }
-
             }
-
             return;
 
         }
@@ -9400,126 +10142,44 @@ class Game {
         // 商店界面点击处理
 
         if (this.shopOpen) {
-
-            const canvas = document.getElementById('gameCanvas');
-
-            if (!canvas) return;
-
-            const cw = canvas.width || 900;
-
-            const ch = canvas.height || 600;
-
-            const centerX = cw / 2;
-
-            const centerY = ch / 2;
-
-            
-
-            // 与 drawShopUI 完全一致的坐标
-
-            const boxWidth = 620;
-
-            const boxHeight = 430;
-
-            const boxX = centerX - boxWidth / 2;
-
-            const boxY = centerY - boxHeight / 2;
-
-            const itemWidth = 160;
-
-            const itemHeight = 210;
-
-            const itemGap = 28;
-
-            const startX = centerX - (this.shopItems.length * itemWidth) / 2 + itemWidth / 2;
-
-            const itemY = boxY + 200;
-
-            const refreshWidth = 210;
-
-            const refreshHeight = 44;
-
-            const refreshX = centerX - refreshWidth / 2;
-
-            const refreshY = boxY + boxHeight - 76;
-
-            
-
-            // 检查是否点击在关闭区域（点击背景关闭）
-
-            if (x < boxX || x > boxX + boxWidth || y < boxY || y > boxY + boxHeight) {
-
+            const shopRegion = this.overlayHitRegions?.shop;
+            if (!shopRegion) return;
+            if (overlayPoint.x < shopRegion.panel.x || overlayPoint.x > shopRegion.panel.x + shopRegion.panel.w || overlayPoint.y < shopRegion.panel.y || overlayPoint.y > shopRegion.panel.y + shopRegion.panel.h) {
                 this.closeShop();
-
                 return;
-
             }
-
-            
-
-            if (x >= refreshX && x <= refreshX + refreshWidth &&
-
-                y >= refreshY && y <= refreshY + refreshHeight) {
-
+            const refresh = shopRegion.refresh;
+            if (refresh && overlayPoint.x >= refresh.x && overlayPoint.x <= refresh.x + refresh.w && overlayPoint.y >= refresh.y && overlayPoint.y <= refresh.y + refresh.h) {
                 this.shopSelected = this.shopItems.length;
-
                 this.refreshShop();
-
                 return;
-
             }
-
-            for (let i = 0; i < this.shopItems.length; i++) {
-
-                const ix = startX + i * (itemWidth + itemGap);
-
-                if (x > ix - itemWidth/2 && x < ix + itemWidth/2 &&
-
-                    y > itemY - itemHeight/2 && y < itemY + itemHeight/2) {
-
+            const items = shopRegion.items || [];
+            for (let i = 0; i < items.length; i++) {
+                const itemRect = items[i];
+                if (overlayPoint.x > itemRect.x && overlayPoint.x < itemRect.x + itemRect.w &&
+                    overlayPoint.y > itemRect.y && overlayPoint.y < itemRect.y + itemRect.h) {
                     this.shopSelected = i;
-
                     this.buyItem(i);
-
                     return;
-
                 }
-
             }
-
             return;
         }
         
         // 宝箱选择框点击处理
         if (this.chestOpen) {
-            const canvas = document.getElementById('gameCanvas');
-            if (!canvas) return;
-            const cw = canvas.width || 900;
-            const ch = canvas.height || 600;
-            const centerX = cw / 2;
-            const centerY = ch / 2;
-            
-            const boxWidth = 680;
-            const boxHeight = 410;
-            const boxX = centerX - boxWidth / 2;
-            const boxY = centerY - boxHeight / 2;
-            
-            // 点击背景关闭
-            if (x < boxX || x > boxX + boxWidth || y < boxY || y > boxY + boxHeight) {
+            const chestRegion = this.overlayHitRegions?.chest;
+            if (!chestRegion) return;
+            if (overlayPoint.x < chestRegion.panel.x || overlayPoint.x > chestRegion.panel.x + chestRegion.panel.w || overlayPoint.y < chestRegion.panel.y || overlayPoint.y > chestRegion.panel.y + chestRegion.panel.h) {
                 this.closeChestSelect();
                 return;
             }
-            
-            const itemWidth = 180;
-            const itemHeight = 220;
-            const itemGap = 28;
-            const startX = centerX - (this.chestItems.length * itemWidth) / 2 + itemWidth / 2;
-            const iy = boxY + 195;
-            
-            for (let i = 0; i < this.chestItems.length; i++) {
-                const ix = startX + i * (itemWidth + itemGap);
-                if (x > ix - itemWidth/2 && x < ix + itemWidth/2 &&
-                    y > iy - itemHeight/2 && y < iy + itemHeight/2) {
+            const items = chestRegion.items || [];
+            for (let i = 0; i < items.length; i++) {
+                const itemRect = items[i];
+                if (overlayPoint.x > itemRect.x && overlayPoint.x < itemRect.x + itemRect.w &&
+                    overlayPoint.y > itemRect.y && overlayPoint.y < itemRect.y + itemRect.h) {
                     this.chestSelected = i;
                     this.selectChestItem(i);
                     return;
@@ -9530,34 +10190,17 @@ class Game {
         
         // 武器箱选择框点击处理
         if (this.weaponBoxOpen) {
-            const canvas = document.getElementById('gameCanvas');
-            if (!canvas) return;
-            const cw = canvas.width || 900;
-            const ch = canvas.height || 600;
-            const centerX = cw / 2;
-            const centerY = ch / 2;
-            
-            const boxWidth = 720;
-            const boxHeight = 430;
-            const boxX = centerX - boxWidth / 2;
-            const boxY = centerY - boxHeight / 2;
-            
-            // 点击背景关闭
-            if (x < boxX || x > boxX + boxWidth || y < boxY || y > boxY + boxHeight) {
+            const weaponRegion = this.overlayHitRegions?.weaponBox;
+            if (!weaponRegion) return;
+            if (overlayPoint.x < weaponRegion.panel.x || overlayPoint.x > weaponRegion.panel.x + weaponRegion.panel.w || overlayPoint.y < weaponRegion.panel.y || overlayPoint.y > weaponRegion.panel.y + weaponRegion.panel.h) {
                 this.closeWeaponBoxSelect();
                 return;
             }
-            
-            const itemWidth = 190;
-            const itemHeight = 230;
-            const itemGap = 28;
-            const startX = centerX - (this.weaponBoxOptions.length * itemWidth) / 2 + itemWidth / 2;
-            const iy = boxY + 200;
-            
-            for (let i = 0; i < this.weaponBoxOptions.length; i++) {
-                const ix = startX + i * (itemWidth + itemGap);
-                if (x > ix - itemWidth/2 && x < ix + itemWidth/2 &&
-                    y > iy - itemHeight/2 && y < iy + itemHeight/2) {
+            const items = weaponRegion.items || [];
+            for (let i = 0; i < items.length; i++) {
+                const itemRect = items[i];
+                if (overlayPoint.x > itemRect.x && overlayPoint.x < itemRect.x + itemRect.w &&
+                    overlayPoint.y > itemRect.y && overlayPoint.y < itemRect.y + itemRect.h) {
                     this.weaponBoxSelected = i;
                     this.selectWeaponBoxOption(i);
                     return;
@@ -9578,53 +10221,27 @@ class Game {
 
     // v0.22: 检测点击的是哪个UI窗口
     detectClickedUI(x, y) {
-        const canvas = document.getElementById('gameCanvas');
-        if (!canvas) return null;
-        
-        const cw = canvas.width || 900;
-        const ch = canvas.height || 600;
-        
-        // 按绘制顺序反向检测（后绘制的先检测）
-        // 武器箱
         if (this.weaponBoxOpen) {
-            const boxWidth = 720;
-            const boxHeight = 430;
-            const boxX = (cw - boxWidth) / 2;
-            const boxY = (ch - boxHeight) / 2;
-            if (x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY + boxHeight) {
+            const panel = this.overlayHitRegions?.weaponBox?.panel;
+            if (panel && x >= panel.x && x <= panel.x + panel.w && y >= panel.y && y <= panel.y + panel.h) {
                 return 'weaponBox';
             }
         }
-        
-        // 宝箱
         if (this.chestOpen) {
-            const boxWidth = 680;
-            const boxHeight = 410;
-            const boxX = (cw - boxWidth) / 2;
-            const boxY = (ch - boxHeight) / 2;
-            if (x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY + boxHeight) {
+            const panel = this.overlayHitRegions?.chest?.panel;
+            if (panel && x >= panel.x && x <= panel.x + panel.w && y >= panel.y && y <= panel.y + panel.h) {
                 return 'chest';
             }
         }
-        
-        // 升级选择
         if (this.levelUpOpen) {
-            const boxWidth = 760;
-            const boxHeight = 540;
-            const boxX = (cw - boxWidth) / 2;
-            const boxY = (ch - boxHeight) / 2;
-            if (x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY + boxHeight) {
+            const panel = this.overlayHitRegions?.levelUp?.panel;
+            if (panel && x >= panel.x && x <= panel.x + panel.w && y >= panel.y && y <= panel.y + panel.h) {
                 return 'levelUp';
             }
         }
-        
-        // 商店
         if (this.shopOpen) {
-            const boxWidth = 620;
-            const boxHeight = 430;
-            const boxX = (cw - boxWidth) / 2;
-            const boxY = (ch - boxHeight) / 2;
-            if (x >= boxX && x <= boxX + boxWidth && y >= boxY && y <= boxY + boxHeight) {
+            const panel = this.overlayHitRegions?.shop?.panel;
+            if (panel && x >= panel.x && x <= panel.x + panel.w && y >= panel.y && y <= panel.y + panel.h) {
                 return 'shop';
             }
         }
@@ -10492,7 +11109,7 @@ class Game {
 
         // 进化武器
 
-        weapon.evolveToSuper(evo.result);
+        weapon.evolveToSuper(evo.result, this.currentCombatStats || null);
         // 注意：evolveToSuper内部已处理环绕类超武的初始化
 
         this.particles.burst(this.player.cx, this.player.cy, '#f0f', 50);  // v0.16.3: 使用中心点
@@ -10607,14 +11224,505 @@ class Game {
 
     
 
+    rollTreasureRewardTier() {
+        const roll = Math.random();
+        if (roll < 0.10) return { key: 'legendary', label: '传奇', count: 3, accent: '#ff8a3d' };
+        if (roll < 0.35) return { key: 'rare', label: '稀有', count: 2, accent: '#ffd24d' };
+        return { key: 'common', label: '普通', count: 1, accent: '#8bd0ff' };
+    }
+
+    rollTreasureRewardType() {
+        const pool = ['item', 'gold', 'exp', 'weapon'];
+        return pool[randInt(0, pool.length - 1)];
+    }
+
+    rollTreasureChestQuality() {
+        const roll = Math.random();
+        if (roll < 0.05) return 'legendary';
+        if (roll < 0.20) return 'rare';
+        return 'common';
+    }
+
+    getTreasureChestProfile(quality = 'common') {
+        const profileMap = {
+            common: { label: '普通宝箱', accent: '#8bd0ff', draws: 1 },
+            rare: { label: '稀有宝箱', accent: '#ffd24d', draws: 2 },
+            legendary: { label: '传奇宝箱', accent: '#ff8a3d', draws: 3 }
+        };
+        return profileMap[quality] || profileMap.common;
+    }
+
+    rollTreasureTierForChest(quality = 'common', drawIndex = 0) {
+        if (quality === 'legendary' && drawIndex === 0) {
+            return { key: 'legendary', label: '传奇', count: 3, accent: '#ff8a3d' };
+        }
+        if (quality === 'rare' && drawIndex === 0) {
+            return { key: 'rare', label: '稀有', count: 2, accent: '#ffd24d' };
+        }
+        const roll = Math.random();
+        if (quality === 'legendary') {
+            if (roll < 0.25) return { key: 'legendary', label: '传奇', count: 3, accent: '#ff8a3d' };
+            if (roll < 0.80) return { key: 'rare', label: '稀有', count: 2, accent: '#ffd24d' };
+            return { key: 'common', label: '普通', count: 1, accent: '#8bd0ff' };
+        }
+        if (quality === 'rare') {
+            if (roll < 0.12) return { key: 'legendary', label: '传奇', count: 3, accent: '#ff8a3d' };
+            if (roll < 0.58) return { key: 'rare', label: '稀有', count: 2, accent: '#ffd24d' };
+            return { key: 'common', label: '普通', count: 1, accent: '#8bd0ff' };
+        }
+        if (roll < 0.03) return { key: 'legendary', label: '传奇', count: 3, accent: '#ff8a3d' };
+        if (roll < 0.25) return { key: 'rare', label: '稀有', count: 2, accent: '#ffd24d' };
+        return { key: 'common', label: '普通', count: 1, accent: '#8bd0ff' };
+    }
+
+    buildTreasureRewardByTierAndType(tier, rewardType) {
+        const originalType = this.rollTreasureRewardType;
+        const originalTier = this.rollTreasureRewardTier;
+        this.rollTreasureRewardType = () => rewardType;
+        this.rollTreasureRewardTier = () => tier;
+        const reward = this.buildTreasureChestChoice();
+        this.rollTreasureRewardType = originalType;
+        this.rollTreasureRewardTier = originalTier;
+        return reward;
+    }
+
+    generateTreasureChestRewardsByQuality(quality = 'common') {
+        const profile = this.getTreasureChestProfile(quality);
+        const rewards = [];
+        for (let i = 0; i < profile.draws; i++) {
+            const tier = this.rollTreasureTierForChest(quality, i);
+            const rewardType = this.rollTreasureRewardType();
+            rewards.push(this.buildTreasureRewardByTierAndType(tier, rewardType));
+        }
+        return rewards;
+    }
+
+    generateTreasureChestChoices() {
+        const choices = [];
+        for (let i = 0; i < 3; i++) {
+            choices.push(this.buildTreasureChestChoice());
+        }
+        return choices;
+    }
+
+    buildTreasureChestChoice() {
+        const tier = this.rollTreasureRewardTier();
+        const rewardType = this.rollTreasureRewardType();
+        const floor = this.currentFloor || 1;
+        const count = tier.count;
+        const baseValue = Math.max(1, Math.floor(45 * Math.pow(floor, 1.15)));
+        const reward = {
+            rewardType,
+            tier: tier.key,
+            tierLabel: tier.label,
+            count,
+            accent: tier.accent,
+            icon: '🎁',
+            name: tier.label + '奖励',
+            desc: '',
+            rewards: [],
+            value: 0
+        };
+
+        if (rewardType === 'item') {
+            const availableItems = this.getAvailableItemsByFloor().slice();
+            while (reward.rewards.length < count && availableItems.length > 0) {
+                const idx = randInt(0, availableItems.length - 1);
+                const item = availableItems.splice(idx, 1)[0];
+                reward.rewards.push(item);
+            }
+            reward.icon = tier.key === 'legendary' ? '🌈' : (tier.key === 'rare' ? '✨' : '📦');
+            reward.name = `${tier.label}道具包`;
+            reward.desc = reward.rewards.length > 0
+                ? `获得 ${reward.rewards.length} 个随机道具`
+                : '道具池已空，开启后会自动转成金币补偿';
+            return reward;
+        }
+
+        if (rewardType === 'weapon') {
+            reward.icon = tier.key === 'legendary' ? '⚔️' : (tier.key === 'rare' ? '🗡️' : '🔧');
+            reward.name = `${tier.label}武器包`;
+            reward.desc = `获得 ${count} 次随机武器奖励`;
+            return reward;
+        }
+
+        if (rewardType === 'gold') {
+            reward.icon = tier.key === 'legendary' ? '👑' : '💰';
+            reward.name = `${tier.label}金币包`;
+            reward.value = baseValue * count;
+            reward.desc = `获得 ${reward.value} 金币`;
+            return reward;
+        }
+
+        reward.icon = tier.key === 'legendary' ? '💎' : '✨';
+        reward.name = `${tier.label}经验包`;
+        reward.value = Math.floor(baseValue * 1.35) * count;
+        reward.desc = `获得 ${reward.value} 经验`;
+        return reward;
+    }
+
+    buildThemedTreasureChoice(rewardType, tierKey) {
+        const tierMap = {
+            common: { key: 'common', label: '普通', count: 1, accent: '#8bd0ff' },
+            rare: { key: 'rare', label: '稀有', count: 2, accent: '#ffd24d' },
+            legendary: { key: 'legendary', label: '传奇', count: 3, accent: '#ff8a3d' }
+        };
+        const tier = tierMap[tierKey] || tierMap.common;
+        const originalType = this.rollTreasureRewardType;
+        const originalTier = this.rollTreasureRewardTier;
+        this.rollTreasureRewardType = () => rewardType;
+        this.rollTreasureRewardTier = () => tier;
+        const reward = this.buildTreasureChestChoice();
+        this.rollTreasureRewardType = originalType;
+        this.rollTreasureRewardTier = originalTier;
+        return reward;
+    }
+
+    buildHiddenRoomRewardSet(modeId) {
+        if (modeId === 'gold') {
+            return [
+                this.buildThemedTreasureChoice('gold', 'common'),
+                this.buildThemedTreasureChoice('gold', 'rare'),
+                this.buildThemedTreasureChoice('gold', 'legendary')
+            ];
+        }
+        if (modeId === 'wisdom') {
+            return [
+                this.buildThemedTreasureChoice('exp', 'common'),
+                this.buildThemedTreasureChoice('exp', 'rare'),
+                this.buildThemedTreasureChoice('exp', 'legendary')
+            ];
+        }
+        if (modeId === 'armory') {
+            return [
+                this.buildThemedTreasureChoice('weapon', 'common'),
+                this.buildThemedTreasureChoice('weapon', 'rare'),
+                this.buildThemedTreasureChoice('weapon', 'legendary')
+            ];
+        }
+        if (modeId === 'relic') {
+            return [
+                this.buildThemedTreasureChoice('item', 'common'),
+                this.buildThemedTreasureChoice('item', 'rare'),
+                this.buildThemedTreasureChoice('item', 'legendary')
+            ];
+        }
+        return [
+            this.buildThemedTreasureChoice('item', 'rare'),
+            this.buildThemedTreasureChoice('gold', 'rare'),
+            this.buildThemedTreasureChoice('weapon', 'legendary')
+        ];
+    }
+
+    getTreasureRewardOrigin() {
+        const sourceChest = this.activeTreasureRewardOrigin || this.activeChestSource;
+        if (sourceChest && Number.isFinite(sourceChest.x) && Number.isFinite(sourceChest.y)) {
+            return { x: sourceChest.x, y: sourceChest.y };
+        }
+        const chest = this.curRoom?.chest;
+        if (chest && Number.isFinite(chest.x) && Number.isFinite(chest.y)) {
+            return { x: chest.x, y: chest.y };
+        }
+        return { x: this.player.cx, y: this.player.cy };
+    }
+
+    getNearestInteractableChest() {
+        if (!this.curRoom || !this.player) return null;
+        if (this.curRoom.type === 'treasure' && Array.isArray(this.curRoom.chests)) {
+            let nearest = null;
+            let bestDistance = Infinity;
+            this.curRoom.chests.forEach(chest => {
+                if (!chest || chest.opened || chest.disabled) return;
+                const d = Math.hypot(this.player.x - chest.x, this.player.y - chest.y);
+                if (d < 80 && d < bestDistance) {
+                    bestDistance = d;
+                    nearest = chest;
+                }
+            });
+            return nearest;
+        }
+        if ((this.curRoom.type === 'treasure' || this.curRoom.type === 'hidden') && this.curRoom.chest && !this.curRoom.chest.opened) {
+            const d = Math.hypot(this.player.x - this.curRoom.chest.x, this.player.y - this.curRoom.chest.y);
+            if (d < 80) return this.curRoom.chest;
+        }
+        return null;
+    }
+
+    isTreasureChestBundleUI() {
+        return this.chestOpen && this.chestUiMode === 'treasure_bundle';
+    }
+
+    openTreasureChest(chest) {
+        if (!this.curRoom || this.curRoom.type !== 'treasure' || !chest || chest.opened || chest.disabled) return;
+        chest.opened = true;
+        if (Array.isArray(this.curRoom.chests)) {
+            this.curRoom.chests.forEach(other => {
+                if (other && other !== chest) other.disabled = true;
+            });
+        }
+        const profile = this.getTreasureChestProfile(chest.quality);
+        const rewards = Array.isArray(chest.rewards) && chest.rewards.length > 0
+            ? chest.rewards
+            : this.generateTreasureChestRewardsByQuality(chest.quality);
+        chest.rewards = rewards;
+        this.openChestSelect(chest, {
+            mode: 'treasure_bundle',
+            items: rewards,
+            title: `${profile.label}抽奖`,
+            subtitle: `抽奖揭示后领取全部 ${rewards.length} 项奖励`,
+            allowOpened: true
+        });
+    }
+
+    getTreasureScatterTarget(index, total, radiusMin = 56, radiusMax = 120) {
+        const baseAngle = total <= 1 ? Math.random() * Math.PI * 2 : (Math.PI * 2 * index) / total;
+        const angle = baseAngle + (Math.random() - 0.5) * 0.45;
+        const radius = radiusMin + Math.random() * (radiusMax - radiusMin);
+        return {
+            x: this.player.cx + Math.cos(angle) * radius,
+            y: this.player.cy + Math.sin(angle) * radius * 0.72
+        };
+    }
+
+    spawnTreasureItemDrop(item, index = 0, total = 1) {
+        if (!this.curRoom || !item) return null;
+        const origin = this.getTreasureRewardOrigin();
+        const target = this.getTreasureScatterTarget(index, total);
+        const drop = {
+            x: origin.x,
+            y: origin.y,
+            targetX: target.x,
+            targetY: target.y,
+            isFlying: true,
+            flyTime: 0.5,
+            id: item.id,
+            icon: item.icon,
+            name: item.name,
+            effect: item.effect,
+            petId: item.petId
+        };
+        this.curRoom.items.push(drop);
+        this.particles.sparkle(origin.x, origin.y, '#fa0', 5);
+        return drop;
+    }
+
+    spawnTreasureWeaponDrops(count = 1) {
+        if (!this.curRoom) return 0;
+        let spawned = 0;
+        for (let i = 0; i < count; i++) {
+            const target = this.getTreasureScatterTarget(i, Math.max(1, count), 64, 132);
+            const chest = this.spawnWeaponChoiceChestAt(this.getTreasureRewardOrigin().x, this.getTreasureRewardOrigin().y);
+            if (!chest) continue;
+            chest.targetX = target.x;
+            chest.targetY = target.y;
+            chest.isFlying = true;
+            chest.flyTime = 0.55;
+            chest.name = '武器奖励包';
+            spawned += 1;
+        }
+        return spawned;
+    }
+
+    scheduleTreasureAutoCollect(drops, delayMs = 650) {
+        if (!Array.isArray(drops) || drops.length === 0) return;
+        const collectAt = Date.now() / 1000 + delayMs / 1000;
+        drops.forEach(drop => {
+            if (!drop) return;
+            drop.autoCollectAfter = collectAt;
+        });
+    }
+
+    spawnTreasureCurrencyDrops(kind, totalValue, tierKey = 'common') {
+        if (!this.curRoom || totalValue <= 0) return 0;
+        const origin = this.getTreasureRewardOrigin();
+        const burstMap = { common: 6, rare: 12, legendary: 18 };
+        const pieceCount = Math.max(4, burstMap[tierKey] || 6);
+        const values = [];
+        let remaining = Math.max(1, Math.floor(totalValue));
+        for (let i = 0; i < pieceCount; i++) {
+            const piecesLeft = pieceCount - i;
+            const value = piecesLeft === 1
+                ? remaining
+                : Math.max(1, Math.floor(remaining / piecesLeft));
+            values.push(value);
+            remaining -= value;
+        }
+
+        const spawned = [];
+        values.forEach(value => {
+            const drop = kind === 'gold'
+                ? this.spawnGoldCoin(origin.x, origin.y, value)
+                : this.spawnExpGem(origin.x, origin.y, value);
+            if (drop) spawned.push(drop);
+        });
+        this.scheduleTreasureAutoCollect(spawned, tierKey === 'legendary' ? 900 : (tierKey === 'rare' ? 750 : 600));
+        return spawned.length;
+    }
+
+    ensureHiddenRoomSetup(room) {
+        if (!room || room.type !== 'hidden' || room.hiddenMode) return room && room.hiddenMode;
+        const modePool = [
+            { id: 'cache', title: '藏宝密室', subtitle: '稳妥高价值奖励', color: '#cfa6ff', challenge: false },
+            { id: 'gold', title: '金币密室', subtitle: '赌一把暴富', color: '#ffd24d', challenge: false },
+            { id: 'wisdom', title: '智慧密室', subtitle: '经验加速成长', color: '#82d6ff', challenge: false },
+            { id: 'armory', title: '军械密室', subtitle: '偏武器强化', color: '#ffb86c', challenge: false },
+            { id: 'trial', title: '试炼密室', subtitle: '击败守卫领取大奖', color: '#ff7a7a', challenge: true }
+        ];
+        const picked = modePool[randInt(0, modePool.length - 1)];
+        room.hiddenMode = picked;
+        room.hiddenRewardGranted = false;
+
+        if (picked.challenge) {
+            room.cleared = false;
+            room.chest = null;
+            return picked;
+        }
+
+        room.cleared = true;
+        room.chest = {
+            x: room.centerX,
+            y: room.centerY,
+            opened: false,
+            rewards: this.buildHiddenRoomRewardSet(picked.id),
+            title: picked.title,
+            subtitle: picked.subtitle + ' | 三选一隐藏奖励'
+        };
+        return picked;
+    }
+
+    grantTreasureChestReward(reward) {
+        if (!reward) return;
+        if (reward.rewardType === 'item') {
+            let spawned = 0;
+            (reward.rewards || []).forEach(item => {
+                if (item && !this.items.has(item.id)) {
+                    if (this.spawnTreasureItemDrop(item, spawned, Math.max(1, reward.rewards.length))) {
+                        spawned += 1;
+                    }
+                }
+            });
+            if (spawned <= 0) {
+                const goldComp = 40 * reward.count;
+                this.spawnTreasureCurrencyDrops('gold', goldComp, reward.tier);
+                this.damageNumbers.spawn(this.player.cx, this.player.cy - 40, `金币补偿 x${goldComp}`, { color: '#ffcc00', size: 16 });
+            } else {
+                this.damageNumbers.spawn(this.player.cx, this.player.cy - 40, `${reward.tierLabel}道具散落`, { color: reward.accent, size: 18, life: 1.8 });
+            }
+            return;
+        }
+
+        if (reward.rewardType === 'weapon') {
+            const spawned = this.spawnTreasureWeaponDrops(reward.count);
+            this.damageNumbers.spawn(this.player.cx, this.player.cy - 40, `武器奖励包 x${Math.max(1, spawned)}`, { color: reward.accent, size: 18, life: 1.8 });
+            return;
+        }
+
+        if (reward.rewardType === 'gold') {
+            this.spawnTreasureCurrencyDrops('gold', reward.value, reward.tier);
+            this.damageNumbers.spawn(this.player.cx, this.player.cy - 40, `${reward.tierLabel}金币喷发`, { color: '#ffcc00', size: 18, life: 1.8 });
+            return;
+        }
+
+        this.spawnTreasureCurrencyDrops('exp', reward.value, reward.tier);
+        this.damageNumbers.spawn(this.player.cx, this.player.cy - 40, `${reward.tierLabel}经验喷发`, { color: reward.accent, size: 18, life: 1.8 });
+    }
+
+    gainTreasureExperience(amount, color = '#7fd6ff') {
+        this.player.exp += amount;
+        this.damageNumbers.spawn(this.player.cx, this.player.cy - 40, `+${amount}经验`, { color, size: 18, life: 1.8 });
+        while (this.player.exp >= this.player.lv * 100) {
+            this.player.exp -= this.player.lv * 100;
+            this.player.lv++;
+            this.player.maxHp += 1;
+            this.player.hp = Math.min(this.player.maxHp, this.player.hp + 1);
+            this.player.expToNext = Math.floor(100 * Math.pow(1.2, this.player.lv - 1));
+            this.openLevelUpSelect();
+        }
+    }
+
+    grantTreasureWeaponRewards(count, color = '#f0c060') {
+        const ownedWeapons = this.weapons.filter(w => !w.isSuper && w.canLevelUp());
+        const ownedKeys = new Set(this.weapons.map(w => w.baseKey));
+        const availableNewWeapons = Object.keys(WEAPONS).filter(key => !ownedKeys.has(key));
+        let granted = 0;
+
+        for (let i = 0; i < count; i++) {
+            if (ownedWeapons.length > 0) {
+                const weapon = ownedWeapons[randInt(0, ownedWeapons.length - 1)];
+                if (weapon.canLevelUp()) {
+                    weapon.level++;
+                    granted++;
+                    this.checkWeaponEvolution(this.weapons.indexOf(weapon));
+                    if (!weapon.canLevelUp()) {
+                        const idx = ownedWeapons.indexOf(weapon);
+                        if (idx >= 0) ownedWeapons.splice(idx, 1);
+                    }
+                    continue;
+                }
+            }
+
+            if (availableNewWeapons.length > 0 && this.weapons.length < 6) {
+                const key = availableNewWeapons.splice(randInt(0, availableNewWeapons.length - 1), 1)[0];
+                this.weapons.push(new Weapon(key, 1));
+                granted++;
+                continue;
+            }
+
+            this.player.gold += 60;
+        }
+
+        this.damageNumbers.spawn(this.player.cx, this.player.cy - 40, `武器奖励 x${Math.max(1, granted)}`, { color, size: 18, life: 1.8 });
+    }
+
+    spawnHiddenTrialReward(room) {
+        if (!room) return;
+        room.chest = {
+            x: room.centerX,
+            y: room.centerY,
+            opened: false,
+            rewards: [
+                this.buildThemedTreasureChoice('item', 'legendary'),
+                this.buildThemedTreasureChoice('weapon', 'legendary'),
+                this.buildThemedTreasureChoice('gold', 'legendary')
+            ],
+            title: '试炼战利品',
+            subtitle: '隐藏试炼完成 | 三选一大奖'
+        };
+        this.particles.explosion(room.centerX, room.centerY, '#c86bff', 18);
+        this.particles.sparkle(room.centerX, room.centerY, '#ffd24d', 14);
+    }
+
+    isChestRolling() {
+        if (!this.chestRollState || !this.chestRollState.active) return false;
+        const elapsed = Date.now() - this.chestRollState.startedAt;
+        if (elapsed >= this.chestRollState.duration) {
+            this.chestRollState.active = false;
+            return false;
+        }
+        return true;
+    }
+
     // 打开宝箱选择框（3选1）
-    openChestSelect() {
-        if (!this.curRoom || !this.curRoom.chest || this.curRoom.chest.opened) return;
+    openChestSelect(chestSource = null, options = {}) {
+        const chest = chestSource || this.curRoom?.chest;
+        if (!this.curRoom || !chest || (chest.opened && !options.allowOpened)) return;
         
-        this.chestItems = this.curRoom.chest.items;
+        if (!Array.isArray(options.items) && (!Array.isArray(chest.rewards) || chest.rewards.length === 0)) {
+            chest.rewards = this.generateTreasureChestChoices();
+        }
+        this.chestItems = Array.isArray(options.items) ? options.items : chest.rewards;
         this.chestRoom = this.curRoom;
+        this.activeChestSource = chest;
         this.chestOpen = true;
         this.chestSelected = 0;
+        this.chestUiMode = options.mode || 'choice';
+        this.chestUiTitle = options.title || chest.title || '幸运抽奖宝箱';
+        this.chestUiSubtitle = options.subtitle || chest.subtitle || '三选一奖励包 | WASD 切换 | 空格确认 | E / Esc 关闭';
+        this.chestRollState = {
+            active: true,
+            startedAt: Date.now(),
+            duration: options.duration || (this.curRoom.type === 'hidden' ? 1300 : 950)
+        };
         this.activeUIWindow = 'chest'; // v0.22: 设为活动窗口
         this.audioCtrl.play('chest');
         // v0.17.2: 移除调试日志
@@ -10630,6 +11738,12 @@ class Game {
         this.chestItems = [];
         this.chestRoom = null;
         this.chestSelected = -1;
+        this.activeChestSource = null;
+        this.activeTreasureRewardOrigin = null;
+        this.chestUiMode = 'choice';
+        this.chestUiTitle = '幸运抽奖宝箱';
+        this.chestUiSubtitle = '三选一奖励包 | WASD 切换 | 空格确认 | E / Esc 关闭';
+        this.chestRollState = null;
         if (this.activeUIWindow === 'chest') this.activeUIWindow = null; // v0.22
         this.refreshPauseState();
     }
@@ -10639,15 +11753,36 @@ class Game {
     // 选择宝箱物品
     selectChestItem(index) {
         if (index < 0 || index >= this.chestItems.length) return;
+        if (this.isChestRolling()) return;
+        if (this.isTreasureChestBundleUI()) {
+            const rewardRoom = this.curRoom;
+            const chest = this.activeChestSource;
+            const rewards = this.chestItems.slice();
+            this.closeChestSelect();
+            rewards.forEach((reward, rewardIndex) => {
+                setTimeout(() => {
+                    if (this.curRoom !== rewardRoom) return;
+                    this.activeTreasureRewardOrigin = chest;
+                    this.grantTreasureChestReward(reward);
+                    this.particles.burst(chest.x, chest.y - 6, reward.accent || '#ffcc66', reward.tier === 'legendary' ? 26 : 16);
+                    this.audioCtrl.play(reward.tier === 'legendary' ? 'evolve' : 'buy');
+                    if (rewardIndex === rewards.length - 1) {
+                        this.activeTreasureRewardOrigin = null;
+                    }
+                }, rewardIndex * 320);
+            });
+            return;
+        }
         
         const item = this.chestItems[index];
-        this.items.add(item.id);
-        this.particles.burst(this.player.cx, this.player.cy, '#ff0', 20);  // v0.16.3: 使用中心点
-        this.audioCtrl.play('buy');
+        this.grantTreasureChestReward(item);
+        this.particles.burst(this.player.cx, this.player.cy, item.accent || '#ff0', item.tier === 'legendary' ? 30 : 20);
+        this.audioCtrl.play(item.tier === 'legendary' ? 'evolve' : 'buy');
         
         // 标记宝箱为已打开
-        if (this.curRoom && this.curRoom.chest) {
-            this.curRoom.chest.opened = true;
+        const chest = this.activeChestSource || this.curRoom?.chest;
+        if (chest) {
+            chest.opened = true;
             // v0.17.2: 移除调试日志
             // console.log('[宝箱] 已标记为打开状态');
         }
@@ -10657,6 +11792,9 @@ class Game {
         this.chestItems = [];
         this.chestRoom = null;
         this.chestSelected = -1;
+        this.activeChestSource = null;
+        this.activeTreasureRewardOrigin = null;
+        this.chestRollState = null;
         if (this.activeUIWindow === 'chest') this.activeUIWindow = null;
         
         // v0.17.2: 移除调试日志
@@ -10826,7 +11964,10 @@ class Game {
                 this.canvas.height
             );
 
-            requestAnimationFrame(() => this.refreshInkStageDecor(true));
+            requestAnimationFrame(() => {
+                this.refreshInkStageDecor(true);
+                this.sidebarHudPresenter?.scheduleSidebarFit();
+            });
 
         });
 
@@ -11017,6 +12158,31 @@ class Game {
         return this.overlayCanvasRenderer.drawPauseScreen();
     }
 
+    getOverlayDrawContext() {
+        return this.overlayCtx || this.ctx;
+    }
+
+    clearOverlayLayer() {
+        if (!this.overlayCtx || !this.overlayCanvas) return;
+        this.overlayCtx.clearRect(0, 0, this.overlayCanvas.width || 0, this.overlayCanvas.height || 0);
+    }
+
+    toOverlayPoint(x, y) {
+        if (!this.overlayCanvas || !this.canvas) return { x, y };
+        const gameRect = this.canvas.getBoundingClientRect();
+        const overlayRect = this.overlayCanvas.getBoundingClientRect();
+        const gameW = this.canvas.width || 1;
+        const gameH = this.canvas.height || 1;
+        const overlayW = this.overlayCanvas.width || 1;
+        const overlayH = this.overlayCanvas.height || 1;
+        const screenX = gameRect.left + (x / gameW) * gameRect.width;
+        const screenY = gameRect.top + (y / gameH) * gameRect.height;
+        return {
+            x: ((screenX - overlayRect.left) / Math.max(overlayRect.width, 1)) * overlayW,
+            y: ((screenY - overlayRect.top) / Math.max(overlayRect.height, 1)) * overlayH
+        };
+    }
+
     hasBlockingOverlayOpen() {
         const isVisible = (el) => !!(el && window.getComputedStyle(el).display !== 'none' && window.getComputedStyle(el).visibility !== 'hidden');
         const settingsVisible = !!this.settingsController?.isOpen?.();
@@ -11049,9 +12215,10 @@ class Game {
     
 
     getPausePointerPosition(e) {
-        const rect = this.canvas.getBoundingClientRect();
-        const scaleX = (this.canvas.width || 1) / Math.max(rect.width, 1);
-        const scaleY = (this.canvas.height || 1) / Math.max(rect.height, 1);
+        const targetCanvas = this.overlayCanvas || this.canvas;
+        const rect = targetCanvas.getBoundingClientRect();
+        const scaleX = (targetCanvas.width || 1) / Math.max(rect.width, 1);
+        const scaleY = (targetCanvas.height || 1) / Math.max(rect.height, 1);
         return {
             x: (e.clientX - rect.left) * scaleX,
             y: (e.clientY - rect.top) * scaleY
@@ -11060,15 +12227,8 @@ class Game {
 
     getPauseButtonAt(x, y) {
         if (!this.pauseButtons) return null;
-
-        const cw = this.canvas.width || 900;
         for (const btn of this.pauseButtons) {
-            const btnX = cw / 2 - 160;
-            const btnY = btn.y - 24;
-            const btnW = 320;
-            const btnH = 54;
-
-            if (x >= btnX && x <= btnX + btnW && y >= btnY && y <= btnY + btnH) {
+            if (x >= btn.x && x <= btn.x + btn.w && y >= btn.y && y <= btn.y + btn.h) {
                 return btn;
             }
         }
@@ -11360,6 +12520,14 @@ class Game {
 
                 this.transition.active = false;
 
+                if (this.curRoom && this.curRoom.type === 'hidden') {
+                    const hiddenMode = this.ensureHiddenRoomSetup(this.curRoom);
+                    if (hiddenMode && !this.curRoom._hiddenModeAnnounced) {
+                        this.curRoom._hiddenModeAnnounced = true;
+                        this.damageNumbers.spawn(this.player.cx, this.player.cy - 60, hiddenMode.title, { color: hiddenMode.color, size: 18, life: 2 });
+                    }
+                }
+
                 
 
                 // 如果是首次进入房间，生成敌人（包括Boss）
@@ -11470,6 +12638,13 @@ class Game {
 
             // 基础属性（道具+被动合并）
 
+            attackPower: Math.max(
+                1,
+                (this.player?.attackPowerBase || window.WEAPON_DAMAGE_MODEL?.baseAttackPower || 24)
+                    + (itemStats.attackPower || 0)
+                    + (passiveStats.attackPower || 0)
+            ),
+
             projCount: (itemStats.projCount || 1) + (passiveStats.projCount || 0),
 
             projSize: itemStats.projSize || 1,
@@ -11558,6 +12733,8 @@ class Game {
             stats.speed *= geneLockMult;
             stats.dmg *= geneLockMult;
         }
+
+        this.currentCombatStats = { ...stats };
 
         
 
@@ -11942,6 +13119,12 @@ class Game {
 
             this.autoCollectAllGems();
 
+            if (this.curRoom.type === 'hidden' && this.curRoom.hiddenMode && this.curRoom.hiddenMode.challenge && !this.curRoom.hiddenRewardGranted) {
+                this.curRoom.hiddenRewardGranted = true;
+                this.spawnHiddenTrialReward(this.curRoom);
+                this.damageNumbers.spawn(this.player.cx, this.player.cy - 70, '试炼完成', { color: '#ffd24d', size: 20, life: 2 });
+            }
+
             
 
             if (this.curRoom.type === 'boss') {
@@ -12035,7 +13218,9 @@ class Game {
                 this.bullets.push(...w.fire(this.player, fireTarget, stats));
                 
                 // 根据武器类型播放对应音效
-                this.audioCtrl.play(w.baseKey);
+                if (!(w.baseKey === 'knife' && w.cfg?.subtype === 'guardian_knife')) {
+                    this.audioCtrl.play(w.baseKey);
+                }
 
             }
 
@@ -12148,6 +13333,12 @@ class Game {
                 this.bullets.splice(i, 1);
                 continue;
             }
+
+            if (b.type === 'guardian_knife_spawn') {
+                this.spawnGuardianKnives(b);
+                this.bullets.splice(i, 1);
+                continue;
+            }
             
             // 普通投射物更新
             if (!this.updateProjectileBullet(b, dt, activeEnemies, stats)) {
@@ -12185,6 +13376,7 @@ class Game {
         
         // 更新环绕物
         this.updateOrbitals(dt, activeEnemies, stats);
+        this.updateGuardianKnives(dt, activeEnemies, stats);
 
         
 
@@ -12192,6 +13384,12 @@ class Game {
         if (!this.curRoom) return;
         for (let i = this.curRoom.gems.length - 1; i >= 0; i--) {
             const g = this.curRoom.gems[i];
+            if (!g.autoCollect && g.autoCollectAfter && Date.now() / 1000 >= g.autoCollectAfter) {
+                g.autoCollect = true;
+                g.targetX = this.player.cx;
+                g.targetY = this.player.cy;
+                delete g.autoCollectAfter;
+            }
             
             // v0.16.3: 自动吸收模式（房间清理后）- 高速飞向玩家
             if (g.autoCollect) {
@@ -12282,6 +13480,12 @@ class Game {
         // v0.16.3: 更新金币掉落物（与经验宝石相同逻辑）- 使用当前房间的goldDrops
         for (let i = this.curRoom.goldDrops.length - 1; i >= 0; i--) {
             const g = this.curRoom.goldDrops[i];
+            if (!g.autoCollect && g.autoCollectAfter && Date.now() / 1000 >= g.autoCollectAfter) {
+                g.autoCollect = true;
+                g.targetX = this.player.cx;
+                g.targetY = this.player.cy;
+                delete g.autoCollectAfter;
+            }
             
             // v0.16.3: 自动吸收模式（房间清理后）
             if (g.autoCollect) {
@@ -12471,7 +13675,12 @@ class Game {
                     }
                 } else {
                     this.audioCtrl.play('buy');
-                    this.items.add(item.id);
+                    if (this.items.add(item.id)) {
+                        const itemDef = ITEMS[item.id];
+                        if (itemDef?.effect === 'unlockPet' && itemDef.petId) {
+                            this.unlockPet(itemDef.petId);
+                        }
+                    }
                 }
 
                 this.curRoom.items.splice(i, 1);
@@ -12653,104 +13862,135 @@ class Game {
         for (const b of this.bullets) {
             if (!this.camera.isVisible(b.x, b.y, 30)) continue;
             const pos = this.camera.worldToScreen(b.x, b.y);
+            const bulletZoom = this.getEntityRenderScale();
             
             // 使用新的WeaponVisuals系统绘制（带HD-2D效果：阴影、辉光、环境光）
-            this.weaponVisuals.drawBullet(b, pos.x, pos.y, this.camera.zoom);
+            this.weaponVisuals.drawBullet(b, pos.x, pos.y, bulletZoom);
             
             // v0.18.0: 子弹实际伤害范围调试显示
             if (this.showHitboxDebug) {
-                this.ctx.save();
-                this.ctx.translate(pos.x, pos.y);
-                
-                let hitboxRadius = 6; // 默认子弹碰撞半径
-                let hitboxColor = '#00ff00';
-                let label = '';
-                
-                if (b.type === 'melee') {
-                    // 近战实际攻击范围 = range
-                    hitboxRadius = b.range * this.camera.zoom;
-                    hitboxColor = '#ff00ff';
-                    label = `近战 ${Math.round(b.range)}`;
-                    // 绘制扇形范围
-                    this.ctx.strokeStyle = hitboxColor;
-                    this.ctx.lineWidth = 2;
-                    this.ctx.setLineDash([5, 5]);
-                    this.ctx.beginPath();
-                    const arcRad = (b.arcAngle || 90) * Math.PI / 360;
-                    this.ctx.arc(0, 0, hitboxRadius, b.angle - arcRad, b.angle + arcRad);
-                    this.ctx.stroke();
-                    // 绘制边界线
-                    this.ctx.beginPath();
-                    this.ctx.moveTo(0, 0);
-                    this.ctx.lineTo(Math.cos(b.angle - arcRad) * hitboxRadius, Math.sin(b.angle - arcRad) * hitboxRadius);
-                    this.ctx.moveTo(0, 0);
-                    this.ctx.lineTo(Math.cos(b.angle + arcRad) * hitboxRadius, Math.sin(b.angle + arcRad) * hitboxRadius);
-                    this.ctx.stroke();
-                } else if (b.type === 'area') {
-                    // 圣水实际范围 = range (在updateAreaBullet中使用)
-                    hitboxRadius = (b.range || 100) * this.camera.zoom;
-                    hitboxColor = '#00ffff';
-                    label = `区域 ${Math.round(b.range || 100)}`;
-                    this.ctx.strokeStyle = hitboxColor;
-                    this.ctx.lineWidth = 2;
-                    this.ctx.setLineDash([5, 5]);
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, hitboxRadius, 0, Math.PI * 2);
-                    this.ctx.stroke();
-                } else if (b.type === 'aura') {
-                    // 光环实际范围 = range (跟随玩家)
-                    hitboxRadius = (b.range || 100) * this.camera.zoom;
-                    hitboxColor = '#00ff00';
-                    label = `光环 ${Math.round(b.range || 100)}`;
-                    this.ctx.strokeStyle = hitboxColor;
-                    this.ctx.lineWidth = 2;
-                    this.ctx.setLineDash([5, 5]);
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, hitboxRadius, 0, Math.PI * 2);
-                    this.ctx.stroke();
-                } else if (b.subtype === 'explode') {
-                    // 爆炸实际范围 = explodeRadius
-                    hitboxRadius = (b.explodeRadius || 80) * this.camera.zoom;
-                    hitboxColor = '#ff8800';
-                    label = `爆炸 ${Math.round(b.explodeRadius || 80)}`;
-                    this.ctx.strokeStyle = hitboxColor;
-                    this.ctx.lineWidth = 2;
-                    this.ctx.setLineDash([5, 5]);
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, hitboxRadius, 0, Math.PI * 2);
-                    this.ctx.stroke();
-                } else {
-                    // 普通子弹碰撞半径
-                    hitboxRadius = 6 * this.camera.zoom;
-                    label = '子弹';
-                    this.ctx.strokeStyle = hitboxColor;
-                    this.ctx.lineWidth = 1;
-                    this.ctx.setLineDash([3, 3]);
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, hitboxRadius, 0, Math.PI * 2);
-                    this.ctx.stroke();
+                const debugShape = this.getBulletDebugCollision(b);
+                if (debugShape?.kind === 'arc') {
+                    this.drawDebugArc(
+                        pos.x,
+                        pos.y,
+                        debugShape.radius * this.camera.zoom,
+                        debugShape.angle || 0,
+                        debugShape.arcAngle || 90,
+                        debugShape.color,
+                        debugShape.label
+                    );
+                } else if (debugShape?.kind === 'circle') {
+                    this.drawDebugCircle(
+                        pos.x,
+                        pos.y,
+                        debugShape.radius * this.camera.zoom,
+                        debugShape.color,
+                        debugShape.label
+                    );
                 }
-                
-                // 绘制中心点
-                this.ctx.fillStyle = hitboxColor;
-                this.ctx.beginPath();
-                this.ctx.arc(0, 0, 3, 0, Math.PI * 2);
-                this.ctx.fill();
-                
-                // 显示范围数值
-                if (label) {
-                    this.ctx.fillStyle = hitboxColor;
-                    this.ctx.font = '10px ZCOOL KuaiLe Local';
-                    this.ctx.textAlign = 'center';
-                    this.ctx.fillText(label, 0, -hitboxRadius - 5);
-                }
-                
-                this.ctx.restore();
             }
         }
         
         // 绘制武器尾迹和粒子
         window.weaponVisuals.draw(this.ctx, this.camera);
+
+        if (this.guardianKnives && this.player && this.camera) {
+            const time = Date.now() / 1000;
+            for (const knife of this.guardianKnives) {
+                if (!knife) continue;
+                if (!this.camera.isVisible(knife.x, knife.y, 36)) continue;
+
+                const pos = this.camera.worldToScreen(knife.x, knife.y);
+                const angle = Math.atan2(knife.vy || 0, knife.vx || 1);
+                const isSuperKnife = !!knife.isSuper;
+                const drawSize = knife.drawSize || (isSuperKnife ? 34 : 26);
+                const bodyLen = drawSize * (isSuperKnife ? 1.5 : 1.32);
+                const bodyWidth = drawSize * (isSuperKnife ? 0.22 : 0.16);
+                const pulse = knife.state === 'idle' ? 0.96 + Math.sin(time * 3 + knife.slotIndex) * 0.05 : 1.04;
+                const baseColor = isSuperKnife ? '#ff7558' : '#ff1f1f';
+                const glowColor = isSuperKnife ? '#ffd36e' : '#ff2f2f';
+                const coreColor = isSuperKnife ? '#fff1bb' : '#ff7a7a';
+                const drawGuardianKnifeNeedle = (drawPos, drawAngle, alpha, scaleY = 1) => {
+                    this.ctx.save();
+                    this.ctx.translate(drawPos.x, drawPos.y);
+                    this.ctx.rotate(drawAngle + Math.PI * 0.5);
+                    this.ctx.shadowBlur = isSuperKnife ? 18 : 10;
+                    this.ctx.shadowColor = glowColor;
+                    this.ctx.globalAlpha = alpha;
+                    this.ctx.scale(1, scaleY);
+
+                    const needleGrad = this.ctx.createLinearGradient(0, bodyLen * 0.48, 0, -bodyLen * 0.55);
+                    needleGrad.addColorStop(0, 'rgba(30, 0, 0, 0)');
+                    needleGrad.addColorStop(0.45, isSuperKnife ? 'rgba(255, 106, 72, 0.62)' : 'rgba(255, 31, 31, 0.72)');
+                    needleGrad.addColorStop(1, isSuperKnife ? 'rgba(255, 230, 150, 0.98)' : 'rgba(255, 108, 108, 0.98)');
+                    this.ctx.fillStyle = needleGrad;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, -bodyLen * 0.82);
+                    this.ctx.lineTo(bodyWidth * 0.92, 0);
+                    this.ctx.lineTo(0, bodyLen * 0.82);
+                    this.ctx.lineTo(-bodyWidth * 0.92, 0);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    this.ctx.shadowBlur = isSuperKnife ? 12 : 7;
+                    this.ctx.shadowColor = coreColor;
+                    this.ctx.fillStyle = coreColor;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, -bodyLen * 0.5);
+                    this.ctx.lineTo(bodyWidth * 0.32, 0);
+                    this.ctx.lineTo(0, bodyLen * 0.5);
+                    this.ctx.lineTo(-bodyWidth * 0.32, 0);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+
+                    this.ctx.shadowBlur = isSuperKnife ? 20 : 11;
+                    this.ctx.shadowColor = glowColor;
+                    this.ctx.fillStyle = baseColor;
+                    this.ctx.beginPath();
+                    this.ctx.moveTo(0, -bodyLen * 0.82);
+                    this.ctx.lineTo(bodyWidth * 0.2, -bodyLen * 0.45);
+                    this.ctx.lineTo(-bodyWidth * 0.2, -bodyLen * 0.45);
+                    this.ctx.closePath();
+                    this.ctx.fill();
+                    this.ctx.restore();
+                };
+
+                const trail = Array.isArray(knife.trail) ? knife.trail : [];
+                if (trail.length > 1) {
+                    this.ctx.save();
+                    this.ctx.lineCap = 'round';
+                    this.ctx.lineJoin = 'round';
+                    this.ctx.shadowBlur = isSuperKnife ? 14 : 10;
+                    this.ctx.shadowColor = glowColor;
+                    for (let i = trail.length - 1; i > 0; i--) {
+                        const current = trail[i];
+                        const next = trail[i - 1];
+                        if (!current || !next || current.breakAfter || next.breakBefore) continue;
+                        const segDist = dist(current.x, current.y, next.x, next.y);
+                        if (segDist > (isSuperKnife ? 40 : 32)) continue;
+                        const ratio = Math.min(current.life / current.maxLife, next.life / next.maxLife);
+                        const p0 = this.camera.worldToScreen(current.x, current.y);
+                        const p1 = this.camera.worldToScreen(next.x, next.y);
+                        this.ctx.strokeStyle = isSuperKnife
+                            ? `rgba(255, 118, 84, ${0.18 + ratio * 0.42})`
+                            : `rgba(255, 36, 36, ${0.22 + ratio * 0.48})`;
+                        this.ctx.lineWidth = (isSuperKnife ? 2.4 : 1.8) * (0.35 + ratio * 0.5);
+                        this.ctx.beginPath();
+                        this.ctx.moveTo(p0.x, p0.y);
+                        this.ctx.lineTo(p1.x, p1.y);
+                        this.ctx.stroke();
+                    }
+                    this.ctx.restore();
+                }
+
+                drawGuardianKnifeNeedle(pos, angle, knife.state === 'idle' ? 0.9 : 0.98, pulse);
+
+                if (this.showHitboxDebug) {
+                    this.drawDebugGuardianKnifeRange(knife);
+                }
+            }
+        }
         
         // 环绕物效果绘制（圣经：贴图旋转+柔和发光）
         if (this.orbitals && this.player && this.camera) {
@@ -12763,10 +14003,11 @@ class Game {
                 const pos = this.camera.worldToScreen(ox, oy);
                 const time = Date.now() / 1000;
                 const bibleSprite = this.sprites ? this.sprites.get('weapon_bible') : null;
+                const visualSpinSpeed = orb.visualSpinSpeed || Math.max(1.4, (orb.speed || 2) * 0.95);
                 
                 this.ctx.save();
                 this.ctx.translate(pos.x, pos.y);
-                this.ctx.rotate(time * 8 + orb.angle);
+                this.ctx.rotate(time * visualSpinSpeed + orb.angle);
                 
                 const isPermanent = orb.permanent || orb.life === Infinity;
                 const glowIntensity = isPermanent ? 14 + Math.sin(time * 9) * 4 : 9 + Math.sin(time * 9) * 3;
@@ -12774,7 +14015,7 @@ class Game {
                 this.ctx.shadowColor = orb.color || '#ffe082';
                 this.ctx.globalAlpha = isPermanent ? 0.95 : 0.85;
                 
-                const drawSize = isPermanent ? 30 : 24;
+                const drawSize = orb.drawSize || (isPermanent ? 76 : 60);
                 if (bibleSprite) {
                     this.ctx.drawImage(bibleSprite, -drawSize / 2, -drawSize / 2, drawSize, drawSize);
                 } else {
@@ -12805,26 +14046,7 @@ class Game {
                     const ox = this.player.cx + Math.cos(orb.angle) * (orb.radius || 80);
                     const oy = this.player.cy + Math.sin(orb.angle) * (orb.radius || 80);
                     if (!this.camera.isVisible(ox, oy, 30)) continue;
-                    
-                    const pos = this.camera.worldToScreen(ox, oy);
-                    this.ctx.save();
-                    this.ctx.translate(pos.x, pos.y);
-                    
-                    // 绘制环绕物碰撞范围（半径20）
-                    this.ctx.strokeStyle = '#ffff00';
-                    this.ctx.lineWidth = 2;
-                    this.ctx.setLineDash([3, 3]);
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, 20 * this.camera.zoom, 0, Math.PI * 2);
-                    this.ctx.stroke();
-                    
-                    // 绘制中心点
-                    this.ctx.fillStyle = '#ffff00';
-                    this.ctx.beginPath();
-                    this.ctx.arc(0, 0, 3, 0, Math.PI * 2);
-                    this.ctx.fill();
-                    
-                    this.ctx.restore();
+                    this.drawDebugOrbitalRange(orb);
                 }
             }
         }
@@ -13094,9 +14316,10 @@ class Game {
             // 使用Enemy类的draw方法，传入转换后的坐标
 
             const pos = this.camera.worldToScreen(e.x, e.y);
+            const enemyScreenScale = this.getEntityRenderScale();
 
             if (this.hd2dRenderer && this.hd2dRenderer.shadow && this.runtimeSettings?.enableHD2D !== false) {
-                this.hd2dRenderer.shadow.render(pos.x, pos.y, this.getCanvasScale(), {
+                this.hd2dRenderer.shadow.render(pos.x, pos.y, this.getEntityRenderScale(), {
                     roomCenterX: (this.canvas.width || 960) / 2,
                     roomCenterY: (this.canvas.height || 960) / 2
                 });
@@ -13110,7 +14333,7 @@ class Game {
 
             if (this.sprites && this.sprites.get) {
 
-                e.drawWithOffset(this.ctx, this.sprites);
+                e.drawWithOffset(this.ctx, this.sprites, this.currentFloor, enemyScreenScale);
 
             }
 
@@ -13141,25 +14364,6 @@ class Game {
                     window.collisionSystem.renderDebug(this.ctx, { ...npc, x: pos.x, y: pos.y }, '#c6f');
                 }
             }
-            
-            // 保留圆形显示作为对比
-            for (const e of activeEnemies) {
-                if (e.hp <= 0) continue;
-                const pos = this.camera.worldToScreen(e.x, e.y);
-                this.ctx.save();
-                this.ctx.translate(pos.x, pos.y);
-                
-                const radius = e.getCollisionRadius() * this.camera.zoom;
-                
-                this.ctx.strokeStyle = 'rgba(255, 0, 0, 0.3)';
-                this.ctx.lineWidth = 1;
-                this.ctx.setLineDash([5, 5]);
-                this.ctx.beginPath();
-                this.ctx.arc(0, 0, radius, 0, Math.PI * 2);
-                this.ctx.stroke();
-                
-                this.ctx.restore();
-            }
         }
 
         
@@ -13174,7 +14378,7 @@ class Game {
                 // v0.30-iter4: 使用 SpriteData 绘制 NPC
                 const npcSprite = this.sprites.get('npc_shopkeeper');
                 if (npcSprite) {
-                    const npcSize = 72 * this.getCanvasScale(); // 基于960画布的等比显示尺寸
+                    const npcSize = 72 * this.getEntityRenderScale();
                     let drawW = npcSize * 2;
                     let drawH = npcSize * 2;
                     let drawX = pos.x - npcSize;
@@ -13225,6 +14429,7 @@ class Game {
         // 玩家屏幕坐标
 
         const playerScreen = this.camera.worldToScreen(this.player.x, this.player.y);
+        const entityScale = this.getEntityRenderScale();
 
         
 
@@ -13254,7 +14459,8 @@ class Game {
 
                 
                 // v0.20.0: 修复尺寸为48x48，与玩家一致，脚底对齐
-                this.ctx.drawImage(trailSprite, -24, -48, 48, 48);
+                const trailSize = 48 * entityScale;
+                this.ctx.drawImage(trailSprite, -trailSize / 2, -trailSize, trailSize, trailSize);
 
                 
 
@@ -13304,7 +14510,7 @@ class Game {
         const playerSprite = this.sprites.get(currentPlayerSpriteName);
 
         if (this.hd2dRenderer && this.runtimeSettings?.enableHD2D !== false) {
-            this.hd2dRenderer.renderPlayerBacklight(this.player, playerScreen.x, totalScreenY, this.getCanvasScale());
+            this.hd2dRenderer.renderPlayerBacklight(this.player, playerScreen.x, totalScreenY, entityScale);
         }
 
         this.ctx.save();
@@ -13340,7 +14546,7 @@ class Game {
         // v0.33: 简化玩家渲染 - 贴图已裁剪，直接绘制
         if (playerSprite) {
             const playerSpriteData = this.player.spriteData;
-            const targetHeight = (this.player.size || 40) * this.getCanvasScale();
+            const targetHeight = (this.player.size || 40) * entityScale;
             if (playerSpriteData) {
                 const bounds = playerSpriteData.bounds;
                 const scale = targetHeight / bounds.height;
@@ -13348,12 +14554,23 @@ class Game {
                 const drawW = bounds.width * scale;
                 const drawH = bounds.height * scale;
                 
+                this.ctx.shadowColor = 'rgba(0, 0, 0, 0.26)';
+                this.ctx.shadowBlur = 5 * entityScale;
+                this.ctx.shadowOffsetX = 0;
+                this.ctx.shadowOffsetY = 1 * entityScale;
+
                 // 脚底对齐，居中绘制
                 this.ctx.drawImage(playerSprite, -drawW/2, -drawH, drawW, drawH);
+                this.ctx.shadowBlur = 0;
             } else {
                 // 回退：固定尺寸
                 const fallbackSize = targetHeight;
+                this.ctx.shadowColor = 'rgba(0, 0, 0, 0.26)';
+                this.ctx.shadowBlur = 5 * entityScale;
+                this.ctx.shadowOffsetX = 0;
+                this.ctx.shadowOffsetY = 1 * entityScale;
                 this.ctx.drawImage(playerSprite, -fallbackSize / 2, -fallbackSize, fallbackSize, fallbackSize);
+                this.ctx.shadowBlur = 0;
             }
         } else {
             // 程序化绘制牛牛
@@ -13555,6 +14772,10 @@ class Game {
 
         this.damageNumbers.draw(this.ctx, this.camera);
 
+        if (this.curRoom && typeof this.curRoom.drawLayer1ForegroundOcclusion === 'function') {
+            this.curRoom.drawLayer1ForegroundOcclusion(this.ctx, this.camera);
+        }
+
         
 
         if (this.transition.active) {
@@ -13573,7 +14794,8 @@ class Game {
         this.ctx.restore();
 
         const hd2dEnabled = !this.runtimeSettings || this.runtimeSettings.enableHD2D !== false;
-        const dynamicLightingEnabled = hd2dEnabled && (!this.runtimeSettings || this.runtimeSettings.enableDynamicLighting !== false);
+        const dynamicLightingEnabled = hd2dEnabled &&
+            (!this.runtimeSettings || this.runtimeSettings.enableDynamicLighting !== false);
 
         // v0.24: HD-2D洞穴效果渲染（氛围+光源）
         if (this.hd2dRenderer && hd2dEnabled) {
@@ -13597,6 +14819,22 @@ class Game {
             } else if (typeof this.hd2dRenderer.renderFinalPostProcess === 'function') {
                 this.hd2dRenderer.renderFinalPostProcess(screenPos.x, screenPos.y);
             }
+        }
+
+        if (this.curRoom && typeof this.curRoom.drawDoorLightBeams === 'function') {
+            const viewLeft = this.camera.x - this.camera.viewWidth / 2;
+            const viewTop = this.camera.y - this.camera.viewHeight / 2;
+            const viewRight = viewLeft + this.camera.viewWidth;
+            const viewBottom = viewTop + this.camera.viewHeight;
+            this.curRoom.drawDoorLightBeams(
+                this.ctx,
+                this.camera,
+                this.curRoom.getDoorPositions(),
+                viewLeft,
+                viewTop,
+                viewRight,
+                viewBottom
+            );
         }
 
         // 滤镜之后再绘制 HUD 和交互弹窗，保证它们永远位于后处理上层
@@ -13708,6 +14946,119 @@ class Game {
         innerGlow.addColorStop(1, 'rgba(72, 24, 120, 0)');
         this.ctx.fillStyle = innerGlow;
         this.ctx.fillRect(-haloRadiusX * 0.82, -haloRadiusX * 0.82, haloRadiusX * 1.64, haloRadiusX * 1.64);
+        this.ctx.restore();
+    }
+
+    renderTreasureChestPresentation() {
+        if (!this.curRoom || this.curRoom.type !== 'treasure' || !Array.isArray(this.curRoom.chests) || this.curRoom.chests.length === 0) return;
+        if (!this.sprites) return;
+
+        const clearScene = this.hd2dRenderer?.roomBlur?.clearCanvas;
+        if (clearScene) {
+            if (!this.treasureChestMaskCanvas) {
+                this.treasureChestMaskCanvas = document.createElement('canvas');
+                this.treasureChestMaskCtx = this.treasureChestMaskCanvas.getContext('2d');
+            }
+
+            if (this.treasureChestMaskCanvas.width !== this.canvas.width || this.treasureChestMaskCanvas.height !== this.canvas.height) {
+                this.treasureChestMaskCanvas.width = this.canvas.width;
+                this.treasureChestMaskCanvas.height = this.canvas.height;
+            }
+
+            const maskCtx = this.treasureChestMaskCtx;
+            const maskCanvas = this.treasureChestMaskCanvas;
+            maskCtx.clearRect(0, 0, maskCanvas.width, maskCanvas.height);
+            maskCtx.drawImage(clearScene, 0, 0);
+            maskCtx.globalCompositeOperation = 'destination-in';
+
+            this.curRoom.chests.forEach(chest => {
+                if (!chest || chest.disabled) return;
+                const pos = this.camera.worldToScreen(chest.x, chest.y);
+                const radiusX = chest.quality === 'legendary' ? 92 : (chest.quality === 'rare' ? 82 : 74);
+                const radiusY = chest.quality === 'legendary' ? 70 : (chest.quality === 'rare' ? 62 : 56);
+                maskCtx.save();
+                maskCtx.translate(pos.x, pos.y + 14);
+                maskCtx.scale(1, radiusY / radiusX);
+                const gradient = maskCtx.createRadialGradient(0, 0, radiusX * 0.12, 0, 0, radiusX);
+                gradient.addColorStop(0, 'rgba(255,255,255,0.98)');
+                gradient.addColorStop(0.36, 'rgba(255,255,255,0.9)');
+                gradient.addColorStop(0.66, 'rgba(255,255,255,0.44)');
+                gradient.addColorStop(0.86, 'rgba(255,255,255,0.14)');
+                gradient.addColorStop(1, 'rgba(255,255,255,0)');
+                maskCtx.fillStyle = gradient;
+                maskCtx.fillRect(-radiusX * 1.1, -radiusX * 1.1, radiusX * 2.2, radiusX * 2.2);
+                maskCtx.restore();
+            });
+
+            maskCtx.globalCompositeOperation = 'source-over';
+            this.ctx.drawImage(maskCanvas, 0, 0);
+        }
+
+        this.ctx.save();
+        this.ctx.globalCompositeOperation = 'screen';
+        this.curRoom.chests.forEach(chest => {
+            if (!chest || chest.disabled) return;
+            const pos = this.camera.worldToScreen(chest.x, chest.y);
+            const radiusX = chest.quality === 'legendary' ? 92 : (chest.quality === 'rare' ? 82 : 74);
+            const radiusY = chest.quality === 'legendary' ? 70 : (chest.quality === 'rare' ? 62 : 56);
+            const rollState = chest.rollState;
+            const isRolling = !!(rollState && Date.now() - rollState.startedAt < rollState.duration);
+            const rollProgress = isRolling ? (Date.now() - rollState.startedAt) / rollState.duration : 1;
+            const palette = chest.quality === 'legendary'
+                ? { outer: 'rgba(255, 150, 72, 0.24)', mid: 'rgba(255, 138, 58, 0.16)', inner: 'rgba(255, 210, 160, 0.10)', symbol: 'rgba(255, 222, 176, 0.94)', shadow: 'rgba(255, 162, 96, 0.34)' }
+                : (chest.quality === 'rare'
+                    ? { outer: 'rgba(255, 216, 98, 0.2)', mid: 'rgba(255, 204, 82, 0.14)', inner: 'rgba(255, 236, 168, 0.09)', symbol: 'rgba(255, 236, 176, 0.9)', shadow: 'rgba(255, 218, 126, 0.28)' }
+                    : { outer: 'rgba(142, 206, 255, 0.16)', mid: 'rgba(126, 194, 255, 0.11)', inner: 'rgba(208, 234, 255, 0.07)', symbol: 'rgba(216, 238, 255, 0.86)', shadow: 'rgba(164, 216, 255, 0.22)' });
+
+            this.ctx.save();
+            this.ctx.translate(pos.x, pos.y + 14);
+            this.ctx.scale(1, radiusY / radiusX);
+            const outerGlow = this.ctx.createRadialGradient(0, 0, radiusX * 0.14, 0, 0, radiusX * (isRolling ? 1.08 : 1));
+            outerGlow.addColorStop(0, palette.outer);
+            outerGlow.addColorStop(0.38, palette.mid);
+            outerGlow.addColorStop(0.72, palette.inner);
+            outerGlow.addColorStop(1, 'rgba(0,0,0,0)');
+            this.ctx.fillStyle = outerGlow;
+            this.ctx.fillRect(-radiusX * 1.12, -radiusX * 1.12, radiusX * 2.24, radiusX * 2.24);
+
+            const innerGlow = this.ctx.createRadialGradient(0, 0, 0, 0, 0, radiusX * 0.56);
+            innerGlow.addColorStop(0, palette.inner);
+            innerGlow.addColorStop(0.48, palette.mid);
+            innerGlow.addColorStop(1, 'rgba(0,0,0,0)');
+            this.ctx.fillStyle = innerGlow;
+            this.ctx.fillRect(-radiusX * 0.76, -radiusX * 0.76, radiusX * 1.52, radiusX * 1.52);
+            this.ctx.restore();
+
+            const chestSpriteName = chest.opened ? 'chest_open' : 'chest_closed';
+            const chestSprite = this.sprites.get(chestSpriteName);
+            if (chestSprite) {
+                const size = 34;
+                this.ctx.save();
+                this.ctx.shadowBlur = chest.quality === 'legendary' ? 18 : 12;
+                this.ctx.shadowColor = palette.shadow;
+                this.ctx.drawImage(chestSprite, pos.x - size, pos.y - size, size * 2, size * 2);
+                this.ctx.restore();
+            }
+
+            if (isRolling) {
+                this.ctx.save();
+                this.ctx.strokeStyle = palette.symbol;
+                this.ctx.globalAlpha = 0.46 + (1 - rollProgress) * 0.28;
+                this.ctx.lineWidth = chest.quality === 'legendary' ? 4 : 3;
+                this.ctx.beginPath();
+                this.ctx.arc(pos.x, pos.y + 2, radiusX * 0.46, 0, Math.PI * 2);
+                this.ctx.stroke();
+                this.ctx.fillStyle = palette.symbol;
+                this.ctx.font = `${chest.quality === 'legendary' ? 20 : 16}px Arial`;
+                this.ctx.textAlign = 'center';
+                const symbols = chest.quality === 'legendary' ? ['★', '✦', '✧'] : (chest.quality === 'rare' ? ['✦', '✧', '◇'] : ['◇', '○', '✦']);
+                symbols.forEach((symbol, index) => {
+                    const angle = Date.now() / 240 + index * (Math.PI * 2 / symbols.length);
+                    this.ctx.fillText(symbol, pos.x + Math.cos(angle) * radiusX * 0.46, pos.y - 10 + Math.sin(angle) * radiusY * 0.3);
+                });
+                this.ctx.restore();
+            }
+        });
         this.ctx.restore();
     }
 
@@ -13879,6 +15230,11 @@ class Game {
     }
 
     renderOverlayUI() {
+        this.clearOverlayLayer();
+        this.overlayHitRegions = {};
+        this.pauseButtons = null;
+        this.resultBtnRect = null;
+        this.renderTreasureChestPresentation();
         this.renderShopkeeperPresentation();
         // 更新侧边面板
         this.updateSidePanels();
@@ -13900,7 +15256,7 @@ class Game {
         uiWindows.forEach(ui => ui.draw());
 
         if (this.bossChestLottery && this.bossChestLottery.active) {
-            this.drawBossChestLottery(this.ctx);
+            this.drawBossChestLottery(this.getOverlayDrawContext());
         }
 
         if (this.paused && !this.hasBlockingOverlayOpen()) {
@@ -14123,18 +15479,22 @@ class Game {
         if (availableItems.length === 0) return;
         
         const item = availableItems[randInt(0, availableItems.length - 1)];
-        this.curRoom.items.push({ x, y, id: item.id, icon: item.icon, name: item.name });
+        const drop = { x, y, id: item.id, icon: item.icon, name: item.name };
+        this.curRoom.items.push(drop);
         // 掉落特效
         this.particles.sparkle(x, y, '#fa0', 5);
+        return drop;
     }
     
     // v0.9.5 - 在指定位置生成武器箱(问号箱子)
     spawnWeaponBoxAt(x, y) {
-        this.curRoom.items.push({
+        const drop = {
             x, y, type: 'weapon_box', icon: '❓', name: '神秘武器箱'
-        });
+        };
+        this.curRoom.items.push(drop);
         // 掉落特效
         this.particles.sparkle(x, y, '#f0f', 8);
+        return drop;
     }
     
     // v0.9.5 - 在指定位置生成血包
@@ -14201,7 +15561,7 @@ class Game {
         if (!this.curRoom) return;
         const angle = Math.random() * Math.PI * 2;
         const speed = 100 + Math.random() * 80;
-        this.curRoom.gems.push({ 
+        const drop = { 
             x, y, 
             v: value, 
             vx: Math.cos(angle) * speed,
@@ -14210,7 +15570,9 @@ class Game {
             gravity: 400,
             bounce: true,
             groundY: y + 20
-        });
+        };
+        this.curRoom.gems.push(drop);
+        return drop;
     }
     
     // v0.16.3 - 生成单个金币（保留供其他调用）
@@ -14218,7 +15580,7 @@ class Game {
         if (!this.curRoom) return;
         const angle = Math.random() * Math.PI * 2;
         const speed = 100 + Math.random() * 80;
-        this.curRoom.goldDrops.push({ 
+        const drop = { 
             x, y, 
             v: value, 
             vx: Math.cos(angle) * speed,
@@ -14227,22 +15589,26 @@ class Game {
             gravity: 400,
             bounce: true,
             groundY: y + 20
-        });
+        };
+        this.curRoom.goldDrops.push(drop);
+        return drop;
     }
     
     // v0.11.0 - T3掉落武器3选1宝箱
     spawnWeaponChoiceChestAt(x, y) {
-        this.curRoom.items.push({
+        const drop = {
             x, y,
             type: 'weapon_choice_chest',
             icon: '🎁',
             name: '武器选择箱',
             opened: false,
             glowPhase: 0
-        });
+        };
+        this.curRoom.items.push(drop);
         // 武器箱掉落特效
         this.particles.explosion(x, y, '#ff8800', 12);
         this.particles.sparkle(x, y, '#ffaa00', 8);
+        return drop;
     }
     
     // ========== v0.15.0 武器系统新方法 ==========
@@ -14569,7 +15935,10 @@ class Game {
         };
 
         if (b.curved) {
-            const originTarget = chooseTarget(startX, startY, b.angle || 0, b.maxTrackAngle || 0.9, laserRange);
+            const trackReferenceAngle = b.lockTrackToFireAngle
+                ? (b.trackReferenceAngle ?? b.angle ?? 0)
+                : (b.angle || 0);
+            const originTarget = chooseTarget(startX, startY, trackReferenceAngle, b.maxTrackAngle || 0.9, laserRange);
             if (originTarget) {
                 const desiredAngle = Math.atan2(originTarget.cy - startY, originTarget.cx - startX);
                 const diff = normalizeAngle(desiredAngle - (b.angle || 0));
@@ -14587,7 +15956,8 @@ class Game {
             let travelled = 0;
 
             while (travelled < laserRange) {
-                const target = chooseTarget(currentX, currentY, currentAngle, maxTrackAngle, laserRange - travelled);
+                const seekAngle = b.lockTrackToFireAngle ? trackReferenceAngle : currentAngle;
+                const target = chooseTarget(currentX, currentY, seekAngle, maxTrackAngle, laserRange - travelled);
                 if (target) {
                     const desiredAngle = Math.atan2(target.cy - currentY, target.cx - currentX);
                     const diff = normalizeAngle(desiredAngle - currentAngle);
@@ -16101,6 +17471,429 @@ class Game {
         ctx.restore();
     }
     
+    spawnGuardianKnives(cfg) {
+        if (!this.guardianKnives) this.guardianKnives = [];
+        const familyKey = 'knife';
+        const existing = this.guardianKnives.filter((knife) => knife.familyKey === familyKey);
+        const desiredCount = Math.max(1, cfg.count || 1);
+        const now = Date.now() / 1000;
+        for (const knife of existing) {
+            knife.dmg = cfg.dmg;
+            knife.speed = cfg.speed || knife.speed || 260;
+            knife.returnSpeed = cfg.returnSpeed || knife.returnSpeed || 340;
+            knife.searchRadius = cfg.searchRadius || knife.searchRadius || 560;
+            knife.leashRadius = cfg.range || knife.leashRadius || 560;
+            knife.idleRadius = cfg.idleRadius || knife.idleRadius || 42;
+            knife.passThroughDistance = cfg.passThroughDistance || knife.passThroughDistance || 72;
+            knife.curveRadius = cfg.curveRadius || knife.curveRadius || 108;
+            knife.hitCooldown = cfg.hitCooldown || knife.hitCooldown || 0.26;
+            knife.weaponKey = cfg.weaponKey || knife.weaponKey || 'knife';
+            knife.weaponSprite = cfg.weaponSprite || knife.weaponSprite || 'weapon_knife';
+            knife.permanent = true;
+            knife.isSuper = !!cfg.isSuper;
+            knife.drawSize = cfg.isSuper ? 34 : 26;
+            knife.expireAt = Infinity;
+            knife.trail = knife.trail || [];
+        }
+
+        while (existing.length > desiredCount) {
+            const knife = existing.pop();
+            const idx = this.guardianKnives.indexOf(knife);
+            if (idx >= 0) this.guardianKnives.splice(idx, 1);
+        }
+
+        for (let i = existing.length; i < desiredCount; i++) {
+            this.guardianKnives.push({
+                familyKey,
+                slotIndex: i,
+                x: this.player?.cx || 0,
+                y: this.player?.cy || 0,
+                vx: 0,
+                vy: -1,
+                state: 'idle',
+                dmg: cfg.dmg,
+                speed: cfg.speed || 260,
+                returnSpeed: cfg.returnSpeed || 340,
+                searchRadius: cfg.searchRadius || 560,
+                leashRadius: cfg.range || 560,
+                idleRadius: cfg.idleRadius || 42,
+                passThroughDistance: cfg.passThroughDistance || 72,
+                curveRadius: cfg.curveRadius || 108,
+                hitCooldown: cfg.hitCooldown || 0.26,
+                weaponKey: cfg.weaponKey || 'knife',
+                weaponSprite: cfg.weaponSprite || 'weapon_knife',
+                permanent: true,
+                isSuper: !!cfg.isSuper,
+                drawSize: cfg.isSuper ? 34 : 26,
+                target: null,
+                targetRef: null,
+                cycleTarget: null,
+                passDirX: 0,
+                passDirY: -1,
+                passRemaining: 0,
+                curveDir: i % 2 === 0 ? 1 : -1,
+                curveTimer: 0,
+                expireAt: Infinity,
+                hitTracker: new Map(),
+                trail: []
+            });
+        }
+
+        const knives = this.guardianKnives.filter((knife) => knife.familyKey === familyKey);
+        knives.forEach((knife, index) => {
+            knife.slotIndex = index;
+        });
+    }
+
+    findGuardianKnifeTarget(knife, enemies, preferredTarget = null) {
+        if (!enemies || !Array.isArray(enemies) || !this.player) return null;
+        const now = Date.now() / 1000;
+        const withinSearch = (enemy) => {
+            if (!enemy || enemy.hp <= 0) return false;
+            const d = dist(knife.x, knife.y, enemy.cx, enemy.cy);
+            return d <= (knife.searchRadius || 560);
+        };
+
+        if (preferredTarget && withinSearch(preferredTarget)) {
+            const lastHit = knife.hitTracker?.get(preferredTarget) || 0;
+            if (lastHit <= now) return preferredTarget;
+        }
+
+        let bestTarget = null;
+        let bestScore = -Infinity;
+        for (const enemy of enemies) {
+            if (!withinSearch(enemy)) continue;
+            const dKnife = dist(knife.x, knife.y, enemy.cx, enemy.cy);
+            const dPlayer = dist(this.player.cx, this.player.cy, enemy.cx, enemy.cy);
+            const score = 900 - dKnife - dPlayer * 0.18 - enemy.hp * 0.03 + ((enemy.isBoss || enemy.tier >= 3) ? 42 : 0);
+            if (score > bestScore) {
+                bestScore = score;
+                bestTarget = enemy;
+            }
+        }
+        return bestTarget;
+    }
+
+    updateGuardianKnifeIdle(knife, dt) {
+        const time = Date.now() / 1000;
+        const total = Math.max(1, this.guardianKnives?.filter((item) => item.familyKey === knife.familyKey).length || 1);
+        const anglePresets = {
+            1: [-Math.PI * 0.1],
+            2: [-Math.PI * 0.86, -Math.PI * 0.14],
+            3: [-Math.PI * 0.9, -Math.PI * 0.5, -Math.PI * 0.1]
+        };
+        const preset = anglePresets[total] || null;
+        const baseAngle = preset ? preset[Math.min(knife.slotIndex, preset.length - 1)] : ((Math.PI * 2 * knife.slotIndex) / total - Math.PI * 0.5);
+        const radius = (knife.idleRadius || 42) + (total === 1 ? 38 : 22);
+        const sway = Math.sin(time * 2.8 + knife.slotIndex * 1.7);
+        const breathe = Math.cos(time * 1.9 + knife.slotIndex * 0.9);
+        const targetX = this.player.cx + Math.cos(baseAngle) * radius + sway * 4;
+        const targetY = this.player.cy - 32 + Math.sin(baseAngle) * radius * 0.15 + breathe * 2.5;
+        const dx = targetX - knife.x;
+        const dy = targetY - knife.y;
+        const move = Math.min((knife.returnSpeed || 340) * dt, Math.sqrt(dx * dx + dy * dy));
+        const angle = Math.atan2(dy, dx);
+        knife.vx = Math.cos(angle) * Math.max(1, move / Math.max(dt, 0.001));
+        knife.vy = Math.sin(angle) * Math.max(1, move / Math.max(dt, 0.001));
+        knife.x += Math.cos(angle) * move;
+        knife.y += Math.sin(angle) * move;
+    }
+
+    playGuardianKnifeWhistle(now) {
+        if (!this.audioCtrl) return;
+        if (now - (this.lastGuardianKnifeWhistleAt || 0) < 0.09) return;
+        this.lastGuardianKnifeWhistleAt = now;
+        this.audioCtrl.play('knife_whistle');
+    }
+
+    updateGuardianKnifeTrail(knife, dt) {
+        knife.trail = knife.trail || [];
+        knife._lastTrailState = knife._lastTrailState || knife.state;
+        const trailSpeed = Math.sqrt((knife.vx || 0) * (knife.vx || 0) + (knife.vy || 0) * (knife.vy || 0));
+        const trailActive = knife.state !== 'idle' && trailSpeed > 80;
+        const prevState = knife._lastTrailState;
+        const nextState = knife.state;
+        const stateChanged = prevState !== nextState;
+        const continuousTransition =
+            (prevState === 'hunt' && nextState === 'pass_through') ||
+            (prevState === 'pass_through' && nextState === 'curve_return') ||
+            (prevState === 'curve_return' && nextState === 'hunt') ||
+            (prevState === 'curve_return' && nextState === 'return') ||
+            (prevState === 'hunt' && nextState === 'return') ||
+            (prevState === 'return' && nextState === 'hunt');
+
+        if (stateChanged && knife.trail.length > 0 && !continuousTransition) {
+            knife.trail[0].breakAfter = true;
+        }
+
+        if (trailActive) {
+            const bodyLen = (knife.drawSize || (knife.isSuper ? 34 : 26)) * (knife.isSuper ? 1.5 : 1.32);
+            const angle = Math.atan2(knife.vy || 0, knife.vx || 1);
+            const tailOffset = bodyLen * 0.82;
+            const tailX = knife.x - Math.cos(angle) * tailOffset;
+            const tailY = knife.y - Math.sin(angle) * tailOffset;
+            const prevSample = knife.trail[0] || null;
+            const jumpBreak = prevSample
+                ? dist(prevSample.x, prevSample.y, tailX, tailY) > (knife.isSuper ? 40 : 32)
+                : false;
+            const sampleLife = 1.0;
+            knife.trail.unshift({
+                x: tailX,
+                y: tailY,
+                life: sampleLife,
+                maxLife: sampleLife,
+                breakBefore: jumpBreak,
+                breakAfter: false
+            });
+        } else {
+            knife.trail.length = 0;
+        }
+
+        for (let ti = knife.trail.length - 1; ti >= 0; ti--) {
+            knife.trail[ti].life -= dt;
+            if (knife.trail[ti].life <= 0) knife.trail.splice(ti, 1);
+        }
+        if (knife.trail.length > (knife.isSuper ? 16 : 12)) {
+            knife.trail.length = knife.isSuper ? 16 : 12;
+        }
+        knife._lastTrailState = knife.state;
+    }
+
+    applyGuardianKnifeSweepDamage(knife, prevX, prevY, enemies, stats, now, skipTarget = null) {
+        if (!enemies || enemies.length === 0) return [];
+        const hits = [];
+        const segX = knife.x - prevX;
+        const segY = knife.y - prevY;
+        const segLenSq = segX * segX + segY * segY;
+        const knifeRadius = (knife.drawSize || 26) * 0.3;
+        for (const enemy of enemies) {
+            if (!enemy || enemy.hp <= 0 || enemy === skipTarget) continue;
+            const hitReadyAt = knife.hitTracker?.get(enemy) || 0;
+            if (hitReadyAt > now) continue;
+            let closestX = knife.x;
+            let closestY = knife.y;
+            if (segLenSq > 0.0001) {
+                const proj = ((enemy.cx - prevX) * segX + (enemy.cy - prevY) * segY) / segLenSq;
+                const t = Math.max(0, Math.min(1, proj));
+                closestX = prevX + segX * t;
+                closestY = prevY + segY * t;
+            }
+            const reach = knifeRadius + (enemy.size || 24) * 0.45;
+            if (dist(closestX, closestY, enemy.cx, enemy.cy) > reach) continue;
+            this.applyDamage(enemy, knife.dmg || 10, stats || {}, {
+                weaponKey: knife.weaponKey,
+                color: knife.permanent ? '#7fe8ff' : '#dfe8ff'
+            });
+            if (window.weaponVisuals?.spark) {
+                window.weaponVisuals.spark(enemy.cx, enemy.cy, knife.permanent ? '#7fe8ff' : '#dfe8ff', enemy === knife.cycleTarget ? 6 : 4);
+            }
+            knife.hitTracker.set(enemy, now + (knife.hitCooldown || 0.26));
+            hits.push(enemy);
+        }
+        return hits;
+    }
+
+    updateGuardianKnives(dt, enemies, stats) {
+        if (!this.guardianKnives || !this.player) return;
+        const now = Date.now() / 1000;
+        for (let i = this.guardianKnives.length - 1; i >= 0; i--) {
+            const knife = this.guardianKnives[i];
+            if (!knife) {
+                this.guardianKnives.splice(i, 1);
+                continue;
+            }
+
+            if (!knife.permanent && knife.expireAt && knife.expireAt < now) {
+                this.guardianKnives.splice(i, 1);
+                continue;
+            }
+
+            if (knife.target && knife.target.hp <= 0) knife.target = null;
+            if (knife.cycleTarget && knife.cycleTarget.hp <= 0) knife.cycleTarget = null;
+
+            const leashDistance = dist(knife.x, knife.y, this.player.cx, this.player.cy);
+            if (leashDistance > (knife.leashRadius || 560) * 1.35) {
+                const farRetarget = this.findGuardianKnifeTarget(knife, enemies, knife.target);
+                if (farRetarget) {
+                    knife.target = farRetarget;
+                    knife.state = 'hunt';
+                } else {
+                    knife.state = 'return';
+                    knife.target = null;
+                    knife.cycleTarget = null;
+                    const homeDX = this.player.cx - knife.x;
+                    const homeDY = (this.player.cy - 8) - knife.y;
+                    const homeLen = Math.max(0.001, Math.sqrt(homeDX * homeDX + homeDY * homeDY));
+                    knife.vx = (homeDX / homeLen) * (knife.returnSpeed || 340) * 1.35;
+                    knife.vy = (homeDY / homeLen) * (knife.returnSpeed || 340) * 1.35;
+                }
+            }
+
+            if (knife.state === 'idle') {
+                this.updateGuardianKnifeIdle(knife, dt);
+                const target = this.findGuardianKnifeTarget(knife, enemies);
+                if (target) {
+                    knife.target = target;
+                    knife.state = 'hunt';
+                    this.playGuardianKnifeWhistle(now);
+                }
+                this.updateGuardianKnifeTrail(knife, dt);
+                continue;
+            }
+
+            if (knife.state === 'hunt') {
+                knife.target = this.findGuardianKnifeTarget(knife, enemies, knife.target);
+                if (!knife.target) {
+                    const nextTarget = this.findGuardianKnifeTarget(knife, enemies);
+                    if (nextTarget) {
+                        knife.target = nextTarget;
+                    } else {
+                        knife.state = 'return';
+                    }
+                    this.updateGuardianKnifeTrail(knife, dt);
+                    continue;
+                }
+
+                const prevX = knife.x;
+                const prevY = knife.y;
+                const dx = knife.target.cx - knife.x;
+                const dy = knife.target.cy - knife.y;
+                const distanceToTarget = Math.max(0.001, Math.sqrt(dx * dx + dy * dy));
+                const dirX = dx / distanceToTarget;
+                const dirY = dy / distanceToTarget;
+                const speed = (knife.speed || 260) * 1.34;
+                knife.vx = dirX * speed;
+                knife.vy = dirY * speed;
+                knife.x += knife.vx * dt;
+                knife.y += knife.vy * dt;
+                this.applyGuardianKnifeSweepDamage(knife, prevX, prevY, enemies, stats, now, knife.target);
+
+                const hitRadius = (knife.drawSize || 26) * 0.3 + (knife.target.size || 24) * 0.45;
+                const hitReadyAt = knife.hitTracker?.get(knife.target) || 0;
+                if (distanceToTarget <= hitRadius && hitReadyAt <= now) {
+                    this.applyDamage(knife.target, knife.dmg || 10, stats || {}, {
+                        weaponKey: knife.weaponKey,
+                        color: knife.permanent ? '#7fe8ff' : '#dfe8ff'
+                    });
+                    if (window.weaponVisuals?.spark) {
+                        window.weaponVisuals.spark(knife.target.cx, knife.target.cy, knife.permanent ? '#7fe8ff' : '#dfe8ff', 5);
+                    }
+                    knife.hitTracker.set(knife.target, now + (knife.hitCooldown || 0.26));
+                    knife.cycleTarget = knife.target;
+                    knife.passDirX = dirX;
+                    knife.passDirY = dirY;
+                    knife.passRemaining = knife.passThroughDistance || 72;
+                    knife.curveTimer = 0;
+                    knife.curveDuration = knife.permanent ? 0.3 : 0.26;
+                    knife.state = 'pass_through';
+                }
+                this.updateGuardianKnifeTrail(knife, dt);
+                continue;
+            }
+
+            if (knife.state === 'pass_through') {
+                const prevX = knife.x;
+                const prevY = knife.y;
+                const speed = (knife.speed || 260) * 1.16;
+                const move = speed * dt;
+                knife.vx = knife.passDirX * speed;
+                knife.vy = knife.passDirY * speed;
+                knife.x += knife.passDirX * move;
+                knife.y += knife.passDirY * move;
+                this.applyGuardianKnifeSweepDamage(knife, prevX, prevY, enemies, stats, now);
+                knife.passRemaining -= move;
+                if (knife.passRemaining <= 0) {
+                    knife.curveTimer = 0;
+                    knife.curveDir *= -1;
+                    const refTarget = (knife.cycleTarget && knife.cycleTarget.hp > 0) ? knife.cycleTarget : null;
+                    const pivotX = refTarget ? refTarget.cx : this.player.cx;
+                    const pivotY = refTarget ? refTarget.cy : this.player.cy - 8;
+                    knife.curvePivotX = pivotX;
+                    knife.curvePivotY = pivotY;
+                    knife.curveStartAngle = Math.atan2(knife.y - pivotY, knife.x - pivotX);
+                    knife.curveStartRadius = Math.max(36, dist(knife.x, knife.y, pivotX, pivotY));
+                    knife.curveTargetRadius = Math.max(knife.curveRadius || 108, knife.curveStartRadius * 0.92);
+                    const passAngle = Math.atan2(knife.passDirY, knife.passDirX);
+                    knife.curveEndAngle = passAngle + knife.curveDir * Math.PI * 0.92;
+                    const arcRadius = (knife.curveStartRadius + knife.curveTargetRadius) * 0.5;
+                    const arcLength = Math.max(56, arcRadius * Math.abs(knife.curveEndAngle - knife.curveStartAngle));
+                    knife.curveDuration = Math.max(0.24, Math.min(0.52, arcLength / Math.max((knife.speed || 260) * 0.9, 1)));
+                    knife.state = 'curve_return';
+                }
+                this.updateGuardianKnifeTrail(knife, dt);
+                continue;
+            }
+
+            if (knife.state === 'curve_return') {
+                const prevX = knife.x;
+                const prevY = knife.y;
+                knife.curveTimer += dt;
+                const refTarget = (knife.cycleTarget && knife.cycleTarget.hp > 0) ? knife.cycleTarget : null;
+                const duration = Math.max(0.14, knife.curveDuration || 0.22);
+                const progress = Math.min(1, knife.curveTimer / duration);
+                const eased = 1 - Math.pow(1 - progress, 2);
+                const pivotX = refTarget ? refTarget.cx : (knife.curvePivotX ?? this.player.cx);
+                const pivotY = refTarget ? refTarget.cy : (knife.curvePivotY ?? (this.player.cy - 8));
+                const startAngle = Number.isFinite(knife.curveStartAngle) ? knife.curveStartAngle : Math.atan2(knife.y - pivotY, knife.x - pivotX);
+                const endAngle = Number.isFinite(knife.curveEndAngle) ? knife.curveEndAngle : (startAngle + knife.curveDir * Math.PI * 0.92);
+                const radiusStart = Math.max(36, knife.curveStartRadius || dist(knife.x, knife.y, pivotX, pivotY));
+                const radiusEnd = Math.max(knife.curveRadius || 108, knife.curveTargetRadius || radiusStart);
+                const radius = radiusStart + (radiusEnd - radiusStart) * eased;
+                const angle = startAngle + (endAngle - startAngle) * eased;
+                knife.x = pivotX + Math.cos(angle) * radius;
+                knife.y = pivotY + Math.sin(angle) * radius;
+                knife.vx = (knife.x - prevX) / Math.max(dt, 0.001);
+                knife.vy = (knife.y - prevY) / Math.max(dt, 0.001);
+                this.applyGuardianKnifeSweepDamage(knife, prevX, prevY, enemies, stats, now);
+
+                if (progress >= 1) {
+                    const nextTarget = refTarget || this.findGuardianKnifeTarget(knife, enemies);
+                    if (nextTarget) {
+                        knife.target = nextTarget;
+                        knife.state = 'hunt';
+                    } else {
+                        knife.target = null;
+                        knife.state = 'return';
+                    }
+                    }
+                this.updateGuardianKnifeTrail(knife, dt);
+                continue;
+            }
+
+            if (knife.state === 'return') {
+                const retarget = this.findGuardianKnifeTarget(knife, enemies);
+                if (retarget) {
+                    knife.target = retarget;
+                    knife.state = 'hunt';
+                    this.updateGuardianKnifeTrail(knife, dt);
+                    continue;
+                }
+                const prevX = knife.x;
+                const prevY = knife.y;
+                const homeX = this.player.cx;
+                const homeY = this.player.cy - 8;
+                const dx = homeX - knife.x;
+                const dy = homeY - knife.y;
+                const length = Math.max(0.001, Math.sqrt(dx * dx + dy * dy));
+                const dirX = dx / length;
+                const dirY = dy / length;
+                const speed = (knife.returnSpeed || 340) * 1.32;
+                knife.vx = dirX * speed;
+                knife.vy = dirY * speed;
+                knife.x += knife.vx * dt;
+                knife.y += knife.vy * dt;
+                this.applyGuardianKnifeSweepDamage(knife, prevX, prevY, enemies, stats, now);
+
+                if (length <= Math.max(16, knife.idleRadius * 0.45)) {
+                    knife.state = 'idle';
+                    knife.target = null;
+                    knife.cycleTarget = null;
+                }
+            }
+            this.updateGuardianKnifeTrail(knife, dt);
+        }
+    }
+
     // 生成环绕物 - v0.26 fix: 保留旧环绕物的角度，只添加新的
     spawnOrbitals(b) {
         if (!this.orbitals) this.orbitals = [];
@@ -16118,6 +17911,9 @@ class Game {
             orb.icon = b.icon;
             orb.speed = b.rotationSpeed || orb.speed || 2;
             orb.permanent = !!b.eternal;
+            orb.drawSize = b.orbitalDrawSize || orb.drawSize || (orb.permanent ? 76 : 60);
+            orb.hitPadding = b.orbitHitPadding || orb.hitPadding || 44;
+            orb.visualSpinSpeed = b.orbitVisualSpinSpeed || orb.visualSpinSpeed || 2;
             orb.combat = b.combat ? { ...b.combat } : orb.combat;
         }
         
@@ -16145,6 +17941,9 @@ class Game {
                     hits: new Set(),
                     color: b.color,
                     icon: b.icon,
+                    drawSize: b.orbitalDrawSize || 60,
+                    hitPadding: b.orbitHitPadding || 44,
+                    visualSpinSpeed: b.orbitVisualSpinSpeed || 2,
                     combat: b.combat ? { ...b.combat } : null
                 });
             }
@@ -16169,6 +17968,9 @@ class Game {
                 color: cfg.color,
                 icon: cfg.icon,
                 glow: true, // 发光特效
+                drawSize: cfg.orbitalDrawSize || 76,
+                hitPadding: cfg.orbitHitPadding || 58,
+                visualSpinSpeed: cfg.orbitVisualSpinSpeed || 2.4,
                 combat: cfg.combat ? { ...cfg.combat } : null
             });
         }
@@ -16209,8 +18011,8 @@ class Game {
                     // v0.18.2: 使用环绕轨迹半径检测，整个圆周范围内的敌人都会受伤
                     const distToPlayer = Math.sqrt((e.cx - this.player.cx)**2 + (e.cy - this.player.cy)**2);
                     const orbRadius = orb.radius || 80;
-                    // 允许±30像素的误差范围
-                    if (Math.abs(distToPlayer - orbRadius) < 30 + (e.size || 24) * 0.5) {
+                    const hitPadding = orb.hitPadding || 30;
+                    if (Math.abs(distToPlayer - orbRadius) < hitPadding + (e.size || 24) * 0.5) {
                         orb.hits.add(e);
                         this.applyDamage(e, orb.dmg || 10, stats || {}, { combat: orb.combat || {} });
                         // 环绕物可以重复伤害，但有个短暂冷却
@@ -16625,6 +18427,7 @@ class Game {
         // 更新性能监控
 
         this.perfMonitor.update();
+        this.debugPanel?.refreshRuntimeStats?.();
 
         
 
@@ -16861,7 +18664,7 @@ window.runRestartAttackTest = async function() {
 <script src="src/systems/weaponSystem.js"></script>
 
 <!-- 武器升级系统 v0.15.5 -->
-<script src="src/systems/weaponUpgrade.js"></script>
+<script src="src/systems/weaponUpgrade.js?v=20260314b"></script>
 
 <!-- 环境氛围系统 v0.24 - 洞穴HD-2D效果 -->
 <script src="src/render/systems/AmbienceSystem.js?v=0337"></script>
@@ -16889,8 +18692,8 @@ window.runRestartAttackTest = async function() {
 <script src="src/ui/ThemeToneResolver.js?v=0333"></script>
 <script src="src/ui/OverlayCanvasRenderer.js?v=0333"></script>
 <script src="src/ui/SidebarHudPresenter.js?v=0333"></script>
-<script src="src/systems/AudioSystem.js"></script>
-<script src="src/systems/AudioController.js"></script>
+<script src="src/systems/AudioSystem.js?v=20260314c"></script>
+<script src="src/systems/AudioController.js?v=20260314c"></script>
 <script src="src/systems/SoundEffectSystem.js"></script>
 <script src="src/utils/SpriteData.js"></script>
 <script src="src/systems/SpriteDataRegistry.js?v=0325"></script>

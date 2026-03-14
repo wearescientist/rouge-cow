@@ -95,6 +95,9 @@
     }
 
     Weapon.prototype.fireProjectile = function(player, target, dmg, subtype, stats) {
+        if (subtype === 'guardian_knife') {
+            return this.fireGuardianKnife(player, dmg, stats);
+        }
         let bullets = [];
         const speed = (this.cfg.speed || 300) * (1 + (stats.projSpeed || 0));
         // 如果没有目标，根据玩家朝向发射
@@ -142,6 +145,13 @@
         }
         
         return bullets;
+    }
+
+    Weapon.prototype.fireGuardianKnife = function(player, dmg, stats) {
+        const spawnCfg = typeof this.buildGuardianKnifeSpawnConfig === 'function'
+            ? this.buildGuardianKnifeSpawnConfig(player, dmg, stats)
+            : null;
+        return spawnCfg ? [spawnCfg] : [];
     }
 
     Weapon.prototype.createProjectile = function(player, baseAngle, speed, dmg, subtype, stats, count = 1, target = null) {
@@ -352,13 +362,14 @@
             explode: { sprite: 'weapon_fireball', size: 12, hitRadius: 6.5, renderStyle: 'fireball' },
             fan: { sprite: 'bullet_arrow', size: 9, hitRadius: 5.2, renderStyle: 'shuriken' },
             penetrate: { sprite: 'bullet_ice', size: 12, hitRadius: 7, renderStyle: 'icicle' },
-            orbit_proj: { sprite: 'bullet_lightning', size: 16, hitRadius: 8, renderStyle: 'orbit_bible' }
+            guardian_knife: { sprite: 'weapon_knife', size: 22, hitRadius: 10, renderStyle: 'knife_guardian' },
+            orbit_proj: { sprite: 'bullet_lightning', size: 40, hitRadius: 11, renderStyle: 'orbit_bible' }
         };
         const cfg = { ...(configMap[subtype] || { sprite: 'bullet_arrow', size: 10, hitRadius: 6 }) };
         const scale = b.scale || 1;
         
         // 武器优先级修正：按武器逻辑使用对应贴图
-        if (b.weaponKey === 'knife' && subtype === 'rapid') {
+        if (b.weaponKey === 'knife' && (subtype === 'rapid' || subtype === 'guardian_knife')) {
             cfg.sprite = 'weapon_knife';
         } else if (b.weaponKey === 'axe' && subtype === 'boomerang') {
             cfg.sprite = 'weapon_axe';
@@ -390,6 +401,9 @@
             eternal: !!this.cfg.eternal,
             doubleRing: !!this.cfg.doubleRing,
             rotationSpeed: (this.cfg.rotationSpeed || this.cfg.orbitSpeed || 2) * (1 + (stats.lingeringFieldScale || 0) * 0.12),
+            orbitalDrawSize: this.cfg.orbitalDrawSize || 30,
+            orbitHitPadding: this.cfg.orbitHitPadding || 44,
+            orbitVisualSpinSpeed: this.cfg.orbitVisualSpinSpeed || 2,
             hits: new Set(),
             weaponKey: this.baseKey,
             weaponSprite: this.getWeaponSpriteKey()
@@ -508,6 +522,35 @@
         if (window.game && window.game.camera) {
             window.game.camera.addShake(this.isSuper ? 2 : 1);
         }
+
+        if (this.cfg.uniqueBeam && window.game && Array.isArray(window.game.bullets)) {
+            const existing = window.game.bullets.find(b =>
+                b &&
+                (b.type === 'laser_beam' || b.isLaser) &&
+                b.weaponKey === this.baseKey &&
+                b.sourceOwner === player &&
+                (b.life || 0) > 0
+            );
+            if (existing) {
+                existing.x = player.cx;
+                existing.y = player.cy;
+                existing.angle = baseAngle;
+                existing.width = width;
+                existing.range = range;
+                existing.dmg = dmg;
+                existing.color = this.cfg.color || existing.color || '#ff0044';
+                existing.life = Math.max(existing.life || 0, life);
+                existing.maxLife = Math.max(existing.maxLife || 0, life);
+                existing.tickCooldown = tickCooldown;
+                existing.curved = !!this.cfg.homingCurve;
+                existing.turnRate = (this.cfg.turnRate || 0) + (isMoving ? (stats.moveConduction || 0) : 0);
+                existing.maxTrackAngle = (this.cfg.maxTrackAngle || 0) + (isMoving ? (stats.moveConduction || 0) * 0.4 : 0);
+                existing.trackReferenceAngle = baseAngle;
+                existing.lockTrackToFireAngle = !!this.cfg.lockTrackToFireAngle;
+                existing.segmentLength = this.cfg.segmentLength || 60;
+                return [];
+            }
+        }
         
         return [this.applyCombatStats({
             x: player.cx, y: player.cy,
@@ -534,6 +577,8 @@
             preferMoveDirection: !!this.cfg.preferMoveDirection,
             turnRate: (this.cfg.turnRate || 0) + (isMoving ? (stats.moveConduction || 0) : 0),
             maxTrackAngle: (this.cfg.maxTrackAngle || 0) + (isMoving ? (stats.moveConduction || 0) * 0.4 : 0),
+            trackReferenceAngle: baseAngle,
+            lockTrackToFireAngle: !!this.cfg.lockTrackToFireAngle,
             segmentLength: this.cfg.segmentLength || 60,
             statsSnapshot: { ...(stats || {}) },
             weaponKey: this.baseKey,

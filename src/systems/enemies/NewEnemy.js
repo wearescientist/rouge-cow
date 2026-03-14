@@ -504,21 +504,27 @@ class NewEnemy {
     }
     
     // v0.34: 新增 - 带偏移绘制（用于 Room 渲染）
-    drawWithOffset(ctx, sprites, floor) {
+    drawWithOffset(ctx, sprites, floor, screenScale = 1) {
         // v0.34: 原点已经在正确位置，直接调用绘制方法
         const cx = 0;
         const cy = 0;
-        
+
+        ctx.save();
+        if (Number.isFinite(screenScale) && screenScale > 0 && screenScale !== 1) {
+            ctx.scale(screenScale, screenScale);
+        }
+
         if (this.spriteLoaded && this.spriteFrames.length > 0) {
             this.drawSprite(ctx, cx, cy);
         } else {
             this.drawFallback(ctx, cx, cy);
         }
-        
+
         // HP bar
         if (this.hp < this.maxHp || this.tier >= 2) {
             this.drawHPBar(ctx, cx, cy);
         }
+        ctx.restore();
     }
 }
 

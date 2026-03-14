@@ -3,10 +3,66 @@ class OverlayCanvasRenderer {
         this.game = game;
     }
 
+    getRenderContext() {
+        return this.game.getOverlayDrawContext ? this.game.getOverlayDrawContext() : this.game.ctx;
+    }
+
+    getMetrics() {
+        const ctx = this.getRenderContext();
+        const canvas = ctx.canvas;
+        const cw = canvas.width || 900;
+        const ch = canvas.height || 900;
+        const scale = Math.min(cw, ch) / 960;
+        return {
+            ctx,
+            cw,
+            ch,
+            scale,
+            centerX: cw / 2,
+            centerY: ch / 2
+        };
+    }
+
+    fitPanel(metrics, designW, designH, margin = 26) {
+        const safeMargin = Math.max(14, margin * metrics.scale);
+        const scale = Math.min(
+            1,
+            (metrics.cw - safeMargin * 2) / Math.max(designW, 1),
+            (metrics.ch - safeMargin * 2) / Math.max(designH, 1)
+        );
+        const width = Math.min(designW * scale, metrics.cw - safeMargin * 2);
+        const height = Math.min(designH * scale, metrics.ch - safeMargin * 2);
+        return {
+            scale,
+            width,
+            height,
+            x: (metrics.cw - width) / 2,
+            y: (metrics.ch - height) / 2
+        };
+    }
+
+    setRegion(key, panel, extra = {}) {
+        this.game.overlayHitRegions[key] = {
+            panel: { x: panel.x, y: panel.y, w: panel.width, h: panel.height },
+            ...extra
+        };
+    }
+
+    text(ctx, size, weight = '', family = 'ZCOOL KuaiLe Local') {
+        const fontSize = Math.max(10, Math.round(size));
+        ctx.font = `${weight}${fontSize}px ${family}`;
+    }
+
+    truncate(text, maxChars) {
+        if (!text) return '';
+        if (text.length <= maxChars) return text;
+        return `${text.slice(0, Math.max(1, maxChars - 1))}…`;
+    }
+
     drawOverlayBackdrop(ctx, alpha = 0.78, tint = 'rgba(9, 10, 14, 0.84)') {
         const canvas = ctx.canvas;
         const cw = canvas.width || 900;
-        const ch = canvas.height || 600;
+        const ch = canvas.height || 900;
         ctx.save();
         ctx.fillStyle = tint;
         ctx.fillRect(0, 0, cw, ch);
@@ -15,8 +71,6 @@ class OverlayCanvasRenderer {
         vignette.addColorStop(1, `rgba(0, 0, 0, ${alpha})`);
         ctx.fillStyle = vignette;
         ctx.fillRect(0, 0, cw, ch);
-        ctx.fillStyle = 'rgba(255, 241, 214, 0.03)';
-        ctx.fillRect(cw * 0.18, ch * 0.06, cw * 0.64, ch * 0.12);
         ctx.restore();
     }
 
@@ -25,85 +79,95 @@ class OverlayCanvasRenderer {
     }
 
     drawOverlayPanel(ctx, x, y, width, height, options = {}) {
+        const scale = options.scale || 1;
         const accent = options.accent || '#d8bb77';
         const ink = options.ink || 'rgba(18, 12, 9, 0.92)';
         const paper = options.paper || 'rgba(75, 56, 40, 0.22)';
         const title = options.title || '';
         const subtitle = options.subtitle || '';
         const muted = options.muted || 'rgba(240, 228, 203, 0.76)';
+        const outerPad = Math.max(4, 8 * scale);
+        const headerH = Math.max(28, 56 * scale);
         ctx.save();
         ctx.fillStyle = ink;
         ctx.fillRect(x, y, width, height);
         ctx.fillStyle = paper;
-        ctx.fillRect(x + 8, y + 8, width - 16, height - 16);
+        ctx.fillRect(x + outerPad, y + outerPad, width - outerPad * 2, height - outerPad * 2);
         ctx.fillStyle = 'rgba(255, 244, 220, 0.04)';
-        ctx.fillRect(x + 10, y + 10, width - 20, 56);
+        ctx.fillRect(x + outerPad + 2, y + outerPad + 2, width - (outerPad + 2) * 2, headerH);
         ctx.strokeStyle = accent;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = Math.max(1.25, 3 * scale);
         ctx.strokeRect(x + 2, y + 2, width - 4, height - 4);
         ctx.strokeStyle = 'rgba(22, 14, 11, 0.88)';
-        ctx.lineWidth = 2;
-        ctx.strokeRect(x + 8, y + 8, width - 16, height - 16);
+        ctx.lineWidth = Math.max(1, 2 * scale);
+        ctx.strokeRect(x + outerPad, y + outerPad, width - outerPad * 2, height - outerPad * 2);
         ctx.strokeStyle = 'rgba(255, 242, 215, 0.08)';
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(x + 18, y + 68);
-        ctx.lineTo(x + width - 18, y + 68);
+        ctx.moveTo(x + 18 * scale, y + headerH + 14 * scale);
+        ctx.lineTo(x + width - 18 * scale, y + headerH + 14 * scale);
         ctx.stroke();
         if (title) {
             ctx.fillStyle = accent;
             ctx.textAlign = 'center';
-            ctx.font = 'bold 34px ZCOOL KuaiLe Local';
-            ctx.fillText(title, x + width / 2, y + 42);
+            this.text(ctx, 34 * scale, 'bold ');
+            ctx.fillText(title, x + width / 2, y + 42 * scale);
         }
         if (subtitle) {
             ctx.fillStyle = muted;
-            ctx.font = '18px ZCOOL KuaiLe Local';
-            ctx.fillText(subtitle, x + width / 2, y + height - 24);
+            this.text(ctx, 18 * scale);
+            ctx.fillText(subtitle, x + width / 2, y + height - 24 * scale);
         }
         ctx.restore();
     }
 
     drawOverlayCard(ctx, x, y, width, height, options = {}) {
+        const scale = options.scale || 1;
         const accent = options.accent || '#d8bb77';
         const fill = options.fill || 'rgba(33, 24, 18, 0.88)';
         const highlight = options.highlight || 'rgba(255, 244, 220, 0.04)';
+        const inset = Math.max(4, 6 * scale);
         ctx.save();
         ctx.fillStyle = fill;
         ctx.fillRect(x, y, width, height);
         ctx.fillStyle = highlight;
-        ctx.fillRect(x + 6, y + 6, width - 12, Math.max(18, height * 0.22));
+        ctx.fillRect(x + inset, y + inset, width - inset * 2, Math.max(18 * scale, height * 0.22));
         ctx.strokeStyle = accent;
-        ctx.lineWidth = options.lineWidth || 2;
+        ctx.lineWidth = options.lineWidth || Math.max(1.25, 2 * scale);
         ctx.strokeRect(x + 1, y + 1, width - 2, height - 2);
         ctx.strokeStyle = 'rgba(20, 13, 9, 0.9)';
         ctx.lineWidth = 1;
-        ctx.strokeRect(x + 6, y + 6, width - 12, height - 12);
+        ctx.strokeRect(x + inset, y + inset, width - inset * 2, height - inset * 2);
         ctx.restore();
     }
 
     drawOverlayButton(ctx, x, y, width, height, label, options = {}) {
+        const scale = options.scale || 1;
         const tones = this.getOverlayThemeTones();
         this.drawOverlayCard(ctx, x, y, width, height, {
+            scale,
             accent: options.hovered ? tones.inkText : (options.accent || tones.muted),
             fill: options.hovered ? 'rgba(88, 66, 46, 0.94)' : 'rgba(31, 24, 19, 0.9)',
             highlight: options.hovered ? 'rgba(255, 242, 214, 0.08)' : 'rgba(255, 242, 214, 0.03)'
         });
         ctx.fillStyle = options.hovered ? tones.inkText : tones.muted;
         ctx.textAlign = 'center';
-        ctx.font = options.hovered ? 'bold 25px ZCOOL KuaiLe Local' : '23px ZCOOL KuaiLe Local';
-        ctx.fillText(label, x + width / 2, y + height / 2 + 8);
+        this.text(ctx, (options.hovered ? 25 : 23) * scale, options.hovered ? 'bold ' : '');
+        ctx.fillText(label, x + width / 2, y + height / 2 + 8 * scale);
     }
 
     drawPauseScreen() {
         const game = this.game;
-        const ctx = game.ctx;
-        const canvas = ctx.canvas;
-        const cw = canvas.width || 900;
-        const ch = canvas.height || 600;
+        const metrics = this.getMetrics();
+        const ctx = metrics.ctx;
         const tones = this.getOverlayThemeTones();
+        const panel = this.fitPanel(metrics, 480, 430);
+        const pad = 32 * panel.scale;
+        const btnW = Math.min(panel.width - pad * 2, 320 * panel.scale);
+        const btnH = 54 * panel.scale;
         this.drawOverlayBackdrop(ctx, 0.8, tones.tint);
-        this.drawOverlayPanel(ctx, cw / 2 - 240, ch / 2 - 200, 480, 430, {
+        this.drawOverlayPanel(ctx, panel.x, panel.y, panel.width, panel.height, {
+            scale: panel.scale,
             accent: tones.accent,
             ink: tones.ink,
             paper: tones.paper,
@@ -112,24 +176,28 @@ class OverlayCanvasRenderer {
             subtitle: '按 ESC 键恢复游戏'
         });
         ctx.fillStyle = 'rgba(255, 244, 220, 0.035)';
-        ctx.fillRect(cw / 2 - 216, ch / 2 - 136, 432, 40);
-        ctx.strokeStyle = 'rgba(255, 244, 220, 0.06)';
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(cw / 2 - 182, ch / 2 - 150);
-        ctx.lineTo(cw / 2 + 182, ch / 2 - 150);
-        ctx.stroke();
+        ctx.fillRect(panel.x + 24 * panel.scale, panel.y + 74 * panel.scale, panel.width - 48 * panel.scale, 40 * panel.scale);
         ctx.textAlign = 'center';
-        const buttons = [
-            { id: 'resume', text: '继续游戏', y: ch / 2 - 32 },
-            { id: 'settings', text: '游戏设置', y: ch / 2 + 34 },
-            { id: 'restart', text: '重新开始', y: ch / 2 + 100 },
-            { id: 'menu', text: '返回主菜单', y: ch / 2 + 166 }
+        const labels = [
+            { id: 'resume', text: '继续游戏' },
+            { id: 'settings', text: '游戏设置' },
+            { id: 'restart', text: '重新开始' },
+            { id: 'menu', text: '返回主菜单' }
         ];
-        game.pauseButtons = buttons;
-        buttons.forEach(btn => {
+        const startY = panel.y + 138 * panel.scale;
+        const gap = 12 * panel.scale;
+        game.pauseButtons = labels.map((btn, index) => ({
+            id: btn.id,
+            text: btn.text,
+            x: panel.x + (panel.width - btnW) / 2,
+            y: startY + index * (btnH + gap),
+            w: btnW,
+            h: btnH
+        }));
+        game.pauseButtons.forEach((btn) => {
             const isHovered = game.pauseHoverButton === btn.id;
-            this.drawOverlayButton(ctx, cw / 2 - 160, btn.y - 24, 320, 54, btn.text, {
+            this.drawOverlayButton(ctx, btn.x, btn.y, btn.w, btn.h, btn.text, {
+                scale: panel.scale,
                 hovered: isHovered,
                 accent: isHovered ? tones.inkText : tones.accent
             });
@@ -138,18 +206,24 @@ class OverlayCanvasRenderer {
 
     drawShopUI() {
         const game = this.game;
-        const ctx = game.ctx;
-        const canvas = ctx.canvas;
-        const cw = canvas.width || 900;
-        const ch = canvas.height || 600;
-        const centerX = cw / 2;
-        const boxWidth = 620;
-        const boxHeight = 430;
-        const boxX = centerX - boxWidth / 2;
-        const boxY = ch / 2 - boxHeight / 2;
+        const metrics = this.getMetrics();
+        const ctx = metrics.ctx;
         const tones = this.getOverlayThemeTones();
+        const panel = this.fitPanel(metrics, 620, 430);
+        const scale = panel.scale;
+        const innerPad = 26 * scale;
+        const gap = 18 * scale;
+        const refreshH = 44 * scale;
+        const itemW = Math.min(160 * scale, (panel.width - innerPad * 2 - gap * (game.shopItems.length - 1)) / Math.max(game.shopItems.length, 1));
+        const itemH = Math.min(210 * scale, panel.height * 0.5);
+        const itemsY = panel.y + 198 * scale;
+        const startX = panel.x + (panel.width - (itemW * game.shopItems.length + gap * (game.shopItems.length - 1))) / 2;
+        const refreshW = Math.min(210 * scale, panel.width - innerPad * 2);
+        const refreshRect = { x: panel.x + (panel.width - refreshW) / 2, y: panel.y + panel.height - 76 * scale, w: refreshW, h: refreshH };
+        const itemRects = [];
         this.drawOverlayBackdrop(ctx, 0.76, tones.tint);
-        this.drawOverlayPanel(ctx, boxX, boxY, boxWidth, boxHeight, {
+        this.drawOverlayPanel(ctx, panel.x, panel.y, panel.width, panel.height, {
+            scale,
             accent: tones.passive,
             ink: tones.ink,
             paper: tones.paper,
@@ -158,101 +232,145 @@ class OverlayCanvasRenderer {
             subtitle: 'WASD 切换 | 空格确认 | E / Esc 关闭'
         });
         ctx.fillStyle = tones.gold;
-        ctx.font = '24px ZCOOL KuaiLe Local';
         ctx.textAlign = 'center';
-        ctx.fillText(`金币 ${game.player.gold}`, centerX, boxY + 74);
-        const itemWidth = 160;
-        const itemHeight = 210;
-        const startX = centerX - (game.shopItems.length * itemWidth) / 2 + itemWidth / 2;
+        this.text(ctx, 24 * scale);
+        ctx.fillText(`金币 ${game.player.gold}`, metrics.centerX, panel.y + 74 * scale);
         game.shopItems.forEach((item, i) => {
-            const ix = startX + i * (itemWidth + 28);
-            const iy = boxY + 200;
+            const rect = {
+                x: startX + i * (itemW + gap),
+                y: itemsY - itemH / 2,
+                w: itemW,
+                h: itemH
+            };
+            itemRects.push(rect);
+            const ix = rect.x + rect.w / 2;
+            const iy = rect.y + rect.h / 2;
             const isSelected = game.shopSelected === i;
-            this.drawOverlayCard(ctx, ix - itemWidth / 2, iy - itemHeight / 2, itemWidth, itemHeight, {
+            this.drawOverlayCard(ctx, rect.x, rect.y, rect.w, rect.h, {
+                scale,
                 accent: isSelected ? tones.gold : (item.sold ? tones.statusLocked : (game.player.gold >= item.price ? tones.passive : tones.statusWarning)),
                 fill: item.sold ? 'rgba(20, 18, 17, 0.9)' : tones.ink,
                 highlight: isSelected ? 'rgba(255, 226, 140, 0.12)' : 'rgba(255, 244, 220, 0.03)',
-                lineWidth: isSelected ? 3 : 2
+                lineWidth: isSelected ? Math.max(2, 3 * scale) : Math.max(1.25, 2 * scale)
             });
+            ctx.textAlign = 'center';
             if (item.sold) {
                 ctx.fillStyle = tones.statusLocked;
-                ctx.font = 'bold 24px ZCOOL KuaiLe Local';
-                ctx.fillText('已售罄', ix, iy + 5);
+                this.text(ctx, 24 * scale, 'bold ');
+                ctx.fillText('已售罄', ix, iy + 4 * scale);
                 ctx.fillStyle = tones.muted;
-                ctx.font = '15px ZCOOL KuaiLe Local';
-                ctx.fillText(`[${i + 1}]`, ix, iy + 102);
+                this.text(ctx, 15 * scale);
+                ctx.fillText(`[${i + 1}]`, ix, iy + rect.h * 0.35);
                 return;
             }
-            ctx.font = '58px ZCOOL KuaiLe Local';
-            ctx.fillText(item.icon, ix, iy - 20);
+            this.text(ctx, 58 * scale);
+            ctx.fillText(item.icon, ix, iy - rect.h * 0.18);
             ctx.fillStyle = tones.inkText;
-            ctx.font = '18px ZCOOL KuaiLe Local';
-            ctx.fillText(item.name, ix, iy + 24);
+            this.text(ctx, 18 * scale);
+            ctx.fillText(this.truncate(item.name, Math.max(4, Math.round(10 * scale))), ix, iy + rect.h * 0.09);
             ctx.fillStyle = tones.muted;
-            ctx.font = '14px ZCOOL KuaiLe Local';
-            ctx.fillText(item.desc, ix, iy + 48);
+            this.text(ctx, 13 * scale);
+            ctx.fillText(this.truncate(item.desc, Math.max(6, Math.round(14 * scale))), ix, iy + rect.h * 0.21);
             ctx.fillStyle = game.player.gold >= item.price ? tones.statusPrice : tones.statusWarning;
-            ctx.font = 'bold 20px ZCOOL KuaiLe Local';
-            ctx.fillText(`💰${item.price}`, ix, iy + 80);
+            this.text(ctx, 20 * scale, 'bold ');
+            ctx.fillText(`💰${item.price}`, ix, iy + rect.h * 0.36);
             ctx.fillStyle = tones.muted;
-            ctx.font = '15px ZCOOL KuaiLe Local';
-            ctx.fillText(`[${i + 1}]`, ix, iy + 102);
+            this.text(ctx, 15 * scale);
+            ctx.fillText(`[${i + 1}]`, ix, iy + rect.h * 0.46);
         });
         const refreshPrice = 10 * Math.pow(2, game.shopRefreshCount);
-        const canRefresh = game.player.gold >= refreshPrice;
-        this.drawOverlayButton(ctx, centerX - 105, boxY + boxHeight - 76, 210, 44, `刷新  ${refreshPrice}`, {
+        this.drawOverlayButton(ctx, refreshRect.x, refreshRect.y, refreshRect.w, refreshRect.h, `刷新 ${refreshPrice}`, {
+            scale,
             hovered: game.shopSelected === game.shopItems.length,
-            accent: canRefresh ? tones.passive : tones.statusWarning
+            accent: game.player.gold >= refreshPrice ? tones.passive : tones.statusWarning
         });
+        this.setRegion('shop', panel, { items: itemRects, refresh: refreshRect });
     }
 
     drawChestSelectUI() {
         const game = this.game;
-        const ctx = game.ctx;
-        const canvas = ctx.canvas;
-        const cw = canvas.width || 900;
-        const ch = canvas.height || 600;
-        const centerX = cw / 2;
-        const boxWidth = 680;
-        const boxHeight = 410;
-        const boxX = centerX - boxWidth / 2;
-        const boxY = ch / 2 - boxHeight / 2;
+        const metrics = this.getMetrics();
+        const ctx = metrics.ctx;
         const tones = this.getOverlayThemeTones();
+        const panel = this.fitPanel(metrics, 680, 410);
+        const scale = panel.scale;
+        const gap = 18 * scale;
+        const itemW = Math.min(180 * scale, (panel.width - 52 * scale - gap * (game.chestItems.length - 1)) / Math.max(game.chestItems.length, 1));
+        const itemH = Math.min(220 * scale, panel.height * 0.56);
+        const startX = panel.x + (panel.width - (itemW * game.chestItems.length + gap * (game.chestItems.length - 1))) / 2;
+        const itemY = panel.y + 195 * scale;
+        const itemRects = [];
+        const rolling = typeof game.isChestRolling === 'function' ? game.isChestRolling() : false;
+        const bundleMode = typeof game.isTreasureChestBundleUI === 'function' ? game.isTreasureChestBundleUI() : false;
+        const revealRatio = game.chestRollState && game.chestRollState.duration
+            ? Math.max(0, Math.min(1, (Date.now() - game.chestRollState.startedAt) / game.chestRollState.duration))
+            : 1;
+        const rouletteIcons = ['💰', '💎', '⚔️', '📦', '✨', '🌈'];
         this.drawOverlayBackdrop(ctx, 0.74, tones.tint);
-        this.drawOverlayPanel(ctx, boxX, boxY, boxWidth, boxHeight, {
+        this.drawOverlayPanel(ctx, panel.x, panel.y, panel.width, panel.height, {
+            scale,
             accent: tones.gold,
             ink: tones.ink,
             paper: tones.paper,
             muted: tones.muted,
-            title: '发现宝箱',
-            subtitle: 'WASD 切换 | 空格确认 | E / Esc 关闭'
+            title: game.chestUiTitle || '幸运抽奖宝箱',
+            subtitle: rolling
+                ? `抽奖揭示中... ${Math.max(0, Math.ceil((1 - revealRatio) * ((game.chestRollState?.duration || 1000) / 1000)))}` 
+                : (game.chestUiSubtitle || (bundleMode ? '空格领取全部奖励 | E / Esc 关闭' : '三选一奖励包 | WASD 切换 | 空格确认 | E / Esc 关闭'))
         });
-        const itemWidth = 180;
-        const itemHeight = 220;
-        const startX = centerX - (game.chestItems.length * itemWidth) / 2 + itemWidth / 2;
         game.chestItems.forEach((item, i) => {
-            const ix = startX + i * (itemWidth + 28);
-            const iy = boxY + 195;
-            const isSelected = game.chestSelected === i;
-            this.drawOverlayCard(ctx, ix - itemWidth / 2, iy - itemHeight / 2, itemWidth, itemHeight, {
-                accent: isSelected ? tones.statusPrice : tones.gold,
+            const rect = {
+                x: startX + i * (itemW + gap),
+                y: itemY - itemH / 2,
+                w: itemW,
+                h: itemH
+            };
+            itemRects.push(rect);
+            const ix = rect.x + rect.w / 2;
+            const iy = rect.y + rect.h / 2;
+            const isSelected = !rolling && !bundleMode && game.chestSelected === i;
+            const accent = item.accent || tones.gold;
+            this.drawOverlayCard(ctx, rect.x, rect.y, rect.w, rect.h, {
+                scale,
+                accent: isSelected ? accent : accent,
                 fill: tones.ink,
-                highlight: isSelected ? 'rgba(255, 226, 140, 0.12)' : 'rgba(255, 236, 192, 0.05)',
-                lineWidth: isSelected ? 3 : 2
+                highlight: isSelected ? 'rgba(255, 226, 140, 0.16)' : 'rgba(255, 236, 192, 0.05)',
+                lineWidth: isSelected ? Math.max(2, 3 * scale) : Math.max(1.25, 2 * scale)
             });
-            ctx.font = '66px ZCOOL KuaiLe Local';
             ctx.textAlign = 'center';
-            ctx.fillText(item.icon, ix, iy - 30);
+            this.text(ctx, 64 * scale);
+            if (rolling) {
+                const icon = rouletteIcons[(Math.floor(Date.now() / 90) + i) % rouletteIcons.length];
+                ctx.fillText(icon, ix, iy - rect.h * 0.18);
+                ctx.fillStyle = tones.statusPrice;
+                this.text(ctx, 13 * scale, 'bold ');
+                ctx.fillText('抽取中', ix, iy - rect.h * 0.01);
+                ctx.fillStyle = tones.inkText;
+                this.text(ctx, 18 * scale, 'bold ');
+                ctx.fillText('???', ix, iy + rect.h * 0.11);
+                ctx.fillStyle = tones.muted;
+                this.text(ctx, 14 * scale);
+                ctx.fillText('正在揭示奖励包', ix, iy + rect.h * 0.24);
+                ctx.fillStyle = tones.statusPrice;
+                this.text(ctx, 16 * scale);
+                ctx.fillText('请稍候...', ix, iy + rect.h * 0.41);
+                return;
+            }
+            ctx.fillText(item.icon, ix, iy - rect.h * 0.18);
+            ctx.fillStyle = accent;
+            this.text(ctx, 13 * scale, 'bold ');
+            ctx.fillText(item.tierLabel || '奖励', ix, iy - rect.h * 0.01);
             ctx.fillStyle = tones.inkText;
-            ctx.font = 'bold 18px ZCOOL KuaiLe Local';
-            ctx.fillText(item.name, ix, iy + 18);
+            this.text(ctx, 18 * scale, 'bold ');
+            ctx.fillText(this.truncate(item.name, Math.max(4, Math.round(10 * scale))), ix, iy + rect.h * 0.11);
             ctx.fillStyle = tones.muted;
-            ctx.font = '14px ZCOOL KuaiLe Local';
-            ctx.fillText(item.desc, ix, iy + 44);
-            ctx.fillStyle = tones.statusPrice;
-            ctx.font = '16px ZCOOL KuaiLe Local';
-            ctx.fillText(`[${i + 1}] 选择`, ix, iy + 90);
+            this.text(ctx, 14 * scale);
+            ctx.fillText(this.truncate(item.desc, Math.max(6, Math.round(14 * scale))), ix, iy + rect.h * 0.24);
+            ctx.fillStyle = accent;
+            this.text(ctx, 16 * scale);
+            ctx.fillText(bundleMode ? `[空格] 领取全部` : `[${i + 1}] 选择`, ix, iy + rect.h * 0.41);
         });
+        this.setRegion('chest', panel, { items: itemRects });
     }
 
     drawSymbolOrSprite(ctx, data, x, y, size = 48) {
@@ -273,18 +391,20 @@ class OverlayCanvasRenderer {
 
     drawWeaponBoxUI() {
         const game = this.game;
-        const ctx = game.ctx;
-        const canvas = ctx.canvas;
-        const cw = canvas.width || 900;
-        const ch = canvas.height || 600;
-        const centerX = cw / 2;
-        const boxWidth = 720;
-        const boxHeight = 430;
-        const boxX = centerX - boxWidth / 2;
-        const boxY = ch / 2 - boxHeight / 2;
+        const metrics = this.getMetrics();
+        const ctx = metrics.ctx;
         const tones = this.getOverlayThemeTones();
+        const panel = this.fitPanel(metrics, 720, 430);
+        const scale = panel.scale;
+        const gap = 18 * scale;
+        const itemW = Math.min(190 * scale, (panel.width - 54 * scale - gap * (game.weaponBoxOptions.length - 1)) / Math.max(game.weaponBoxOptions.length, 1));
+        const itemH = Math.min(230 * scale, panel.height * 0.56);
+        const startX = panel.x + (panel.width - (itemW * game.weaponBoxOptions.length + gap * (game.weaponBoxOptions.length - 1))) / 2;
+        const itemY = panel.y + 202 * scale;
+        const itemRects = [];
         this.drawOverlayBackdrop(ctx, 0.76, tones.tint);
-        this.drawOverlayPanel(ctx, boxX, boxY, boxWidth, boxHeight, {
+        this.drawOverlayPanel(ctx, panel.x, panel.y, panel.width, panel.height, {
+            scale,
             accent: tones.weapon,
             ink: tones.ink,
             paper: tones.paper,
@@ -292,56 +412,61 @@ class OverlayCanvasRenderer {
             title: '神秘武器箱',
             subtitle: 'WASD 切换 | 空格确认 | E / Esc 关闭'
         });
-        const itemWidth = 190;
-        const itemHeight = 230;
-        const startX = centerX - (game.weaponBoxOptions.length * itemWidth) / 2 + itemWidth / 2;
         game.weaponBoxOptions.forEach((option, i) => {
-            const ix = startX + i * (itemWidth + 28);
-            const iy = boxY + 200;
+            const rect = {
+                x: startX + i * (itemW + gap),
+                y: itemY - itemH / 2,
+                w: itemW,
+                h: itemH
+            };
+            itemRects.push(rect);
+            const ix = rect.x + rect.w / 2;
+            const iy = rect.y + rect.h / 2;
             const isSelected = game.weaponBoxSelected === i;
-            this.drawOverlayCard(ctx, ix - itemWidth / 2, iy - itemHeight / 2, itemWidth, itemHeight, {
+            this.drawOverlayCard(ctx, rect.x, rect.y, rect.w, rect.h, {
+                scale,
                 accent: isSelected ? tones.gold : (option.isNew ? tones.passive : tones.weapon),
                 fill: tones.ink,
                 highlight: isSelected ? 'rgba(255, 226, 140, 0.12)' : 'rgba(255, 244, 220, 0.04)',
-                lineWidth: isSelected ? 3 : 2
+                lineWidth: isSelected ? Math.max(2, 3 * scale) : Math.max(1.25, 2 * scale)
             });
             ctx.textAlign = 'center';
-            if (option.isNew) {
-                ctx.fillStyle = tones.statusNew;
-                ctx.font = 'bold 15px ZCOOL KuaiLe Local';
-                ctx.fillText('[新武器]', ix, iy - 90);
-            } else {
-                ctx.fillStyle = tones.statusLevel;
-                ctx.font = 'bold 15px ZCOOL KuaiLe Local';
-                const isMaxLevel = option.level >= option.maxLevel;
-                const levelText = isMaxLevel ? 'MAX' : `Lv.${option.level - 1} → Lv.${option.level}`;
-                ctx.fillText(levelText, ix, iy - 90);
-            }
+            ctx.fillStyle = option.isNew ? tones.statusNew : tones.statusLevel;
+            this.text(ctx, 15 * scale, 'bold ');
+            ctx.fillText(option.isNew ? '[新武器]' : (option.level >= option.maxLevel ? 'MAX' : `Lv.${option.level - 1} → Lv.${option.level}`), ix, iy - rect.h * 0.36);
             ctx.fillStyle = tones.inkText;
-            ctx.font = '60px ZCOOL KuaiLe Local';
-            this.drawSymbolOrSprite(ctx, option.data, ix, iy - 42, 64);
-            ctx.font = 'bold 18px ZCOOL KuaiLe Local';
-            ctx.fillText(option.data.name, ix, iy + 18);
+            this.text(ctx, 60 * scale);
+            this.drawSymbolOrSprite(ctx, option.data, ix, iy - rect.h * 0.16, Math.max(28, 64 * scale));
+            this.text(ctx, 18 * scale, 'bold ');
+            ctx.fillText(this.truncate(option.data.name, Math.max(4, Math.round(11 * scale))), ix, iy + rect.h * 0.07);
             ctx.fillStyle = tones.muted;
-            ctx.font = '14px ZCOOL KuaiLe Local';
-            const desc = option.data.desc || `${option.data.dmg}伤害 ${option.data.cd}秒冷却`;
-            ctx.fillText(desc, ix, iy + 52);
+            this.text(ctx, 13 * scale);
+            ctx.fillText(this.truncate(option.data.desc || `${option.data.dmg}伤害 ${option.data.cd}秒冷却`, Math.max(7, Math.round(16 * scale))), ix, iy + rect.h * 0.22);
             ctx.fillStyle = tones.statusPrice;
-            ctx.font = '16px ZCOOL KuaiLe Local';
-            ctx.fillText(`[${i + 1}] 选择`, ix, iy + 98);
+            this.text(ctx, 16 * scale);
+            ctx.fillText(`[${i + 1}] 选择`, ix, iy + rect.h * 0.42);
         });
+        this.setRegion('weaponBox', panel, { items: itemRects });
     }
 
     drawLevelUpUI() {
         const game = this.game;
-        const ctx = game.ctx;
-        const boxWidth = 760;
-        const boxHeight = 540;
-        const boxX = (ctx.canvas.width || 900) / 2 - boxWidth / 2;
-        const boxY = (ctx.canvas.height || 600) / 2 - boxHeight / 2;
+        const metrics = this.getMetrics();
+        const ctx = metrics.ctx;
         const tones = this.getOverlayThemeTones();
+        const panel = this.fitPanel(metrics, 760, 540);
+        const scale = panel.scale;
+        const padding = 24 * scale;
+        const gapX = 18 * scale;
+        const gapY = 18 * scale;
+        const contentWidth = panel.width - padding * 2;
+        const contentHeight = panel.height - 120 * scale;
+        const cardWidth = (contentWidth - gapX) / 2;
+        const cardHeight = (contentHeight - gapY) / 2;
+        const cards = [];
         this.drawOverlayBackdrop(ctx, 0.76, tones.tint);
-        this.drawOverlayPanel(ctx, boxX, boxY, boxWidth, boxHeight, {
+        this.drawOverlayPanel(ctx, panel.x, panel.y, panel.width, panel.height, {
+            scale,
             accent: tones.accent,
             ink: tones.ink,
             paper: tones.paper,
@@ -349,139 +474,95 @@ class OverlayCanvasRenderer {
             title: '升级抉择',
             subtitle: 'WASD 切换 | 空格确认'
         });
-        const padding = 28;
-        const bottomBarHeight = 52;
-        const contentWidth = boxWidth - padding * 2;
-        const contentHeight = boxHeight - 64 - bottomBarHeight;
-        const gapX = 28;
-        const gapY = 28;
-        const cardWidth = (contentWidth - gapX) / 2;
-        const cardHeight = (contentHeight - gapY) / 2;
-        const startX = boxX + padding;
-        const startY = boxY + 68;
         game.levelUpOptions.forEach((option, i) => {
             const row = Math.floor(i / 2);
             const col = i % 2;
-            const cardX = startX + col * (cardWidth + gapX);
-            const cardY = startY + row * (cardHeight + gapY);
+            const card = {
+                x: panel.x + padding + col * (cardWidth + gapX),
+                y: panel.y + 76 * scale + row * (cardHeight + gapY),
+                w: cardWidth,
+                h: cardHeight
+            };
+            cards.push(card);
             const isWeapon = option.type === 'weapon';
             const isSelected = game.levelUpSelected === i;
             const borderColor = isWeapon ? tones.weapon : tones.passive;
-            this.drawOverlayCard(ctx, cardX, cardY, cardWidth, cardHeight, {
+            this.drawOverlayCard(ctx, card.x, card.y, card.w, card.h, {
+                scale,
                 accent: isSelected ? tones.gold : borderColor,
                 fill: tones.ink,
                 highlight: isSelected ? 'rgba(255, 226, 140, 0.12)' : (isWeapon ? 'rgba(195, 218, 244, 0.05)' : 'rgba(220, 240, 197, 0.04)'),
-                lineWidth: isSelected ? 3 : 2
+                lineWidth: isSelected ? Math.max(2, 3 * scale) : Math.max(1.25, 2 * scale)
             });
-            const headerHeight = Math.max(28, cardHeight * 0.15);
+            const headerH = Math.max(22, 30 * scale);
             ctx.fillStyle = borderColor;
-            ctx.fillRect(cardX + 6, cardY + 6, cardWidth - 12, headerHeight - 2);
+            ctx.fillRect(card.x + 6 * scale, card.y + 6 * scale, card.w - 12 * scale, headerH);
             ctx.fillStyle = tones.inkText;
-            ctx.font = `bold ${Math.max(13, cardHeight * 0.08)}px ZCOOL KuaiLe Local`;
             ctx.textAlign = 'left';
-            ctx.fillText(isWeapon ? '武器' : '被动', cardX + 14, cardY + headerHeight * 0.6);
+            this.text(ctx, 13 * scale, 'bold ');
+            ctx.fillText(isWeapon ? '武器' : '被动', card.x + 12 * scale, card.y + 24 * scale);
             ctx.fillStyle = tones.gold;
-            ctx.font = `bold ${Math.max(15, cardHeight * 0.09)}px ZCOOL KuaiLe Local`;
             ctx.textAlign = 'center';
-            ctx.fillText(`${i + 1}`, cardX + cardWidth - 24, cardY + headerHeight * 0.6);
-            const contentY = cardY + headerHeight;
-            const contentH = cardHeight - headerHeight;
-            const cardCenterX = cardX + cardWidth / 2;
-            ctx.font = `${Math.max(40, cardHeight * 0.22)}px ZCOOL KuaiLe Local`;
-            this.drawSymbolOrSprite(ctx, option.data, cardCenterX, contentY + contentH * 0.28, Math.max(40, cardHeight * 0.24));
+            this.text(ctx, 14 * scale, 'bold ');
+            ctx.fillText(`${i + 1}`, card.x + card.w - 22 * scale, card.y + 24 * scale);
+            const centerX = card.x + card.w / 2;
+            const contentY = card.y + headerH + 14 * scale;
             ctx.fillStyle = tones.inkText;
-            ctx.font = `bold ${Math.max(16, cardHeight * 0.09)}px ZCOOL KuaiLe Local`;
-            ctx.fillText(option.data.name, cardCenterX, contentY + contentH * 0.55);
-            const infoY = contentY + contentH * 0.7;
+            this.text(ctx, 42 * scale);
+            this.drawSymbolOrSprite(ctx, option.data, centerX, contentY + card.h * 0.18, Math.max(28, 54 * scale));
+            this.text(ctx, 16 * scale, 'bold ');
+            ctx.fillText(this.truncate(option.data.name, Math.max(4, Math.round(11 * scale))), centerX, contentY + card.h * 0.4);
+            const infoY = contentY + card.h * 0.54;
             if (isWeapon) {
-                if (option.isNew) {
-                    ctx.fillStyle = tones.statusNew;
-                    ctx.font = `bold ${Math.max(14, cardHeight * 0.08)}px ZCOOL KuaiLe Local`;
-                    ctx.fillText('[新武器]', cardCenterX, infoY);
-                } else {
-                    ctx.fillStyle = tones.statusLevel;
-                    ctx.font = `bold ${Math.max(14, cardHeight * 0.08)}px ZCOOL KuaiLe Local`;
-                    const isMaxLevel = option.level >= option.maxLevel;
-                    const levelText = isMaxLevel ? 'MAX' : `Lv.${option.level}/${option.maxLevel}`;
-                    ctx.fillText(levelText, cardCenterX, infoY);
-                }
+                ctx.fillStyle = option.isNew ? tones.statusNew : tones.statusLevel;
+                this.text(ctx, 13 * scale, 'bold ');
+                ctx.fillText(option.isNew ? '[新武器]' : (option.level >= option.maxLevel ? 'MAX' : `Lv.${option.level}/${option.maxLevel}`), centerX, infoY);
                 ctx.fillStyle = tones.muted;
-                ctx.font = `${Math.max(12, cardHeight * 0.07)}px ZCOOL KuaiLe Local`;
-                ctx.fillText(`伤害${option.data.dmg} 冷却${option.data.cd}s`, cardCenterX, contentY + contentH * 0.85);
+                this.text(ctx, 11 * scale);
+                ctx.fillText(this.truncate(`伤害${option.data.dmg} 冷却${option.data.cd}s`, Math.max(8, Math.round(18 * scale))), centerX, contentY + card.h * 0.7);
             } else {
                 ctx.fillStyle = tones.statusPassive;
-                ctx.font = `bold ${Math.max(14, cardHeight * 0.08)}px ZCOOL KuaiLe Local`;
-                ctx.fillText(`Lv.${option.level}/${option.maxLevel}`, cardCenterX, infoY);
+                this.text(ctx, 13 * scale, 'bold ');
+                ctx.fillText(`Lv.${option.level}/${option.maxLevel}`, centerX, infoY);
                 ctx.fillStyle = tones.muted;
-                ctx.font = `${Math.max(12, cardHeight * 0.07)}px ZCOOL KuaiLe Local`;
-                let desc = option.data.desc;
-                if (desc.length > 12) desc = desc.substring(0, 11) + '…';
-                ctx.fillText(desc, cardCenterX, contentY + contentH * 0.85);
-                if (option.superInfo) {
-                    const { weaponName, superName, owned, canEvolve } = option.superInfo;
-                    const fontSize = Math.max(14, cardHeight * 0.09);
-                    if (owned) {
-                        ctx.fillStyle = canEvolve ? tones.statusPrice : tones.statusLocked;
-                        ctx.font = `bold ${fontSize}px ZCOOL KuaiLe Local`;
-                        const icon = canEvolve ? '⭐' : '🔒';
-                        ctx.fillText(`${icon}${weaponName}+${option.data.name}=${superName}`, cardCenterX, contentY + contentH * 0.95);
-                    } else {
-                        ctx.fillStyle = tones.statusLocked;
-                        ctx.font = `${fontSize}px ZCOOL KuaiLe Local`;
-                        ctx.fillText(`${weaponName}+${option.data.name}=${superName}`, cardCenterX, contentY + contentH * 0.95);
-                    }
-                }
+                this.text(ctx, 11 * scale);
+                ctx.fillText(this.truncate(option.data.desc, Math.max(8, Math.round(18 * scale))), centerX, contentY + card.h * 0.7);
             }
         });
+        this.setRegion('levelUp', panel, { cards });
     }
 
     drawResultScreen() {
         const game = this.game;
-        const ctx = game.ctx;
         const data = game.gameResultData;
         const isVictory = game.gameResult === 'cleared';
         const isDead = game.gameResult === 'dead';
-        const canvas = game.canvas;
-        const cw = canvas.width;
-        const ch = canvas.height;
-        const centerX = cw / 2;
+        const metrics = this.getMetrics();
+        const ctx = metrics.ctx;
         const tones = this.getOverlayThemeTones();
+        const panel = this.fitPanel(metrics, 500, 380, 20);
+        const scale = panel.scale;
         this.drawOverlayBackdrop(ctx, 0.84, tones.tint);
         ctx.textAlign = 'center';
-        if (isVictory) {
-            ctx.fillStyle = tones.statusVictory;
-            ctx.font = 'bold 56px ZCOOL KuaiLe Local';
-            ctx.fillText('🎉 通关胜利! 🎉', centerX, ch * 0.13);
-        } else if (isDead) {
-            ctx.fillStyle = tones.statusDefeat;
-            ctx.font = 'bold 56px ZCOOL KuaiLe Local';
-            ctx.fillText('💀 你阵亡了 💀', centerX, ch * 0.13);
-        } else {
-            ctx.fillStyle = tones.statusNeutral;
-            ctx.font = 'bold 56px ZCOOL KuaiLe Local';
-            ctx.fillText('🏁 游戏结束 🏁', centerX, ch * 0.13);
-        }
-        const panelW = Math.min(500, cw - 40);
-        const panelH = Math.min(380, ch - 150);
-        const panelX = (cw - panelW) / 2;
-        const panelY = ch * 0.18;
-        this.drawOverlayPanel(ctx, panelX, panelY, panelW, panelH, {
+        ctx.fillStyle = isVictory ? tones.statusVictory : (isDead ? tones.statusDefeat : tones.statusNeutral);
+        this.text(ctx, 56 * scale, 'bold ');
+        ctx.fillText(isVictory ? '🎉 通关胜利! 🎉' : (isDead ? '💀 你阵亡了 💀' : '🏁 游戏结束 🏁'), metrics.centerX, Math.max(40, panel.y - 28 * scale));
+        this.drawOverlayPanel(ctx, panel.x, panel.y, panel.width, panel.height, {
+            scale,
             accent: isVictory ? tones.statusVictory : (isDead ? tones.statusDefeat : tones.statusNeutral),
             ink: tones.ink,
             paper: tones.paper,
             muted: tones.muted
         });
         ctx.fillStyle = tones.inkText;
-        ctx.font = 'bold 24px ZCOOL KuaiLe Local';
-        ctx.fillText('📊 最终统计', centerX, panelY + 35);
+        this.text(ctx, 24 * scale, 'bold ');
+        ctx.fillText('📊 最终统计', metrics.centerX, panel.y + 35 * scale);
         ctx.strokeStyle = tones.statusLocked;
         ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.moveTo(panelX + 30, panelY + 50);
-        ctx.lineTo(panelX + panelW - 30, panelY + 50);
+        ctx.moveTo(panel.x + 30 * scale, panel.y + 50 * scale);
+        ctx.lineTo(panel.x + panel.width - 30 * scale, panel.y + 50 * scale);
         ctx.stroke();
-        ctx.font = '20px ZCOOL KuaiLe Local';
-        ctx.textAlign = 'left';
         const stats = [
             { label: '💯 最终分数', value: data.finalScore.toLocaleString(), color: tones.statusPrice },
             { label: '⚔️ 击杀敌人', value: data.stats.enemiesKilled, color: tones.inkText },
@@ -490,30 +571,33 @@ class OverlayCanvasRenderer {
             { label: '📍 到达层数', value: `${game.currentFloor}/6`, color: tones.inkText },
             { label: '⭐ 最高等级', value: `Lv.${game.player.lv}`, color: tones.statusPassive }
         ];
-        const rowHeight = Math.min(45, (panelH - 80) / stats.length);
-        const startY = panelY + 90;
+        const rowHeight = Math.min(45 * scale, (panel.height - 96 * scale) / stats.length);
+        const startY = panel.y + 92 * scale;
+        this.text(ctx, 20 * scale);
+        ctx.textAlign = 'left';
         stats.forEach((stat, i) => {
             const y = startY + i * rowHeight;
             ctx.fillStyle = tones.muted;
-            ctx.fillText(stat.label, panelX + 50, y);
+            ctx.fillText(stat.label, panel.x + 34 * scale, y);
             ctx.fillStyle = stat.color;
             ctx.textAlign = 'right';
-            ctx.fillText(String(stat.value), panelX + panelW - 50, y);
+            ctx.fillText(String(stat.value), panel.x + panel.width - 34 * scale, y);
             ctx.textAlign = 'left';
         });
-        const btnW = 200;
-        const btnH = 50;
-        const btnX = centerX - btnW / 2;
-        const btnY = panelY + panelH + 20;
+        const btnW = Math.min(200 * scale, panel.width - 40 * scale);
+        const btnH = 50 * scale;
+        const btnX = metrics.centerX - btnW / 2;
+        const btnY = panel.y + panel.height + 20 * scale;
         game.resultBtnRect = { x: btnX, y: btnY, w: btnW, h: btnH };
         this.drawOverlayButton(ctx, btnX, btnY, btnW, btnH, '↩ 返回主菜单', {
+            scale,
             hovered: false,
             accent: tones.accent
         });
         ctx.fillStyle = tones.muted;
-        ctx.font = '14px ZCOOL KuaiLe Local';
+        this.text(ctx, 14 * scale);
         ctx.textAlign = 'center';
-        ctx.fillText('点击按钮或按空格键返回', centerX, btnY + btnH + 30);
+        ctx.fillText('点击按钮或按空格键返回', metrics.centerX, btnY + btnH + 30 * scale);
     }
 }
 

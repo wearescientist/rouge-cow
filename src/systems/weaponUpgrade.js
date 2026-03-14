@@ -51,13 +51,13 @@ const WEAPON_UPGRADE_TABLE = {
     knife: {
         name: '飞刀',
         upgrades: [
-            { level: 2, count: 2, burst: 4, dmg: 1.25, desc: '双重连射+4枚+伤害+25%' },
-            { level: 3, count: 2, burst: 5, pierce: 5, dmg: 1.2, desc: '5连发+穿透+伤害+20%' },
-            { level: 4, count: 3, burst: 7, dmg: 1.35, desc: '三重连射7枚+伤害+35%（质变）' },
-            { level: 5, count: 3, burst: 9, dmg: 1.45, speed: 1.3, desc: '9连发+伤害+45%，速度+30%' },
-            { level: 6, count: 4, burst: 10, dmg: 1.35, bounce: 3, desc: '四重10枚+弹跳3次+伤害+35%' },
-            { level: 7, count: 5, burst: 12, dmg: 1.5, pierce: 99, desc: '五重12连发+无限穿透+伤害+50%' },
-            { level: 8, count: 6, burst: 14, dmg: 1.75, ricochet: true, desc: '六重14枚+伤害+75%+裂射（完全体）' }
+            { level: 2, dmg: 1.24, speed: 1.32, desc: '伤害+24%，飞行速度+32%' },
+            { level: 3, dmg: 1.18, speed: 1.24, searchRadius: 1.14, desc: '伤害+18%，速度+24%，索敌更远' },
+            { level: 4, count: 2, dmg: 1.28, desc: '双刃常驻+伤害+28%（质变）' },
+            { level: 5, dmg: 1.34, speed: 1.28, returnSpeed: 1.24, desc: '伤害+34%，穿刺与回收更快' },
+            { level: 6, dmg: 1.46, searchRadius: 1.2, passThroughDistance: 1.24, desc: '伤害+46%，穿透更深，索敌更稳' },
+            { level: 7, dmg: 1.58, speed: 1.32, hitCooldown: 0.82, desc: '伤害+58%，往返节奏更紧凑' },
+            { level: 8, dmg: 1.76, searchRadius: 1.28, returnSpeed: 1.28, desc: '伤害+76%，追猎范围扩大，准备进化' }
         ]
     },
     axe: {
@@ -149,13 +149,13 @@ const WEAPON_UPGRADE_TABLE = {
     bible: {
         name: '圣经',
         upgrades: [
-            { level: 2, count: 8, dmg: 1.52, duration: 10.5, desc: '8本+伤害+52%+续航提升' },
-            { level: 3, count: 8, dmg: 1.45, range: 1.58, rotationSpeed: 1.36, desc: '8本+伤害+45%，半径+58%' },
-            { level: 4, count: 9, dmg: 1.68, duration: 13, rotationSpeed: 1.78, desc: '9本+伤害+68%，持续13秒（质变）' },
-            { level: 5, count: 10, dmg: 1.82, range: 2.05, desc: '10本+伤害+82%，范围+105%' },
-            { level: 6, count: 11, dmg: 1.76, duration: 20, rotationSpeed: 2.02, desc: '11本+伤害+76%，持续20秒' },
-            { level: 7, count: 13, dmg: 2.05, range: 2.32, desc: '13本+伤害+105%，范围+132%' },
-            { level: 8, count: 16, dmg: 2.65, eternal: true, range: 2.65, rotationSpeed: 2.4, desc: '16本+伤害+165%+永久圣环（完全体）' }
+            { level: 2, count: 4, dmg: 1.32, duration: 10.2, desc: '4本+伤害+32%+续航提升' },
+            { level: 3, count: 4, dmg: 1.48, range: 1.16, rotationSpeed: 1.72, desc: '4本+伤害+48%，半径+16%，转速小幅提升' },
+            { level: 4, count: 5, dmg: 1.66, duration: 11.6, rotationSpeed: 1.86, desc: '5本+伤害+66%+更稳定覆盖' },
+            { level: 5, count: 5, dmg: 1.84, range: 1.28, desc: '5本+伤害+84%，范围+28%' },
+            { level: 6, count: 6, dmg: 2.02, duration: 13.6, rotationSpeed: 2.02, desc: '6本+伤害+102%+续航强化' },
+            { level: 7, count: 6, dmg: 2.22, range: 1.42, desc: '6本+伤害+122%，范围+42%' },
+            { level: 8, count: 6, dmg: 2.46, eternal: true, range: 1.58, rotationSpeed: 2.14, desc: '6本+伤害+146%+永久圣环（完全体）' }
         ]
     },
     lightning: {
@@ -220,13 +220,10 @@ function applyUpgrade(weapon, newLevel) {
     const upgrade = table.upgrades.find(u => u.level === newLevel);
     if (!upgrade) return;
     
-    // v0.16.1 fix: 保存基础伤害值，避免重复计算
-    if (!weapon.baseDmg) {
-        weapon.baseDmg = weapon.cfg.dmg;
+    // 伤害改为 Weapon.getDamage 统一按攻击力系数结算，这里不再直接改 cfg.dmg
+    if (!weapon.baseAttackCoeff && Number.isFinite(weapon.cfg.attackCoeff)) {
+        weapon.baseAttackCoeff = weapon.cfg.attackCoeff;
     }
-    
-    // 应用数值提升（基于基础值）
-    if (upgrade.dmg) weapon.cfg.dmg = Math.floor(weapon.baseDmg * upgrade.dmg * (1 + (newLevel - 1) * 0.15));
     if (upgrade.range) weapon.cfg.range = (weapon.cfg.baseRange || weapon.cfg.range) * upgrade.range;
     // v0.16.3: 支持固定范围增加值（大蒜专用）
     if (upgrade.rangeAdd) {
@@ -260,7 +257,11 @@ function applyUpgrade(weapon, newLevel) {
     if (upgrade.execute !== undefined) weapon.cfg.execute = upgrade.execute;
     if (upgrade.executeThreshold !== undefined) weapon.cfg.executeThreshold = upgrade.executeThreshold;
     if (upgrade.homingStrength !== undefined) weapon.cfg.homingStrength = upgrade.homingStrength;
-    if (upgrade.poisonDmg !== undefined) weapon.cfg.poisonDmg = upgrade.poisonDmg;
+    if (upgrade.poisonDmg !== undefined) {
+        const attackBase = window.WEAPON_DAMAGE_MODEL?.baseAttackPower || 24;
+        weapon.cfg.poisonDmgCoeff = Math.round((upgrade.poisonDmg / attackBase) * 1000) / 1000;
+        weapon.cfg.poisonDmg = upgrade.poisonDmg;
+    }
     if (upgrade.freezeChance !== undefined) weapon.cfg.freezeChance = upgrade.freezeChance;
     if (upgrade.freezeDuration !== undefined) weapon.cfg.freezeDuration = upgrade.freezeDuration;
     if (upgrade.slow !== undefined) weapon.cfg.slow = upgrade.slow;
@@ -275,6 +276,10 @@ function applyUpgrade(weapon, newLevel) {
     if (upgrade.beamLife !== undefined) weapon.cfg.beamLife = upgrade.beamLife;
     if (upgrade.tickCooldown !== undefined) weapon.cfg.tickCooldown = upgrade.tickCooldown;
     if (upgrade.rotationSpeed !== undefined) weapon.cfg.rotationSpeed = upgrade.rotationSpeed;
+    if (upgrade.searchRadius !== undefined) weapon.cfg.searchRadius = Math.round((weapon.cfg.searchRadius || weapon.cfg.range || 0) * upgrade.searchRadius);
+    if (upgrade.returnSpeed !== undefined) weapon.cfg.returnSpeed = Math.round((weapon.cfg.returnSpeed || weapon.cfg.speed || 0) * upgrade.returnSpeed);
+    if (upgrade.passThroughDistance !== undefined) weapon.cfg.passThroughDistance = Math.round((weapon.cfg.passThroughDistance || 72) * upgrade.passThroughDistance);
+    if (upgrade.hitCooldown !== undefined) weapon.cfg.hitCooldown = Math.max(0.08, (weapon.cfg.hitCooldown || 0.26) * upgrade.hitCooldown);
     if (upgrade.branches !== undefined) weapon.cfg.branches = upgrade.branches;
     if (upgrade.burstRadius !== undefined) weapon.cfg.burstRadius = upgrade.burstRadius;
     

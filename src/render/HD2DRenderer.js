@@ -50,7 +50,6 @@ class HD2DRenderer {
 
     renderFinalPostProcess(playerScreenX, playerScreenY) {
         const useRoomBlur = !!(this.roomBlur && this.roomBlur.enabled);
-        const useTiltShift = !!(this.tiltShift && this.tiltShift.enabled);
         const centerX = (this.ctx.canvas.width || 960) / 2;
         const centerY = (this.ctx.canvas.height || 960) / 2;
         const focusX = Number.isFinite(playerScreenX) ? playerScreenX : centerX;
@@ -61,8 +60,6 @@ class HD2DRenderer {
 
         if (useRoomBlur) {
             this.roomBlur.render(this.postProcessFocus.x, this.postProcessFocus.y);
-        } else if (useTiltShift) {
-            this.tiltShift.render(this.postProcessFocus.x, this.postProcessFocus.y);
         }
 
         this.renderPlayerVignette(playerScreenX, playerScreenY);
@@ -78,9 +75,11 @@ class HD2DRenderer {
         const w = canvas.width || 900;
         const h = canvas.height || 600;
         const canvasScale = Math.min(w, h) / 960;
-        const lightRadius = 78 * canvasScale;
-        const vignetteInner = 70 * canvasScale;
-        const vignetteOuter = 325 * canvasScale;
+        const currentFloor = window.game?.currentFloor || 1;
+        const darknessBoost = currentFloor >= 6 ? 1.14 : 1;
+        const lightRadius = 42 * canvasScale;
+        const vignetteInner = 58 * canvasScale;
+        const vignetteOuter = 340 * canvasScale;
 
         this.ctx.save();
         if (typeof this.ctx.resetTransform === 'function') {
@@ -90,8 +89,8 @@ class HD2DRenderer {
         }
 
         const lightGradient = this.ctx.createRadialGradient(x, y, 0, x, y, lightRadius);
-        lightGradient.addColorStop(0, 'rgba(255, 238, 196, 0.075)');
-        lightGradient.addColorStop(0.34, 'rgba(255, 222, 164, 0.028)');
+        lightGradient.addColorStop(0, 'rgba(255, 224, 170, 0.007)');
+        lightGradient.addColorStop(0.32, 'rgba(255, 206, 138, 0.002)');
         lightGradient.addColorStop(1, 'rgba(255, 200, 120, 0)');
         this.ctx.globalCompositeOperation = 'screen';
         this.ctx.fillStyle = lightGradient;
@@ -108,11 +107,11 @@ class HD2DRenderer {
         const grad = this.ctx.createRadialGradient(x, y, vignetteInner, x, y, vignetteOuter);
         grad.addColorStop(0, 'rgba(5, 8, 12, 0)');
         grad.addColorStop(0.18, 'rgba(5, 8, 12, 0)');
-        grad.addColorStop(0.42, 'rgba(5, 8, 12, 0.05)');
-        grad.addColorStop(0.64, 'rgba(4, 7, 10, 0.16)');
-        grad.addColorStop(0.82, 'rgba(3, 6, 9, 0.31)');
-        grad.addColorStop(0.94, 'rgba(2, 5, 8, 0.46)');
-        grad.addColorStop(1, 'rgba(2, 5, 8, 0.58)');
+        grad.addColorStop(0.34, `rgba(5, 7, 10, ${0.12 * darknessBoost})`);
+        grad.addColorStop(0.56, `rgba(4, 5, 8, ${0.28 * darknessBoost})`);
+        grad.addColorStop(0.76, `rgba(3, 4, 7, ${0.54 * darknessBoost})`);
+        grad.addColorStop(0.9, `rgba(2, 3, 5, ${0.76 * darknessBoost})`);
+        grad.addColorStop(1, `rgba(1, 2, 4, ${Math.min(0.94, 0.88 * darknessBoost)})`);
         this.ctx.fillStyle = grad;
         this.ctx.fillRect(0, 0, w, h);
 
