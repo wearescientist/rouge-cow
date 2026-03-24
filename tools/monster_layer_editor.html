@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怪物分层编辑器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a14;
+            color: #eee;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: #1a1a2a;
+            padding: 15px 20px;
+            border-bottom: 2px solid #333;
+        }
+        
+        h1 {
+            color: #ffd700;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            color: #888;
+            font-size: 12px;
+        }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr 300px;
+            gap: 15px;
+            padding: 15px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        /* 左侧面板 - 楼层选择 */
+        .floor-panel {
+            background: #1a1a2a;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .panel-title {
+            color: #ffd700;
+            font-size: 14px;
+            margin-bottom: 12px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #333;
+        }
+        
+        .floor-btn {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 8px;
+            background: #0f0f1e;
+            border: 1px solid #333;
+            border-radius: 6px;
+            color: #888;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: left;
+        }
+        
+        .floor-btn:hover { border-color: #555; color: #fff; }
+        .floor-btn.active { border-color: #ffd700; background: #2a2a3e; color: #ffd700; }
+        
+        .floor-btn .floor-name { font-weight: bold; }
+        .floor-btn .floor-theme { font-size: 11px; color: #666; }
+        
+        /* 中间面板 - 当前楼层编辑 */
+        .edit-panel {
+            background: #1a1a2a;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .tier-section {
+            margin-bottom: 20px;
+            padding: 15px;
+            background: #0f0f1e;
+            border-radius: 8px;
+            border-left: 3px solid;
+        }
+        
+        .tier-basics { border-color: #27ae60; }
+        .tier-t2 { border-color: #3498db; }
+        .tier-t3 { border-color: #e67e22; }
+        .tier-boss { border-color: #e74c3c; }
+        
+        .tier-title {
+            font-size: 14px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .tier-badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        .badge-basics { background: #27ae60; }
+        .badge-t2 { background: #3498db; }
+        .badge-t3 { background: #e67e22; }
+        .badge-boss { background: #e74c3c; }
+        
+        /* 怪物卡片 */
+        .monster-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 10px;
+        }
+        
+        .monster-card {
+            background: #1a1a2a;
+            border-radius: 8px;
+            padding: 10px;
+            border: 2px solid #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .monster-card:hover { border-color: #555; }
+        .monster-card.selected { border-color: #ffd700; }
+        .monster-card.in-pool { border-color: #27ae60; }
+        
+        .monster-sprite {
+            width: 50px;
+            height: 50px;
+            background: #0a0a14;
+            border-radius: 4px;
+            margin: 0 auto 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            image-rendering: pixelated;
+        }
+        
+        .monster-sprite img {
+            max-width: 40px;
+            max-height: 40px;
+        }
+        
+        .monster-name {
+            font-size: 11px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .monster-id {
+            font-size: 9px;
+            color: #666;
+            text-align: center;
+        }
+        
+        /* 右侧面板 - 属性编辑 */
+        .props-panel {
+            background: #1a1a2a;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .prop-row {
+            margin-bottom: 15px;
+        }
+        
+        .prop-label {
+            display: block;
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .prop-input {
+            width: 100%;
+            padding: 8px;
+            background: #0f0f1e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 13px;
+        }
+        
+        .prop-input:focus { border-color: #ffd700; outline: none; }
+        
+        input[type="range"] {
+            width: 100%;
+            margin-top: 5px;
+        }
+        
+        .range-value {
+            text-align: right;
+            font-size: 11px;
+            color: #ffd700;
+        }
+        
+        /* 底部工具栏 */
+        .toolbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a2a;
+            border-top: 2px solid #333;
+            padding: 15px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        
+        .btn {
+            padding: 10px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 13px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .btn-primary { background: #27ae60; color: #fff; }
+        .btn-primary:hover { background: #2ecc71; }
+        
+        .btn-secondary { background: #3498db; color: #fff; }
+        .btn-secondary:hover { background: #5dade2; }
+        
+        .btn-export { background: #e74c3c; color: #fff; }
+        .btn-export:hover { background: #ec7063; }
+        
+        /* 标签页 */
+        .tabs {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .tab-btn {
+            padding: 8px 16px;
+            background: #0f0f1e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #888;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .tab-btn.active {
+            background: #2a2a3e;
+            color: #ffd700;
+            border-color: #ffd700;
+        }
+        
+        /* 变体主题选择 */
+        .variant-select {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 10px;
+        }
+        
+        .variant-btn {
+            padding: 4px 10px;
+            background: #0f0f1e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #888;
+            cursor: pointer;
+            font-size: 11px;
+        }
+        
+        .variant-btn.active {
+            background: #e67e22;
+            color: #fff;
+            border-color: #e67e22;
+        }
+        
+        .help-text {
+            color: #666;
+            font-size: 11px;
+            margin-top: 10px;
+            line-height: 1.5;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🎮 怪物分层编辑器</h1>
+        <div class="subtitle">8基础模板 + 每层主题变体 + T2/T3/Boss 分层配置</div>
+    </div>
+    
+    <div class="main-layout">
+        <!-- 左侧面板 - 楼层选择 -->
+        <div class="floor-panel">
+            <div class="panel-title">选择楼层</div>
+            <button class="floor-btn active" data-floor="1">
+                <div class="floor-name">Floor 1</div>
+                <div class="floor-theme">菌丝区 - 教学层</div>
+            </button>
+            <button class="floor-btn" data-floor="2">
+                <div class="floor-name">Floor 2</div>
+                <div class="floor-theme">孵化温室</div>
+            </button>
+            <button class="floor-btn" data-floor="3">
+                <div class="floor-name">Floor 3</div>
+                <div class="floor-theme">神经索</div>
+            </button>
+            <button class="floor-btn" data-floor="4">
+                <div class="floor-name">Floor 4</div>
+                <div class="floor-theme">消化熔炉</div>
+            </button>
+            <button class="floor-btn" data-floor="5">
+                <div class="floor-name">Floor 5</div>
+                <div class="floor-theme">母虫庭院</div>
+            </button>
+            <button class="floor-btn" data-floor="6">
+                <div class="floor-name">Floor 6</div>
+                <div class="floor-theme">千根之心</div>
+            </button>
+        </div>
+        
+        <!-- 中间面板 - 编辑区 -->
+        <div class="edit-panel">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="basics">基础怪池</button>
+                <button class="tab-btn" data-tab="t2">T2精英</button>
+                <button class="tab-btn" data-tab="t3">T3小Boss</button>
+                <button class="tab-btn" data-tab="boss">Boss</button>
+            </div>
+            
+            <!-- 基础怪 -->
+            <div class="tier-section tier-basics" id="basics-section">
+                <div class="tier-title">
+                    <span class="tier-badge badge-basics">基础怪</span>
+                    <span>从8个全局模板选择，应用本层主题变体</span>
+                </div>
+                <div class="monster-grid" id="basics-grid"></div>
+            </div>
+            
+            <!-- T2 -->
+            <div class="tier-section tier-t2" id="t2-section" style="display:none;">
+                <div class="tier-title">
+                    <span class="tier-badge badge-t2">T2精英</span>
+                    <span>特色怪，强化楼层辨识度</span>
+                </div>
+                <div class="monster-grid" id="t2-grid"></div>
+            </div>
+            
+            <!-- T3 -->
+            <div class="tier-section tier-t3" id="t3-section" style="display:none;">
+                <div class="tier-title">
+                    <span class="tier-badge badge-t3">T3小Boss</span>
+                    <span>每层唯一，使用最终Boss模型池</span>
+                </div>
+                <div class="monster-grid" id="t3-grid"></div>
+            </div>
+            
+            <!-- Boss -->
+            <div class="tier-section tier-boss" id="boss-section" style="display:none;">
+                <div class="tier-title">
+                    <span class="tier-badge badge-boss">Boss</span>
+                    <span>楼层最终主Boss</span>
+                </div>
+                <div class="monster-grid" id="boss-grid"></div>
+            </div>
+        </div>
+        
+        <!-- 右侧面板 - 属性编辑 -->
+        <div class="props-panel">
+            <div class="panel-title">属性编辑</div>
+            <div id="no-selection">
+                <p class="help-text">点击左侧怪物进行选择，可以编辑其在本层的具体参数。</p>
+            </div>
+            <div id="prop-editor" style="display:none;">
+                <div class="prop-row">
+                    <label class="prop-label">怪物ID</label>
+                    <input type="text" class="prop-input" id="prop-id" readonly>
+                </div>
+                <div class="prop-row">
+                    <label class="prop-label">体型 (px)</label>
+                    <input type="range" id="prop-size" min="20" max="100" value="32">
+                    <div class="range-value" id="prop-size-val">32px</div>
+                </div>
+                <div class="prop-row">
+                    <label class="prop-label">血量 (HP)</label>
+                    <input type="number" class="prop-input" id="prop-hp" value="10">
+                </div>
+                <div class="prop-row">
+                    <label class="prop-label">速度</label>
+                    <input type="range" id="prop-speed" min="50" max="300" value="100">
+                    <div class="range-value" id="prop-speed-val">100</div>
+                </div>
+                <div class="prop-row">
+                    <label class="prop-label">攻击力</label>
+                    <input type="number" class="prop-input" id="prop-atk" value="1">
+                </div>
+                <div class="prop-row" id="variant-row">
+                    <label class="prop-label">主题变体</label>
+                    <div class="variant-select">
+                        <button class="variant-btn active" data-variant="none">原色</button>
+                        <button class="variant-btn" data-variant="fungal">菌丝绿</button>
+                        <button class="variant-btn" data-variant="warm">温室暖</button>
+                        <button class="variant-btn" data-variant="neural">神经紫</button>
+                        <button class="variant-btn" data-variant="hot">熔炉红</button>
+                        <button class="variant-btn" data-variant="abyss">深渊黑</button>
+                        <button class="variant-btn" data-variant="cosmic">星空蓝</button>
+                    </div>
+                </div>
+                <div class="prop-row" id="weight-row" style="display:none;">
+                    <label class="prop-label">刷新权重 (T2)</label>
+                    <input type="range" id="prop-weight" min="0.1" max="1" step="0.1" value="0.3">
+                    <div class="range-value" id="prop-weight-val">0.3</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 底部工具栏 -->
+    <div class="toolbar">
+        <button class="btn btn-secondary" onclick="loadDefaultConfig()">加载默认配置</button>
+        <button class="btn btn-primary" onclick="validateConfig()">验证配置</button>
+        <button class="btn btn-export" onclick="exportConfig()">导出配置 (JS)</button>
+    </div>
+
+    <script>
+        // 8个全局基础怪模板
+        const CORE_BASE_POOL = [
+            { baseId: 'bat', version: 'v2', name: '小蝙蝠', func: '飞行/骚扰', defaultSize: 28 },
+            { baseId: 'chick', version: 'spr', name: '变异小鸡', func: '小型/快速', defaultSize: 32 },
+            { baseId: 'crab', version: 'v4', name: '铁甲蟹', func: '坦克/近战', defaultSize: 36 },
+            { baseId: 'fox', version: 'v1', name: '幼狐', func: '快速/灵活', defaultSize: 40 },
+            { baseId: 'snail', version: 'v1', name: '蜗牛', func: '慢速/坦克', defaultSize: 36 },
+            { baseId: 'ghost', version: 'v3', name: '怨灵', func: '漂浮/穿墙', defaultSize: 36 },
+            { baseId: 'rabbit2', version: 'v2', name: '疯兔', func: '跳跃/快速', defaultSize: 32 },
+            { baseId: 'snake', version: 'v4', name: '毒蛇', func: '爬行/远程', defaultSize: 32 },
+        ];
+        
+        // T2候选池
+        const T2_POOL = [
+            { baseId: 'mimic', version: 'v1', name: '宝箱怪', func: '伪装' },
+            { baseId: 'mimic', version: 'v5', name: '守卫宝箱', func: '伪装' },
+            { baseId: 'mimic', version: 'v7', name: '宝箱守护者', func: '伪装' },
+            { baseId: 'panther', version: 'v1', name: '幼豹', func: '刺客' },
+            { baseId: 'panther', version: 'v10', name: '豹王', func: '刺客' },
+            { baseId: 'pigeon', version: 'v4', name: '毒鸽', func: '飞行' },
+            { baseId: 'pigeon', version: 'v8', name: '鸽王', func: '飞行' },
+            { baseId: 'nibei', version: 'spr', name: '小泥龟', func: '坦克' },
+            { baseId: 'nibei', version: 'v6', name: '泥背', func: '坦克' },
+            { baseId: 'yinya', version: 'v7', name: '狼王银牙', func: '精英' },
+            { baseId: 'bee', version: 'v6', name: '毒蜂', func: '飞行/毒' },
+            { baseId: 'goose', version: 'v6', name: '守卫鹅', func: '凶猛' },
+            { baseId: 'goose', version: 'v10', name: '鹅王', func: '凶猛' },
+            { baseId: 'bat', version: 'v9', name: '蝙蝠王', func: '飞行' },
+            { baseId: 'crab', version: 'v8', name: '蟹王', func: '坦克' },
+            { baseId: 'fox', version: 'v7', name: '妖狐', func: '魔法' },
+            { baseId: 'fox', version: 'v8', name: '九尾狐', func: '魔法' },
+        ];
+        
+        // T3池（最终Boss变体）
+        const T3_POOL = [
+            { baseId: 'mother', version: 'v2', name: '母虫幼体', theme: '基础' },
+            { baseId: 'mother', version: 'v3', name: '变异母虫', theme: '变异' },
+            { baseId: 'mother', version: 'v6', name: '成熟母虫', theme: '成熟' },
+            { baseId: 'mother', version: 'v7', name: '深渊母虫', theme: '深渊' },
+            { baseId: 'mother', version: 'v8', name: '千根母虫', theme: '根须' },
+            { baseId: 'mother', version: 'v10', name: '群星母体', theme: '星空' },
+        ];
+        
+        // Boss池
+        const BOSS_POOL = [
+            { baseId: 'yinya', version: 'v7', name: '狼王银牙' },
+            { baseId: 'wolf_king', version: 'v2', name: '狼王' },
+            { baseId: 'mother', version: 'v6', name: '母虫' },
+            { baseId: 'mother', version: 'v10', name: '群星母体' },
+        ];
+        
+        // 当前状态
+        let currentFloor = 1;
+        let currentTab = 'basics';
+        let selectedMonster = null;
+        
+        // 配置数据
+        let floorConfig = {
+            1: { basics: [], t2: [], t3: null, boss: null, theme: 'fungal' },
+            2: { basics: [], t2: [], t3: null, boss: null, theme: 'warm' },
+            3: { basics: [], t2: [], t3: null, boss: null, theme: 'neural' },
+            4: { basics: [], t2: [], t3: null, boss: null, theme: 'hot' },
+            5: { basics: [], t2: [], t3: null, boss: null, theme: 'abyss' },
+            6: { basics: [], t2: [], t3: null, boss: null, theme: 'cosmic' },
+        };
+        
+        // 初始化
+        function init() {
+            // 楼层切换
+            document.querySelectorAll('.floor-btn').forEach(btn => {
+                btn.onclick = () => {
+                    currentFloor = parseInt(btn.dataset.floor);
+                    document.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderCurrentTab();
+                };
+            });
+            
+            // 标签切换
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.onclick = () => {
+                    currentTab = btn.dataset.tab;
+                    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    document.querySelectorAll('.tier-section').forEach(s => s.style.display = 'none');
+                    document.getElementById(currentTab + '-section').style.display = 'block';
+                    
+                    renderCurrentTab();
+                };
+            });
+            
+            // 变体按钮
+            document.querySelectorAll('.variant-btn').forEach(btn => {
+                btn.onclick = () => {
+                    document.querySelectorAll('.variant-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                };
+            });
+            
+            // 滑块事件
+            document.getElementById('prop-size').oninput = (e) => {
+                document.getElementById('prop-size-val').textContent = e.target.value + 'px';
+            };
+            document.getElementById('prop-speed').oninput = (e) => {
+                document.getElementById('prop-speed-val').textContent = e.target.value;
+            };
+            document.getElementById('prop-weight').oninput = (e) => {
+                document.getElementById('prop-weight-val').textContent = e.target.value;
+            };
+            
+            renderCurrentTab();
+        }
+        
+        function renderCurrentTab() {
+            const container = document.getElementById(currentTab + '-grid');
+            container.innerHTML = '';
+            
+            let pool = [];
+            if (currentTab === 'basics') pool = CORE_BASE_POOL;
+            else if (currentTab === 't2') pool = T2_POOL;
+            else if (currentTab === 't3') pool = T3_POOL;
+            else if (currentTab === 'boss') pool = BOSS_POOL;
+            
+            pool.forEach((m, idx) => {
+                const card = document.createElement('div');
+                card.className = 'monster-card';
+                
+                // 检查是否在当前楼层配置中
+                const config = floorConfig[currentFloor][currentTab];
+                let isSelected = false;
+                if (Array.isArray(config)) {
+                    isSelected = config.some(c => c.baseId === m.baseId && c.version === m.version);
+                } else if (config) {
+                    isSelected = config.baseId === m.baseId && config.version === m.version;
+                }
+                
+                if (isSelected) card.classList.add('in-pool');
+                
+                const spritePath = `../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/${m.baseId}/${m.version}/walk/f01.png`;
+                
+                card.innerHTML = `
+                    <div class="monster-sprite">
+                        <img src="${spritePath}" alt="${m.name}" onerror="this.style.display='none'">
+                    </div>
+                    <div class="monster-name">${m.name}</div>
+                    <div class="monster-id">${m.baseId}_${m.version}</div>
+                `;
+                
+                card.onclick = () => selectMonster(m, idx, card);
+                container.appendChild(card);
+            });
+        }
+        
+        function selectMonster(monster, idx, cardElement) {
+            selectedMonster = { ...monster, idx };
+            
+            document.querySelectorAll('.monster-card').forEach(c => c.classList.remove('selected'));
+            cardElement.classList.add('selected');
+            
+            document.getElementById('no-selection').style.display = 'none';
+            document.getElementById('prop-editor').style.display = 'block';
+            
+            // 填充属性
+            document.getElementById('prop-id').value = monster.baseId + '_' + monster.version;
+            document.getElementById('prop-size').value = monster.defaultSize || 40;
+            document.getElementById('prop-size-val').textContent = (monster.defaultSize || 40) + 'px';
+            document.getElementById('prop-hp').value = 10;
+            document.getElementById('prop-speed').value = 100;
+            document.getElementById('prop-speed-val').textContent = '100';
+            document.getElementById('prop-atk').value = 1;
+            
+            // 显示/隐藏特定字段
+            document.getElementById('weight-row').style.display = currentTab === 't2' ? 'block' : 'none';
+            document.getElementById('variant-row').style.display = currentTab === 'basics' ? 'block' : 'none';
+        }
+        
+        function loadDefaultConfig() {
+            // 加载推荐的默认配置
+            floorConfig[1].basics = [
+                { baseId: 'bat', version: 'v2', size: 28, hp: 10, speed: 120, variant: 'fungal' },
+                { baseId: 'chick', version: 'spr', size: 32, hp: 12, speed: 100, variant: 'fungal' },
+                { baseId: 'crab', version: 'v4', size: 36, hp: 20, speed: 60, variant: 'fungal' },
+                { baseId: 'snail', version: 'v1', size: 36, hp: 25, speed: 45, variant: 'fungal' },
+            ];
+            floorConfig[1].t2 = [
+                { baseId: 'mimic', version: 'v1', size: 44, hp: 50, speed: 70, weight: 0.3 },
+            ];
+            floorConfig[1].t3 = { baseId: 'mother', version: 'v2', size: 56, hp: 150, speed: 60 };
+            floorConfig[1].boss = null;
+            
+            alert('默认配置已加载到Floor 1！其他楼层请手动配置或后续扩展。');
+            renderCurrentTab();
+        }
+        
+        function validateConfig() {
+            let issues = [];
+            
+            for (let f = 1; f <= 6; f++) {
+                const cfg = floorConfig[f];
+                if (cfg.basics.length === 0) issues.push(`Floor ${f}: 缺少基础怪`);
+                if (cfg.basics.length > 5) issues.push(`Floor ${f}: 基础怪过多(>5)`);
+                if (cfg.t2.length > 4) issues.push(`Floor ${f}: T2过多(>4)`);
+                if (!cfg.t3) issues.push(`Floor ${f}: 缺少T3`);
+            }
+            
+            if (issues.length === 0) {
+                alert('✅ 配置验证通过！');
+            } else {
+                alert('⚠️ 配置问题:\n' + issues.join('\n'));
+            }
+        }
+        
+        function exportConfig() {
+            const config = {
+                coreBasePool: CORE_BASE_POOL,
+                t2Pool: T2_POOL,
+                t3Pool: T3_POOL,
+                bossPool: BOSS_POOL,
+                floors: floorConfig
+            };
+            
+            const json = JSON.stringify(config, null, 2);
+            navigator.clipboard.writeText(json).then(() => {
+                alert('配置已复制到剪贴板！\n\n共 ' + Object.keys(floorConfig).length + ' 层配置');
+            });
+        }
+        
+        init();
+    </script>
+</body>
+</html>

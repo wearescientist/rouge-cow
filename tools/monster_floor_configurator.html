@@ -1,0 +1,965 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>楼层怪物配置器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #0a0a14;
+            color: #eee;
+            height: 100vh;
+            overflow: hidden;
+        }
+        .header {
+            background: #1a1a2a;
+            padding: 10px 20px;
+            border-bottom: 2px solid #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        h1 {
+            color: #ffd700;
+            font-size: 18px;
+        }
+        .floor-tabs {
+            display: flex;
+            gap: 5px;
+        }
+        .floor-tab {
+            padding: 6px 16px;
+            background: #0f0f1e;
+            border: 1px solid #333;
+            border-radius: 4px;
+            color: #888;
+            cursor: pointer;
+            font-size: 13px;
+        }
+        .floor-tab:hover { border-color: #555; color: #fff; }
+        .floor-tab.active { 
+            border-color: #ffd700; 
+            background: #2a2a3e; 
+            color: #ffd700; 
+        }
+        .main-layout {
+            display: grid;
+            grid-template-columns: 1fr 420px;
+            gap: 15px;
+            padding: 15px;
+            height: calc(100vh - 60px);
+            padding-bottom: 70px;
+        }
+        .current-config {
+            background: #1a1a2a;
+            border-radius: 10px;
+            padding: 15px;
+            overflow-y: auto;
+        }
+        .global-section {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #1a2a1e;
+            border-radius: 8px;
+            border: 2px solid #27ae60;
+        }
+        .global-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .global-title {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #27ae60;
+            font-weight: bold;
+        }
+        .section {
+            margin-bottom: 15px;
+            padding: 12px;
+            background: #0f0f1e;
+            border-radius: 8px;
+            border-left: 4px solid;
+        }
+        .section-t2 { border-color: #3498db; }
+        .section-t3 { border-color: #e67e22; }
+        .section-boss { border-color: #e74c3c; }
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .section-title {
+            font-size: 13px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .badge {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .badge-global { background: #27ae60; color: #fff; }
+        .badge-t2 { background: #3498db; color: #fff; }
+        .badge-t3 { background: #e67e22; color: #fff; }
+        .badge-boss { background: #e74c3c; color: #fff; }
+        .count {
+            font-size: 12px;
+            color: #888;
+        }
+        .selected-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            min-height: 60px;
+            padding: 8px;
+            background: #1a1a2a;
+            border-radius: 6px;
+            border: 2px dashed #333;
+        }
+        .selected-list:empty::before {
+            content: '从右侧选择怪物添加...';
+            color: #555;
+            font-size: 11px;
+            width: 100%;
+            text-align: center;
+            padding: 20px;
+        }
+        .selected-card {
+            position: relative;
+            width: 85px;
+            background: #252538;
+            border-radius: 6px;
+            padding: 6px;
+            border: 2px solid #444;
+            cursor: pointer;
+        }
+        .selected-card:hover { border-color: #666; }
+        .selected-card.active { border-color: #ffd700; background: #2a2a40; }
+        .selected-sprite {
+            width: 45px;
+            height: 45px;
+            background: #0a0a14;
+            border-radius: 4px;
+            margin: 0 auto 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            image-rendering: pixelated;
+            overflow: hidden;
+        }
+        .selected-sprite img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .selected-name {
+            font-size: 10px;
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .btn-remove {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 16px;
+            height: 16px;
+            background: #e74c3c;
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            font-size: 9px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .monster-pool {
+            background: #1a1a2a;
+            border-radius: 10px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+        }
+        .pool-header {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #333;
+        }
+        .pool-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        .pool-hint {
+            font-size: 11px;
+            color: #27ae60;
+            margin-bottom: 10px;
+        }
+        .pool-filters {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        .filter-btn {
+            padding: 4px 10px;
+            background: #0f0f1e;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #888;
+            font-size: 11px;
+            cursor: pointer;
+        }
+        .filter-btn:hover { border-color: #666; color: #fff; }
+        .filter-btn.active { border-color: #ffd700; color: #ffd700; background: #1a1a2e; }
+        .pool-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 8px;
+        }
+        .pool-card {
+            background: #0f0f1e;
+            border: 2px solid #333;
+            border-radius: 6px;
+            padding: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        .pool-card:hover {
+            border-color: #ffd700;
+            transform: translateY(-2px);
+        }
+        .pool-sprite {
+            width: 36px;
+            height: 36px;
+            background: #1a1a2a;
+            border-radius: 4px;
+            margin: 0 auto 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            image-rendering: pixelated;
+            overflow: hidden;
+        }
+        .pool-sprite img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .pool-name {
+            font-size: 9px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .pool-floor {
+            font-size: 8px;
+            color: #666;
+            margin-top: 2px;
+        }
+        .add-buttons {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        .add-btn {
+            padding: 2px 6px;
+            font-size: 9px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            color: #fff;
+        }
+        .add-global { background: #27ae60; }
+        .add-t2 { background: #3498db; }
+        .add-t3 { background: #e67e22; }
+        .add-boss { background: #e74c3c; }
+        .prop-editor {
+            margin-top: 15px;
+            padding: 12px;
+            background: #0f0f1e;
+            border-radius: 8px;
+            border: 1px solid #333;
+        }
+        .prop-title {
+            font-size: 12px;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        .prop-row {
+            display: grid;
+            grid-template-columns: 45px 1fr 40px;
+            gap: 6px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .prop-label {
+            font-size: 10px;
+            color: #888;
+        }
+        .prop-input {
+            padding: 5px 6px;
+            background: #1a1a2a;
+            border: 1px solid #444;
+            border-radius: 4px;
+            color: #fff;
+            font-size: 11px;
+        }
+        .prop-input:focus { border-color: #ffd700; outline: none; }
+        .prop-value {
+            font-size: 10px;
+            color: #ffd700;
+            text-align: right;
+        }
+        .toolbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #1a1a2a;
+            border-top: 2px solid #333;
+            padding: 10px 20px;
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 12px;
+            cursor: pointer;
+        }
+        .btn-primary { background: #27ae60; color: #fff; }
+        .btn-secondary { background: #3498db; color: #fff; }
+        .btn-export { background: #e74c3c; color: #fff; }
+        .global-badge {
+            position: absolute;
+            top: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #27ae60;
+            color: #fff;
+            font-size: 9px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            white-space: nowrap;
+        }
+        .floor-indicator {
+            background: #0f0f1e;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            border-left: 4px solid #ffd700;
+        }
+        .floor-indicator-text {
+            font-size: 12px;
+            color: #ffd700;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>楼层怪物配置器</h1>
+        <div class="floor-tabs">
+            <button class="floor-tab active" data-floor="global">全局基础</button>
+            <button class="floor-tab" data-floor="1">F1</button>
+            <button class="floor-tab" data-floor="2">F2</button>
+            <button class="floor-tab" data-floor="3">F3</button>
+            <button class="floor-tab" data-floor="4">F4</button>
+            <button class="floor-tab" data-floor="5">F5</button>
+            <button class="floor-tab" data-floor="6">F6</button>
+        </div>
+    </div>
+    
+    <div class="main-layout">
+        <div class="current-config">
+            <!-- 全局基础怪池 -->
+            <div id="global-section" class="global-section">
+                <div class="global-header">
+                    <div class="global-title">
+                        <span class="badge badge-global">全局基础怪池</span>
+                        <span style="font-size:11px;color:#888;font-weight:normal;">(所有楼层共享)</span>
+                    </div>
+                    <span class="count" id="global-count">0</span>
+                </div>
+                <div class="selected-list" id="global-list"></div>
+            </div>
+            
+            <!-- 楼层专属配置 -->
+            <div id="floor-sections">
+                <div class="floor-indicator">
+                    <span class="floor-indicator-text">当前配置: <span id="current-floor-name">F1</span> 的专属怪物</span>
+                </div>
+                
+                <div class="section section-t2">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span class="badge badge-t2">T2池</span>
+                            <span style="font-size:11px;color:#888;">精英怪</span>
+                        </div>
+                        <span class="count" id="t2-count">0</span>
+                    </div>
+                    <div class="selected-list" id="t2-list"></div>
+                </div>
+                
+                <div class="section section-t3">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span class="badge badge-t3">T3池</span>
+                            <span style="font-size:11px;color:#888;">小BOSS</span>
+                        </div>
+                        <span class="count" id="t3-count">0</span>
+                    </div>
+                    <div class="selected-list" id="t3-list"></div>
+                </div>
+                
+                <div class="section section-boss">
+                    <div class="section-header">
+                        <div class="section-title">
+                            <span class="badge badge-boss">Boss池</span>
+                            <span style="font-size:11px;color:#888;">楼层BOSS</span>
+                        </div>
+                        <span class="count" id="boss-count">0</span>
+                    </div>
+                    <div class="selected-list" id="boss-list"></div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="monster-pool">
+            <div class="pool-header">怪物图鉴 (点击按钮添加)</div>
+            <div class="pool-content">
+                <div class="pool-hint" id="pool-hint-text">添加到全局基础怪池 (所有楼层共享)</div>
+                <div class="pool-filters" id="floor-filters">
+                    <button class="filter-btn active" data-filter="all">全部</button>
+                    <button class="filter-btn" data-filter="1">F1</button>
+                    <button class="filter-btn" data-filter="2">F2</button>
+                    <button class="filter-btn" data-filter="3">F3</button>
+                    <button class="filter-btn" data-filter="4">F4</button>
+                    <button class="filter-btn" data-filter="5">F5</button>
+                    <button class="filter-btn" data-filter="6">F6</button>
+                </div>
+                <div class="pool-grid" id="pool-grid"></div>
+            </div>
+            
+            <div class="prop-editor" id="prop-editor" style="display:none;">
+                <div class="prop-title">编辑: <span id="edit-name"></span></div>
+                <div class="prop-row">
+                    <span class="prop-label">体型</span>
+                    <input type="range" class="prop-input" id="edit-size" min="20" max="120">
+                    <span class="prop-value" id="val-size"></span>
+                </div>
+                <div class="prop-row">
+                    <span class="prop-label">血量</span>
+                    <input type="number" class="prop-input" id="edit-hp">
+                    <span></span>
+                </div>
+                <div class="prop-row">
+                    <span class="prop-label">速度</span>
+                    <input type="range" class="prop-input" id="edit-speed" min="30" max="300">
+                    <span class="prop-value" id="val-speed"></span>
+                </div>
+                <div class="prop-row">
+                    <span class="prop-label">攻击</span>
+                    <input type="number" class="prop-input" id="edit-atk">
+                    <span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="toolbar">
+        <button class="btn btn-secondary" onclick="clearCurrent()">清空当前</button>
+        <button class="btn btn-primary" onclick="exportConfig()">导出配置</button>
+    </div>
+
+    <script>
+        // 数据存储
+        var ALL_MONSTERS = [];
+        var globalBasics = []; // 全局基础怪池
+        var floorConfigs = {
+            1: { t2: [], t3: [], boss: [] },
+            2: { t2: [], t3: [], boss: [] },
+            3: { t2: [], t3: [], boss: [] },
+            4: { t2: [], t3: [], boss: [] },
+            5: { t2: [], t3: [], boss: [] },
+            6: { t2: [], t3: [], boss: [] }
+        };
+        
+        var currentMode = 'global'; // 'global' 或楼层数字
+        var currentFilter = 'all';
+        var selectedCard = null;
+        
+        // 加载数据
+        function loadFloorData() {
+            var script = document.createElement('script');
+            script.src = '../floor-data.js';
+            script.onload = function() {
+                parseFloorData();
+                init();
+            };
+            script.onerror = function() {
+                alert('无法加载 floor-data.js');
+                initWithDefaultData();
+            };
+            document.head.appendChild(script);
+        }
+        
+        function parseFloorData() {
+            if (typeof window.FLOOR_DATA === 'undefined') return;
+            
+            var data = window.FLOOR_DATA;
+            var monsterMap = new Map();
+            var globalIds = new Set(); // 在多个楼层出现的基础怪
+            var monsterFloorCount = {}; // 统计怪物出现的楼层数
+            
+            // 第一遍：统计怪物出现次数
+            for (var floorNum = 1; floorNum <= 6; floorNum++) {
+                var floorKey = 'floor' + floorNum;
+                var floor = data.floors[floorKey];
+                if (!floor || !floor.monsters) continue;
+                
+                floor.monsters.forEach(function(m) {
+                    var poolType = getPoolType(m);
+                    if (poolType === 'basics') {
+                        monsterFloorCount[m.id] = (monsterFloorCount[m.id] || 0) + 1;
+                    }
+                });
+            }
+            
+            // 第二遍：加载配置
+            for (var floorNum = 1; floorNum <= 6; floorNum++) {
+                var floorKey = 'floor' + floorNum;
+                var floor = data.floors[floorKey];
+                
+                // 先初始化该楼层的配置（即使没有怪物）
+                floorConfigs[floorNum] = { t2: [], t3: [], boss: [] };
+                
+                if (!floor || !floor.monsters) continue;
+                
+                floor.monsters.forEach(function(m) {
+                    var monsterDef = {
+                        id: m.id,
+                        baseId: m.baseId,
+                        version: m.version,
+                        name: m.name,
+                        floor: m.floor || floorNum,
+                        size: m.size || 32,
+                        hp: m.stats ? m.stats.hp : 10,
+                        speed: m.stats ? m.stats.speed : 100,
+                        atk: m.stats ? m.stats.dmg : 1,
+                        tier: m.tier || 1,
+                        type: m.type || 'common'
+                    };
+                    
+                    if (!monsterMap.has(m.id)) {
+                        monsterMap.set(m.id, monsterDef);
+                    }
+                    
+                    var poolType = getPoolType(m);
+                    if (poolType === 'basics') {
+                        // 所有基础怪都放入全局池（每层共享）
+                        if (!globalIds.has(m.id)) {
+                            globalIds.add(m.id);
+                            globalBasics.push(JSON.parse(JSON.stringify(monsterDef)));
+                        }
+                    } else {
+                        // 楼层专属怪（t2/t3/boss）
+                        floorConfigs[floorNum][poolType].push(JSON.parse(JSON.stringify(monsterDef)));
+                    }
+                });
+            }
+            
+            ALL_MONSTERS = Array.from(monsterMap.values());
+            ALL_MONSTERS.sort(function(a, b) {
+                if (a.floor !== b.floor) return a.floor - b.floor;
+                return a.baseId.localeCompare(b.baseId);
+            });
+        }
+        
+        function getPoolType(monster) {
+            if (monster.type === 'boss' || monster.type === 'final_boss') return 'boss';
+            if (monster.tier === 3 || monster.tier === 4) return 't3';
+            if (monster.tier === 2) return 't2';
+            return 'basics';
+        }
+        
+        function init() {
+            setupTabs();
+            setupFilters();
+            setupPropEditor();
+            renderPool();
+            updateUI();
+        }
+        
+        function setupTabs() {
+            var tabs = document.querySelectorAll('.floor-tab');
+            tabs.forEach(function(tab) {
+                tab.onclick = function() {
+                    var floor = this.getAttribute('data-floor');
+                    currentMode = floor === 'global' ? 'global' : parseInt(floor);
+                    
+                    tabs.forEach(function(t) { t.classList.remove('active'); });
+                    this.classList.add('active');
+                    
+                    selectedCard = null;
+                    hidePropEditor();
+                    updateUI();
+                };
+            });
+        }
+        
+        function updateUI() {
+            // 显示/隐藏区域
+            var globalSection = document.getElementById('global-section');
+            var floorSections = document.getElementById('floor-sections');
+            var hintText = document.getElementById('pool-hint-text');
+            var floorName = document.getElementById('current-floor-name');
+            
+            if (currentMode === 'global') {
+                globalSection.style.display = 'block';
+                floorSections.style.display = 'none';
+                hintText.textContent = '添加到全局基础怪池 (所有楼层共享)';
+                renderGlobalList();
+            } else {
+                globalSection.style.display = 'none';
+                floorSections.style.display = 'block';
+                hintText.textContent = '添加到 F' + currentMode + ' 的专属怪物池';
+                floorName.textContent = 'F' + currentMode;
+                renderFloorLists();
+            }
+            
+            // 重新渲染怪物池（按钮需要更新）
+            renderPool();
+        }
+        
+        function setupFilters() {
+            var filters = document.querySelectorAll('.filter-btn');
+            filters.forEach(function(btn) {
+                btn.onclick = function() {
+                    currentFilter = this.getAttribute('data-filter');
+                    filters.forEach(function(f) { f.classList.remove('active'); });
+                    this.classList.add('active');
+                    renderPool();
+                };
+            });
+        }
+        
+        function getSpritePath(monster) {
+            return '../generated_assets/monster_walk_preserve_features/floor' + monster.floor + '/' + 
+                   monster.baseId + '/' + monster.version + '/walk/f01.png';
+        }
+        
+        function renderPool() {
+            var container = document.getElementById('pool-grid');
+            container.innerHTML = '';
+            
+            var filtered = ALL_MONSTERS;
+            if (currentFilter !== 'all') {
+                var filterFloor = parseInt(currentFilter);
+                filtered = ALL_MONSTERS.filter(function(m) { return m.floor === filterFloor; });
+            }
+            
+            filtered.forEach(function(monster) {
+                var card = document.createElement('div');
+                card.className = 'pool-card';
+                
+                var spritePath = getSpritePath(monster);
+                var buttonsHtml = '';
+                
+                if (currentMode === 'global') {
+                    buttonsHtml = '<button class="add-btn add-global">加入基础池</button>';
+                } else {
+                    buttonsHtml = 
+                        '<button class="add-btn add-t2">T2</button>' +
+                        '<button class="add-btn add-t3">T3</button>' +
+                        '<button class="add-btn add-boss">Boss</button>';
+                }
+                
+                card.innerHTML = 
+                    '<div class="pool-sprite"><img src="' + spritePath + '" alt="' + monster.name + '" onerror="this.style.display=\'none\'"></div>' +
+                    '<div class="pool-name">' + monster.name + '</div>' +
+                    '<div class="pool-floor">F' + monster.floor + '</div>' +
+                    '<div class="add-buttons">' + buttonsHtml + '</div>';
+                
+                if (currentMode === 'global') {
+                    card.querySelector('.add-global').onclick = function() { 
+                        addToGlobal(monster); 
+                    };
+                } else {
+                    card.querySelector('.add-t2').onclick = function() { 
+                        addToFloor('t2', monster); 
+                    };
+                    card.querySelector('.add-t3').onclick = function() { 
+                        addToFloor('t3', monster); 
+                    };
+                    card.querySelector('.add-boss').onclick = function() { 
+                        addToFloor('boss', monster); 
+                    };
+                }
+                
+                container.appendChild(card);
+            });
+        }
+        
+        function addToGlobal(monster) {
+            var newItem = JSON.parse(JSON.stringify(monster));
+            globalBasics.push(newItem);
+            renderGlobalList();
+        }
+        
+        function addToFloor(type, monster) {
+            var newItem = JSON.parse(JSON.stringify(monster));
+            floorConfigs[currentMode][type].push(newItem);
+            renderFloorLists();
+        }
+        
+        function renderGlobalList() {
+            var container = document.getElementById('global-list');
+            var countEl = document.getElementById('global-count');
+            container.innerHTML = '';
+            countEl.textContent = globalBasics.length;
+            
+            globalBasics.forEach(function(item, idx) {
+                var card = createSelectedCard(item, 'global', idx);
+                container.appendChild(card);
+            });
+        }
+        
+        function renderFloorLists() {
+            var config = floorConfigs[currentMode];
+            
+            renderList('t2', config.t2);
+            renderList('t3', config.t3);
+            renderList('boss', config.boss);
+        }
+        
+        function renderList(type, items) {
+            var container = document.getElementById(type + '-list');
+            var countEl = document.getElementById(type + '-count');
+            container.innerHTML = '';
+            countEl.textContent = items.length;
+            
+            items.forEach(function(item, idx) {
+                var card = createSelectedCard(item, type, idx);
+                container.appendChild(card);
+            });
+        }
+        
+        function createSelectedCard(item, type, idx) {
+            var card = document.createElement('div');
+            card.className = 'selected-card';
+            if (selectedCard && selectedCard.type === type && selectedCard.index === idx) {
+                card.classList.add('active');
+            }
+            
+            var spritePath = getSpritePath(item);
+            
+            card.innerHTML = 
+                '<button class="btn-remove">×</button>' +
+                '<div class="selected-sprite"><img src="' + spritePath + '" alt="' + item.name + '" onerror="this.style.display=\'none\'"></div>' +
+                '<div class="selected-name">' + item.name + '</div>';
+            
+            card.querySelector('.btn-remove').onclick = function(e) {
+                e.stopPropagation();
+                removeFromPool(type, idx);
+            };
+            
+            card.onclick = function() {
+                selectMonster(type, idx, item);
+            };
+            
+            return card;
+        }
+        
+        function removeFromPool(type, idx) {
+            if (type === 'global') {
+                globalBasics.splice(idx, 1);
+                renderGlobalList();
+            } else {
+                floorConfigs[currentMode][type].splice(idx, 1);
+                renderFloorLists();
+            }
+            
+            if (selectedCard && selectedCard.type === type && selectedCard.index === idx) {
+                selectedCard = null;
+                hidePropEditor();
+            }
+        }
+        
+        function selectMonster(type, idx, item) {
+            selectedCard = { type: type, index: idx, data: item };
+            if (type === 'global') {
+                renderGlobalList();
+            } else {
+                renderFloorLists();
+            }
+            showPropEditor(item);
+        }
+        
+        function setupPropEditor() {
+            document.getElementById('edit-size').oninput = function() {
+                document.getElementById('val-size').textContent = this.value + 'px';
+                updateData('size', parseInt(this.value));
+            };
+            document.getElementById('edit-speed').oninput = function() {
+                document.getElementById('val-speed').textContent = this.value;
+                updateData('speed', parseInt(this.value));
+            };
+            document.getElementById('edit-hp').onchange = function() {
+                updateData('hp', parseInt(this.value));
+            };
+            document.getElementById('edit-atk').onchange = function() {
+                updateData('atk', parseInt(this.value));
+            };
+        }
+        
+        function updateData(field, value) {
+            if (!selectedCard) return;
+            
+            var target;
+            if (selectedCard.type === 'global') {
+                target = globalBasics[selectedCard.index];
+            } else {
+                target = floorConfigs[currentMode][selectedCard.type][selectedCard.index];
+            }
+            
+            if (target) {
+                target[field] = value;
+                if (selectedCard.type === 'global') {
+                    renderGlobalList();
+                } else {
+                    renderFloorLists();
+                }
+            }
+        }
+        
+        function showPropEditor(item) {
+            document.getElementById('prop-editor').style.display = 'block';
+            document.getElementById('edit-name').textContent = item.name;
+            document.getElementById('edit-size').value = item.size || 32;
+            document.getElementById('val-size').textContent = (item.size || 32) + 'px';
+            document.getElementById('edit-hp').value = item.hp || 10;
+            document.getElementById('edit-speed').value = item.speed || 100;
+            document.getElementById('val-speed').textContent = item.speed || 100;
+            document.getElementById('edit-atk').value = item.atk || 1;
+        }
+        
+        function hidePropEditor() {
+            document.getElementById('prop-editor').style.display = 'none';
+        }
+        
+        function clearCurrent() {
+            if (currentMode === 'global') {
+                if (!confirm('确定清空全局基础怪池?')) return;
+                globalBasics = [];
+                renderGlobalList();
+            } else {
+                if (!confirm('确定清空 F' + currentMode + ' 的所有专属怪物?')) return;
+                floorConfigs[currentMode] = { t2: [], t3: [], boss: [] };
+                renderFloorLists();
+            }
+            selectedCard = null;
+            hidePropEditor();
+        }
+        
+        function exportConfig() {
+            var output = {
+                version: '1.1.0',
+                exportedAt: new Date().toISOString(),
+                floors: {}
+            };
+            
+            for (var i = 1; i <= 6; i++) {
+                var floorKey = 'floor' + i;
+                var config = floorConfigs[i];
+                var monsters = [];
+                
+                // 1. 添加全局基础怪 (强制T1)
+                globalBasics.forEach(function(m) {
+                    monsters.push(createMonsterEntry(m, 'common', 1));
+                });
+                
+                // 2. 添加楼层专属怪 (强制根据池子设置tier)
+                config.t2.forEach(function(m) {
+                    monsters.push(createMonsterEntry(m, 'elite', 2));
+                });
+                config.t3.forEach(function(m) {
+                    monsters.push(createMonsterEntry(m, 'elite', 3));
+                });
+                config.boss.forEach(function(m) {
+                    monsters.push(createMonsterEntry(m, 'boss', m.tier >= 5 ? 5 : 4));
+                });
+                
+                output.floors[floorKey] = {
+                    name: getFloorName(i),
+                    theme: getFloorTheme(i),
+                    monsters: monsters
+                };
+            }
+            
+            var json = JSON.stringify(output, null, 2);
+            navigator.clipboard.writeText(json).then(function() {
+                alert('配置已复制！基础怪(' + globalBasics.length + '个)已应用到所有楼层');
+            });
+        }
+        
+        function createMonsterEntry(m, defaultType, forcedTier) {
+            return {
+                id: m.id,
+                baseId: m.baseId,
+                version: m.version,
+                name: m.name,
+                tier: forcedTier !== undefined ? forcedTier : m.tier,
+                type: defaultType,
+                size: m.size,
+                stats: {
+                    hp: m.hp,
+                    speed: m.speed,
+                    dmg: m.atk
+                }
+            };
+        }
+        
+        function getFloorName(floorNum) {
+            var names = ['菌丝区', '洞穴区', '地下水脉', '古老遗迹', '深渊入口', '母虫巢穴'];
+            return names[floorNum - 1] || '未知区域';
+        }
+        
+        function getFloorTheme(floorNum) {
+            var themes = [
+                '基础怪物 - 菌丝感染的初级生物',
+                '洞穴怪物 - 适应黑暗环境的生物',
+                '水生怪物 - 地下水脉中的生物',
+                '古代怪物 - 遗迹中的守护者',
+                '深渊怪物 - 被深度感染的强大生物',
+                '母虫领域 - 核心区域的终极生物'
+            ];
+            return themes[floorNum - 1] || '未知主题';
+        }
+        
+        function initWithDefaultData() {
+            init();
+        }
+        
+        // 启动
+        loadFloorData();
+    </script>
+</body>
+</html>

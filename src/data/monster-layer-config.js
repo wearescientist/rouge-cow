@@ -117,7 +117,7 @@ const T3_MINI_BOSS_POOL = [
         theme: 'infant',
         stage: [1, 2],
         size: 56,
-        stats: { hp: 300, speed: 60, attack: 5 },
+        stats: { hp: 200, speed: 60, attack: 5 },
         visualStyle: 'pale_pink_slime',
     },
     {
@@ -128,7 +128,7 @@ const T3_MINI_BOSS_POOL = [
         theme: 'mature',
         stage: [3, 4],
         size: 64,
-        stats: { hp: 600, speed: 70, attack: 8 },
+        stats: { hp: 200, speed: 70, attack: 8 },
         visualStyle: 'armor_shell',
     },
     {
@@ -139,7 +139,7 @@ const T3_MINI_BOSS_POOL = [
         theme: 'mutant',
         stage: [2, 3, 4],
         size: 60,
-        stats: { hp: 450, speed: 75, attack: 7 },
+        stats: { hp: 200, speed: 75, attack: 7 },
         visualStyle: 'chaos_mutated',
     },
     {
@@ -150,7 +150,7 @@ const T3_MINI_BOSS_POOL = [
         theme: 'abyss',
         stage: [5],
         size: 68,
-        stats: { hp: 900, speed: 65, attack: 10 },
+        stats: { hp: 200, speed: 65, attack: 10 },
         visualStyle: 'tentacle_dark',
     },
     {
@@ -161,7 +161,7 @@ const T3_MINI_BOSS_POOL = [
         theme: 'roots',
         stage: [5, 6],
         size: 72,
-        stats: { hp: 1200, speed: 55, attack: 12 },
+        stats: { hp: 200, speed: 55, attack: 12 },
         visualStyle: 'root_covered',
     },
     {
@@ -172,7 +172,7 @@ const T3_MINI_BOSS_POOL = [
         theme: 'cosmic',
         stage: [6],
         size: 80,
-        stats: { hp: 2000, speed: 50, attack: 15 },
+        stats: { hp: 1000, speed: 50, attack: 15 },
         visualStyle: 'cosmic_stars',
     },
 ];
@@ -202,11 +202,11 @@ const T2_ELITE_CANDIDATES = [
 // ==================== Boss配置 ====================
 const FLOOR_BOSSES = {
     1: null, // 教学层无Boss
-    2: { baseId: 'yinya', version: 'v7', name: '狼王银牙', size: 88, hp: 800, speed: 150 },
+    2: { baseId: 'yinya', version: 'v7', name: '狼王银牙', size: 88, hp: 1000, speed: 150 },
     3: { baseId: 'nibei', version: 'v6', name: '远古泥背', size: 80, hp: 1000, speed: 80 },
-    4: { baseId: 'wolf_king', version: 'v2', name: '狼王', size: 88, hp: 1200, speed: 160 },
-    5: { baseId: 'mother', version: 'v6', name: '母虫', size: 96, hp: 2000, speed: 70 },
-    6: { baseId: 'mother', version: 'v10', name: '群星母体', size: 112, hp: 5000, speed: 60 },
+    4: { baseId: 'wolf_king', version: 'v2', name: '狼王', size: 88, hp: 1000, speed: 160 },
+    5: { baseId: 'mother', version: 'v6', name: '母虫', size: 96, hp: 1000, speed: 70 },
+    6: { baseId: 'mother', version: 'v10', name: '群星母体', size: 112, hp: 1000, speed: 60 },
 };
 
 // ==================== 楼层主题变体配置 ====================

@@ -123,7 +123,7 @@ class MenuController {
     initBackgroundAnimation() {
         if (!this.mainMenu) return;
 
-        const bgSrc = 'assets/sprites/ui/ChatGPT Image.png?v=menu_static2';
+        const bgSrc = 'assets/runtime/sprites/ui/ChatGPT Image.png?v=menu_static2';
         const img = new Image();
         img.src = bgSrc;
 
@@ -138,7 +138,9 @@ class MenuController {
         this.mainMenu.style.backgroundColor = '#060a13';
         this.mainMenu.style.backgroundRepeat = 'no-repeat, no-repeat';
         this.mainMenu.style.backgroundPosition = 'center center, 50% 50%';
-        this.mainMenu.style.backgroundSize = '100% 100%, auto 100%';
+        this.mainMenu.style.backgroundSize = isMobile
+            ? '100% 100%, contain'
+            : '100% 100%, auto 100%';
         this.mainMenu.style.backgroundBlendMode = 'normal, normal';
         this.mainMenu.style.willChange = disableMotion ? 'auto' : 'background-position';
         this.mainMenu.style.animation = disableMotion

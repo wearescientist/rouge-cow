@@ -144,7 +144,7 @@ class StoryEventSystem {
         }
     }
     
-    showDialogueBox({speaker, text, title, speakerColor = '#fff', subtitle, autoClose}) {
+    showDialogueBox({speaker, text, title, speakerColor = '#fff', subtitle, autoClose, onClose}) {
         // 暂停游戏
         const wasPaused = window.game && window.game.paused;
         if (window.game && window.game.state === 'playing') {
@@ -205,7 +205,10 @@ class StoryEventSystem {
         overlay.appendChild(box);
         document.body.appendChild(overlay);
         
+        let closed = false;
         const closeHandler = () => {
+            if (closed) return;
+            closed = true;
             overlay.style.animation = 'fadeOut 0.3s ease';
             setTimeout(() => {
                 overlay.remove();
@@ -213,6 +216,7 @@ class StoryEventSystem {
                 if (window.game && !wasPaused) {
                     window.game.paused = false;
                 }
+                if (typeof onClose === 'function') onClose();
             }, 300);
         };
         

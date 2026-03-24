@@ -1,14 +1,14 @@
 ﻿/**
  * main.js - 游戏入口文件
  * 模块加载和游戏初始化
- * v0.22.1 - Phase 2 重构
+ * v0.35.1 - Render Perf Downgrade Phase 1+2
  */
 
 (function() {
     'use strict';
 
     // 游戏版本
-    const VERSION = window.AppVersion?.number || '0.33.1';
+    const VERSION = window.AppVersion?.number || '0.35.1';
     
     // 加载状态
     const loadState = {

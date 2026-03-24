@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SpriteData 调试工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 { text-align: center; margin-bottom: 20px; color: #4a9; }
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr 300px;
+            gap: 20px;
+        }
+        .panel {
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 15px;
+        }
+        .panel h2 {
+            font-size: 16px;
+            margin-bottom: 15px;
+            color: #48f;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px;
+        }
+        .file-input {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid #444;
+            border-radius: 6px;
+            color: #fff;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 8px;
+            background: #246;
+            border: none;
+            border-radius: 6px;
+            color: #fff;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        button:hover { background: #369; }
+        button.primary { background: #4a6; }
+        button.primary:hover { background: #5b7; }
+        button.danger { background: #a44; }
+        button.danger:hover { background: #b55; }
+        #canvas {
+            background: #0a0a1a;
+            border-radius: 8px;
+            width: 100%;
+            image-rendering: pixelated;
+        }
+        .stats {
+            font-family: monospace;
+            font-size: 12px;
+            line-height: 1.8;
+        }
+        .stat-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+        .stat-label { color: #888; }
+        .stat-value { color: #4a9; }
+        .slider-group {
+            margin-bottom: 15px;
+        }
+        .slider-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 12px;
+            color: #888;
+        }
+        input[type="range"] {
+            width: 100%;
+            accent-color: #48f;
+        }
+        .checkbox-group {
+            margin-bottom: 10px;
+        }
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+        }
+        .color-picker {
+            display: flex;
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .color-btn {
+            width: 30px;
+            height: 30px;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .color-btn.active {
+            border-color: #fff;
+        }
+        #log {
+            height: 150px;
+            overflow-y: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 10px;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 11px;
+            line-height: 1.5;
+        }
+        .log-entry { margin-bottom: 4px; }
+        .log-info { color: #48f; }
+        .log-warn { color: #fa4; }
+        .log-error { color: #f44; }
+    </style>
+</head>
+<body>
+    <h1>🎨 SpriteData 调试工具 v2.0</h1>
+    
+    <div class="container">
+        <!-- 左侧面板 -->
+        <div class="panel">
+            <h2>📁 文件</h2>
+            <input type="file" id="imageInput" class="file-input" accept="image/*">
+            <input type="file" id="jsonInput" class="file-input" accept=".json">
+            <button class="primary" onclick="analyzeImage()">分析图片</button>
+            <button onclick="exportJSON()">导出 JSON</button>
+            <button class="danger" onclick="clearAll()">清空</button>
+            
+            <h2 style="margin-top: 20px;">🎚️ 参数调整</h2>
+            <div class="slider-group">
+                <label>缩放: <span id="scaleValue">1.0</span>x</label>
+                <input type="range" id="scaleSlider" min="0.5" max="3" step="0.1" value="1">
+            </div>
+            <div class="slider-group">
+                <label>碰撞箱宽度: <span id="hitboxWValue">80</span>%</label>
+                <input type="range" id="hitboxWSlider" min="50" max="100" step="5" value="80">
+            </div>
+            <div class="slider-group">
+                <label>碰撞箱高度: <span id="hitboxHValue">90</span>%</label>
+                <input type="range" id="hitboxHSlider" min="50" max="100" step="5" value="90">
+            </div>
+            
+            <h2 style="margin-top: 20px;">👁️ 显示选项</h2>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="showCanvasBounds" checked> 画布边界 (红)</label>
+            </div>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="showModelBounds" checked> 模型边界 (绿)</label>
+            </div>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="showHitbox" checked> 碰撞箱 (蓝)</label>
+            </div>
+            <div class="checkbox-group">
+                <label><input type="checkbox" id="showAnchors" checked> 锚点 (黄/紫)</label>
+            </div>
+        </div>
+        
+        <!-- 中间画布 -->
+        <div class="panel">
+            <canvas id="canvas" width="700" height="500"></canvas>
+        </div>
+        
+        <!-- 右侧面板 -->
+        <div class="panel">
+            <h2>📊 统计信息</h2>
+            <div class="stats" id="stats">
+                <div class="stat-row">
+                    <span class="stat-label">画布尺寸:</span>
+                    <span class="stat-value" id="canvasSize">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">模型尺寸:</span>
+                    <span class="stat-value" id="modelSize">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">填充率:</span>
+                    <span class="stat-value" id="fillRate">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">脚底偏移:</span>
+                    <span class="stat-value" id="feetOffset">-</span>
+                </div>
+                <div class="stat-row">
+                    <span class="stat-label">中心偏移:</span>
+                    <span class="stat-value" id="centerOffset">-</span>
+                </div>
+            </div>
+            
+            <h2 style="margin-top: 20px;">📝 日志</h2>
+            <div id="log"></div>
+        </div>
+    </div>
+
+    <script src="../src/utils/SpriteData.js"></script>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        let currentImage = null;
+        let currentSpriteData = null;
+        let animationId = null;
+
+        // 日志
+        function log(msg, type = 'info') {
+            const logDiv = document.getElementById('log');
+            const entry = document.createElement('div');
+            entry.className = `log-entry log-${type}`;
+            entry.textContent = `[${new Date().toLocaleTimeString()}] ${msg}`;
+            logDiv.appendChild(entry);
+            logDiv.scrollTop = logDiv.scrollHeight;
+        }
+
+        // 分析图片
+        function analyzeImage() {
+            const input = document.getElementById('imageInput');
+            if (!input.files[0]) {
+                log('请先选择图片', 'error');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    currentImage = img;
+                    generateSpriteData(img);
+                    log('图片加载成功');
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(input.files[0]);
+        }
+
+        // 生成 SpriteData
+        function generateSpriteData(img) {
+            // 创建临时 canvas 分析像素
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = img.width;
+            tempCanvas.height = img.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            tempCtx.drawImage(img, 0, 0);
+            
+            const imageData = tempCtx.getImageData(0, 0, img.width, img.height);
+            const bounds = calculateBounds(imageData, img.width, img.height);
+            
+            currentSpriteData = new SpriteData({
+                canvasWidth: img.width,
+                canvasHeight: img.height,
+                modelOffsetX: bounds.offsetX,
+                modelOffsetY: bounds.offsetY,
+                modelWidth: bounds.width,
+                modelHeight: bounds.height,
+                anchor: {
+                    center: { x: bounds.centerX, y: bounds.centerY },
+                    feet: { x: bounds.feetX, y: bounds.feetY }
+                },
+                hitboxRatio: { w: 0.8, h: 0.9 }
+            });
+            
+            updateStats();
+            startRenderLoop();
+        }
+
+        // 计算边界
+        function calculateBounds(imageData, width, height) {
+            const data = imageData.data;
+            let minX = width, minY = height;
+            let maxX = 0, maxY = 0;
+            let hasVisible = false;
+            
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    const idx = (y * width + x) * 4;
+                    if (data[idx + 3] > 10) {
+                        hasVisible = true;
+                        minX = Math.min(minX, x);
+                        minY = Math.min(minY, y);
+                        maxX = Math.max(maxX, x);
+                        maxY = Math.max(maxY, y);
+                    }
+                }
+            }
+            
+            if (!hasVisible) {
+                return { offsetX: 0, offsetY: 0, width, height, centerX: width/2, centerY: height/2, feetX: width/2, feetY: height };
+            }
+            
+            const modelW = maxX - minX + 1;
+            const modelH = maxY - minY + 1;
+            
+            return {
+                offsetX: minX,
+                offsetY: minY,
+                width: modelW,
+                height: modelH,
+                centerX: minX + Math.floor(modelW / 2),
+                centerY: minY + Math.floor(modelH / 2),
+                feetX: minX + Math.floor(modelW / 2),
+                feetY: maxY + 1
+            };
+        }
+
+        // 更新统计
+        function updateStats() {
+            if (!currentSpriteData) return;
+            
+            const sd = currentSpriteData;
+            document.getElementById('canvasSize').textContent = `${sd.canvasWidth}x${sd.canvasHeight}`;
+            document.getElementById('modelSize').textContent = `${sd.modelWidth}x${sd.modelHeight}`;
+            
+            const fillRate = ((sd.modelWidth * sd.modelHeight) / (sd.canvasWidth * sd.canvasHeight) * 100).toFixed(1);
+            document.getElementById('fillRate').textContent = `${fillRate}%`;
+            
+            document.getElementById('feetOffset').textContent = `(${sd.anchor.feet.x}, ${sd.anchor.feet.y})`;
+            document.getElementById('centerOffset').textContent = `(${sd.anchor.center.x}, ${sd.anchor.center.y})`;
+        }
+
+        // 渲染循环
+        function startRenderLoop() {
+            if (animationId) cancelAnimationFrame(animationId);
+            
+            function render() {
+                if (!currentImage || !currentSpriteData) return;
+                
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                const scale = parseFloat(document.getElementById('scaleSlider').value);
+                const hitboxW = parseInt(document.getElementById('hitboxWSlider').value) / 100;
+                const hitboxH = parseInt(document.getElementById('hitboxHSlider').value) / 100;
+                
+                // 更新碰撞箱比例
+                currentSpriteData.hitboxRatio = { w: hitboxW, h: hitboxH };
+                
+                // 居中绘制
+                const centerX = canvas.width / 2;
+                const centerY = canvas.height / 2;
+                
+                // 计算绘制位置
+                const renderPos = currentSpriteData.worldToRender(centerX, centerY, scale, 'feet');
+                const drawSize = currentSpriteData.getDrawSize(scale);
+                
+                // 绘制图片
+                ctx.drawImage(currentImage, renderPos.x, renderPos.y, drawSize.width, drawSize.height);
+                
+                // 绘制调试图层
+                ctx.save();
+                
+                // 画布边界（红）
+                if (document.getElementById('showCanvasBounds').checked) {
+                    ctx.strokeStyle = 'rgba(255, 0, 0, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(renderPos.x, renderPos.y, drawSize.width, drawSize.height);
+                }
+                
+                // 模型边界（绿）
+                if (document.getElementById('showModelBounds').checked) {
+                    const modelLeft = renderPos.x + currentSpriteData.modelOffsetX * scale;
+                    const modelTop = renderPos.y + currentSpriteData.modelOffsetY * scale;
+                    ctx.strokeStyle = 'rgba(0, 255, 0, 0.8)';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(modelLeft, modelTop, 
+                        currentSpriteData.modelWidth * scale, 
+                        currentSpriteData.modelHeight * scale);
+                }
+                
+                // 碰撞箱（蓝）
+                if (document.getElementById('showHitbox').checked) {
+                    const hitbox = currentSpriteData.getHitbox(centerX, centerY, scale);
+                    ctx.strokeStyle = 'rgba(0, 100, 255, 0.9)';
+                    ctx.lineWidth = 3;
+                    ctx.setLineDash([5, 5]);
+                    ctx.strokeRect(hitbox.x, hitbox.y, hitbox.width, hitbox.height);
+                }
+                
+                // 锚点
+                if (document.getElementById('showAnchors').checked) {
+                    const feet = currentSpriteData.getFeetPosition(centerX, centerY, scale, 'feet');
+                    const center = currentSpriteData.getCenterPosition(centerX, centerY, scale, 'feet');
+                    
+                    // 脚底（黄）
+                    ctx.fillStyle = 'yellow';
+                    ctx.beginPath();
+                    ctx.arc(feet.x, feet.y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                    
+                    // 中心（紫）
+                    ctx.fillStyle = 'magenta';
+                    ctx.beginPath();
+                    ctx.arc(center.x, center.y, 6, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                
+                ctx.restore();
+                
+                animationId = requestAnimationFrame(render);
+            }
+            
+            render();
+        }
+
+        // 导出 JSON
+        function exportJSON() {
+            if (!currentSpriteData) {
+                log('没有可导出的数据', 'error');
+                return;
+            }
+            
+            const data = {
+                src: 'assets/sprites/your_sprite.png',
+                canvasWidth: currentSpriteData.canvasWidth,
+                canvasHeight: currentSpriteData.canvasHeight,
+                modelOffsetX: currentSpriteData.modelOffsetX,
+                modelOffsetY: currentSpriteData.modelOffsetY,
+                modelWidth: currentSpriteData.modelWidth,
+                modelHeight: currentSpriteData.modelHeight,
+                anchor: currentSpriteData.anchor,
+                hitboxRatio: currentSpriteData.hitboxRatio,
+                shadowOffsetY: 2
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'sprite_data.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            log('JSON 已导出');
+        }
+
+        // 清空
+        function clearAll() {
+            currentImage = null;
+            currentSpriteData = null;
+            if (animationId) cancelAnimationFrame(animationId);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            document.getElementById('stats').querySelectorAll('.stat-value').forEach(el => el.textContent = '-');
+            log('已清空');
+        }
+
+        // 滑块事件
+        document.getElementById('scaleSlider').addEventListener('input', (e) => {
+            document.getElementById('scaleValue').textContent = e.target.value;
+        });
+        document.getElementById('hitboxWSlider').addEventListener('input', (e) => {
+            document.getElementById('hitboxWValue').textContent = e.target.value;
+        });
+        document.getElementById('hitboxHSlider').addEventListener('input', (e) => {
+            document.getElementById('hitboxHValue').textContent = e.target.value;
+        });
+
+        // 初始化
+        log('SpriteDebugger 已就绪');
+        log('选择图片开始分析');
+    </script>
+</body>
+</html>

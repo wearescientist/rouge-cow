@@ -78,6 +78,7 @@ class TotemSystem {
             this.collected.add(totemId);
             this.saveProgress();
             this.applyBlessing(totemId);
+            window.collectionCodex?.unlockTotem?.(totemId);
             this.showCollectNotification(totemId);
             return true;
         }
@@ -294,5 +295,6 @@ class TotemSystem {
     }
 }
 
+window.TOTEM_DATA = TOTEM_DATA;
 // 创建全局实例
 window.totemSystem = new TotemSystem();

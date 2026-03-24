@@ -1,6 +1,23 @@
 class SidebarHudPresenter {
     constructor(game) {
         this.game = game;
+        this.textCache = new Map();
+        this.lastFastUpdate = 0;
+        this.lastEquipmentUpdate = 0;
+        this.lastItemUpdate = 0;
+        this.lastMiniMapUpdate = 0;
+        this.sidebarFitQueued = false;
+        this.sidebarFitSignature = '';
+        this.debugSnapshot = {
+            lastFrameCost: 0,
+            lastFastUpdate: 0,
+            lastEquipmentUpdate: 0,
+            lastItemUpdate: 0,
+            lastMiniMapUpdate: 0
+        };
+        this.equipmentSignature = '';
+        this.itemSignature = '';
+        this.miniMapSignature = '';
         this.roomNames = {
             start: '起点',
             normal: '战斗',
@@ -13,22 +30,185 @@ class SidebarHudPresenter {
     }
 
     update() {
+        const start = performance.now();
+        const now = start;
         const game = this.game;
+        let shouldFitSidebars = false;
         game.applyFloorHudTheme();
-        this.updatePrimaryStats();
-        this.updateEquipment();
-        this.updateCombatStats();
-        this.updateRunStats();
-        this.updateItemGrid();
-        this.updateHeartsAndExp();
-        this.updateLegacyTopInfo();
-        this.updateMiniMap();
-        // updateMobileActionState 由 Game 独立管理
+
+        if (now - this.lastFastUpdate >= 80) {
+            this.updatePrimaryStats();
+            this.updateCombatStats();
+            this.updateRunStats();
+            this.updateHeartsAndExp();
+            this.updateLegacyTopInfo();
+            this.lastFastUpdate = now;
+            this.debugSnapshot.lastFastUpdate = now;
+        }
+
+        const equipmentSignature = this.getEquipmentSignature();
+        if (equipmentSignature !== this.equipmentSignature || now - this.lastEquipmentUpdate >= 250) {
+            this.updateEquipment();
+            this.equipmentSignature = equipmentSignature;
+            this.lastEquipmentUpdate = now;
+            this.debugSnapshot.lastEquipmentUpdate = now;
+            shouldFitSidebars = true;
+        }
+
+        const itemSignature = this.getItemSignature();
+        if (itemSignature !== this.itemSignature || now - this.lastItemUpdate >= 250) {
+            this.updateItemGrid();
+            this.itemSignature = itemSignature;
+            this.lastItemUpdate = now;
+            this.debugSnapshot.lastItemUpdate = now;
+            shouldFitSidebars = true;
+        }
+
+        const miniMapSignature = this.getMiniMapSignature();
+        if (miniMapSignature !== this.miniMapSignature || now - this.lastMiniMapUpdate >= 180) {
+            this.updateMiniMap(now);
+            this.miniMapSignature = miniMapSignature;
+            this.lastMiniMapUpdate = now;
+            this.debugSnapshot.lastMiniMapUpdate = now;
+            shouldFitSidebars = true;
+        }
+
+        if (shouldFitSidebars) {
+            this.scheduleSidebarFit();
+        }
+
+        this.debugSnapshot.lastFrameCost = performance.now() - start;
+    }
+
+    scheduleSidebarFit(force = false) {
+        if (force) {
+            this.sidebarFitSignature = '';
+        }
+        if (this.sidebarFitQueued) return;
+        this.sidebarFitQueued = true;
+        requestAnimationFrame(() => {
+            this.sidebarFitQueued = false;
+            this.fitSidebars(force);
+        });
+    }
+
+    fitSidebars(force = false) {
+        const layout = document.getElementById('mainLayout');
+        const leftSidebar = document.getElementById('leftSidebar');
+        const rightSidebar = document.getElementById('rightSidebar');
+        if (!layout || !leftSidebar || !rightSidebar) return;
+
+        const signature = [
+            Math.round(window.innerWidth),
+            Math.round(window.innerHeight),
+            this.equipmentSignature,
+            this.itemSignature,
+            this.miniMapSignature,
+            document.getElementById('sidebarHp')?.textContent || '',
+            document.getElementById('sidebarScore')?.textContent || ''
+        ].join('|');
+        if (!force && signature === this.sidebarFitSignature) return;
+        this.sidebarFitSignature = signature;
+
+        this.fitSidebarColumn(leftSidebar, {
+            anchorSide: 'right',
+            origin: 'top right'
+        });
+        this.fitSidebarColumn(rightSidebar, {
+            anchorSide: 'left',
+            origin: 'top left'
+        });
+    }
+
+    fitSidebarColumn(sidebar, options = {}) {
+        const stack = sidebar?.querySelector('.sidebar-stack');
+        if (!stack || getComputedStyle(sidebar).display === 'none') return;
+
+        const previous = {
+            transform: stack.style.transform,
+            transformOrigin: stack.style.transformOrigin,
+            top: stack.style.top,
+            left: stack.style.left,
+            right: stack.style.right
+        };
+
+        stack.style.transform = 'none';
+        stack.style.transformOrigin = options.origin || 'top left';
+        stack.style.top = '0px';
+        stack.style.left = '0px';
+        stack.style.right = 'auto';
+
+        const availableWidth = sidebar.clientWidth;
+        const availableHeight = sidebar.clientHeight;
+        const contentWidth = Math.max(stack.offsetWidth, stack.scrollWidth);
+        const contentHeight = Math.max(stack.offsetHeight, stack.scrollHeight);
+
+        if (!availableWidth || !availableHeight || !contentWidth || !contentHeight) {
+            stack.style.transform = previous.transform;
+            stack.style.transformOrigin = previous.transformOrigin;
+            stack.style.top = previous.top;
+            stack.style.left = previous.left;
+            stack.style.right = previous.right;
+            return;
+        }
+
+        const scale = Math.min(availableWidth / contentWidth, availableHeight / contentHeight, 1);
+        const scaledWidth = contentWidth * scale;
+        const scaledHeight = contentHeight * scale;
+        const top = Math.max((availableHeight - scaledHeight) / 2, 0);
+
+        stack.style.top = `${Math.round(top)}px`;
+        if (options.anchorSide === 'right') {
+            stack.style.left = `${Math.max(availableWidth - scaledWidth, 0)}px`;
+            stack.style.right = 'auto';
+        } else {
+            stack.style.left = '0px';
+            stack.style.right = 'auto';
+        }
+        stack.style.transformOrigin = options.origin || 'top left';
+        stack.style.transform = `scale(${scale})`;
+        stack.dataset.sidebarScale = scale.toFixed(4);
     }
 
     setText(id, value) {
         const el = document.getElementById(id);
-        if (el) el.textContent = value;
+        const nextValue = String(value);
+        if (!el || this.textCache.get(id) === nextValue) return;
+        el.textContent = nextValue;
+        this.textCache.set(id, nextValue);
+    }
+
+    getEquipmentSignature() {
+        const weapons = (this.game.weapons || []).map((weapon) => `${weapon.baseKey}:${weapon.level}:${weapon.isSuper ? 1 : 0}`).join('|');
+        const passives = (this.game.passives ? this.game.passives.getOwnedPassives() : [])
+            .map((passive) => `${passive.key || passive.id || passive.name}:${passive.level}`)
+            .join('|');
+        const petSkills = (this.game.petManager?.getSkillEntries?.() || [])
+            .map((entry) => `${entry.key}:${entry.level}`)
+            .join('|');
+        const petUnlocked = this.game.petManager?.isUnlocked ? '1' : '0';
+        return `${weapons}__${passives}__${petUnlocked}__${petSkills}`;
+    }
+
+    getItemSignature() {
+        const ownedItems = this.game.items ? this.game.items.getOwnedItems() : [];
+        return ownedItems
+            .slice(0, 20)
+            .map((item) => item ? `${item.id}:${item.rarity}:${item.icon}` : 'empty')
+            .join('|');
+    }
+
+    getMiniMapSignature() {
+        const rooms = this.game.allRooms ? Array.from(this.game.allRooms.values()) : [];
+        const visibleRooms = rooms.filter((room) => room.type !== 'hidden');
+        const visitedCount = visibleRooms.reduce((count, room) => count + (room.visited ? 1 : 0), 0);
+        const currentRoom = this.game.curRoom;
+        const roomKey = currentRoom ? `${currentRoom.gx},${currentRoom.gy},${currentRoom.type}` : 'none';
+        return `${this.game.currentFloor}|${rooms.length}|${visitedCount}|${roomKey}`;
+    }
+
+    getDebugSnapshot() {
+        return { ...this.debugSnapshot };
     }
 
     updatePrimaryStats() {
@@ -40,6 +220,8 @@ class SidebarHudPresenter {
         this.setText('sidebarFloor', `${game.currentFloor}/${game.maxFloors}`);
         this.setText('sidebarMapFloor', `第${game.currentFloor}层`);
         this.setText('sidebarMapZone', floorNameText);
+        this.setText('mobileGold', game.player.gold);
+        this.setText('mobileFloor', `${game.currentFloor}/${game.maxFloors}`);
 
         if (game.curRoom) {
             const roomName = this.roomNames[game.curRoom.type] || '探索';
@@ -73,7 +255,9 @@ class SidebarHudPresenter {
             emptyTitle: '空武器槽',
             className: (weapon) => `equipment-slot${weapon ? '' : ' empty'}${weapon && weapon.isSuper ? ' active' : ''}`,
             title: (weapon) => `${weapon.cfg.name} ${weapon.isSuper ? '[超武]' : `[Lv.${weapon.level}]`}`,
-            icon: (weapon) => weapon.cfg.iconSprite ? `<img src="assets/sprites/weapons/${weapon.cfg.iconSprite}.png" alt="${weapon.cfg.name}" style="width:100%;height:100%;object-fit:contain;">` : weapon.cfg.icon,
+            icon: (weapon) => (window.WeaponIconResolver
+                ? window.WeaponIconResolver.getMarkup(weapon.cfg, { style: 'width:100%;height:100%;object-fit:contain;', altText: weapon.cfg.name })
+                : (weapon.cfg.iconSprite ? `<img src="assets/runtime/sprites/weapons/${weapon.cfg.iconSprite}.png" alt="${weapon.cfg.name}" style="width:100%;height:100%;object-fit:contain;">` : weapon.cfg.icon)),
             level: (weapon) => (weapon.isSuper ? 'MAX' : `Lv${weapon.level}`)
         });
 
@@ -100,21 +284,52 @@ class SidebarHudPresenter {
                 ? ownedPassives.slice(0, 2).map((p) => p.name).join(' / ') + (ownedPassives.length > 2 ? ` +${ownedPassives.length - 2}` : '')
                 : '被动与武器联动可合成超武';
         }
+
+        const petEntries = game.petManager?.getSkillEntries?.() || [];
+        this.renderEquipmentSlots('sidebarPetSkills', petEntries, {
+            maxSlots: 6,
+            emptyTitle: '空宠物技能槽',
+            className: (entry) => `equipment-slot passive-slot pet-slot${entry && entry.unlocked ? ' active' : ''}${entry ? '' : ' empty'}`,
+            title: (entry) => entry.unlocked ? `${entry.name} [Lv.${entry.level}]` : `${entry.name} [未解锁]`,
+            icon: (entry) => entry.icon,
+            level: (entry) => entry.level > 0 ? `Lv${entry.level}` : '--'
+        });
+
+        const petSummaryEl = document.getElementById('sidebarPetSummary');
+        if (petSummaryEl) {
+            if (!game.petManager?.isUnlocked) {
+                petSummaryEl.textContent = '拾取灵宠契约后开启宠物技能池';
+            } else {
+                const unlocked = petEntries.filter((entry) => entry.level > 0);
+                petSummaryEl.textContent = unlocked.length > 0
+                    ? `守护灵宠 · ${unlocked.map((entry) => `${entry.name}Lv${entry.level}`).slice(0, 2).join(' / ')}${unlocked.length > 2 ? ` +${unlocked.length - 2}` : ''}`
+                    : '守护灵宠已跟随，继续拾取宠物技能成长';
+            }
+        }
     }
 
     updateCombatStats() {
         const game = this.game;
         if (!game.items) return;
-        const stats = game.items.getStats();
+        const stats = game.items.getStats() || {};
+        const petBonuses = game.petManager?.getTeamBonuses?.() || {};
+        const speed = Number.isFinite(stats.speed) ? stats.speed : 1;
+        const fireRateBase = Number.isFinite(stats.fireRate) ? stats.fireRate : 1;
+        const fireRate = fireRateBase * (1 + (petBonuses.fireRateMul || 0));
+        const critBase = Number.isFinite(stats.crit) ? stats.crit : 0;
+        const crit = critBase + (petBonuses.critAdd || 0) + ((petBonuses.luckAdd || 0) * 0.5);
+        const armor = Number.isFinite(stats.armor) ? stats.armor : 0;
+        const projSize = Number.isFinite(stats.projSize) ? stats.projSize : 1;
         let totalDmg = 0;
         game.weapons.forEach((weapon) => {
-            totalDmg += Math.floor(weapon.getDamage(stats) * stats.projSize);
+            totalDmg += Math.floor(weapon.getDamage(stats) * projSize);
         });
+        totalDmg = Math.floor(totalDmg * (1 + (petBonuses.dmgMul || 0)));
         this.setText('sidebarDmg', totalDmg);
-        this.setText('sidebarSpeed', `${Math.floor(stats.speed * 100)}%`);
-        this.setText('sidebarFireRate', `${Math.floor(stats.fireRate * 100)}%`);
-        this.setText('sidebarCrit', `${Math.floor(stats.crit * 100)}%`);
-        const blockChance = Math.min(50, Math.round(stats.armor / (stats.armor + 17) * 100));
+        this.setText('sidebarSpeed', `${Math.floor(speed * 100)}%`);
+        this.setText('sidebarFireRate', `${Math.floor(fireRate * 100)}%`);
+        this.setText('sidebarCrit', `${Math.floor(crit * 100)}%`);
+        const blockChance = armor > 0 ? Math.min(50, Math.round(armor / (armor + 17) * 100)) : 0;
         this.setText('sidebarArmor', `${blockChance}%`);
     }
 
@@ -135,6 +350,7 @@ class SidebarHudPresenter {
         const minutes = String(Math.floor(totalSeconds / 60)).padStart(2, '0');
         const seconds = String(totalSeconds % 60).padStart(2, '0');
         this.setText('sidebarTime', `${minutes}:${seconds}`);
+        this.setText('mobileTime', `${minutes}:${seconds}`);
     }
 
     updateItemGrid() {
@@ -224,21 +440,39 @@ class SidebarHudPresenter {
             slot.id = `sidebarItem${i}`;
             grid.appendChild(slot);
         }
+        this.scheduleSidebarFit(true);
     }
 
     updateMobileActionState(context) {
         const game = this.game;
         const interactBtn = game.mobileButtons?.interactBtn || document.getElementById('mobileInteractBtn');
+        const confirmBtn = game.mobileButtons?.confirmBtn || document.getElementById('mobileConfirmBtn');
         const talkBtn = game.mobileButtons?.talkBtn || document.getElementById('mobileTalkBtn');
+        const cancelBtn = game.mobileButtons?.cancelBtn || document.getElementById('mobileCancelBtn');
+        const auxBtn = game.mobileButtons?.auxBtn || document.getElementById('mobileAuxBtn');
         const choiceStrip = document.getElementById('mobileChoiceStrip');
 
         if (interactBtn && context.label !== undefined) {
             interactBtn.textContent = context.label;
         }
 
+        if (confirmBtn) {
+            confirmBtn.textContent = context.showChoices ? '选择' : '确认';
+        }
+
         if (talkBtn) {
             talkBtn.classList.toggle('hidden', !context.canTalk);
             if (context.talkLabel) talkBtn.textContent = context.talkLabel;
+        }
+
+        if (cancelBtn) {
+            cancelBtn.classList.toggle('hidden', !(game.shopOpen || game.chestOpen || game.weaponBoxOpen || (game.manualPaused && !game.hasBlockingOverlayOpen?.())));
+        }
+
+        if (auxBtn) {
+            const showAux = !!context.showChoices;
+            auxBtn.classList.toggle('hidden', !showAux);
+            if (showAux) auxBtn.textContent = '选1';
         }
 
         if (choiceStrip) {
@@ -276,7 +510,7 @@ class SidebarHudPresenter {
         }
     }
 
-    updateMiniMap() {
+    updateMiniMap(now = performance.now()) {
         const game = this.game;
         const canvases = [
             document.getElementById('miniMapCanvas'),
@@ -288,7 +522,8 @@ class SidebarHudPresenter {
 
         game.applyFloorHudTheme();
         const mapColors = game.themeToneResolver.getMiniMapColors();
-        const rooms = Array.from(game.allRooms.values());
+        const revealAll = !!(game.items?.getStats?.()?.fullMapScroll);
+        const rooms = Array.from(game.allRooms.values()).filter((room) => room.type !== 'hidden');
         let minX = 0, maxX = 0, minY = 0, maxY = 0;
 
         for (const r of rooms) {
@@ -322,24 +557,38 @@ class SidebarHudPresenter {
                 const ry = offsetY + (r.gy - minY) * cellSize + 2;
                 const rw = cellSize - 4;
 
-                if (r.visited) {
-                    switch(r.type) {
-                        case 'start': ctx.fillStyle = mapColors.start; break;
-                        case 'boss': ctx.fillStyle = mapColors.boss; break;
-                        case 'treasure': ctx.fillStyle = mapColors.treasure; break;
-                        case 'shop': ctx.fillStyle = mapColors.shop; break;
-                        case 'elite': ctx.fillStyle = mapColors.elite; break;
-                        default: ctx.fillStyle = mapColors.normal;
+                const isVisited = !!r.visited;
+                const isVisible = revealAll || isVisited;
+                if (isVisible) {
+                    if (!isVisited && revealAll) {
+                        ctx.save();
+                        ctx.globalAlpha = 0.52;
+                        ctx.fillStyle = '#6f7480';
+                        ctx.fillRect(rx, ry, rw, rw);
+                        ctx.globalAlpha = 0.95;
+                        ctx.strokeStyle = '#b9c0cd';
+                        ctx.lineWidth = size <= 140 ? 1 : 1.5;
+                        ctx.strokeRect(rx, ry, rw, rw);
+                        ctx.restore();
+                    } else {
+                        switch(r.type) {
+                            case 'start': ctx.fillStyle = mapColors.start; break;
+                            case 'boss': ctx.fillStyle = mapColors.boss; break;
+                            case 'treasure': ctx.fillStyle = mapColors.treasure; break;
+                            case 'shop': ctx.fillStyle = mapColors.shop; break;
+                            case 'elite': ctx.fillStyle = mapColors.elite; break;
+                            default: ctx.fillStyle = mapColors.normal;
+                        }
+                        ctx.fillRect(rx, ry, rw, rw);
                     }
-                    ctx.fillRect(rx, ry, rw, rw);
                 } else {
                     ctx.strokeStyle = mapColors.unvisited;
                     ctx.lineWidth = size <= 140 ? 1 : 1.5;
                     ctx.strokeRect(rx, ry, rw, rw);
                 }
 
-                if (r.type === 'boss' && r.visited) {
-                    const pulse = 0.5 + Math.sin(Date.now() / 150) * 0.5;
+                if (r.type === 'boss' && isVisible) {
+                    const pulse = 0.5 + Math.sin(now / 150) * 0.5;
                     ctx.strokeStyle = mapColors.boss;
                     ctx.globalAlpha = 0.8 + pulse * 0.2;
                     ctx.lineWidth = size <= 140 ? 2 : 3;
@@ -355,7 +604,7 @@ class SidebarHudPresenter {
                 }
 
                 if (r === game.curRoom) {
-                    const pulse = 1 + Math.sin(Date.now() / 200) * 0.3;
+                    const pulse = 1 + Math.sin(now / 200) * 0.3;
                     ctx.strokeStyle = mapColors.current;
                     ctx.lineWidth = size <= 140 ? 2 : 3;
                     ctx.strokeRect(rx - 2, ry - 2, rw + 4, rw + 4);

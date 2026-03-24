@@ -176,8 +176,12 @@ class OverlayCanvasRenderer {
             subtitle: '按 ESC 键恢复游戏'
         });
         ctx.fillStyle = 'rgba(255, 244, 220, 0.035)';
-        ctx.fillRect(panel.x + 24 * panel.scale, panel.y + 74 * panel.scale, panel.width - 48 * panel.scale, 40 * panel.scale);
+        ctx.fillRect(panel.x + 24 * panel.scale, panel.y + 74 * panel.scale, panel.width - 48 * panel.scale, 56 * panel.scale);
         ctx.textAlign = 'center';
+        const seedText = `种子 ${game.runSeed || '----'}`;
+        ctx.fillStyle = tones.muted;
+        this.text(ctx, 16 * panel.scale, 'bold ');
+        ctx.fillText(seedText, panel.x + panel.width / 2, panel.y + 100 * panel.scale);
         const labels = [
             { id: 'resume', text: '继续游戏' },
             { id: 'settings', text: '游戏设置' },
@@ -524,9 +528,31 @@ class OverlayCanvasRenderer {
                 ctx.fillStyle = tones.statusPassive;
                 this.text(ctx, 13 * scale, 'bold ');
                 ctx.fillText(`Lv.${option.level}/${option.maxLevel}`, centerX, infoY);
+
+                const baseDescY = contentY + card.h * 0.66;
+                const hintY = contentY + card.h * 0.79;
+                const superInfo = option.superInfo || null;
+
                 ctx.fillStyle = tones.muted;
                 this.text(ctx, 11 * scale);
-                ctx.fillText(this.truncate(option.data.desc, Math.max(8, Math.round(18 * scale))), centerX, contentY + card.h * 0.7);
+                ctx.fillText(this.truncate(option.data.desc, Math.max(8, Math.round(18 * scale))), centerX, baseDescY);
+
+                if (superInfo) {
+                    const ownedHint = superInfo.owned === true;
+                    const readyHint = superInfo.canEvolve === true;
+                    const weaponLabel = `${superInfo.weaponName}→${superInfo.superName}`;
+                    let hintColor = tones.muted;
+                    if (readyHint) hintColor = tones.gold;
+                    else if (ownedHint) hintColor = tones.statusNew;
+                    else hintColor = '#b79eff';
+
+                    const prefix = readyHint
+                        ? `已持有 Lv.${superInfo.level} · 可合成超武：`
+                        : (ownedHint ? `已持有 Lv.${superInfo.level} · 超武配方：` : '超武配方：');
+                    ctx.fillStyle = hintColor;
+                    this.text(ctx, ownedHint ? 11.5 * scale : 10.5 * scale, ownedHint ? 'bold ' : '');
+                    ctx.fillText(this.truncate(prefix + weaponLabel, Math.max(8, Math.round(20 * scale))), centerX, hintY);
+                }
             }
         });
         this.setRegion('levelUp', panel, { cards });
@@ -568,7 +594,7 @@ class OverlayCanvasRenderer {
             { label: '⚔️ 击杀敌人', value: data.stats.enemiesKilled, color: tones.inkText },
             { label: '🚪 探索房间', value: data.stats.roomsExplored, color: tones.inkText },
             { label: '💰 获得金币', value: game.player.gold, color: tones.gold },
-            { label: '📍 到达层数', value: `${game.currentFloor}/6`, color: tones.inkText },
+            { label: '📍 到达层数', value: `${game.currentFloor}/${game.maxFloors}`, color: tones.inkText },
             { label: '⭐ 最高等级', value: `Lv.${game.player.lv}`, color: tones.statusPassive }
         ];
         const rowHeight = Math.min(45 * scale, (panel.height - 96 * scale) / stats.length);

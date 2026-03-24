@@ -137,6 +137,7 @@ class SimpleLighting {
      */
     render() {
         if (!this.enabled || this.lights.length === 0) return;
+        if (this.game?.curRoom?.type === 'hidden') return;
         
         // 创建光照层
         const lightCanvas = document.createElement('canvas');

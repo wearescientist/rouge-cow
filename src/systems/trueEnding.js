@@ -25,6 +25,7 @@ class TrueEndingSystem {
         if (!this.unlocked) {
             this.unlocked = true;
             this.saveProgress();
+            window.collectionCodex?.onTrueRouteUnlocked?.();
             this.showUnlockNotification();
         }
     }
@@ -72,6 +73,7 @@ class TrueEndingSystem {
     playTrueEnding() {
         if (this.played) return;
         this.played = true;
+        window.collectionCodex?.onTrueEnding?.();
         
         const scenes = [
             {

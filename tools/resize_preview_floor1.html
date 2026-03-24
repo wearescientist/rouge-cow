@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怪物贴图尺寸压缩对比 - Floor 1</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, sans-serif; background: #1a1a2e; color: #eee; padding: 20px; }
+        h1 { text-align: center; color: #ffd700; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; font-size: 14px; }
+        .legend { 
+            display: flex; justify-content: center; gap: 20px; margin-bottom: 30px; 
+            flex-wrap: wrap; font-size: 13px;
+        }
+        .legend-item { display: flex; align-items: center; gap: 5px; }
+        .legend-dot { width: 12px; height: 12px; border-radius: 2px; }
+        .dot-huge { background: #ff4444; }   <!-- 50% -->
+        .dot-large { background: #ff8844; }  <!-- 60% -->
+        .dot-medium { background: #ffcc44; } <!-- 70% -->
+        .dot-normal { background: #88cc44; } <!-- 75% -->
+        .dot-small { background: #4488cc; }  <!-- 85% -->
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: #2a2a3e;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #444;
+        }
+        
+        .card.huge { border-color: #ff4444; }   <!-- >150k -->
+        .card.large { border-color: #ff8844; }  <!-- 90-150k -->
+        .card.medium { border-color: #ffcc44; } <!-- 70-90k -->
+        .card.normal { border-color: #88cc44; } <!-- 60-70k -->
+        .card.small { border-color: #4488cc; }  <!-- 50-60k -->
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        
+        .monster-name { font-weight: bold; font-size: 14px; }
+        .compress-tag {
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+        .tag-huge { background: #ff4444; color: #fff; }
+        .tag-large { background: #ff8844; color: #fff; }
+        .tag-medium { background: #ffcc44; color: #000; }
+        .tag-normal { background: #88cc44; color: #fff; }
+        .tag-small { background: #4488cc; color: #fff; }
+        
+        .size-info {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 10px;
+        }
+        
+        .preview {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        
+        .preview-box {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .preview-box img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 6px;
+            background: #0a0a1e;
+        }
+        
+        .preview-label {
+            font-size: 11px;
+            color: #888;
+            margin-top: 5px;
+        }
+        
+        .preview-label.original { color: #ff6b6b; }
+        .preview-label.resized { color: #4ecdc4; }
+    </style>
+</head>
+<body>
+    <h1>📐 怪物贴图智能压缩对比</h1>
+    <p class="subtitle">根据原始像素数动态调整 | Floor 1</p>
+    
+    <div class="legend">
+        <div class="legend-item"><div class="legend-dot dot-huge"></div>>150k 像素 → 50%压缩</div>
+        <div class="legend-item"><div class="legend-dot dot-large"></div>90-150k → 60%</div>
+        <div class="legend-item"><div class="legend-dot dot-medium"></div>70-90k → 70%</div>
+        <div class="legend-item"><div class="legend-dot dot-normal"></div>60-70k → 75%</div>
+        <div class="legend-item"><div class="legend-dot dot-small"></div>50-60k → 85%</div>
+    </div>
+    
+    <div class="grid">
+
+        <div class="card huge">
+            <div class="card-header">
+                <span class="monster-name">chick/spr</span>
+                <span class="compress-tag tag-huge">50%</span>
+            </div>
+            <div class="size-info">
+                364×556 (202,384px) → 182×278 (50,596px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/chick/spr/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 364×556</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/chick/spr/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 182×278</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card large">
+            <div class="card-header">
+                <span class="monster-name">pigeon/v1</span>
+                <span class="compress-tag tag-large">60%</span>
+            </div>
+            <div class="size-info">
+                363×276 (100,188px) → 218×166 (36,067px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/pigeon/v1/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 363×276</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/pigeon/v1/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 218×166</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card large">
+            <div class="card-header">
+                <span class="monster-name">ghost/v3</span>
+                <span class="compress-tag tag-large">60%</span>
+            </div>
+            <div class="size-info">
+                345×274 (94,530px) → 207×164 (34,030px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/ghost/v3/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 345×274</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/ghost/v3/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 207×164</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card medium">
+            <div class="card-header">
+                <span class="monster-name">snail/v4</span>
+                <span class="compress-tag tag-medium">70%</span>
+            </div>
+            <div class="size-info">
+                380×235 (89,300px) → 266×165 (43,756px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/snail/v4/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 380×235</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/snail/v4/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 266×165</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card medium">
+            <div class="card-header">
+                <span class="monster-name">mimic/v5</span>
+                <span class="compress-tag tag-medium">70%</span>
+            </div>
+            <div class="size-info">
+                336×263 (88,368px) → 235×184 (43,300px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/mimic/v5/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 336×263</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/mimic/v5/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 235×184</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card medium">
+            <div class="card-header">
+                <span class="monster-name">ghost/v4</span>
+                <span class="compress-tag tag-medium">70%</span>
+            </div>
+            <div class="size-info">
+                299×277 (82,823px) → 209×194 (40,583px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/ghost/v4/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 299×277</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/ghost/v4/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 209×194</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card medium">
+            <div class="card-header">
+                <span class="monster-name">bat/v2</span>
+                <span class="compress-tag tag-medium">70%</span>
+            </div>
+            <div class="size-info">
+                364×225 (81,900px) → 255×158 (40,131px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/bat/v2/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 364×225</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/bat/v2/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 255×158</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card medium">
+            <div class="card-header">
+                <span class="monster-name">fox/v1</span>
+                <span class="compress-tag tag-medium">70%</span>
+            </div>
+            <div class="size-info">
+                384×210 (80,640px) → 269×147 (39,513px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/fox/v1/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 384×210</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/fox/v1/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 269×147</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card medium">
+            <div class="card-header">
+                <span class="monster-name">rabbit2/v2</span>
+                <span class="compress-tag tag-medium">70%</span>
+            </div>
+            <div class="size-info">
+                326×234 (76,284px) → 228×164 (37,379px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/rabbit2/v2/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 326×234</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/rabbit2/v2/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 228×164</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card medium">
+            <div class="card-header">
+                <span class="monster-name">mimic/v1</span>
+                <span class="compress-tag tag-medium">70%</span>
+            </div>
+            <div class="size-info">
+                317×223 (70,691px) → 222×156 (34,638px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/mimic/v1/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 317×223</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/mimic/v1/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 222×156</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="card-header">
+                <span class="monster-name">bat/v3</span>
+                <span class="compress-tag tag-normal">75%</span>
+            </div>
+            <div class="size-info">
+                325×213 (69,225px) → 244×160 (38,939px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/bat/v3/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 325×213</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/bat/v3/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 244×160</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card normal">
+            <div class="card-header">
+                <span class="monster-name">pigeon/v4</span>
+                <span class="compress-tag tag-normal">75%</span>
+            </div>
+            <div class="size-info">
+                338×191 (64,558px) → 254×143 (36,313px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/pigeon/v4/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 338×191</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/pigeon/v4/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 254×143</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card small">
+            <div class="card-header">
+                <span class="monster-name">panther/v1</span>
+                <span class="compress-tag tag-small">85%</span>
+            </div>
+            <div class="size-info">
+                335×177 (59,295px) → 285×151 (42,840px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/panther/v1/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 335×177</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/panther/v1/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 285×151</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card small">
+            <div class="card-header">
+                <span class="monster-name">fox/v3</span>
+                <span class="compress-tag tag-small">85%</span>
+            </div>
+            <div class="size-info">
+                313×188 (58,844px) → 266×160 (42,514px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/fox/v3/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 313×188</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/fox/v3/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 266×160</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card small">
+            <div class="card-header">
+                <span class="monster-name">crab/v4</span>
+                <span class="compress-tag tag-small">85%</span>
+            </div>
+            <div class="size-info">
+                316×186 (58,776px) → 269×159 (42,465px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/crab/v4/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 316×186</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/crab/v4/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 269×159</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card small">
+            <div class="card-header">
+                <span class="monster-name">snake/v4</span>
+                <span class="compress-tag tag-small">85%</span>
+            </div>
+            <div class="size-info">
+                329×178 (58,562px) → 280×152 (42,311px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/snake/v4/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 329×178</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/snake/v4/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 280×152</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card small">
+            <div class="card-header">
+                <span class="monster-name">snail/v1</span>
+                <span class="compress-tag tag-small">85%</span>
+            </div>
+            <div class="size-info">
+                322×181 (58,282px) → 274×154 (42,108px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/snail/v1/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 322×181</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/snail/v1/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 274×154</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card small">
+            <div class="card-header">
+                <span class="monster-name">rabbit2/v4</span>
+                <span class="compress-tag tag-small">85%</span>
+            </div>
+            <div class="size-info">
+                279×199 (55,521px) → 237×170 (40,113px)
+            </div>
+            <div class="preview">
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/rabbit2/v4/walk/f01.png" 
+                         alt="Original" loading="lazy">
+                    <div class="preview-label original">原始 279×199</div>
+                </div>
+                <div class="preview-box">
+                    <img src="../generated_assets/monster_walk_curated_by_floor_reworked_v2_resized/floor1/rabbit2/v4/walk/f01.png" 
+                         alt="Resized" loading="lazy">
+                    <div class="preview-label resized">压缩后 237×170</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怪物体型分类工具</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a14;
+            color: #eee;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 8px;
+            font-size: 22px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 20px;
+            font-size: 12px;
+        }
+        
+        /* 体型标准 */
+        .size-standards {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .size-badge {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+        
+        .size-small { background: #2ecc71; color: #000; }
+        .size-medium { background: #3498db; color: #fff; }
+        .size-large { background: #e74c3c; color: #fff; }
+        .size-huge { background: #9b59b6; color: #fff; }
+        
+        .size-badge span {
+            font-weight: normal;
+            font-size: 11px;
+            opacity: 0.8;
+        }
+        
+        /* 楼层选择 */
+        .floor-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+        }
+        
+        .floor-btn {
+            padding: 10px 24px;
+            border: 2px solid #333;
+            background: #1a1a2a;
+            color: #888;
+            cursor: pointer;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .floor-btn:hover {
+            border-color: #555;
+            color: #fff;
+        }
+        
+        .floor-btn.active {
+            border-color: #ffd700;
+            background: #2a2a3e;
+            color: #ffd700;
+        }
+        
+        /* 怪物网格 */
+        .monsters-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 15px;
+            max-width: 1400px;
+            margin: 0 auto 30px;
+        }
+        
+        .monster-card {
+            background: #1a1a2a;
+            border-radius: 12px;
+            padding: 15px;
+            border: 2px solid #333;
+            cursor: pointer;
+            transition: all 0.2s;
+            position: relative;
+        }
+        
+        .monster-card:hover {
+            transform: translateY(-2px);
+            border-color: #555;
+        }
+        
+        .monster-card.size-small { border-color: #2ecc71; box-shadow: 0 0 10px rgba(46, 204, 113, 0.2); }
+        .monster-card.size-medium { border-color: #3498db; box-shadow: 0 0 10px rgba(52, 152, 219, 0.2); }
+        .monster-card.size-large { border-color: #e74c3c; box-shadow: 0 0 10px rgba(231, 76, 60, 0.2); }
+        .monster-card.size-huge { border-color: #9b59b6; box-shadow: 0 0 10px rgba(155, 89, 182, 0.2); }
+        
+        .monster-canvas {
+            width: 100%;
+            height: 100px;
+            background: #0f0f1e;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            image-rendering: pixelated;
+        }
+        
+        .monster-name {
+            font-size: 13px;
+            color: #fff;
+            margin-bottom: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .monster-id {
+            font-size: 10px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+        
+        /* 体型选择器 */
+        .size-selector {
+            display: flex;
+            gap: 4px;
+        }
+        
+        .size-option {
+            flex: 1;
+            padding: 6px 4px;
+            border: 1px solid #333;
+            background: #0f0f1e;
+            color: #666;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 11px;
+            text-align: center;
+            transition: all 0.15s;
+        }
+        
+        .size-option:hover {
+            border-color: #555;
+            color: #fff;
+        }
+        
+        .size-option.selected.small { background: #2ecc71; color: #000; border-color: #2ecc71; }
+        .size-option.selected.medium { background: #3498db; color: #fff; border-color: #3498db; }
+        .size-option.selected.large { background: #e74c3c; color: #fff; border-color: #e74c3c; }
+        .size-option.selected.huge { background: #9b59b6; color: #fff; border-color: #9b59b6; }
+        
+        /* 预览区 */
+        .preview-section {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #1a1a2a;
+            border: 2px solid #444;
+            border-radius: 16px;
+            padding: 20px;
+            width: 90%;
+            max-width: 800px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+        }
+        
+        .preview-title {
+            text-align: center;
+            color: #ffd700;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+        
+        .preview-canvas {
+            width: 100%;
+            height: 120px;
+            background: linear-gradient(180deg, #0f0f1e 0%, #050510 100%);
+            border-radius: 8px;
+            image-rendering: pixelated;
+        }
+        
+        .preview-legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 10px;
+            font-size: 11px;
+            color: #888;
+        }
+        
+        /* 导出按钮 */
+        .export-section {
+            text-align: center;
+            margin-top: 30px;
+            padding-bottom: 180px;
+        }
+        
+        .export-btn {
+            padding: 12px 32px;
+            background: #27ae60;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .export-btn:hover {
+            background: #2ecc71;
+            transform: scale(1.05);
+        }
+        
+        /* 统计 */
+        .stats-bar {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .stats-bar span {
+            margin: 0 10px;
+        }
+        
+        .stats-bar .count {
+            color: #ffd700;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎮 怪物体型分类工具</h1>
+    <p class="subtitle">按楼层为怪物分配体型：小(28px) / 中(36px) / 大(44px) / 特大(88px)</p>
+    
+    <div class="size-standards">
+        <div class="size-badge size-small">小 <span>28px</span></div>
+        <div class="size-badge size-medium">中 <span>36px</span></div>
+        <div class="size-badge size-large">大 <span>44px</span></div>
+        <div class="size-badge size-huge">特大 <span>88px</span></div>
+    </div>
+    
+    <div class="floor-tabs">
+        <button class="floor-btn active" data-floor="1">第一层</button>
+        <button class="floor-btn" data-floor="2">第二层</button>
+        <button class="floor-btn" data-floor="3">第三层</button>
+        <button class="floor-btn" data-floor="4">第四层</button>
+        <button class="floor-btn" data-floor="5">第五层</button>
+        <button class="floor-btn" data-floor="6">第六层</button>
+    </div>
+    
+    <div class="stats-bar" id="statsBar">
+        <span>小: <span class="count" id="countSmall">0</span></span>
+        <span>中: <span class="count" id="countMedium">0</span></span>
+        <span>大: <span class="count" id="countLarge">0</span></span>
+        <span>特大: <span class="count" id="countHuge">0</span></span>
+        <span>未分: <span class="count" id="countNone">0</span></span>
+    </div>
+    
+    <div class="monsters-grid" id="monstersGrid"></div>
+    
+    <div class="preview-section">
+        <div class="preview-title">👤 玩家 (40px) vs 当前楼层怪物体型对比预览</div>
+        <canvas class="preview-canvas" id="previewCanvas" width="800" height="120"></canvas>
+        <div class="preview-legend">
+            <span style="color: #3498db;">● 玩家 40px</span>
+            <span style="color: #2ecc71;">● 小 28px</span>
+            <span style="color: #3498db;">● 中 36px</span>
+            <span style="color: #e74c3c;">● 大 44px</span>
+            <span style="color: #9b59b6;">● 特大 88px</span>
+        </div>
+    </div>
+    
+    <div class="export-section">
+        <button class="export-btn" onclick="exportData()">📋 导出体型配置</button>
+    </div>
+
+    <script>
+        // 从 floor-data.js 提取的怪物数据
+        const floorsData = {
+            1: [
+                { id: 'bat_v2', name: '小蝙蝠', baseId: 'bat', version: 'v2' },
+                { id: 'bat_v3', name: '吸血蝙蝠', baseId: 'bat', version: 'v3' },
+                { id: 'chick_spr', name: '变异小鸡', baseId: 'chick', version: 'spr' },
+                { id: 'crab_v4', name: '铁甲蟹', baseId: 'crab', version: 'v4' },
+                { id: 'fox_v1', name: '幼狐', baseId: 'fox', version: 'v1' },
+                { id: 'fox_v3', name: '狡猾狐狸', baseId: 'fox', version: 'v3' },
+                { id: 'ghost_v3', name: '怨灵', baseId: 'ghost', version: 'v3' },
+                { id: 'ghost_v4', name: '恶灵', baseId: 'ghost', version: 'v4' },
+                { id: 'mimic_v1', name: '宝箱怪', baseId: 'mimic', version: 'v1' },
+                { id: 'mimic_v5', name: '守卫宝箱怪', baseId: 'mimic', version: 'v5' },
+                { id: 'panther_v1', name: '幼豹', baseId: 'panther', version: 'v1' },
+                { id: 'pigeon_v1', name: '变异鸽子', baseId: 'pigeon', version: 'v1' },
+                { id: 'pigeon_v4', name: '毒鸽', baseId: 'pigeon', version: 'v4' },
+                { id: 'rabbit2_v2', name: '疯兔', baseId: 'rabbit2', version: 'v2' },
+                { id: 'rabbit2_v4', name: '暴徒兔', baseId: 'rabbit2', version: 'v4' },
+                { id: 'snail_v1', name: '蜗牛', baseId: 'snail', version: 'v1' },
+                { id: 'snail_v4', name: '铁壳蜗牛', baseId: 'snail', version: 'v4' },
+                { id: 'snake_v4', name: '毒蛇', baseId: 'snake', version: 'v4' },
+            ],
+            2: [
+                { id: 'bat_v9', name: '蝙蝠王', baseId: 'bat', version: 'v9' },
+                { id: 'crab_spr', name: '小螃蟹', baseId: 'crab', version: 'spr' },
+                { id: 'fox_v7', name: '妖狐', baseId: 'fox', version: 'v7' },
+                { id: 'mimic_v7', name: '宝箱守护者', baseId: 'mimic', version: 'v7' },
+                { id: 'nibei_spr', name: '小泥龟', baseId: 'nibei', version: 'spr' },
+                { id: 'pigeon_v7', name: '飞鸽', baseId: 'pigeon', version: 'v7' },
+                { id: 'pigeon_v8', name: '鸽王', baseId: 'pigeon', version: 'v8' },
+                { id: 'snail_spr', name: '寄生蜗牛', baseId: 'snail', version: 'spr' },
+                { id: 'snail_v7', name: '蜗牛王', baseId: 'snail', version: 'v7' },
+                { id: 'snake_v7', name: '蟒蛇', baseId: 'snake', version: 'v7' },
+                { id: 'yinya_v7', name: '狼王银牙', baseId: 'yinya', version: 'v7' },
+            ],
+            3: [
+                { id: 'bat_v8', name: '巨蝙蝠', baseId: 'bat', version: 'v8' },
+                { id: 'crab_v8', name: '蟹王', baseId: 'crab', version: 'v8' },
+                { id: 'fox_v8', name: '九尾狐', baseId: 'fox', version: 'v8' },
+                { id: 'ghost_v8', name: '盲眼', baseId: 'ghost', version: 'v8' },
+                { id: 'mimic_v8', name: '宝箱王', baseId: 'mimic', version: 'v8' },
+                { id: 'mimic_v10', name: '传说宝箱怪', baseId: 'mimic', version: 'v10' },
+                { id: 'nibei_v6', name: '泥背', baseId: 'nibei', version: 'v6' },
+                { id: 'nibei_v8', name: '巨泥龟', baseId: 'nibei', version: 'v8' },
+                { id: 'rabbit2_v8', name: '兔王', baseId: 'rabbit2', version: 'v8' },
+                { id: 'snail_v2', name: '硬壳蜗牛', baseId: 'snail', version: 'v2' },
+                { id: 'snail_v8', name: '传说蜗牛', baseId: 'snail', version: 'v8' },
+                { id: 'snake_v8', name: '巨蛇', baseId: 'snake', version: 'v8' },
+            ],
+            4: [
+                { id: 'ghost_v2', name: '游荡幽灵', baseId: 'ghost', version: 'v2' },
+                { id: 'ghost_v10', name: '幽灵王', baseId: 'ghost', version: 'v10' },
+                { id: 'panther_v10', name: '豹王', baseId: 'panther', version: 'v10' },
+                { id: 'pigeon_v10', name: '传说鸽', baseId: 'pigeon', version: 'v10' },
+                { id: 'snail_v10', name: '神蜗牛', baseId: 'snail', version: 'v10' },
+                { id: 'snake_v10', name: '蛇王', baseId: 'snake', version: 'v10' },
+                { id: 'wolf_king_v2', name: '狼王', baseId: 'wolf_king', version: 'v2' },
+            ],
+            5: [
+                { id: 'bee_v6', name: '毒蜂', baseId: 'bee', version: 'v6' },
+                { id: 'crab_v2', name: '螃蟹', baseId: 'crab', version: 'v2' },
+                { id: 'crab_v6', name: '巨钳蟹', baseId: 'crab', version: 'v6' },
+                { id: 'fox_v6', name: '狐王', baseId: 'fox', version: 'v6' },
+                { id: 'ghost_v6', name: '凶灵', baseId: 'ghost', version: 'v6' },
+                { id: 'goose_v6', name: '守卫鹅', baseId: 'goose', version: 'v6' },
+                { id: 'mimic_v6', name: '精英宝箱怪', baseId: 'mimic', version: 'v6' },
+                { id: 'mother_v6', name: '母虫', baseId: 'mother', version: 'v6' },
+                { id: 'mother_v7', name: '深渊母虫', baseId: 'mother', version: 'v7' },
+                { id: 'panther_v2', name: '黑豹', baseId: 'panther', version: 'v2' },
+                { id: 'pigeon_v2', name: '腐化鸽', baseId: 'pigeon', version: 'v2' },
+                { id: 'pigeon_v6', name: '巨鸽', baseId: 'pigeon', version: 'v6' },
+                { id: 'snail_v6', name: '巨蜗牛', baseId: 'snail', version: 'v6' },
+            ],
+            6: [
+                { id: 'fox_v10', name: '天狐', baseId: 'fox', version: 'v10' },
+                { id: 'ghost_spr', name: '幽灵', baseId: 'ghost', version: 'spr' },
+                { id: 'goose_v10', name: '鹅王', baseId: 'goose', version: 'v10' },
+                { id: 'mimic_spr', name: '小宝箱怪', baseId: 'mimic', version: 'spr' },
+                { id: 'mother_v2', name: '母虫幼体', baseId: 'mother', version: 'v2' },
+                { id: 'mother_v3', name: '深渊母体', baseId: 'mother', version: 'v3' },
+                { id: 'mother_v8', name: '千根母虫', baseId: 'mother', version: 'v8' },
+                { id: 'mother_v10', name: '群星母体', baseId: 'mother', version: 'v10' },
+            ]
+        };
+        
+        // 体型配置
+        const SIZE_CONFIG = {
+            small: { label: '小', px: 28, color: '#2ecc71' },
+            medium: { label: '中', px: 36, color: '#3498db' },
+            large: { label: '大', px: 44, color: '#e74c3c' },
+            huge: { label: '特大', px: 88, color: '#9b59b6' }
+        };
+        
+        // 存储分类数据
+        const classifications = {};
+        let currentFloor = 1;
+        let playerImage = null;
+        
+        // 加载图片
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                const img = new Image();
+                img.onload = () => resolve(img);
+                img.onerror = () => reject(new Error(src));
+                img.src = src;
+            });
+        }
+        
+        // 初始化
+        async function init() {
+            // 加载玩家图片
+            try {
+                playerImage = await loadImage('../assets/sprites/player/variants_40x40/player_idle_0_crop_40.png');
+            } catch (e) {
+                console.error('Player image load failed:', e);
+            }
+            
+            // 初始化分类数据
+            for (let f = 1; f <= 6; f++) {
+                floorsData[f].forEach(m => {
+                    classifications[m.id] = null; // 未分类
+                });
+            }
+            
+            // 楼层切换
+            document.querySelectorAll('.floor-btn').forEach(btn => {
+                btn.onclick = () => {
+                    currentFloor = parseInt(btn.dataset.floor);
+                    document.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderMonsters();
+                    updateStats();
+                    drawPreview();
+                };
+            });
+            
+            renderMonsters();
+            updateStats();
+            drawPreview();
+        }
+        
+        // 渲染怪物网格
+        async function renderMonsters() {
+            const grid = document.getElementById('monstersGrid');
+            grid.innerHTML = '';
+            
+            const monsters = floorsData[currentFloor];
+            
+            for (const m of monsters) {
+                const card = document.createElement('div');
+                const sizeClass = classifications[m.id] || '';
+                card.className = `monster-card ${sizeClass}`;
+                card.dataset.id = m.id;
+                
+                card.innerHTML = `
+                    <canvas class="monster-canvas" id="canvas_${m.id}" width="160" height="100"></canvas>
+                    <div class="monster-name">${m.name}</div>
+                    <div class="monster-id">${m.id}</div>
+                    <div class="size-selector">
+                        <button class="size-option small ${classifications[m.id] === 'small' ? 'selected' : ''}" data-size="small">小</button>
+                        <button class="size-option medium ${classifications[m.id] === 'medium' ? 'selected' : ''}" data-size="medium">中</button>
+                        <button class="size-option large ${classifications[m.id] === 'large' ? 'selected' : ''}" data-size="large">大</button>
+                        <button class="size-option huge ${classifications[m.id] === 'huge' ? 'selected' : ''}" data-size="huge">特大</button>
+                    </div>
+                `;
+                
+                grid.appendChild(card);
+                
+                // 绘制怪物预览
+                drawMonsterPreview(m.id, m.baseId, m.version);
+                
+                // 体型选择事件
+                card.querySelectorAll('.size-option').forEach(btn => {
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        const size = btn.dataset.size;
+                        classifications[m.id] = size;
+                        
+                        // 更新UI
+                        card.querySelectorAll('.size-option').forEach(b => b.classList.remove('selected'));
+                        btn.classList.add('selected');
+                        card.className = `monster-card size-${size}`;
+                        
+                        updateStats();
+                        drawPreview();
+                    };
+                });
+            }
+        }
+        
+        // 绘制单个怪物预览
+        async function drawMonsterPreview(monsterId, baseId, version) {
+            const canvas = document.getElementById(`canvas_${monsterId}`);
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // 地面线
+            const groundY = 80;
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+            ctx.beginPath();
+            ctx.moveTo(10, groundY);
+            ctx.lineTo(150, groundY);
+            ctx.stroke();
+            
+            // 加载怪物图片
+            const path = `../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor${currentFloor}/${baseId}/${version}/walk/f01.png`;
+            
+            try {
+                const img = await loadImage(path);
+                const size = classifications[monsterId] ? SIZE_CONFIG[classifications[monsterId]].px : 36;
+                const scale = 1.5;
+                const drawSize = size * scale;
+                
+                ctx.save();
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(img, 80 - drawSize/2, groundY - drawSize, drawSize, drawSize);
+                ctx.restore();
+                
+                // 显示当前体型
+                if (classifications[monsterId]) {
+                    ctx.fillStyle = SIZE_CONFIG[classifications[monsterId]].color;
+                    ctx.font = 'bold 11px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(SIZE_CONFIG[classifications[monsterId]].label, 80, 95);
+                }
+            } catch (e) {
+                // 图片加载失败显示占位
+                ctx.fillStyle = '#333';
+                ctx.fillRect(60, 30, 40, 40);
+                ctx.fillStyle = '#666';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('加载中', 80, 55);
+            }
+        }
+        
+        // 绘制底部预览
+        function drawPreview() {
+            const canvas = document.getElementById('previewCanvas');
+            const ctx = canvas.getContext('2d');
+            const width = canvas.width;
+            const height = canvas.height;
+            const groundY = 90;
+            
+            ctx.clearRect(0, 0, width, height);
+            
+            // 地面
+            ctx.fillStyle = 'rgba(255,255,255,0.03)';
+            ctx.fillRect(0, groundY, width, height - groundY);
+            ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(width, groundY);
+            ctx.stroke();
+            
+            // 绘制玩家
+            if (playerImage) {
+                const playerSize = 40 * 1.5;
+                ctx.save();
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(playerImage, 50, groundY - playerSize, playerSize, playerSize);
+                ctx.restore();
+                
+                ctx.fillStyle = '#3498db';
+                ctx.font = '12px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('玩家 40px', 50 + playerSize/2, groundY + 20);
+            }
+            
+            // 绘制当前楼层已分类的怪物体型对比
+            let x = 180;
+            const monsters = floorsData[currentFloor];
+            
+            for (const m of monsters) {
+                if (classifications[m.id] && x < width - 60) {
+                    const size = SIZE_CONFIG[classifications[m.id]].px * 1.5;
+                    
+                    ctx.fillStyle = SIZE_CONFIG[classifications[m.id]].color;
+                    ctx.fillRect(x, groundY - size, size, size);
+                    
+                    ctx.fillStyle = '#fff';
+                    ctx.font = '10px sans-serif';
+                    ctx.textAlign = 'center';
+                    ctx.fillText(SIZE_CONFIG[classifications[m.id]].label, x + size/2, groundY + 15);
+                    
+                    x += size + 20;
+                }
+            }
+        }
+        
+        // 更新统计
+        function updateStats() {
+            const monsters = floorsData[currentFloor];
+            let small = 0, medium = 0, large = 0, huge = 0, none = 0;
+            
+            monsters.forEach(m => {
+                const size = classifications[m.id];
+                if (size === 'small') small++;
+                else if (size === 'medium') medium++;
+                else if (size === 'large') large++;
+                else if (size === 'huge') huge++;
+                else none++;
+            });
+            
+            document.getElementById('countSmall').textContent = small;
+            document.getElementById('countMedium').textContent = medium;
+            document.getElementById('countLarge').textContent = large;
+            document.getElementById('countHuge').textContent = huge;
+            document.getElementById('countNone').textContent = none;
+        }
+        
+        // 导出数据
+        function exportData() {
+            const output = {};
+            for (let f = 1; f <= 6; f++) {
+                output[f] = {};
+                floorsData[f].forEach(m => {
+                    output[f][m.id] = classifications[m.id] || 'medium'; // 默认中
+                });
+            }
+            
+            const json = JSON.stringify(output, null, 2);
+            navigator.clipboard.writeText(json).then(() => {
+                alert('体型配置已复制到剪贴板！\n\n' + json.substring(0, 200) + '...');
+            });
+        }
+        
+        init();
+    </script>
+</body>
+</html>

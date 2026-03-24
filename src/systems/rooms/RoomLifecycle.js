@@ -22,13 +22,19 @@
                 if (roll < 0.20) return 'rare';
                 return 'common';
             };
-            const positions = [-96, 0, 96];
+            const spreadX = Math.max(160, Math.min(230, this.width * 0.16));
+            const spreadY = Math.max(110, Math.min(160, this.height * 0.11));
+            const positions = [
+                { x: -spreadX, y: spreadY * 0.2 },
+                { x: spreadX, y: spreadY * 0.2 },
+                { x: 0, y: -spreadY }
+            ];
             this.chest = null;
-            this.chests = positions.map(offsetX => {
+            this.chests = positions.map((offset) => {
                 const quality = createQuality();
                 return {
-                    x: this.centerX + offsetX,
-                    y: this.centerY,
+                    x: this.centerX + offset.x,
+                    y: this.centerY + offset.y,
                     opened: false,
                     disabled: false,
                     quality,
@@ -106,14 +112,19 @@
 
         if (this.type === 'hidden') {
 
-            const eliteTypes = ['bear', 'yinya'];
-
-            const typeKey = randChoice(eliteTypes);
+            const floor = window.game?.currentFloor || 1;
+            const typeKey = (typeof getRandomNewMonsterForFloor === 'function' &&
+                (getRandomNewMonsterForFloor(floor, 2) ||
+                 getRandomNewMonsterForFloor(floor, 3) ||
+                 getRandomNewMonsterForFloor(floor))) || null;
+            if (!typeKey) {
+                console.error(`[HiddenRoom] 未找到第${floor}层的新怪物配置`);
+                return;
+            }
 
             const elite = createEnemy(this.centerX, this.centerY, typeKey);
 
             // v0.18.4: 应用楼层难度倍率
-            const floor = window.game?.currentFloor || 1;
             elite.hp *= 2 * floor;  // 基础2倍精英 × 楼层倍率
 
             elite.maxHp = elite.hp;
@@ -141,65 +152,19 @@
         
 
         if (this.type === 'boss') {
-            // v0.12.0 - 根据当前楼层选择对应的Boss
             const floor = window.game ? window.game.currentFloor : 1;
-            const bossKey = 'floor' + Math.min(Math.max(floor, 1), 6);
-            const bossCfg = BOSS_TYPES[bossKey];
-            
-            if (!bossCfg) {
-                console.error(`[Boss生成] 未找到楼层${floor}的Boss配置`);
-                return;
-            }
-            
-            // v0.20.0: 割草模式 - Boss血量 = 基础 × 10 × 楼层^1.5 (第6层=150倍基础)
-            const bossHp = Math.floor(bossCfg.baseHp * 10 * Math.pow(floor, 1.5));
-            // Boss伤害保持原版，不受楼层影响
-            
             // 第6层Boss固定在房间中央略高位置
             const bossX = this.centerX;
             const bossY = (floor === 6) ? this.centerY - 50 : this.centerY - 100;
             
             const boss = createBoss(bossX, bossY, floor);
-            boss.name = bossCfg.name;
-            boss.hp = bossHp;
-            boss.maxHp = bossHp;
-            boss.speed = bossCfg.speed;
-            // v0.20.0: Boss伤害保持原版，不受楼层影响（玩家太脆）
-            boss.dmg = bossCfg.dmg;
-            boss.exp = bossCfg.exp;
-            boss.gold = bossCfg.gold;
-            boss.color = bossCfg.color;
-            boss.isBoss = true;
-            boss.tier = 4;
-            boss.phase = 0;
-            boss.bossFloor = floor; // 记录Boss楼层用于后续逻辑
-            
-            // 设置贴图
-            if (bossCfg.sprite) {
-                boss.sprite = bossCfg.sprite;
+            if (!boss) {
+                console.error(`[Boss生成] 未找到楼层${floor}的新Boss配置`);
+                return;
             }
-            
-            // 第6层特殊处理：静止Boss
-            if (floor === 6) {
-                boss.isStatic = true;
-                boss.speed = 0;
-            }
-
-            // Boss攻击系统初始化
-            boss.skillCooldowns = {
-                charge: 3,
-                bullet_hell: 2,
-                summon: 5,
-                shockwave: 4,
-                homing: 1
-            };
-            boss.skillTimers = {};
-            boss.isCharging = false;
-            boss.chargeWarning = false;
-            boss.chargeDir = { x: 0, y: 0 };
             
             // v0.17.2: 移除调试日志
-        // console.log(`[Boss生成] 第${floor}层Boss: ${boss.name}, HP:${bossHp}, 贴图:${boss.sprite}`);
+        // console.log(`[Boss生成] 第${floor}层Boss: ${boss.name}, 贴图:${boss.typeKey}`);
             
             if (this.hordeManager) {
                 this.hordeManager.enemies.push(boss);
@@ -222,23 +187,17 @@
         // v0.18.4: 应用楼层难度倍率
         const floor = window.game?.currentFloor || 1;
         
-        // Use new system monsters if available
-        const useNewTypes = (typeof USE_NEW_ENEMY_SYSTEM !== 'undefined' && USE_NEW_ENEMY_SYSTEM && 
-                            typeof getRandomNewMonsterForFloor === 'function');
-        
         for (let i = 0; i < count; i++) {
             const angle = (i / count) * Math.PI * 2;
             const r = 150 + Math.random() * 100;
             const x = 450 + Math.cos(angle) * r;
             const y = 300 + Math.sin(angle) * r;
             
-            let typeKey;
-            if (useNewTypes) {
-                typeKey = getRandomNewMonsterForFloor(floor);
-            } else {
-                const t1Types = ['chick', 'snail', 'pigeon', 'duck3', 'bat'];
-                typeKey = randChoice(t1Types);
-            }
+            const typeKey = (typeof getRandomNewMonsterForFloor === 'function' &&
+                (getRandomNewMonsterForFloor(floor, 1) ||
+                 getRandomNewMonsterForFloor(floor, [1, 2]) ||
+                 getRandomNewMonsterForFloor(floor))) || null;
+            if (!typeKey) continue;
             
             const enemy = createEnemy(x, y, typeKey, 1);
             // 应用楼层倍率

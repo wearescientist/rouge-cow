@@ -1,0 +1,40 @@
+基线包: rougelike-cow_collection_dialogue_patch.zip
+\n一、建议直接删除（旧主源 / 死脚本 / 备份残留）
+src/data/items.json
+src/data/enemies.json
+src/data/weapons.json
+src/items_system.js
+src/weapon_system.js
+src/game_demo.js
+src/debug/CoordinateDebugger.js
+src/debug/DebugPanel.js
+src/systems/AudioController.js.backup.20260305_125644
+src/systems/AudioController222.js
+\n二、建议按模式批量删除（训练产物垃圾文件）
+data/train_*.json  (匹配 353 个)
+data/train_*_final.png  (匹配 3 个)
+data/train_count.txt  (匹配 1 个)
+\n总删除数: 367\n\n三、当前保留的 live 源\n[items]
+  - data/items/index.js
+  - data/pets/index.js
+  - src/systems/items/ItemManager.js
+[weapons]
+  - src/systems/passives/WeaponAndPassiveManager.js
+  - src/systems/weapons/Weapon.js
+  - src/data/weapon_visual_data.js
+  - src/systems/weaponSystem.js
+  - src/systems/weaponUpgrade.js
+[enemies]
+  - floor-data.js
+  - src/data/enemy-types-new.js
+  - src/systems/enemies/NewEnemy.js
+  - src/systems/HordeManager.js
+[codex_and_story]
+  - src/data/enemyCodex.js
+  - src/data/totemData.js
+  - src/ui/CollectionCodexSystem.js
+  - src/systems/ShopNPCDialogue.js
+  - src/systems/trueEnding.js
+\n四、说明\n1. 这份清单不删除当前 index.html 正在加载的 live 文件。
+2. weapons.json / enemies.json / items.json 这些是旧静态表，不再参与当前主流程。
+3. data/train_* 为训练/中间产物，不参与当前运行。

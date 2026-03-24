@@ -6,6 +6,7 @@ class GameSettingsStore {
             masterVolume: 0.6,
             bgmVolume: 0.3,
             sfxVolume: 1.0,
+            gameBrightness: 1.0,
             theme: 'dark',
             autoPauseOnBlur: true,
             enableScreenShake: true,
@@ -13,7 +14,7 @@ class GameSettingsStore {
             enableHD2D: true,
             enableTiltShift: true,
             enableDynamicLighting: true,
-            useNewEnemySystem: true  // v0.36: 默认跟随新楼层敌人主线
+            devMode: this.storage.getItem('dev_mode') === '1'
         };
     }
 
@@ -30,7 +31,8 @@ class GameSettingsStore {
                     masterVolume: legacyMaster != null ? parseFloat(legacyMaster) : this.defaults.masterVolume,
                     bgmVolume: legacyBgm != null ? parseFloat(legacyBgm) : this.defaults.bgmVolume,
                     sfxVolume: legacySfx != null ? parseFloat(legacySfx) : this.defaults.sfxVolume,
-                    theme: legacyTheme || this.defaults.theme
+                    theme: legacyTheme || this.defaults.theme,
+                    devMode: this.storage.getItem('dev_mode') === '1'
                 });
             }
 
@@ -40,7 +42,9 @@ class GameSettingsStore {
                 masterVolume: parsed.masterVolume != null ? parsed.masterVolume : legacyMaster,
                 bgmVolume: parsed.bgmVolume != null ? parsed.bgmVolume : legacyBgm,
                 sfxVolume: parsed.sfxVolume != null ? parsed.sfxVolume : legacySfx,
-                theme: parsed.theme || legacyTheme || this.defaults.theme
+                gameBrightness: parsed.gameBrightness != null ? parsed.gameBrightness : this.defaults.gameBrightness,
+                theme: parsed.theme || legacyTheme || this.defaults.theme,
+                devMode: parsed.devMode != null ? parsed.devMode : (this.storage.getItem('dev_mode') === '1')
             });
         } catch (error) {
             console.warn('[GameSettingsStore] load failed:', error);
@@ -64,6 +68,7 @@ class GameSettingsStore {
             masterVolume: this.clamp(settings.masterVolume, this.defaults.masterVolume),
             bgmVolume: this.clamp(settings.bgmVolume, this.defaults.bgmVolume),
             sfxVolume: this.clamp(settings.sfxVolume, this.defaults.sfxVolume),
+            gameBrightness: this.clampRange(settings.gameBrightness, 0.5, 1.5, this.defaults.gameBrightness),
             theme: settings.theme === 'light' ? 'light' : 'dark',
             autoPauseOnBlur: settings.autoPauseOnBlur !== false,
             enableScreenShake: settings.enableScreenShake !== false,
@@ -71,7 +76,7 @@ class GameSettingsStore {
             enableHD2D: settings.enableHD2D !== false,
             enableTiltShift: settings.enableTiltShift !== false,
             enableDynamicLighting: settings.enableDynamicLighting !== false,
-            useNewEnemySystem: settings.useNewEnemySystem !== false  // v0.36: 未设置时默认启用
+            devMode: settings.devMode === true
         };
     }
 
@@ -81,9 +86,20 @@ class GameSettingsStore {
         const next = settings ? this.normalize(settings) : this.load();
         game.runtimeSettings = next;
         game.autoPauseOnBlur = next.autoPauseOnBlur;
+        game.devModeEnabled = next.devMode;
 
         document.documentElement.setAttribute('data-theme', next.theme);
         this.storage.setItem('gameTheme', next.theme);
+        if (next.devMode) this.storage.setItem('dev_mode', '1');
+        else this.storage.removeItem('dev_mode');
+        const centerGame = document.getElementById('centerGame');
+        if (centerGame) {
+            if (Math.abs((next.gameBrightness ?? 1) - 1) < 0.001) {
+                centerGame.style.filter = 'none';
+            } else {
+                centerGame.style.filter = `brightness(${next.gameBrightness})`;
+            }
+        }
 
         if (game.camera) {
             game.camera.enableShake = next.enableScreenShake;
@@ -110,10 +126,16 @@ class GameSettingsStore {
                 game.hd2dRenderer.lighting.enabled = next.enableHD2D && next.enableDynamicLighting;
             }
             if (game.hd2dRenderer.tiltShift) {
-                game.hd2dRenderer.tiltShift.enabled = next.enableHD2D && next.enableTiltShift;
+                game.hd2dRenderer.tiltShift.enabled = false;
             }
             if (game.hd2dRenderer.roomBlur) {
                 game.hd2dRenderer.roomBlur.enabled = next.enableHD2D && next.enableTiltShift;
+                game.hd2dRenderer.roomBlur.rClear = 330;
+                game.hd2dRenderer.roomBlur.rHeavy = 470;
+                game.hd2dRenderer.roomBlur.blurLight = 0.8;
+                game.hd2dRenderer.roomBlur.blurHeavy = 1.45;
+                game.hd2dRenderer.roomBlur.outerDimStrength = 0.22;
+                game.hd2dRenderer.roomBlur.outerTintStrength = 0.06;
             }
         }
 
@@ -133,10 +155,6 @@ class GameSettingsStore {
             }
         }
 
-        // v0.34: 应用敌人系统选择到全局开关
-        window.USE_NEW_ENEMY_SYSTEM = next.useNewEnemySystem;
-        console.log(`[GameSettings] Enemy System: ${next.useNewEnemySystem ? 'NEW' : 'LEGACY'}`);
-
         return next;
     }
 
@@ -144,6 +162,12 @@ class GameSettingsStore {
         const numeric = Number(value);
         if (!Number.isFinite(numeric)) return fallback;
         return Math.max(0, Math.min(1, numeric));
+    }
+
+    clampRange(value, min, max, fallback) {
+        const numeric = Number(value);
+        if (!Number.isFinite(numeric)) return fallback;
+        return Math.max(min, Math.min(max, numeric));
     }
 }
 

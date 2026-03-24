@@ -1,190 +1,164 @@
-const PETS = {
-    // 基础宠物 - v0.20.0: 全屏射程 + 高伤害
-    brimstone: {
-        id: 'brimstone',
-        name: '硫磺火牛',
-        icon: '🔥',
-        desc: '发射贯穿全屏的火焰激光',
-        rarity: 'epic',
-        attackType: 'laser',
-        damage: 80,  // v0.20.0: 大幅提升伤害
-        attackCd: 2.0,  // v0.20.0: 略微加快
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#ff4400',
-        laserWidth: 30  // v0.20.0: 激光宽度
-    },
-    tech: {
-        id: 'tech',
-        name: '科技牛',
-        icon: '🔬',
-        desc: '环绕玩家发射激光',
-        rarity: 'epic',
-        attackType: 'orbit',
-        damage: 40,  // v0.20.0: 提升伤害
-        attackCd: 0.1,
-        attackRange: 400,  // v0.20.0: 增大环绕范围
-        color: '#00ff88'
-    },
-    tear: {
-        id: 'tear',
-        name: '眼泪牛',
-        icon: '💧',
-        desc: '发射会弹跳的眼泪',
-        rarity: 'rare',
-        attackType: 'bounce',
-        damage: 50,  // v0.20.0: 大幅提升伤害
-        attackCd: 0.8,  // v0.20.0: 略微加快
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#4488ff'
-    },
-    bomb: {
-        id: 'bomb',
-        name: '炸弹牛',
-        icon: '💣',
-        desc: '向敌人投掷炸弹',
-        rarity: 'rare',
-        attackType: 'bomb',
-        damage: 120,  // v0.20.0: 大幅提升伤害
-        attackCd: 1.5,  // v0.20.0: 略微加快
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#ff8800',
-        explodeRadius: 150  // v0.20.0: 增大爆炸范围
-    },
-    knife: {
-        id: 'knife',
-        name: '飞刀牛',
-        icon: '🔪',
-        desc: '发射回旋飞刀',
-        rarity: 'rare',
-        attackType: 'boomerang',
-        damage: 60,  // v0.20.0: 大幅提升伤害
-        attackCd: 1.2,  // v0.20.0: 略微加快
-        attackRange: 400,  // v0.20.0: 增大射程
-        color: '#cccccc'
-    },
-    blackhole: {
-        id: 'blackhole',
-        name: '黑洞牛',
-        icon: '🕳️',
-        desc: '发射吸引敌人的黑洞',
-        rarity: 'legendary',
-        attackType: 'blackhole',
-        damage: 30,  // v0.20.0: 大幅提升伤害
-        attackCd: 3.0,  // v0.20.0: 略微加快
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#440044',
-        pullRadius: 250  // v0.20.0: 增大吸引范围
-    },
-    aura: {
-        id: 'aura',
-        name: '光环牛',
-        icon: '✨',
-        desc: '周围持续造成伤害',
-        rarity: 'epic',
-        attackType: 'aura',
-        damage: 25,  // v0.20.0: 大幅提升伤害
-        attackCd: 0.3,  // v0.20.0: 更快触发
-        attackRange: 200,  // v0.20.0: 增大光环范围
-        color: '#ffcc00'
-    },
-    missile: {
-        id: 'missile',
-        name: '导弹牛',
-        icon: '🚀',
-        desc: '发射追踪导弹',
-        rarity: 'epic',
-        attackType: 'homing',
-        damage: 100,  // v0.20.0: 大幅提升伤害
-        attackCd: 1.5,  // v0.20.0: 略微加快
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#ff4444'
-    },
-    copy: {
-        id: 'copy',
-        name: '复制牛',
-        icon: '📋',
-        desc: '复制玩家上一次攻击',
-        rarity: 'legendary',
-        attackType: 'copy',
-        damage: 0.8, // v0.20.0: 80%玩家伤害
-        attackCd: 0.8,  // v0.20.0: 更快触发
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#8888ff'
-    },
-    ice: {
-        id: 'ice',
-        name: '冰冻牛',
-        icon: '❄️',
-        desc: '发射减速敌人的冰锥',
-        rarity: 'rare',
-        attackType: 'slow',
-        damage: 45,  // v0.20.0: 大幅提升伤害
-        attackCd: 1.0,  // v0.20.0: 略微加快
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#88ccff'
-    },
-    thunder: {
-        id: 'thunder',
-        name: '雷电牛',
-        icon: '⚡',
-        desc: '发射跳跃的闪电',
-        rarity: 'rare',
-        attackType: 'chain',
-        damage: 60,  // v0.20.0: 大幅提升伤害
-        attackCd: 1.2,  // v0.20.0: 略微加快
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#ffff00'
-    },
-    holy: {
-        id: 'holy',
-        name: '圣心牛',
-        icon: '💖',
-        desc: '发射追踪眼泪并治疗玩家',
-        rarity: 'legendary',
-        attackType: 'heal',
-        damage: 70,  // v0.20.0: 大幅提升伤害
-        attackCd: 0.8,  // v0.20.0: 略微加快
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        heal: 2, // v0.20.0: 每次攻击回复2血
-        color: '#ff88ff'
-    },
-    godhead: {
-        id: 'godhead',
-        name: '神性牛',
-        icon: '✨',
-        desc: '发射带神圣光环的眼泪',
-        rarity: 'mythic',
-        attackType: 'aoe',
-        damage: 100,  // v0.20.0: 大幅提升伤害
-        attackCd: 1.0,  // v0.20.0: 略微加快
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#ffd700'
-    },
-    dragon: {
-        id: 'dragon',
-        name: '幼龙',
-        icon: '🐉',
-        desc: '喷吐火焰',
-        rarity: 'epic',
-        attackType: 'breath',
-        damage: 35,  // v0.20.0: 大幅提升伤害
-        attackCd: 0.2,  // v0.20.0: 更快喷射
-        attackRange: 350,  // v0.20.0: 更大射程
-        color: '#ff6644'
-    },
-    fairy: {
-        id: 'fairy',
-        name: '小精灵',
-        icon: '🧚',
-        desc: '快速发射小子弹',
-        rarity: 'rare',
-        attackType: 'rapid',
-        damage: 20,  // v0.20.0: 大幅提升伤害
-        attackCd: 0.25,  // v0.20.0: 更快射击
-        attackRange: 3000,  // v0.20.0: 全屏射程
-        color: '#88ff88'
-    }
-}
+(function(){
+  const root = typeof window !== 'undefined' ? window : globalThis;
 
-// Export to global
-window.PETS = PETS;
+  const PET_UNLOCK_ITEM_ID = 901;
+  const PET_SKILL_ITEM_IDS = {
+    attack: 902,
+    attackSpeed: 903,
+    luck: 904,
+    gold: 905,
+    exp: 906,
+    crit: 907
+  };
+
+  const PET_SKILL_DEFS = {
+    attack: {
+      key: 'attack',
+      name: '攻击',
+      icon: '⚔️',
+      maxLevel: 5,
+      values: [0.08, 0.16, 0.24, 0.32, 0.40]
+    },
+    attackSpeed: {
+      key: 'attackSpeed',
+      name: '攻速',
+      icon: '⚡',
+      maxLevel: 5,
+      values: [0.08, 0.16, 0.24, 0.32, 0.40]
+    },
+    luck: {
+      key: 'luck',
+      name: '幸运',
+      icon: '🍀',
+      maxLevel: 5,
+      values: [1, 2, 3, 4, 5]
+    },
+    gold: {
+      key: 'gold',
+      name: '金币',
+      icon: '💰',
+      maxLevel: 5,
+      values: [0.15, 0.30, 0.45, 0.60, 0.75]
+    },
+    exp: {
+      key: 'exp',
+      name: '经验',
+      icon: '✨',
+      maxLevel: 5,
+      values: [0.12, 0.24, 0.36, 0.48, 0.60]
+    },
+    crit: {
+      key: 'crit',
+      name: '暴击',
+      icon: '💥',
+      maxLevel: 5,
+      values: [0.05, 0.10, 0.15, 0.20, 0.25]
+    }
+  };
+
+  root.PETS = {
+    companion: {
+      id: 'companion',
+      name: '守护灵宠',
+      icon: '🐮',
+      color: '#9fd8ff',
+      attackRange: 0,
+      attackCd: 999
+    }
+  };
+
+  root.PET_UNLOCK_ITEM_ID = PET_UNLOCK_ITEM_ID;
+  root.PET_SKILL_ITEM_IDS = PET_SKILL_ITEM_IDS;
+  root.PET_SKILL_DEFS = PET_SKILL_DEFS;
+
+  const ITEMS = root.ITEMS;
+  if (ITEMS && typeof ITEMS === 'object') {
+    for (const key of Object.keys(ITEMS)) {
+      const item = ITEMS[key];
+      if (!item || typeof item !== 'object') continue;
+      if (item.effect === 'unlockPet' || item.petId) {
+        delete ITEMS[key];
+      }
+    }
+
+    ITEMS[PET_UNLOCK_ITEM_ID] = {
+      id: PET_UNLOCK_ITEM_ID,
+      name: '灵宠契约',
+      icon: '🐮',
+      rarity: 'rare',
+      unlockFloor: 1,
+      effect: 'unlockCompanion',
+      desc: '解锁唯一宠物，并开启宠物技能道具池',
+      price: 120
+    };
+
+    const skillItems = {
+      attack: { name: '利爪刻印', icon: '⚔️', rarity: 'common', unlockFloor: 1, desc: '宠物技能：攻击提升一级' },
+      attackSpeed: { name: '迅息符', icon: '⚡', rarity: 'common', unlockFloor: 1, desc: '宠物技能：攻速提升一级' },
+      luck: { name: '四叶穗', icon: '🍀', rarity: 'rare', unlockFloor: 1, desc: '宠物技能：幸运提升一级' },
+      gold: { name: '聚财囊', icon: '💰', rarity: 'common', unlockFloor: 1, desc: '宠物技能：金币收益提升一级' },
+      exp: { name: '启智芽', icon: '✨', rarity: 'common', unlockFloor: 1, desc: '宠物技能：经验收益提升一级' },
+      crit: { name: '猎心瞳', icon: '💥', rarity: 'rare', unlockFloor: 1, desc: '宠物技能：暴击率提升一级' }
+    };
+
+    for (const [key, id] of Object.entries(PET_SKILL_ITEM_IDS)) {
+      const meta = skillItems[key];
+      ITEMS[id] = {
+        id,
+        name: meta.name,
+        icon: meta.icon,
+        rarity: meta.rarity,
+        unlockFloor: meta.unlockFloor,
+        effect: 'petSkill',
+        petSkillKey: key,
+        desc: meta.desc,
+        price: 90
+      };
+    }
+  }
+
+  if (typeof Game !== 'undefined' && Game.prototype) {
+    const originalGetAvailableItemsByFloor = Game.prototype.getAvailableItemsByFloor;
+    Game.prototype.getAvailableItemsByFloor = function() {
+      const list = typeof originalGetAvailableItemsByFloor === 'function'
+        ? originalGetAvailableItemsByFloor.call(this)
+        : Object.values(root.ITEMS || {});
+      const petMgr = this.petManager;
+      return list.filter((item) => {
+        if (!item) return false;
+        if (item.id === PET_UNLOCK_ITEM_ID) {
+          return !(petMgr && petMgr.isUnlocked);
+        }
+        if (item.effect === 'petSkill') {
+          if (!petMgr || !petMgr.isUnlocked) return false;
+          return !petMgr.isSkillMaxed(item.petSkillKey);
+        }
+        return true;
+      });
+    };
+
+    Game.prototype.spawnFlyingItem = function(startX, startY, targetX, targetY) {
+      const availableItems = this.getAvailableItemsByFloor();
+      if (!availableItems || availableItems.length === 0) return;
+      const item = availableItems[randInt(0, availableItems.length - 1)];
+      this.curRoom.items.push({
+        x: startX, y: startY,
+        targetX, targetY,
+        isFlying: true,
+        flyTime: 0.5,
+        id: item.id, icon: item.icon, name: item.name
+      });
+    };
+
+    Game.prototype.unlockPet = function() {
+      if (!this.petManager) return false;
+      const unlockedNow = this.petManager.unlockPet('companion');
+      if (unlockedNow && this.damageNumbers && this.player) {
+        this.damageNumbers.spawn(this.player.cx, this.player.cy - 60, '+ 守护灵宠', {
+          color: '#9fd8ff', size: 16, life: 2
+        });
+      }
+      return unlockedNow;
+    };
+  }
+})();

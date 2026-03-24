@@ -42,7 +42,7 @@ class SeamlessPrologueController {
             },
             {
                 key: 'empty_home',
-                image: 'assets/sprites/story/start2.png',
+                image: 'assets/runtime/sprites/story/start2.png',
                 duration: 11800,
                 transitionToBlack: 1700,
                 motionClass: 'scene-drift-in',
@@ -53,7 +53,7 @@ class SeamlessPrologueController {
             },
             {
                 key: 'note',
-                image: 'assets/sprites/story/start3.png',
+                image: 'assets/runtime/sprites/story/start3.png',
                 duration: 12600,
                 transitionToBlack: 1800,
                 motionClass: 'scene-drift-soft',
@@ -64,7 +64,7 @@ class SeamlessPrologueController {
             },
             {
                 key: 'descent',
-                image: 'assets/sprites/story/start4.png',
+                image: 'assets/runtime/sprites/story/start4.png',
                 duration: 13200,
                 motionClass: 'scene-drift-up',
                 bubbles: [
@@ -213,6 +213,17 @@ class SeamlessPrologueController {
                 to { transform: translate3d(-50%, calc(-50% - 14px), 0) scale(1.055); }
             }
             @media (max-width: 800px) {
+                .seamless-prologue__scene img {
+                    width: 100%;
+                    height: 100%;
+                    object-fit: contain;
+                    object-position: center center;
+                    transform: translate3d(-50%, -50%, 0) scale(0.96);
+                    animation-duration: 9.6s;
+                }
+                .scene-drift-in img { animation-name: seamlessSceneDriftInMobile; }
+                .scene-drift-soft img { animation-name: seamlessSceneDriftSoftMobile; }
+                .scene-drift-up img { animation-name: seamlessSceneDriftUpMobile; }
                 .seamless-prologue__bubble {
                     width: min(88vw, 560px);
                     bottom: 12%;
@@ -228,6 +239,18 @@ class SeamlessPrologueController {
                     text-align: center;
                     font-size: 21px;
                 }
+            }
+            @keyframes seamlessSceneDriftInMobile {
+                from { transform: translate3d(-50%, -50%, 0) scale(0.96); }
+                to { transform: translate3d(-50%, calc(-50% - 6px), 0) scale(1); }
+            }
+            @keyframes seamlessSceneDriftSoftMobile {
+                from { transform: translate3d(-50%, -50%, 0) scale(0.965); }
+                to { transform: translate3d(calc(-50% + 4px), calc(-50% - 4px), 0) scale(0.995); }
+            }
+            @keyframes seamlessSceneDriftUpMobile {
+                from { transform: translate3d(-50%, -50%, 0) scale(0.97); }
+                to { transform: translate3d(-50%, calc(-50% - 7px), 0) scale(1); }
             }
         `;
         document.head.appendChild(style);

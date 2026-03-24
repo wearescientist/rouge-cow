@@ -1,4 +1,4 @@
-﻿class Room {
+class Room {
 
     getLayer1FullSceneBackdropUrl() {
         return 'none';
@@ -14,7 +14,7 @@
             Room._activeStageShellBackdrop = nextValue;
         }
 
-        const shouldUseSceneShell = Number.isFinite(this.floor) && this.floor >= 1 && this.floor <= 6;
+        const shouldUseSceneShell = Number.isFinite(this.floor) && this.floor >= 1 && this.floor <= 7;
         if (shouldUseSceneShell) {
             mainLayout.dataset.sceneShell = 'layer1';
             this.applyLayer1ShellRuntimeVars(mainLayout);
@@ -34,8 +34,8 @@
                 location.hostname === '127.0.0.1' ||
                 location.protocol === 'file:';
             const basePath = isLocal
-                ? './assets/sprites/'
-                : 'https://wearescientist.github.io/rouge-cow/assets/sprites/';
+                ? './assets/runtime/sprites/'
+                : 'https://wearescientist.github.io/rouge-cow/assets/runtime/sprites/';
             const createImage = (src) => {
                 const image = new Image();
                 image.decoding = 'async';
@@ -44,10 +44,10 @@
             };
 
             Room._layer1EnvelopeTextures = {
-                roomShellTrial: createImage(basePath + 'background/layer1_room_shell_trial.png'),
-                floorBase: createImage(basePath + 'tiles/layer1/set1/layer1_set1_floor_base.png'),
-                floorDetail: createImage(basePath + 'tiles/layer1/set2/layer1_set2_floor_detail.png'),
-                floorCrack: createImage(basePath + 'tiles/layer1/set2/layer1_set2_floor_crack.png'),
+                roomShellTrial: createImage(basePath + 'rooms/shells/floor1_shell_greenhouse_primary.png' + this.getShellAssetVersionTag()),
+                floorBase: null,
+                floorDetail: null,
+                floorCrack: null,
                 wallCoreBase: createImage(basePath + 'tiles/layer1/wall/layer1_wall_base.png'),
                 wallCoreTop: createImage(basePath + 'tiles/layer1/wall/layer1_wall_top.png'),
                 wallCoreBottom: createImage(basePath + 'tiles/layer1/wall/layer1_wall_bottom.png'),
@@ -117,7 +117,7 @@
     getDoorPositions() {
         const doorPositions = {};
         const wallT = SURVIVOR_CONFIG.WALL_THICKNESS;
-        const doorSize = 180;
+        const doorSize = 220;
         const doorOffset = (doorSize - wallT) / 2;
 
         for (const [dir, door] of Object.entries(this.doors)) {
@@ -194,6 +194,7 @@
 
         for (const [dir, door] of Object.entries(this.doors)) {
             if (!door || !door.open) continue;
+            if (door?.target?.type === 'hidden' && this.type !== 'hidden') continue;
 
             const pos = doorPositions[dir];
             if (!pos) continue;
@@ -214,7 +215,7 @@
             }
 
             const pulse = 0.94 + Math.sin(time * 2.2 + pos.x * 0.01 + pos.y * 0.01) * 0.06;
-            const openingWidth = 100;
+            const openingWidth = 200;
             const beamLength = config.length;
             const farWidth = openingWidth * config.spread;
             const lipThickness = 12;
@@ -438,23 +439,15 @@
         ctx.fillStyle = '#282826';
         ctx.fillRect(floorX, floorY, floorW, floorH);
         if (baseFloorSprite) {
-            ctx.globalAlpha = 0.66;
+            ctx.globalAlpha = 0.92;
             ctx.drawImage(baseFloorSprite, floorX, floorY, floorW, floorH);
         }
-        if (this.isEnvelopeTextureReady(textures?.floorBase)) {
-            ctx.globalAlpha = 0.05;
-            ctx.drawImage(textures.floorBase, floorX, floorY, floorW, floorH);
-        }
-        if (this.isEnvelopeTextureReady(textures?.floorDetail)) {
-            ctx.globalAlpha = 0.02;
-            ctx.drawImage(textures.floorDetail, floorX, floorY, floorW, floorH);
-        }
-        ctx.globalAlpha = 0.4;
+        ctx.globalAlpha = 0.22;
         ctx.fillStyle = '#000000';
         ctx.fillRect(floorX, floorY, floorW, floorH);
         ctx.restore();
 
-        if (this.isEnvelopeTextureReady(textures?.floorCrack)) {
+        if (false && this.isEnvelopeTextureReady(textures?.floorCrack)) {
             ctx.save();
             ctx.globalAlpha = 0.08;
             for (let i = 0; i < 2; i++) {
@@ -489,6 +482,13 @@
         this.visited = false;
 
         this.items = [];
+        this.secretHints = [];
+        this.environmentLights = [];
+        this.ambientWorms = [];
+        this.roomMode = null;
+        this.roomModeName = null;
+        this.roomModeConfig = null;
+        this.isSecretRoom = false;
         
         // v0.16.3: 经验和金币按房间存储（像血迹一样）
         this.gems = [];      // 经验宝石
@@ -517,6 +517,7 @@
         this.templateKey = templateKey || keys[Math.floor(Math.random() * keys.length)];
 
         this.template = ROOM_TEMPLATES[this.templateKey];
+        this.ambientWorms = this.buildAmbientWorms();
 
         // 将相对坐标（0-1）转换为绝对坐标
 
@@ -566,13 +567,19 @@
                 if (roll < 0.20) return 'rare';
                 return 'common';
             };
-            const positions = [-200, 0, 200];
+            const spreadX = Math.max(160, Math.min(230, this.width * 0.16));
+            const spreadY = Math.max(110, Math.min(160, this.height * 0.11));
+            const positions = [
+                { x: -spreadX, y: spreadY * 0.2 },
+                { x: spreadX, y: spreadY * 0.2 },
+                { x: 0, y: -spreadY }
+            ];
             this.chest = null;
-            this.chests = positions.map(offsetX => {
+            this.chests = positions.map((offset) => {
                 const quality = createQuality();
                 return {
-                    x: this.centerX + offsetX,
-                    y: this.centerY - 8,
+                    x: this.centerX + offset.x,
+                    y: this.centerY + offset.y,
                     opened: false,
                     disabled: false,
                     quality,
@@ -658,14 +665,19 @@
 
         if (this.type === 'hidden') {
 
-            const eliteTypes = ['bear', 'yinya'];
-
-            const typeKey = randChoice(eliteTypes);
+            const floor = window.game?.currentFloor || 1;
+            const typeKey = (typeof getRandomNewMonsterForFloor === 'function' &&
+                (getRandomNewMonsterForFloor(floor, 2) ||
+                 getRandomNewMonsterForFloor(floor, 3) ||
+                 getRandomNewMonsterForFloor(floor))) || null;
+            if (!typeKey) {
+                console.error(`[HiddenRoom] 未找到第${floor}层的新怪物配置`);
+                return;
+            }
 
             const elite = createEnemy(this.centerX, this.centerY, typeKey);
 
             // v0.18.4: 应用楼层难度倍率
-            const floor = window.game?.currentFloor || 1;
             elite.hp *= 2 * floor;  // 基础2倍精英 × 楼层倍率
 
             elite.maxHp = elite.hp;
@@ -693,65 +705,19 @@
         
 
         if (this.type === 'boss') {
-            // v0.12.0 - 根据当前楼层选择对应的Boss
             const floor = window.game ? window.game.currentFloor : 1;
-            const bossKey = 'floor' + Math.min(Math.max(floor, 1), 6);
-            const bossCfg = BOSS_TYPES[bossKey];
+            // 第6层Boss固定在房间中央略高位置
+            const bossX = this.centerX;
+            const bossY = (floor >= 6) ? this.centerY - 50 : this.centerY - 100;
             
-            if (!bossCfg) {
-                console.error(`[Boss生成] 未找到楼层${floor}的Boss配置`);
+            const boss = createBoss(bossX, bossY, floor);
+            if (!boss) {
+                console.error(`[Boss生成] 未找到楼层${floor}的新Boss配置`);
                 return;
             }
             
-            // v0.20.0: 割草模式 - Boss血量 = 基础 × 10 × 楼层^1.5 (第6层=150倍基础)
-            const bossHp = Math.floor(bossCfg.baseHp * 10 * Math.pow(floor, 1.5));
-            // Boss伤害保持原版，不受楼层影响
-            
-            // 第6层Boss固定在房间中央略高位置
-            const bossX = this.centerX;
-            const bossY = (floor === 6) ? this.centerY - 50 : this.centerY - 100;
-            
-            const boss = createBoss(bossX, bossY, floor);
-            boss.name = bossCfg.name;
-            boss.hp = bossHp;
-            boss.maxHp = bossHp;
-            boss.speed = bossCfg.speed;
-            // v0.20.0: Boss伤害保持原版，不受楼层影响（玩家太脆）
-            boss.dmg = bossCfg.dmg;
-            boss.exp = bossCfg.exp;
-            boss.gold = bossCfg.gold;
-            boss.color = bossCfg.color;
-            boss.isBoss = true;
-            boss.tier = 4;
-            boss.phase = 0;
-            boss.bossFloor = floor; // 记录Boss楼层用于后续逻辑
-            
-            // 设置贴图
-            if (bossCfg.sprite) {
-                boss.sprite = bossCfg.sprite;
-            }
-            
-            // 第6层特殊处理：静止Boss
-            if (floor === 6) {
-                boss.isStatic = true;
-                boss.speed = 0;
-            }
-
-            // Boss攻击系统初始化
-            boss.skillCooldowns = {
-                charge: 3,
-                bullet_hell: 2,
-                summon: 5,
-                shockwave: 4,
-                homing: 1
-            };
-            boss.skillTimers = {};
-            boss.isCharging = false;
-            boss.chargeWarning = false;
-            boss.chargeDir = { x: 0, y: 0 };
-            
             // v0.17.2: 移除调试日志
-        // console.log(`[Boss生成] 第${floor}层Boss: ${boss.name}, HP:${bossHp}, 贴图:${boss.sprite}`);
+        // console.log(`[Boss生成] 第${floor}层Boss: ${boss.name}, 贴图:${boss.typeKey}`);
             
             if (this.hordeManager) {
                 this.hordeManager.enemies.push(boss);
@@ -774,23 +740,17 @@
         // v0.18.4: 应用楼层难度倍率
         const floor = window.game?.currentFloor || 1;
         
-        // Use new system monsters if available
-        const useNewTypes = (typeof USE_NEW_ENEMY_SYSTEM !== 'undefined' && USE_NEW_ENEMY_SYSTEM && 
-                            typeof getRandomNewMonsterForFloor === 'function');
-        
         for (let i = 0; i < count; i++) {
             const angle = (i / count) * Math.PI * 2;
             const r = 150 + Math.random() * 100;
             const x = 450 + Math.cos(angle) * r;
             const y = 300 + Math.sin(angle) * r;
             
-            let typeKey;
-            if (useNewTypes) {
-                typeKey = getRandomNewMonsterForFloor(floor);
-            } else {
-                const t1Types = ['chick', 'snail', 'pigeon', 'duck3', 'bat'];
-                typeKey = randChoice(t1Types);
-            }
+            const typeKey = (typeof getRandomNewMonsterForFloor === 'function' &&
+                (getRandomNewMonsterForFloor(floor, 1) ||
+                 getRandomNewMonsterForFloor(floor, [1, 2]) ||
+                 getRandomNewMonsterForFloor(floor))) || null;
+            if (!typeKey) continue;
             
             const enemy = createEnemy(x, y, typeKey, 1);
             // 应用楼层倍率
@@ -813,7 +773,8 @@
             'layer3_floor_nerve',       // 第3层 - 神经索
             'layer4_floor_furnace',     // 第4层 - 消化熔炉
             'layer5_floor_courtyard',   // 第5层 - 母虫庭院
-            'layer6_floor_core'         // 第6层 - 千根之心
+            'layer6_floor_core',        // 第6层 - 千根之心
+            'layer7_floor_final'        // 第7层 - 真结局层
         ];
         
         const floorColors = { 
@@ -1057,7 +1018,18 @@
                 
                 // v0.20.0: 检查是否通往Boss房（door.target 是目标房间）
                 const leadsToBoss = door.target && door.target.type === 'boss';
+                const leadsToHidden = door.target && door.target.type === 'hidden' && this.type !== 'hidden';
                 
+                if (leadsToHidden) {
+                    // 秘密入口：维持墙体外观，仅靠环境暗示与碰撞通道进入
+                    continue;
+                }
+
+                if (this.floor >= 2) {
+                    // 2-7层不再绘制门贴图/红绿门块，保留通行与光束即可
+                    continue;
+                }
+
                 if (doorSprite) {
                     ctx.save();
                     ctx.translate(centerX.x, centerX.y);
@@ -1165,6 +1137,52 @@
 
     
 
+    drawFloor7BossTotem(ctx, camera, sprites, time = Date.now() / 1000) {
+        if (this.floor !== 7 || this.type !== 'boss' || !this.trueEndingBossTotem) return;
+        const totem = this.trueEndingBossTotem;
+        if (totem.absorbed) return;
+
+        const pos = camera.worldToScreen(totem.x, totem.y);
+        const spriteName = totem.state === 'absorbing'
+            ? 'totem_attack'
+            : (totem.state === 'spent' ? 'totem_speed' : 'totem_defense');
+        const sprite = sprites ? sprites.get(spriteName) : null;
+        const basePulse = 0.72 + Math.sin(time * 2.6 + (totem.pulseSeed || 0) * 7) * 0.18;
+        const haloRadius = totem.state === 'absorbing' ? 120 : 90;
+
+        ctx.save();
+        const halo = ctx.createRadialGradient(pos.x, pos.y + 14, 0, pos.x, pos.y + 14, haloRadius);
+        halo.addColorStop(0, `rgba(150, 220, 255, ${0.26 * basePulse})`);
+        halo.addColorStop(0.45, `rgba(96, 150, 255, ${0.18 * basePulse})`);
+        halo.addColorStop(1, 'rgba(20, 25, 40, 0)');
+        ctx.fillStyle = halo;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y + 14, haloRadius, 0, Math.PI * 2);
+        ctx.fill();
+
+        if (sprite) {
+            const size = totem.state === 'absorbing' ? 118 : 96;
+            ctx.globalAlpha = totem.state === 'spent' ? 0.45 : 0.92;
+            ctx.drawImage(sprite, pos.x - size / 2, pos.y - size * 0.78, size, size);
+        }
+
+        if (totem.state === 'absorbing') {
+            const enemies = this.getActiveEnemies ? this.getActiveEnemies() : this.enemies;
+            const boss = (enemies || []).find(enemy => enemy && enemy.isBoss && enemy.hp > 0);
+            if (boss) {
+                const bossPos = camera.worldToScreen(boss.x, boss.cy || boss.y);
+                ctx.globalAlpha = 0.8;
+                ctx.strokeStyle = 'rgba(186, 240, 255, 0.72)';
+                ctx.lineWidth = 6;
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y - 18);
+                ctx.lineTo(bossPos.x, bossPos.y - 10);
+                ctx.stroke();
+            }
+        }
+        ctx.restore();
+    }
+
     drawAmbientEffects(ctx, camera, sprites, viewLeft, viewTop, viewRight, viewBottom) {
 
         const center = camera.worldToScreen(this.centerX, this.centerY);
@@ -1199,15 +1217,18 @@
 
                 ctx.fillRect(0, 0, camera.viewWidth, camera.viewHeight);
 
+                this.drawFloor7BossTotem(ctx, camera, sprites, time);
+
                 break;
 
                 
 
             case 'treasure':
                 // 宝箱房 - 金色微光
-                sparkle = 0.15 + Math.sin(time * 3) * 0.05;
-                grad = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, 300);
+                sparkle = 0.05 + Math.sin(time * 3) * 0.02;
+                grad = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, 220);
                 grad.addColorStop(0, `rgba(255, 215, 0, ${sparkle})`);
+                grad.addColorStop(0.42, `rgba(255, 215, 0, ${sparkle * 0.42})`);
                 grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
                 ctx.fillStyle = grad;
                 ctx.fillRect(0, 0, camera.viewWidth, camera.viewHeight);
@@ -1216,6 +1237,12 @@
                     this.chests.forEach(chest => {
                         if (chest.disabled) return;
                         const pos = camera.worldToScreen(chest.x, chest.y);
+                        const chestSpriteName = chest.opened ? 'chest_open' : 'chest_closed';
+                        const chestSprite = sprites.get(chestSpriteName);
+                        if (chestSprite) {
+                            const size = 32;
+                            ctx.drawImage(chestSprite, pos.x - size, pos.y - size, size * 2, size * 2);
+                        }
                         if (!chest.opened && window.game && window.game.player) {
                             const d = Math.hypot(window.game.player.x - chest.x, window.game.player.y - chest.y);
                             if (d < 60) {
@@ -1241,19 +1268,6 @@
                 
 
             case 'shop':
-
-                // 商店 - 蓝色魔法光
-
-                grad = ctx.createRadialGradient(center.x, center.y, 0, center.x, center.y, 250);
-
-                grad.addColorStop(0, 'rgba(100, 150, 255, 0.1)');
-
-                grad.addColorStop(1, 'rgba(0, 0, 0, 0)');
-
-                ctx.fillStyle = grad;
-
-                ctx.fillRect(0, 0, camera.viewWidth, camera.viewHeight);
-
                 break;
 
                 
@@ -1279,6 +1293,8 @@
                 
 
             default:
+
+                // 隐藏房提示改为 presentation overlay 层绘制，避免被壳层盖住
 
                 // 普通房间 - 微弱环境光
 
@@ -1310,6 +1326,1119 @@
 
         }
 
+    }
+
+
+
+    getAmbientWormPalette() {
+        const palettes = {
+            1: { body: '#78c7a5', core: '#9bdaba', glow: { r: 136, g: 238, b: 182 } },
+            2: { body: '#73c99a', core: '#97ddad', glow: { r: 132, g: 242, b: 170 } },
+            3: { body: '#ac6dca', core: '#c599dd', glow: { r: 208, g: 145, b: 238 } },
+            4: { body: '#c79563', core: '#dcb48b', glow: { r: 235, g: 185, b: 135 } },
+            5: { body: '#c67588', core: '#db9aaa', glow: { r: 234, g: 153, b: 172 } },
+            6: { body: '#c46f66', core: '#db9b95', glow: { r: 232, g: 147, b: 138 } }
+        };
+        return palettes[this.floor] || palettes[1];
+    }
+
+    getVisualTuning() {
+        const tuning = window.game?.debugVisualTuning || {};
+        return {
+            wormBrightness: Number.isFinite(tuning.wormBrightness) ? tuning.wormBrightness : 1.9,
+            mushroomBrightness: Number.isFinite(tuning.mushroomBrightness) ? tuning.mushroomBrightness : 1.35,
+            lanternBrightness: Number.isFinite(tuning.lanternBrightness) ? tuning.lanternBrightness : 1.12
+        };
+    }
+
+    buildAmbientWorms() {
+        const wallT = SURVIVOR_CONFIG.WALL_THICKNESS;
+        const count = this.type === 'hidden' ? 8 : (this.type === 'normal' ? (3 + Math.floor(Math.random() * 3)) : 3);
+        const worms = [];
+        const normalRoom = this.type === 'normal';
+        const minX = wallT + 72;
+        const maxX = Math.max(minX, this.width - wallT - 72);
+        const minY = wallT + 68;
+        const maxY = Math.max(minY, this.height - wallT - 68);
+        for (let i = 0; i < count; i++) {
+            const angle = (i / Math.max(1, count)) * Math.PI * 2 + Math.random() * 0.45;
+            const radiusX = this.width * 0.24;
+            const radiusY = this.height * 0.18;
+            worms.push({
+                seed: Math.random() * 1000,
+                lane: i / Math.max(1, count - 1),
+                baseX: normalRoom
+                    ? minX + Math.random() * Math.max(1, maxX - minX)
+                    : this.centerX + Math.cos(angle) * radiusX + (Math.random() - 0.5) * 60,
+                baseY: normalRoom
+                    ? minY + Math.random() * Math.max(1, maxY - minY)
+                    : this.centerY + Math.sin(angle) * radiusY + (Math.random() - 0.5) * 44,
+                len: 14 + Math.random() * 12,
+                thickness: 1.8 + Math.random() * 1.6,
+                speed: 0.34 + Math.random() * 0.22,
+                drift: 10 + Math.random() * 18,
+                wiggle: 1.6 + Math.random() * 2.4,
+                dir: Math.random() * Math.PI * 2,
+                glowScale: 1.0 + Math.random() * 0.45
+            });
+        }
+        return worms;
+    }
+
+    getAmbientWormCritters(time = Date.now() / 1000) {
+        const palette = this.getAmbientWormPalette();
+        const hiddenRoom = this.type === 'hidden';
+        const cinematicMul = hiddenRoom ? 1.0 : 0.92;
+        return (this.ambientWorms || []).map((worm, index) => {
+            const crawl = time * worm.speed + worm.seed;
+            const headX = worm.baseX + Math.cos(crawl * 0.7 + index) * worm.drift * 0.65;
+            const headY = worm.baseY + Math.sin(crawl * 0.95 + index * 0.43) * worm.drift * 0.42;
+            const dir = worm.dir + Math.sin(crawl * 0.45) * 0.35;
+            const glowScale = (worm.glowScale || 1) * (hiddenRoom ? 1.18 : 1.08);
+            return {
+                kind: 'worm_ambient',
+                x: headX,
+                y: headY,
+                dir,
+                len: worm.len,
+                thickness: worm.thickness,
+                wiggle: worm.wiggle,
+                phase: crawl,
+                color: palette,
+                glowScale,
+                lightAlpha: (hiddenRoom ? 0.12 : 0.10) * glowScale,
+                reveal: hiddenRoom ? 0.30 : 0.24,
+                clarity: hiddenRoom ? 0.34 : 0.28,
+                radiusX: (hiddenRoom ? 12 : 10.5) * glowScale,
+                radiusY: (hiddenRoom ? 9 : 7.5) * glowScale,
+                bloomRadius: (hiddenRoom ? 7 : 6) * glowScale,
+                noBloom: false,
+                haloAlpha: (hiddenRoom ? 0.04 : 0.03) * cinematicMul,
+                preserveSharpness: hiddenRoom ? 0.20 : 0.18,
+                preferColor: true,
+                selfVisibleOnly: true,
+                forceCinematic: true
+            };
+        });
+    }
+
+    getSecretHintWormCritters(time = Date.now() / 1000) {
+        if (!Array.isArray(this.secretHints) || this.secretHints.length === 0) return [];
+        const wallT = SURVIVOR_CONFIG.WALL_THICKNESS;
+        const hiddenRoom = this.type === 'hidden';
+        const sideAnchors = {
+            up: { x: this.centerX, y: wallT + 28, dx: 0, dy: -1 },
+            down: { x: this.centerX, y: this.height - wallT - 28, dx: 0, dy: 1 },
+            left: { x: wallT + 28, y: this.centerY, dx: -1, dy: 0 },
+            right: { x: this.width - wallT - 28, y: this.centerY, dx: 1, dy: 0 }
+        };
+        const sourceSidesByTarget = {
+            up: ['left', 'right', 'down'],
+            down: ['left', 'right', 'up'],
+            left: ['up', 'down', 'right'],
+            right: ['up', 'down', 'left']
+        };
+        const palette = this.getAmbientWormPalette();
+        const critters = [];
+        const cubicPoint = (p0, p1, p2, p3, t) => {
+            const mt = 1 - t;
+            const mt2 = mt * mt;
+            const t2 = t * t;
+            const x = mt2 * mt * p0.x + 3 * mt2 * t * p1.x + 3 * mt * t2 * p2.x + t2 * t * p3.x;
+            const y = mt2 * mt * p0.y + 3 * mt2 * t * p1.y + 3 * mt * t2 * p2.y + t2 * t * p3.y;
+            return { x, y };
+        };
+        const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
+
+        this.secretHints.forEach((hint, hintIndex) => {
+            const anchor = sideAnchors[hint.side] || sideAnchors.right;
+            const targetDirX = anchor.dx || 0;
+            const targetDirY = anchor.dy || 0;
+            const targetPerpX = -targetDirY;
+            const targetPerpY = targetDirX;
+            const targetX = anchor.x + targetDirX * 54;
+            const targetY = anchor.y + targetDirY * 54;
+            const sourceSides = sourceSidesByTarget[hint.side] || ['left', 'right', 'up'];
+            const sourceGroupCount = 3 + (Math.abs((hint.seed || 0) % 2));
+            const wormCountPerGroup = 2;
+            const baseSpeed = 0.055;
+
+            for (let groupIndex = 0; groupIndex < sourceGroupCount; groupIndex++) {
+                const sourceSide = sourceSides[groupIndex % sourceSides.length];
+                const sourceAnchor = sideAnchors[sourceSide] || sideAnchors.left;
+                const sourceDirX = sourceAnchor.dx || 0;
+                const sourceDirY = sourceAnchor.dy || 0;
+                const sourcePerpX = -sourceDirY;
+                const sourcePerpY = sourceDirX;
+                const sideSpan = sourceDirX !== 0 ? (this.height - wallT * 2) : (this.width - wallT * 2);
+                const lane = sourceGroupCount === 1 ? 0 : (groupIndex / (sourceGroupCount - 1) - 0.5);
+                const laneOffset = lane * Math.min(90, sideSpan * 0.22);
+                const seedPhase = (hint.seed || 0) * 0.0017 + groupIndex * 1.37 + hintIndex * 0.91;
+                const laneJitter = Math.sin(seedPhase) * 22;
+                const sourceX = sourceAnchor.x + sourceDirX * 92 + sourcePerpX * (laneOffset + laneJitter);
+                const sourceY = sourceAnchor.y + sourceDirY * 92 + sourcePerpY * (laneOffset + laneJitter);
+                const targetJitter = Math.sin(seedPhase * 0.73) * 18;
+                const endX = targetX + targetPerpX * targetJitter + targetDirX * 18;
+                const endY = targetY + targetPerpY * targetJitter + targetDirY * 18;
+                const midBiasX = this.centerX + Math.sin(seedPhase * 1.3) * 46;
+                const midBiasY = this.centerY + Math.cos(seedPhase * 1.1) * 38;
+                const c1 = {
+                    x: sourceX + (midBiasX - sourceX) * 0.34 + sourcePerpX * (18 + Math.sin(seedPhase * 1.8) * 12),
+                    y: sourceY + (midBiasY - sourceY) * 0.34 + sourcePerpY * (18 + Math.cos(seedPhase * 1.4) * 10)
+                };
+                const c2 = {
+                    x: endX + (midBiasX - endX) * 0.38 + targetPerpX * (12 + Math.cos(seedPhase * 1.9) * 14),
+                    y: endY + (midBiasY - endY) * 0.38 + targetPerpY * (12 + Math.sin(seedPhase * 1.6) * 12)
+                };
+
+                for (let wormIndex = 0; wormIndex < wormCountPerGroup; wormIndex++) {
+                    const wormSeed = seedPhase + wormIndex * 0.61;
+                    const flow = ((time * (baseSpeed + wormIndex * 0.007)) + wormSeed * 0.17) % 1;
+                    const t = clamp(flow, 0.04, 0.98);
+                    const p = cubicPoint({ x: sourceX, y: sourceY }, c1, c2, { x: endX, y: endY }, t);
+                    const ahead = cubicPoint({ x: sourceX, y: sourceY }, c1, c2, { x: endX, y: endY }, clamp(t + 0.018, 0.05, 0.995));
+                    const behind = cubicPoint({ x: sourceX, y: sourceY }, c1, c2, { x: endX, y: endY }, clamp(t - 0.018, 0.005, 0.96));
+                    const travelDir = Math.atan2(ahead.y - behind.y, ahead.x - behind.x);
+                    const bodyDrift = Math.sin(time * 0.8 + wormSeed * 2.7) * 3.2;
+                    const dirX = Math.cos(travelDir);
+                    const dirY = Math.sin(travelDir);
+                    const perpX = -dirY;
+                    const perpY = dirX;
+                    const prominence = 0.5 + (1 - Math.abs(t - 0.72) / 0.72) * 0.24;
+                    const glowScale = (hiddenRoom ? 1.14 : 1.08) * (0.92 + prominence * 0.42);
+                    critters.push({
+                        kind: 'worm_secret',
+                        x: p.x + perpX * bodyDrift,
+                        y: p.y + perpY * bodyDrift,
+                        dir: travelDir + Math.sin(time * 0.55 + wormSeed * 1.9) * 0.11,
+                        len: 14 + ((groupIndex + wormIndex + hintIndex) % 3) * 2,
+                        thickness: 1.8 + ((groupIndex + wormIndex) % 2) * 0.3,
+                        wiggle: 1.8 + (wormIndex % 2) * 0.35,
+                        phase: time * 1.8 + wormSeed * 3.1,
+                        color: palette,
+                        glowScale,
+                        lightAlpha: (hiddenRoom ? 0.14 : 0.11) + prominence * (hiddenRoom ? 0.04 : 0.03),
+                        reveal: (hiddenRoom ? 0.26 : 0.22) + prominence * 0.06,
+                        clarity: (hiddenRoom ? 0.30 : 0.26) + prominence * 0.06,
+                        radiusX: (hiddenRoom ? 10 : 8.5) + prominence * (hiddenRoom ? 4 : 2.8),
+                        radiusY: (hiddenRoom ? 8 : 6.2) + prominence * (hiddenRoom ? 3 : 1.8),
+                        bloomRadius: (hiddenRoom ? 7 : 5.8) + prominence * (hiddenRoom ? 2.4 : 1.5),
+                        noBloom: false,
+                        haloAlpha: hiddenRoom ? 0.05 : 0.035,
+                        preserveSharpness: hiddenRoom ? 0.22 : 0.18,
+                        preferColor: true,
+                        selfVisibleOnly: true,
+                        forceCinematic: true
+                    });
+                }
+            }
+        });
+        return critters;
+    }
+
+    getPresentationCritters(time = Date.now() / 1000) {
+        return [
+            ...this.getAmbientWormCritters(time),
+            ...this.getSecretHintWormCritters(time)
+        ];
+    }
+
+    drawWormCritter(ctx, camera, worm, options = {}) {
+        const zoom = camera.zoom || 1;
+        const dir = worm.dir || 0;
+        const len = worm.len || 16;
+        const thickness = (worm.thickness || 2) * zoom;
+        const wiggle = worm.wiggle || 2;
+        const color = worm.color || this.getAmbientWormPalette();
+        const glow = color.glow || { r: 176, g: 255, b: 208 };
+        const glowScale = worm.glowScale || 1;
+        const wormBrightness = this.getVisualTuning().wormBrightness;
+        const glowRadiusMul = 0.82 + wormBrightness * 0.22;
+        const glowAlphaMul = 0.60 + wormBrightness * 0.40;
+        const renderMode = options.renderMode || 'normal';
+        const hiddenRoom = this.type === 'hidden';
+        const cinematicGlow = worm.forceCinematic !== false;
+        const styleHidden = hiddenRoom || cinematicGlow;
+        const segments = 7;
+        const pts = [];
+        const perpX = -Math.sin(dir);
+        const perpY = Math.cos(dir);
+        const dirX = Math.cos(dir);
+        const dirY = Math.sin(dir);
+        for (let i = 0; i < segments; i++) {
+            const t = i / (segments - 1);
+            const back = len * t;
+            const sway = Math.sin((worm.phase || 0) * 2.2 - t * 3.6) * wiggle * (1 - t * 0.22);
+            const wx = worm.x - dirX * back + perpX * sway;
+            const wy = worm.y - dirY * back + perpY * sway;
+            pts.push(camera.worldToScreen(wx, wy));
+        }
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        const glowPts = this.getWormLightAnchors(worm, styleHidden ? 6 : 5).map((p) => camera.worldToScreen(p.x, p.y));
+        if (renderMode === 'mask') {
+            ctx.strokeStyle = styleHidden ? 'rgba(255,255,255,0.42)' : 'rgba(255,255,255,0.24)';
+            ctx.lineWidth = Math.max(styleHidden ? 1.7 : 1.0, thickness * (styleHidden ? 0.72 : 0.52));
+            ctx.beginPath();
+            ctx.moveTo(glowPts[0].x, glowPts[0].y);
+            for (let i = 1; i < glowPts.length; i++) ctx.lineTo(glowPts[i].x, glowPts[i].y);
+            ctx.stroke();
+            if (styleHidden) {
+                glowPts.slice(0, 2).forEach((p, i) => {
+                    ctx.fillStyle = `rgba(255,255,255,${i === 0 ? 0.28 : 0.16})`;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, Math.max(1.6, thickness * (i === 0 ? 0.72 : 0.46)), 0, Math.PI * 2);
+                    ctx.fill();
+                });
+            }
+            ctx.restore();
+            return;
+        }
+
+        if (styleHidden) {
+            const head = glowPts[0];
+            const mid = glowPts[Math.min(glowPts.length - 1, 2)] || head;
+            const glowBoost = (hiddenRoom ? 0.84 : 0.76) * glowRadiusMul;
+            const underGlow = ctx.createRadialGradient(head.x, head.y, 0, head.x, head.y, Math.max(14, 28 * glowScale * glowBoost));
+            underGlow.addColorStop(0, `rgba(${glow.r}, ${glow.g}, ${glow.b}, ${(hiddenRoom ? 0.11 : 0.08) * glowAlphaMul})`);
+            underGlow.addColorStop(0.55, `rgba(${glow.r}, ${glow.g}, ${glow.b}, ${(hiddenRoom ? 0.045 : 0.03) * glowAlphaMul})`);
+            underGlow.addColorStop(1, `rgba(${glow.r}, ${glow.g}, ${glow.b}, 0)`);
+            ctx.fillStyle = underGlow;
+            ctx.beginPath();
+            ctx.arc(head.x, head.y + Math.max(3, 6 * zoom), Math.max(14, 28 * glowScale * glowBoost), 0, Math.PI * 2);
+            ctx.fill();
+
+            const trailGlow = ctx.createLinearGradient(head.x, head.y, mid.x, mid.y);
+            trailGlow.addColorStop(0, `rgba(${glow.r}, ${glow.g}, ${glow.b}, ${(hiddenRoom ? 0.10 : 0.07) * glowAlphaMul})`);
+            trailGlow.addColorStop(1, `rgba(${glow.r}, ${glow.g}, ${glow.b}, 0)`);
+            ctx.strokeStyle = trailGlow;
+            ctx.lineWidth = Math.max(hiddenRoom ? 2.6 : 2.2, thickness * (hiddenRoom ? 1.55 : 1.35));
+            ctx.beginPath();
+            ctx.moveTo(head.x, head.y);
+            ctx.lineTo(mid.x, mid.y);
+            ctx.stroke();
+        }
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'source-over';
+        ctx.shadowBlur = (styleHidden ? 12 : 8) * glowScale * glowRadiusMul;
+        ctx.shadowColor = `rgba(${glow.r}, ${glow.g}, ${glow.b}, ${(styleHidden ? (hiddenRoom ? 0.20 : 0.16) : 0.12) * glowAlphaMul})`;
+        ctx.strokeStyle = `rgba(${glow.r}, ${glow.g}, ${glow.b}, ${(styleHidden ? (hiddenRoom ? 0.18 : 0.14) : 0.12) * glowAlphaMul})`;
+        ctx.lineWidth = Math.max(styleHidden ? 1.9 : 1.4, thickness * (styleHidden ? 1.02 : 0.82));
+        ctx.beginPath();
+        ctx.moveTo(glowPts[0].x, glowPts[0].y);
+        for (let i = 1; i < glowPts.length; i++) ctx.lineTo(glowPts[i].x, glowPts[i].y);
+        ctx.stroke();
+        ctx.shadowBlur = (styleHidden ? 18 : 10) * glowScale * glowRadiusMul;
+        ctx.strokeStyle = `rgba(${glow.r}, ${glow.g}, ${glow.b}, ${(styleHidden ? (hiddenRoom ? 0.08 : 0.06) : 0.05) * glowAlphaMul})`;
+        ctx.lineWidth = Math.max(styleHidden ? 2.8 : 2.0, thickness * (styleHidden ? 1.30 : 1.05));
+        ctx.beginPath();
+        ctx.moveTo(glowPts[0].x, glowPts[0].y);
+        for (let i = 1; i < glowPts.length; i++) ctx.lineTo(glowPts[i].x, glowPts[i].y);
+        ctx.stroke();
+        glowPts.forEach((p, i) => {
+            const alpha = styleHidden
+                ? (hiddenRoom ? (i === 0 ? 0.20 : (i < 3 ? 0.11 : 0.07)) : (i === 0 ? 0.16 : (i < 3 ? 0.09 : 0.06)))
+                : (i === 0 ? 0.14 : 0.07);
+            ctx.fillStyle = `rgba(${glow.r}, ${glow.g}, ${glow.b}, ${alpha * glowAlphaMul})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, Math.max(styleHidden ? 2.5 : 2.2, thickness * (i === 0 ? (styleHidden ? 1.02 : 1.08) : (styleHidden ? 0.74 : 0.78))) * glowRadiusMul, 0, Math.PI * 2);
+            ctx.fill();
+        });
+        ctx.restore();
+
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = typeof color.body === 'string' && color.body.startsWith('#')
+            ? `${color.body}${styleHidden ? (hiddenRoom ? 'd6' : 'ca') : 'b8'}`
+            : color.body;
+        ctx.lineWidth = Math.max(styleHidden ? 1.34 : 1.1, thickness * (styleHidden ? 0.94 : 0.88));
+        ctx.beginPath();
+        ctx.moveTo(pts[0].x, pts[0].y);
+        for (let i = 1; i < pts.length; i++) ctx.lineTo(pts[i].x, pts[i].y);
+        ctx.stroke();
+
+        ctx.shadowBlur = styleHidden ? 4 * glowScale : 0;
+        ctx.shadowColor = `rgba(${glow.r}, ${glow.g}, ${glow.b}, ${styleHidden ? (hiddenRoom ? 0.12 : 0.08) : 0})`;
+        ctx.fillStyle = typeof color.core === 'string' && color.core.startsWith('#')
+            ? `${color.core}${styleHidden ? (hiddenRoom ? 'e6' : 'd4') : 'aa'}`
+            : color.core;
+        ctx.beginPath();
+        ctx.ellipse(pts[0].x, pts[0].y, Math.max(styleHidden ? 1.7 : 1.2, thickness * (styleHidden ? 0.54 : 0.44)), Math.max(styleHidden ? 1.18 : 0.92, thickness * (styleHidden ? 0.34 : 0.28)), dir, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+    }
+
+    getWormLightAnchors(worm, samples = 5) {
+        if (!worm) return [];
+        const dir = worm.dir || 0;
+        const len = worm.len || 16;
+        const wiggle = worm.wiggle || 2;
+        const perpX = -Math.sin(dir);
+        const perpY = Math.cos(dir);
+        const dirX = Math.cos(dir);
+        const dirY = Math.sin(dir);
+        const anchors = [];
+        const count = Math.max(1, samples | 0);
+        for (let i = 0; i < count; i++) {
+            const t = count === 1 ? 0 : i / (count - 1);
+            const back = len * t;
+            const sway = Math.sin((worm.phase || 0) * 2.2 - t * 3.6) * wiggle * (1 - t * 0.22);
+            anchors.push({
+                x: worm.x - dirX * back + perpX * sway,
+                y: worm.y - dirY * back + perpY * sway,
+                t
+            });
+        }
+        return anchors;
+    }
+
+    drawPresentationCritters(ctx, camera, time = Date.now() / 1000, options = {}) {
+        const critters = this.getPresentationCritters(time);
+        critters.forEach((worm) => this.drawWormCritter(ctx, camera, worm, options));
+    }
+
+
+    getPresentationWormLightSources(time = Date.now() / 1000) {
+        return [];
+    }
+
+    createHiddenFeatureLight(kind, x, y, options = {}) {
+        if (!Number.isFinite(x) || !Number.isFinite(y)) return null;
+        const radiusX = Math.max(8, options.radiusX ?? options.radius ?? 48);
+        const radiusY = Math.max(8, options.radiusY ?? options.radius ?? 36);
+        const bloomRadius = Math.max(4, options.bloomRadius ?? (Math.max(radiusX, radiusY) * 0.5));
+        return {
+            kind,
+            x,
+            y,
+            radiusX,
+            radiusY,
+            bloomRadius,
+            color: options.color || { r: 180, g: 220, b: 255 },
+            alpha: Math.max(0, options.alpha ?? 0),
+            reveal: Math.max(0, options.reveal ?? 0),
+            clarity: Math.max(0, options.clarity ?? 0),
+            bloomAlpha: Math.max(0, options.bloomAlpha ?? 0),
+            colorizeAlpha: Math.max(0, options.colorizeAlpha ?? 0),
+            haloAlpha: Math.max(0, options.haloAlpha ?? 0),
+            preserveSharpness: Math.max(0, options.preserveSharpness ?? 0),
+            preferColor: options.preferColor !== false,
+            pulseSpeed: Number.isFinite(options.pulseSpeed) ? options.pulseSpeed : 0,
+            pulseAmount: Number.isFinite(options.pulseAmount) ? options.pulseAmount : 0,
+            phase: Number.isFinite(options.phase) ? options.phase : 0,
+            noBloom: !!options.noBloom,
+            selfVisibleOnly: !!options.selfVisibleOnly,
+            pinHidden: !!options.pinHidden,
+            flicker: Number.isFinite(options.flicker) ? options.flicker : 1
+        };
+    }
+
+    getCurrentHiddenPuzzleState() {
+        if (this.type !== 'hidden') return this.hiddenPuzzleState || {};
+        const game = typeof window !== 'undefined' ? window.game : null;
+        const floor = Math.max(1, Number(this.floor || game?.currentFloor || 1));
+        const live = game?.hiddenRooms?.floors?.[floor]?.puzzleState;
+        return live || this.hiddenPuzzleState || {};
+    }
+
+    getCurrentHiddenProgress() {
+        if (this.type !== 'hidden') return null;
+        const game = typeof window !== 'undefined' ? window.game : null;
+        const floor = Math.max(1, Number(this.floor || game?.currentFloor || 1));
+        return game?.hiddenRooms?.floors?.[floor] || null;
+    }
+
+    getHiddenMushroomLightConfig(mode, scale = 1) {
+        switch (mode) {
+            case 'active':
+                return {
+                    radiusX: 92 * scale,
+                    radiusY: 70 * scale,
+                    bloomRadius: 44 * scale,
+                    alpha: 0.32,
+                    reveal: 0.62,
+                    clarity: 0.32,
+                    bloomAlpha: 0.14,
+                    colorizeAlpha: 0.12,
+                    haloAlpha: 0.07,
+                    preserveSharpness: 0.34,
+                    pulseSpeed: 0,
+                    pulseAmount: 0
+                };
+            case 'preview':
+                return {
+                    radiusX: 82 * scale,
+                    radiusY: 62 * scale,
+                    bloomRadius: 38 * scale,
+                    alpha: 0.28,
+                    reveal: 0.50,
+                    clarity: 0.28,
+                    bloomAlpha: 0.12,
+                    colorizeAlpha: 0.10,
+                    haloAlpha: 0.06,
+                    preserveSharpness: 0.30,
+                    pulseSpeed: 4.2,
+                    pulseAmount: 0.05
+                };
+            case 'preview_static':
+                return {
+                    radiusX: 82 * scale,
+                    radiusY: 62 * scale,
+                    bloomRadius: 40 * scale,
+                    alpha: 0.30,
+                    reveal: 0.62,
+                    clarity: 0.34,
+                    bloomAlpha: 0.14,
+                    colorizeAlpha: 0.12,
+                    haloAlpha: 0.07,
+                    preserveSharpness: 0.36,
+                    pulseSpeed: 2.2,
+                    pulseAmount: 0.03
+                };
+            case 'hover':
+                return {
+                    radiusX: 60 * scale,
+                    radiusY: 46 * scale,
+                    bloomRadius: 24 * scale,
+                    alpha: 0.16,
+                    reveal: 0.30,
+                    clarity: 0.18,
+                    bloomAlpha: 0.06,
+                    colorizeAlpha: 0.05,
+                    haloAlpha: 0.03,
+                    preserveSharpness: 0.20,
+                    pulseSpeed: 3,
+                    pulseAmount: 0.02
+                };
+            default:
+                return null;
+        }
+    }
+
+    createHiddenMushroomLight(kind, node, mode, options = {}) {
+        if (!node || !mode) return null;
+        const scale = (Number.isFinite(node.scale) ? node.scale : 1) * (Number.isFinite(options.scaleMul) ? options.scaleMul : 1);
+        const profile = this.getHiddenMushroomLightConfig(mode, scale);
+        if (!profile) return null;
+        const phaseBase = Number.isFinite(options.phase) ? options.phase : (Number.isFinite(node.index) ? node.index : 0) * 0.41;
+        const yOffsetMul = Number.isFinite(options.yOffsetMul) ? options.yOffsetMul : 0.25;
+        return this.createHiddenFeatureLight(kind, node.x, node.y - 8 + ((node.offsetY || 0) * yOffsetMul), {
+            ...profile,
+            color: options.color || node.glowColor || node.glow || '#8fdcff',
+            phase: phaseBase,
+            pinHidden: true
+        });
+    }
+
+    getHiddenTemplateCellLightState(cell) {
+        if (!cell || !cell.hasMushroom) return null;
+        return this.createHiddenMushroomLight('hidden_template_mushroom', cell, 'preview_static', {
+            color: cell.glowColor || '#8fdcff',
+            phase: (Number.isFinite(cell.index) ? cell.index : 0) * 0.37,
+            yOffsetMul: 0.20
+        });
+    }
+
+    getHiddenCandleLightState(node, puzzleState = this.getCurrentHiddenPuzzleState(), options = {}) {
+        if (!node) return null;
+        const lit = !!options.forceLit || !!node.alwaysGlow || !!puzzleState.candleStates?.[node.index];
+        if (!lit) return null;
+        const scale = (Number.isFinite(node.scale) ? node.scale : 1) * (Number.isFinite(options.scaleMul) ? options.scaleMul : 1);
+        const phase = (Number.isFinite(node.index) ? node.index : 0) * 0.61;
+        const profile = options.profile === 'legacy'
+            ? {
+                radiusX: 74 * scale,
+                radiusY: 56 * scale,
+                bloomRadius: 30 * scale,
+                alpha: 0.28,
+                reveal: 0.42,
+                clarity: 0.24,
+                bloomAlpha: 0.13,
+                colorizeAlpha: 0.11,
+                haloAlpha: 0.06,
+                preserveSharpness: 0.24,
+                pulseSpeed: 5.4,
+                pulseAmount: 0.04
+            }
+            : {
+                radiusX: 74 * scale,
+                radiusY: 56 * scale,
+                bloomRadius: 28 * scale,
+                alpha: 0.30,
+                reveal: 0.66,
+                clarity: 0.30,
+                bloomAlpha: 0.08,
+                colorizeAlpha: 0.06,
+                haloAlpha: 0.03,
+                preserveSharpness: 0.30,
+                pulseSpeed: 6.2,
+                pulseAmount: 0.05
+            };
+        return this.createHiddenFeatureLight(options.kind || 'hidden_candle', node.x, node.y - 18 * scale, {
+            ...profile,
+            color: options.color || { r: 255, g: 214, b: 138 },
+            phase,
+            pinHidden: true
+        });
+    }
+
+    isHiddenMushroomDecorAssetKey(key) {
+        return typeof key === 'string' && /^(set[125]_mush_|cluster_mush_)/.test(key);
+    }
+
+    isHiddenMushroomDecorItem(item) {
+        if (!item) return false;
+        if (item.kind === 'mushroom_band') return true;
+        return this.isHiddenMushroomDecorAssetKey(item.key)
+            || this.isHiddenMushroomDecorAssetKey(item.spriteKey)
+            || this.isHiddenMushroomDecorAssetKey(item.assetKey)
+            || this.isHiddenMushroomDecorAssetKey(item.customAssetName);
+    }
+
+    getHiddenMushroomNodeMode(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        if (!node) return null;
+        const progress = this.getCurrentHiddenProgress();
+        if (progress?.completed) return 'active';
+        const floor = Math.max(1, Number(node.floor || this.floor || window.game?.currentFloor || 1));
+        if (floor === 3) {
+            const sequence = Array.isArray(puzzleState.sequence) ? puzzleState.sequence : [];
+            const entered = new Set(sequence.slice(0, Math.max(0, puzzleState.inputIndex || 0)));
+            const previewLit = !!puzzleState.previewLit && puzzleState.activePreviewIndex === node.index;
+            const activeLit = entered.has(node.index);
+            const hovered = puzzleState.stage === 'input' && puzzleState.hoveredIndex === node.index;
+            if (activeLit) return 'active';
+            if (previewLit) return 'preview';
+            if (hovered) return 'hover';
+            return null;
+        }
+        return 'preview_static';
+    }
+
+    getHiddenMemoryMushroomNodeMode(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        if (!node) return null;
+        const progress = this.getCurrentHiddenProgress();
+        if (progress?.completed) return 'active';
+        const litNodeIds = Array.isArray(puzzleState.litNodeIds) ? puzzleState.litNodeIds : [];
+        return litNodeIds.includes(node.id) ? 'active' : null;
+    }
+
+    getHiddenPlacedDecorMode(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        if (!this.isHiddenMushroomDecorItem(node)) return null;
+        const progress = this.getCurrentHiddenProgress();
+        if (node.kind === 'mushroom_band') {
+            return progress?.completed ? 'active' : 'preview_static';
+        }
+        const floor = Math.max(1, Number(node.floor || this.floor || window.game?.currentFloor || 1));
+        if (progress?.completed) return 'active';
+        if (floor === 3 && Number.isFinite(node.linkedIndex)) {
+            const sequence = Array.isArray(puzzleState.sequence) ? puzzleState.sequence : [];
+            const entered = new Set(sequence.slice(0, Math.max(0, puzzleState.inputIndex || 0)));
+            if (entered.has(node.linkedIndex)) return 'preview';
+            if (puzzleState.stage === 'input' && puzzleState.hoveredIndex === node.linkedIndex) return 'hover';
+            if (puzzleState.stage === 'input' && puzzleState.activePreviewIndex === node.linkedIndex && puzzleState.previewLit) return 'preview_static';
+            return null;
+        }
+        if (floor === 4 && node.linkedId) {
+            return puzzleState.litNodeIds?.includes(node.linkedId) ? 'active' : null;
+        }
+        if (floor === 5 && Number.isFinite(node.sealIndex)) {
+            return puzzleState.blocked?.[node.sealIndex] ? 'active' : 'preview_static';
+        }
+        if (floor >= 1 && floor <= 6) return 'preview_static';
+        return null;
+    }
+
+    getHiddenDecorMushroomMode(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        if (!node) return null;
+        const floor = Math.max(1, Number(node.floor || this.floor || window.game?.currentFloor || 1));
+        const progress = this.getCurrentHiddenProgress();
+        if (progress?.completed) return 'active';
+        if (floor === 2 || floor === 6) return 'preview_static';
+        if (floor === 3) {
+            const sequence = Array.isArray(puzzleState.sequence) ? puzzleState.sequence : [];
+            const entered = new Set(sequence.slice(0, Math.max(0, puzzleState.inputIndex || 0)));
+            if (Number.isFinite(node.linkedIndex) && entered.has(node.linkedIndex)) return 'preview';
+            if (Number.isFinite(node.linkedIndex) && puzzleState.stage === 'input' && puzzleState.hoveredIndex === node.linkedIndex) return 'hover';
+            if (Number.isFinite(node.linkedIndex) && puzzleState.stage === 'input' && puzzleState.activePreviewIndex === node.linkedIndex && puzzleState.previewLit) return 'preview_static';
+            return null;
+        }
+        if (floor === 4) {
+            if (node.linkedId && puzzleState.litNodeIds?.includes(node.linkedId)) return 'active';
+            return null;
+        }
+        if (floor === 5) {
+            if (Number.isFinite(node.sealIndex) && puzzleState.blocked?.[node.sealIndex]) return 'active';
+            return 'preview_static';
+        }
+        return 'preview_static';
+    }
+
+    getHiddenMushroomLightState(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        const mode = this.getHiddenMushroomNodeMode(node, puzzleState);
+        if (!mode) return null;
+        return this.createHiddenMushroomLight('hidden_mushroom', node, mode, {
+            phase: (Number.isFinite(node.index) ? node.index : 0) * 0.41,
+            yOffsetMul: 0.22
+        });
+    }
+
+    getHiddenMemoryMushroomLightState(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        const mode = this.getHiddenMemoryMushroomNodeMode(node, puzzleState);
+        if (!mode) return null;
+        return this.createHiddenMushroomLight('hidden_memory_mushroom', node, mode, {
+            phase: (Number.isFinite(node.index) ? node.index : 0) * 0.43,
+            yOffsetMul: 0.22
+        });
+    }
+
+    getHiddenPlacedDecorLightState(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        const mode = this.getHiddenPlacedDecorMode(node, puzzleState);
+        if (!mode) return null;
+        return this.createHiddenMushroomLight('hidden_placed_decor_mushroom', node, mode, {
+            phase: (Number.isFinite(node.index) ? node.index : 0) * 0.39,
+            yOffsetMul: 0.18,
+            scaleMul: Number.isFinite(node.scaleMul) ? node.scaleMul : 1
+        });
+    }
+
+    getHiddenDecorMushroomLightState(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        const mode = this.getHiddenDecorMushroomMode(node, puzzleState);
+        if (!mode) return null;
+        return this.createHiddenMushroomLight('hidden_decor_mushroom', node, mode, {
+            phase: (Number.isFinite(node.index) ? node.index : 0) * 0.35,
+            yOffsetMul: 0.18,
+            scaleMul: Number.isFinite(node.scaleMul) ? node.scaleMul : 1
+        });
+    }
+
+    getHiddenSealTargetLightState(target, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        if (!target) return null;
+        const sealed = !!puzzleState.blocked?.[target.index];
+        const phase = (Number.isFinite(target.index) ? target.index : 0) * 0.63;
+        return this.createHiddenFeatureLight('hidden_seal_target', target.x, target.y, {
+            radiusX: sealed ? 60 : 38,
+            radiusY: sealed ? 46 : 30,
+            bloomRadius: sealed ? 28 : 16,
+            color: sealed ? { r: 166, g: 239, b: 210 } : { r: 132, g: 216, b: 238 },
+            alpha: sealed ? 0.20 : 0.08,
+            reveal: sealed ? 0.36 : 0.12,
+            clarity: sealed ? 0.20 : 0.08,
+            bloomAlpha: sealed ? 0.12 : 0.03,
+            colorizeAlpha: sealed ? 0.09 : 0.03,
+            haloAlpha: sealed ? 0.06 : 0.02,
+            preserveSharpness: sealed ? 0.20 : 0.12,
+            pulseSpeed: sealed ? 3.0 : 2.4,
+            pulseAmount: sealed ? 0.04 : 0.02,
+            phase,
+            pinHidden: true
+        });
+    }
+
+    getHiddenSealBlockerLightState(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        if (!node) return null;
+        const blocker = Array.isArray(this.hiddenBlockers)
+            ? (this.hiddenBlockers.find((item) => item && item.index === node.index) || node)
+            : node;
+        const sealed = !!blocker.sealed || !!puzzleState.blocked?.[node.index];
+        if (!sealed) return null;
+        const phase = (Number.isFinite(node.index) ? node.index : 0) * 0.59;
+        return this.createHiddenFeatureLight('hidden_seal_blocker', blocker.x, blocker.y - 8, {
+            radiusX: 62,
+            radiusY: 48,
+            bloomRadius: 30,
+            color: blocker.glowColor || '#a6efd2',
+            alpha: 0.22,
+            reveal: 0.30,
+            clarity: 0.18,
+            bloomAlpha: 0.12,
+            colorizeAlpha: 0.10,
+            haloAlpha: 0.06,
+            preserveSharpness: 0.22,
+            pulseSpeed: 3.2,
+            pulseAmount: 0.04,
+            phase,
+            pinHidden: true
+        });
+    }
+
+    getHiddenSealAmbientLightState(puzzleState = this.getCurrentHiddenPuzzleState()) {
+        const sealedCount = Array.isArray(puzzleState.blocked) ? puzzleState.blocked.filter(Boolean).length : 0;
+        if (sealedCount <= 0) return null;
+        return this.createHiddenFeatureLight('hidden_seal_room', this.centerX, this.centerY - 6, {
+            radiusX: 92 + sealedCount * 24,
+            radiusY: 64 + sealedCount * 18,
+            bloomRadius: 22 + sealedCount * 8,
+            color: { r: 166, g: 239, b: 210 },
+            alpha: 0.03 + sealedCount * 0.02,
+            reveal: 0.07 + sealedCount * 0.05,
+            clarity: 0.03 + sealedCount * 0.02,
+            bloomAlpha: 0.01 + sealedCount * 0.01,
+            colorizeAlpha: 0.02 + sealedCount * 0.02,
+            haloAlpha: 0.01 + sealedCount * 0.01,
+            preserveSharpness: 0.12,
+            pulseSpeed: 1.8,
+            pulseAmount: 0.02
+        });
+    }
+
+    getHiddenLegacyLightState(node, puzzleState = this.getCurrentHiddenPuzzleState()) {
+        if (!node) return null;
+        if (node.kind === 'legacy_lantern') {
+            return this.createHiddenFeatureLight('legacy_lantern', node.x, node.y - 10, {
+                radiusX: 84,
+                radiusY: 66,
+                bloomRadius: 42,
+                color: node.glow || '#ffd59d',
+                alpha: 0.32,
+                reveal: 0.46,
+                clarity: 0.28,
+                bloomAlpha: 0.16,
+                colorizeAlpha: 0.13,
+                haloAlpha: 0.08,
+                preserveSharpness: 0.28,
+                pulseSpeed: 5.4,
+                pulseAmount: 0.05
+            });
+        }
+        if (node.kind === 'legacy_book') {
+            return puzzleState.bookRead ? this.createHiddenFeatureLight('legacy_book', node.x, node.y - 6, {
+                radiusX: 42,
+                radiusY: 34,
+                bloomRadius: 22,
+                color: { r: 130, g: 196, b: 255 },
+                alpha: 0.16,
+                reveal: 0.22,
+                clarity: 0.12,
+                bloomAlpha: 0.06,
+                colorizeAlpha: 0.06,
+                haloAlpha: 0.04,
+                preserveSharpness: 0.14
+            }) : null;
+        }
+        if (node.kind === 'legacy_bread') {
+            return puzzleState.breadTaken ? this.createHiddenFeatureLight('legacy_bread', node.x, node.y - 2, {
+                radiusX: 40,
+                radiusY: 32,
+                bloomRadius: 20,
+                color: { r: 255, g: 222, b: 146 },
+                alpha: 0.14,
+                reveal: 0.20,
+                clarity: 0.11,
+                bloomAlpha: 0.05,
+                colorizeAlpha: 0.05,
+                haloAlpha: 0.03,
+                preserveSharpness: 0.12
+            }) : null;
+        }
+        if (node.kind === 'legacy_bag') {
+            return puzzleState.moneyTaken ? this.createHiddenFeatureLight('legacy_bag', node.x, node.y + 2, {
+                radiusX: 40,
+                radiusY: 32,
+                bloomRadius: 20,
+                color: { r: 166, g: 255, b: 216 },
+                alpha: 0.14,
+                reveal: 0.20,
+                clarity: 0.11,
+                bloomAlpha: 0.05,
+                colorizeAlpha: 0.05,
+                haloAlpha: 0.03,
+                preserveSharpness: 0.12
+            }) : null;
+        }
+        return null;
+    }
+
+
+    getHiddenFloor2CritterLightState(critter) {
+        if (!critter || !critter.alive || critter.hiddenTime > 0 || !critter.red) return null;
+        return this.createHiddenFeatureLight('floor2_worm_red', critter.x, critter.y + 4, {
+            radiusX: 58,
+            radiusY: 38,
+            bloomRadius: 26,
+            color: critter.hue || { r: 214, g: 102, b: 116 },
+            alpha: 0.24,
+            reveal: 0.40,
+            clarity: 0.24,
+            bloomAlpha: 0.12,
+            colorizeAlpha: 0.10,
+            haloAlpha: 0.06,
+            preserveSharpness: 0.22,
+            pulseSpeed: 0,
+            pulseAmount: 0,
+            pinHidden: true
+        });
+    }
+
+    getPresentationLightSources(time = Date.now() / 1000) {
+        const sources = [];
+        sources.push(...this.getPresentationWormLightSources(time));
+        const wallT = SURVIVOR_CONFIG.WALL_THICKNESS;
+        const sideAnchors = {
+            up: { x: this.centerX, y: wallT + 34 },
+            down: { x: this.centerX, y: this.height - wallT - 34 },
+            left: { x: wallT + 34, y: this.centerY },
+            right: { x: this.width - wallT - 34, y: this.centerY }
+        };
+
+        if (Array.isArray(this.secretHints) && this.secretHints.length > 0) {
+            this.secretHints.forEach((hint, index) => {
+                if (hint.type !== 'candle') return;
+                const anchor = sideAnchors[hint.side] || sideAnchors.right;
+                const flicker = 0.65 + Math.sin(time * 6 + index) * 0.18;
+                sources.push({
+                    kind: 'candle',
+                    x: anchor.x,
+                    y: anchor.y - 10,
+                    radiusX: 68,
+                    radiusY: 56,
+                    bloomRadius: 34,
+                    color: { r: 255, g: 218, b: 120 },
+                    alpha: 0.38 * flicker,
+                    reveal: 0.5,
+                    clarity: 0.22,
+                    bloomAlpha: 0.07,
+                    colorizeAlpha: 0.05,
+                    haloAlpha: 0.03,
+                    preserveSharpness: 0.12,
+                    preferColor: true,
+                    flicker
+                });
+            });
+        }
+
+        if (Array.isArray(this.hiddenLightSources) && this.hiddenLightSources.length > 0) {
+            this.hiddenLightSources.forEach((light, index) => {
+                if (!light) return;
+                const pulse = light.pulse ? (1 + Math.sin(time * 3 + index * 0.6) * light.pulse) : 1;
+                const hiddenScale = Math.max(0.5, Number.isFinite(light.hiddenScale) ? light.hiddenScale : 1);
+                const baseAlpha = Math.max(0, light.alpha ?? 0.18) * Math.min(1.22, 0.96 + hiddenScale * 0.22);
+                sources.push({
+                    kind: light.kind || 'hidden_room',
+                    x: Number.isFinite(light.x) ? light.x : this.centerX,
+                    y: Number.isFinite(light.y) ? light.y : this.centerY,
+                    radiusX: Math.max(10, (light.radiusX ?? light.radius ?? 58) * pulse * hiddenScale),
+                    radiusY: Math.max(10, (light.radiusY ?? light.radius ?? 48) * pulse * hiddenScale),
+                    bloomRadius: Math.max(6, (light.bloomRadius ?? (light.radius ?? 58) * 0.52) * pulse * hiddenScale),
+                    color: light.color || { r: 180, g: 220, b: 255 },
+                    alpha: baseAlpha,
+                    reveal: Math.max(0.14, Math.min(1.10, light.reveal ?? (baseAlpha * 2.9))),
+                    clarity: Math.max(0.12, Math.min(0.78, light.clarity ?? (baseAlpha * 1.8))),
+                    bloomAlpha: Math.max(0.02, Math.min(0.22, light.bloomAlpha ?? (baseAlpha * 0.58))),
+                    colorizeAlpha: Math.max(0.04, Math.min(0.20, light.colorizeAlpha ?? (baseAlpha * 0.42))),
+                    haloAlpha: Math.max(0.02, Math.min(0.16, light.haloAlpha ?? (baseAlpha * 0.26))),
+                    preserveSharpness: Math.max(0.14, light.preserveSharpness ?? 0.26),
+                    preferColor: true,
+                    flicker: 1
+                });
+            });
+        }
+
+        if (this.type === 'hidden' && Array.isArray(this.hiddenTemplateCells) && this.hiddenTemplateCells.length > 0) {
+            this.hiddenTemplateCells.forEach((cell) => {
+                const light = this.getHiddenTemplateCellLightState(cell);
+                if (light) sources.push(light);
+            });
+        }
+
+        if (this.type === 'hidden' && Array.isArray(this.hiddenDecorMushrooms) && this.hiddenDecorMushrooms.length > 0) {
+            const state = this.getCurrentHiddenPuzzleState();
+            this.hiddenDecorMushrooms.forEach((node) => {
+                const light = this.getHiddenDecorMushroomLightState(node, state);
+                if (light) sources.push(light);
+            });
+        }
+
+        if (this.type === 'hidden' && Array.isArray(this.hiddenDecor) && this.hiddenDecor.length > 0) {
+            const state = this.getCurrentHiddenPuzzleState();
+            this.hiddenDecor.forEach((node) => {
+                const light = this.getHiddenPlacedDecorLightState(node, state);
+                if (light) sources.push(light);
+            });
+        }
+
+        if (this.type === 'hidden' && Array.isArray(this.hiddenWormCritters) && this.hiddenWormCritters.length > 0) {
+            this.hiddenWormCritters.forEach((critter) => {
+                const light = this.getHiddenFloor2CritterLightState(critter);
+                if (light) sources.push(light);
+            });
+        }
+
+        if (this.type === 'hidden' && Array.isArray(this.hiddenPuzzleNodes) && this.hiddenPuzzleNodes.length > 0) {
+            const state = this.getCurrentHiddenPuzzleState();
+            this.hiddenPuzzleNodes.forEach((node) => {
+                if (!node) return;
+                if (node.kind === 'candle') {
+                    const light = this.getHiddenCandleLightState(node, state);
+                    if (light) sources.push(light);
+                    return;
+                }
+                if (node.kind === 'mushroom') {
+                    const light = this.getHiddenMushroomLightState(node, state);
+                    if (light) sources.push(light);
+                    return;
+                }
+                if (node.kind === 'memory_mushroom') {
+                    const light = this.getHiddenMemoryMushroomLightState(node, state);
+                    if (light) sources.push(light);
+                    return;
+                }
+                if (node.kind === 'seal_target') {
+                    const light = this.getHiddenSealTargetLightState(node, state);
+                    if (light) sources.push(light);
+                    return;
+                }
+                if (node.kind === 'seal_blocker') {
+                    const light = this.getHiddenSealBlockerLightState(node, state);
+                    if (light) sources.push(light);
+                    return;
+                }
+                if (['legacy_lantern', 'legacy_book', 'legacy_bread', 'legacy_bag'].includes(node.kind)) {
+                    const light = this.getHiddenLegacyLightState(node, state);
+                    if (light) sources.push(light);
+                }
+            });
+            if (Math.max(1, Number(this.floor || window.game?.currentFloor || 1)) === 5) {
+                const ambient = this.getHiddenSealAmbientLightState(state);
+                if (ambient) sources.push(ambient);
+            }
+        }
+
+        if (this.type === 'hidden' && this.hiddenLegacyCandle) {
+            const light = this.getHiddenCandleLightState({
+                x: this.hiddenLegacyCandle.x,
+                y: this.hiddenLegacyCandle.y,
+                scale: 0.72,
+                index: 0
+            }, this.getCurrentHiddenPuzzleState(), {
+                forceLit: true,
+                kind: 'legacy_candle',
+                profile: 'legacy'
+            });
+            if (light) sources.push(light);
+        }
+
+        if (this.type === 'hidden' && this.hiddenOrb) {
+            const orbPulse = 1 + Math.sin(time * 2.6) * 0.05;
+            const progress = this.getCurrentHiddenProgress();
+            const ready = !!(this.hiddenPulse || this.hiddenOrbFlash || progress?.completed || progress?.phase === 'awakened' || progress?.phase === 'played' || progress?.witnessed);
+            sources.push({
+                kind: 'hidden_orb',
+                x: this.hiddenOrb.x,
+                y: this.hiddenOrb.y - 4,
+                radiusX: (ready ? 74 : 52) * orbPulse,
+                radiusY: (ready ? 58 : 40) * orbPulse,
+                bloomRadius: (ready ? 38 : 20) * orbPulse,
+                color: ready ? { r: 138, g: 198, b: 255 } : { r: 148, g: 216, b: 255 },
+                alpha: ready ? 0.24 : 0.08,
+                reveal: ready ? 0.42 : 0.16,
+                clarity: ready ? 0.28 : 0.10,
+                bloomAlpha: ready ? 0.15 : 0.05,
+                colorizeAlpha: ready ? 0.10 : 0.03,
+                haloAlpha: ready ? 0.08 : 0.02,
+                preserveSharpness: ready ? 0.32 : 0.16,
+                preferColor: true
+            });
+        }
+
+        if (this.type === 'hidden' && this.hiddenDemoRabbit?.active) {
+            sources.push({
+                kind: 'rabbit_demo',
+                x: this.hiddenDemoRabbit.x,
+                y: this.hiddenDemoRabbit.y - 2,
+                radiusX: 40,
+                radiusY: 28,
+                bloomRadius: 24,
+                color: { r: 153, g: 242, b: 255 },
+                alpha: 0.16,
+                reveal: 0.22,
+                clarity: 0.16,
+                bloomAlpha: 0.10,
+                colorizeAlpha: 0.06,
+                haloAlpha: 0.04,
+                preserveSharpness: 0.16,
+                preferColor: true
+            });
+        }
+
+        if (Array.isArray(this.environmentLights) && this.environmentLights.length > 0) {
+            this.environmentLights.forEach((light, index) => {
+                if (!light) return;
+                const pulseSpeed = Number.isFinite(light.pulseSpeed) ? light.pulseSpeed : 0;
+                const pulseAmount = Number.isFinite(light.pulseAmount) ? light.pulseAmount : 0;
+                const pulse = pulseSpeed > 0 ? (1 + Math.sin(time * pulseSpeed + index) * pulseAmount) : 1;
+                const color = light.color || { r: 255, g: 220, b: 160 };
+                sources.push({
+                    kind: light.kind || 'generic',
+                    x: Number.isFinite(light.x) ? light.x : this.centerX,
+                    y: Number.isFinite(light.y) ? light.y : this.centerY,
+                    radiusX: Math.max(8, (light.radiusX ?? light.radius ?? 64) * pulse),
+                    radiusY: Math.max(8, (light.radiusY ?? light.radius ?? 52) * pulse),
+                    bloomRadius: Math.max(6, (light.bloomRadius ?? (light.radius ?? 64) * 0.45) * pulse),
+                    color,
+                    alpha: Math.max(0, light.alpha ?? light.intensity ?? 0.5),
+                    reveal: Math.max(0.1, Math.min(1.25, light.reveal ?? 0.85)),
+                    flicker: Math.max(0.35, pulse)
+                });
+            });
+        }
+
+        if (this.type === 'treasure' && Array.isArray(this.chests) && this.chests.length > 0) {
+            this.chests.forEach((chest, index) => {
+                if (!chest || chest.disabled) return;
+                const quality = chest.quality || 'normal';
+                const isLegendary = quality === 'legendary';
+                const isRare = quality === 'rare';
+                sources.push({
+                    kind: 'treasure_chest',
+                    x: chest.x,
+                    y: chest.y + 10,
+                    radiusX: isLegendary ? 132 : (isRare ? 120 : 108),
+                    radiusY: isLegendary ? 98 : (isRare ? 88 : 78),
+                    bloomRadius: isLegendary ? 72 : (isRare ? 62 : 54),
+                    color: isLegendary ? { r: 255, g: 214, b: 96 } : (isRare ? { r: 178, g: 118, b: 255 } : { r: 248, g: 248, b: 242 }),
+                    alpha: isLegendary ? 0.64 : (isRare ? 0.54 : 0.46),
+                    reveal: isLegendary ? 0.96 : (isRare ? 0.84 : 0.78),
+                    clarity: isLegendary ? 1.08 : (isRare ? 1.02 : 0.98),
+                    pulseSpeed: 2.2 + index * 0.18,
+                    pulseAmount: isLegendary ? 0.08 : 0.06,
+                    bloomAlpha: isLegendary ? 0.26 : (isRare ? 0.22 : 0.18),
+                    haloAlpha: isLegendary ? 0.12 : (isRare ? 0.1 : 0.08),
+                    haloRadiusMul: isLegendary ? 1.36 : (isRare ? 1.26 : 1.18),
+                    colorizeAlpha: isLegendary ? 0.28 : (isRare ? 0.24 : 0.18),
+                    colorizeRadiusMul: isLegendary ? 1.22 : (isRare ? 1.16 : 1.12),
+                    preserveSharpness: isLegendary ? 1.02 : (isRare ? 0.94 : 0.88),
+                    preferColor: true
+                });
+            });
+        }
+
+        return sources;
+    }
+
+    drawSecretHints(ctx, camera, time) {
+        const wallT = SURVIVOR_CONFIG.WALL_THICKNESS;
+        const sideAnchors = {
+            up: { x: this.centerX, y: wallT + 34 },
+            down: { x: this.centerX, y: this.height - wallT - 34 },
+            left: { x: wallT + 34, y: this.centerY },
+            right: { x: this.width - wallT - 34, y: this.centerY }
+        };
+
+        this.secretHints.forEach((hint, index) => {
+            const anchor = sideAnchors[hint.side] || sideAnchors.right;
+            const pos = camera.worldToScreen(anchor.x, anchor.y);
+            if (hint.type === 'candle') {
+                const flicker = 0.65 + Math.sin(time * 6 + index) * 0.18;
+                ctx.fillStyle = '#d8c7a0';
+                ctx.fillRect(pos.x - 3, pos.y - 4, 6, 14);
+                ctx.fillStyle = `rgba(255, 215, 90, ${0.7 * flicker})`;
+                ctx.beginPath();
+                ctx.ellipse(pos.x, pos.y - 9, 4, 7, 0, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        });
     }
 
     drawLayer1FullSceneEnvelope(ctx, scene, time) {
@@ -1544,49 +2673,63 @@
         ctx.restore();
     }
 
+    getShellAssetVersionTag() {
+        return "?v=v0.35.1_perf_phase12";
+    }
+
+    getFloorAssetVersionTag() {
+        return "?v=v0.35.1_perf_phase12";
+    }
+
     getLayer1ShellRuntimeBasePath() {
         const isLocal = location.hostname === 'localhost' ||
             location.hostname === '127.0.0.1' ||
             location.protocol === 'file:';
         return isLocal
-            ? '/assets/sprites/'
-            : 'https://wearescientist.github.io/rouge-cow/assets/sprites/';
+            ? '/assets/runtime/sprites/'
+            : 'https://wearescientist.github.io/rouge-cow/assets/runtime/sprites/';
     }
 
     getSceneShellAssetPaths() {
         const floor = Number.isFinite(this.floor) ? this.floor : 1;
         const themed = {
+            1: {
+                far: 'rooms/shells/floor1_shell_greenhouse_far.png',
+                mid: 'rooms/shells/floor1_shell_greenhouse_mid.png',
+                primary: 'rooms/shells/floor1_shell_greenhouse_primary.png'
+            },
             2: {
-                far: 'tiles/floor_shells/floor2_shell_greenhouse_far.png',
-                mid: 'tiles/floor_shells/floor2_shell_greenhouse_mid.png',
-                primary: 'tiles/floor_shells/floor2_shell_greenhouse_primary.png'
+                far: 'rooms/shells/floor2_shell_greenhouse_far.png',
+                mid: 'rooms/shells/floor2_shell_greenhouse_mid.png',
+                primary: 'rooms/shells/floor2_shell_greenhouse_primary.png'
             },
             3: {
-                far: 'tiles/floor_shells/floor3_shell_nerve_far.png',
-                mid: 'tiles/floor_shells/floor3_shell_nerve_mid.png',
-                primary: 'tiles/floor_shells/floor3_shell_nerve_primary.png'
+                far: 'rooms/shells/floor3_shell_nerve_far.png',
+                mid: 'rooms/shells/floor3_shell_nerve_mid.png',
+                primary: 'rooms/shells/floor3_shell_nerve_primary.png'
             },
             4: {
-                far: 'tiles/floor_shells/floor4_shell_furnace_far.png',
-                mid: 'tiles/floor_shells/floor4_shell_furnace_mid.png',
-                primary: 'tiles/floor_shells/floor4_shell_furnace_primary.png'
+                far: 'rooms/shells/floor4_shell_furnace_far.png',
+                mid: 'rooms/shells/floor4_shell_furnace_mid.png',
+                primary: 'rooms/shells/floor4_shell_furnace_primary.png'
             },
             5: {
-                far: 'tiles/floor_shells/floor5_shell_courtyard_far.png',
-                mid: 'tiles/floor_shells/floor5_shell_courtyard_mid.png',
-                primary: 'tiles/floor_shells/floor5_shell_courtyard_primary.png'
+                far: 'rooms/shells/floor5_shell_courtyard_far.png',
+                mid: 'rooms/shells/floor5_shell_courtyard_mid.png',
+                primary: 'rooms/shells/floor5_shell_courtyard_primary.png'
             },
             6: {
-                far: 'tiles/floor_shells/floor6_shell_core_far.png',
-                mid: 'tiles/floor_shells/floor6_shell_core_mid.png',
-                primary: 'tiles/floor_shells/floor6_shell_core_primary.png'
+                far: 'rooms/shells/floor6_shell_core_far.png',
+                mid: 'rooms/shells/floor6_shell_core_mid.png',
+                primary: 'rooms/shells/floor6_shell_core_primary.png'
+            },
+            7: {
+                far: 'rooms/shells/floor7_shell_greenhouse_far7.png',
+                mid: 'rooms/shells/floor7_shell_greenhouse_mid7.png',
+                primary: 'rooms/shells/floor7_shell_greenhouse_primary7.png'
             }
         };
-        return themed[floor] || {
-            far: 'tiles/back_organic_far.png',
-            mid: 'tiles/back_organic_mid.png',
-            primary: 'tiles/back_organic_primary.png'
-        };
+        return themed[floor] || themed[1];
     }
 
     getSceneShellToneProfile() {
@@ -1604,7 +2747,7 @@
                 roomFrame: { x: 469.15, y: 96.15, size: 767.7 },
                 layers: {
                     primary: {
-                        assetPath: 'tiles/back_organic_primary.png',
+                        assetPath: 'rooms/backdrops/back_organic_primary.png',
                         x: -849.5,
                         y: -1359,
                         width: 3405.3,
@@ -1616,7 +2759,7 @@
                         contrast: 1
                     },
                     mid: {
-                        assetPath: 'tiles/back_organic_mid.png',
+                        assetPath: 'rooms/backdrops/back_organic_mid.png',
                         x: -547.8,
                         y: -1103.3,
                         width: 2773,
@@ -1628,7 +2771,7 @@
                         contrast: 1
                     },
                     far: {
-                        assetPath: 'tiles/back_organic_far.png',
+                        assetPath: 'rooms/backdrops/back_organic_far.png',
                         x: -228.2,
                         y: -843.3,
                         width: 2189.9,
@@ -1664,7 +2807,7 @@
         const config = this.getLayer1ShellRuntimeConfig();
         const images = {};
         Object.entries(config.layers).forEach(([key, layer]) => {
-            const src = basePath + layer.assetPath;
+            const src = basePath + layer.assetPath + this.getShellAssetVersionTag();
             if (!Room._layer1ShellRuntimeImages[src]) {
                 const image = new Image();
                 image.decoding = 'async';
@@ -1722,7 +2865,7 @@
             opacity: layer.opacity,
             brightness: layer.brightness,
             contrast: layer.contrast,
-            imageUrl: `url("${this.getLayer1ShellRuntimeBasePath()}${layer.assetPath}")`
+            imageUrl: `url("${this.getLayer1ShellRuntimeBasePath()}${layer.assetPath}${this.getShellAssetVersionTag()}")`
         };
     }
 

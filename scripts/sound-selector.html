@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎵 音效选择器 - 武器&系统</title>
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            color: #e0e0e0;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 40px;
+        }
+        .section-title {
+            font-size: 20px;
+            color: #4ade80;
+            border-bottom: 2px solid #4ade80;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+        .sound-card {
+            background: #0f3460;
+            border-radius: 12px;
+            padding: 20px;
+            border: 2px solid transparent;
+            transition: border-color 0.3s;
+        }
+        .sound-card:hover {
+            border-color: #e94560;
+        }
+        .sound-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffd700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .variant {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: #1a1a2e;
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+        .variant.selected {
+            background: #0d4f2e;
+            border: 1px solid #4ade80;
+        }
+        .play-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: #e94560;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+            transition: transform 0.1s, background 0.3s;
+        }
+        .play-btn:hover {
+            background: #ff6b6b;
+            transform: scale(1.05);
+        }
+        .play-btn:active {
+            transform: scale(0.95);
+        }
+        .variant-label {
+            flex: 1;
+        }
+        .select-radio {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .export-section {
+            margin-top: 40px;
+            padding: 20px;
+            background: #0f3460;
+            border-radius: 12px;
+        }
+        .export-section h2 {
+            color: #4ade80;
+            margin-top: 0;
+        }
+        .export-text {
+            background: #1a1a2e;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+        .instructions {
+            margin-top: 30px;
+            padding: 20px;
+            background: #1a1a2e;
+            border-radius: 12px;
+        }
+        .instructions h3 {
+            color: #ffd700;
+            margin-top: 0;
+        }
+        .instructions ol {
+            line-height: 1.8;
+        }
+        .instructions code {
+            background: #333;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #4ade80;
+        }
+        .progress {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 16px;
+            color: #888;
+        }
+        .progress span {
+            color: #4ade80;
+            font-weight: bold;
+        }
+        .system-ready {
+            display: inline-block;
+            background: #0d4f2e;
+            color: #4ade80;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 音效选择器</h1>
+    <div class="subtitle">9武器×2变体 + 5系统×1变体 | 武器需选择，系统音效直接用</div>
+    
+    <div class="progress">
+        武器已选择: <span id="selected-count">0</span> / 9
+    </div>
+
+    <!-- 武器部分 -->
+    <div class="section">
+        <h2 class="section-title">🔫 武器音效 (选择最佳变体)</h2>
+        <div class="sound-grid" id="weapon-grid"></div>
+    </div>
+
+    <!-- 系统音效 -->
+    <div class="section">
+        <h2 class="section-title">⚙️ 系统音效 (已生成，直接使用)</h2>
+        <div class="sound-grid" id="system-grid"></div>
+    </div>
+
+    <div class="export-section">
+        <h2>📋 导出命令</h2>
+        <div class="export-text" id="export-cmd">// 请先选择所有武器的最佳变体</div>
+    </div>
+
+    <div class="instructions">
+        <h3>📖 使用说明</h3>
+        <ol>
+            <li><strong>武器音效：</strong>点击 ▶ 试听每个变体，选择最佳变体</li>
+            <li><strong>系统音效：</strong>直接试听，满意则复制使用</li>
+            <li>全部选择完成后，复制上面的 PowerShell 命令</li>
+            <li>在 <code>generated_audio/</code> 目录打开 PowerShell 执行</li>
+        </ol>
+    </div>
+
+    <script>
+        const weapons = [
+            { id: 'wand_cast', name: '魔杖' },
+            { id: 'knife_throw', name: '飞刀' },
+            { id: 'axe_throw', name: '斧头' },
+            { id: 'cross_launch', name: '十字架' },
+            { id: 'fireball', name: '火球' },
+            { id: 'shuriken', name: '手里剑' },
+            { id: 'icicle', name: '冰锥' },
+            { id: 'dart_shoot', name: '毒镔' },
+            { id: 'lightning', name: '闪电' }
+        ];
+
+        const systems = [
+            { id: 'dash', name: '冲刺' },
+            { id: 'coin_pickup', name: '金币' },
+            { id: 'exp_gain', name: '经验' },
+            { id: 'weapon_evolve', name: '进化' },
+            { id: 'door_open', name: '开门' }
+        ];
+
+        const selected = {};
+
+        function renderGrids() {
+            // 渲染武器
+            const weaponGrid = document.getElementById('weapon-grid');
+            weaponGrid.innerHTML = weapons.map(w => `
+                <div class="sound-card" data-id="${w.id}">
+                    <div class="sound-name">🔫 ${w.name}</div>
+                    <div class="variant" id="${w.id}-v1">
+                        <button class="play-btn" onclick="playSound('${w.id}_v1.mp3')">▶</button>
+                        <span class="variant-label">变体 1</span>
+                        <input type="radio" class="select-radio" name="${w.id}" value="v1" 
+                               onchange="selectVariant('${w.id}', 'v1')">
+                    </div>
+                    <div class="variant" id="${w.id}-v2">
+                        <button class="play-btn" onclick="playSound('${w.id}_v2.mp3')">▶</button>
+                        <span class="variant-label">变体 2</span>
+                        <input type="radio" class="select-radio" name="${w.id}" value="v2" 
+                               onchange="selectVariant('${w.id}', 'v2')">
+                    </div>
+                </div>
+            `).join('');
+
+            // 渲染系统音效
+            const systemGrid = document.getElementById('system-grid');
+            systemGrid.innerHTML = systems.map(s => `
+                <div class="sound-card">
+                    <div class="sound-name">${getIcon(s.id)} ${s.name} <span class="system-ready">✓ 已完成</span></div>
+                    <div class="variant">
+                        <button class="play-btn" onclick="playSound('${s.id}.mp3')">▶</button>
+                        <span class="variant-label">${s.id}.mp3</span>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getIcon(id) {
+            const icons = {
+                dash: '💨', coin_pickup: '💰', exp_gain: '✨', 
+                weapon_evolve: '🏰', door_open: '🚪'
+            };
+            return icons[id] || '⚙️';
+        }
+
+        function playSound(filename) {
+            const audio = new Audio('../generated_audio/' + filename);
+            audio.play().catch(e => alert('无法播放: ' + filename + '\n确保音频文件存在'));
+        }
+
+        function selectVariant(weaponId, variant) {
+            document.querySelectorAll(`[data-id="${weaponId}"] .variant`).forEach(el => {
+                el.classList.remove('selected');
+            });
+            document.getElementById(`${weaponId}-${variant}`).classList.add('selected');
+            
+            selected[weaponId] = variant;
+            updateProgress();
+            updateExport();
+        }
+
+        function updateProgress() {
+            const count = Object.keys(selected).length;
+            document.getElementById('selected-count').textContent = count;
+        }
+
+        function updateExport() {
+            const exportDiv = document.getElementById('export-cmd');
+            if (Object.keys(selected).length === 0) {
+                exportDiv.textContent = '// 请先选择所有武器的最佳变体';
+                return;
+            }
+
+            const weaponCmds = Object.entries(selected).map(([id, variant]) => {
+                return `Copy-Item "${id}_${variant}.mp3" "..\..\assets\audio\${id}.mp3"`;
+            });
+            
+            const systemCmds = systems.map(s => {
+                return `Copy-Item "${s.id}.mp3" "..\..\assets\audio\${s.id}.mp3"`;
+            });
+
+            exportDiv.textContent = `# 在 generated_audio/ 目录打开 PowerShell 执行:
+
+# 武器音效 (选择的变体)
+${weaponCmds.join('\n')}
+
+# 系统音效 (直接复制)
+${systemCmds.join('\n')}`;
+        }
+
+        renderGrids();
+    </script>
+</body>
+</html>

@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音效选择器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+            background: #1a1a2e;
+            color: #fff;
+            padding: 20px;
+        }
+        h1 { text-align: center; color: #4f4; margin-bottom: 10px; }
+        .subtitle { text-align: center; color: #888; margin-bottom: 30px; }
+        .sound-row {
+            background: #2a2a4e;
+            border-radius: 10px;
+            padding: 15px 20px;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .sound-name { font-weight: bold; min-width: 100px; }
+        .variant {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .play-btn {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid #4f4;
+            background: transparent;
+            color: #4f4;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .play-btn:hover { background: #4f4; color: #000; }
+        .play-btn.active { background: #f44; border-color: #f44; color: #fff; }
+        .v-label { font-size: 12px; color: #888; }
+        .section-title {
+            color: #48f;
+            font-size: 18px;
+            margin: 30px 0 15px;
+            border-bottom: 2px solid #48f;
+            padding-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎵 音效选择器</h1>
+    <p class="subtitle">核心音效每个2个变体，次要音效直接使用</p>
+    
+    <div class="section-title">⚔️ 武器攻击（2变体）</div>
+    <div id="weapons"></div>
+    
+    <div class="section-title">💥 命中音效（2变体）</div>
+    <div id="hits"></div>
+    
+    <div class="section-title">🎮 次要音效（1变体 - 直接使用）</div>
+    <div id="secondary"></div>
+
+    <script>
+        // 核心音效（需要选择）
+        const coreSounds = [
+            // 武器
+            { id: 'wand_cast', name: '魔杖施法' },
+            { id: 'knife_throw', name: '飞刀投掷' },
+            { id: 'axe_throw', name: '斧头投掷' },
+            { id: 'cross_launch', name: '十字架发射' },
+            { id: 'fireball', name: '火球术' },
+            { id: 'shuriken', name: '手里剑' },
+            { id: 'icicle', name: '冰锥' },
+            { id: 'dart_shoot', name: '毒镔' },
+            { id: 'lightning', name: '闪电' },
+            { id: 'laser', name: '激光' },
+            // 命中
+            { id: 'hit_flesh', name: '命中肉体' },
+            { id: 'hit_shell', name: '命中甲壳' },
+            { id: 'hit_fur', name: '命中毛皮' },
+            { id: 'hit_slime', name: '命中粘液' },
+            { id: 'crit_hit', name: '暴击' },
+        ];
+        
+        // 次要音效（直接使用）
+        const secondarySounds = [
+            { id: 'dash', name: '冲刺' },
+            { id: 'coin_pickup', name: '拾取金币' },
+            { id: 'gem_pickup', name: '拾取经验' },
+            { id: 'level_up', name: '升级' },
+            { id: 'player_hurt', name: '受伤' },
+            { id: 'chest_open', name: '开宝箱' },
+            { id: 'buy_item', name: '购买' },
+            { id: 'explosion', name: '爆炸' },
+            { id: 'enemy_spawn', name: '敌人生成' },
+            { id: 'button_click', name: '按钮点击' },
+            { id: 'heal', name: '治疗' },
+        ];
+        
+        function createCoreRow(sound) {
+            return `
+                <div class="sound-row">
+                    <div class="sound-name">${sound.name}</div>
+                    <div class="variant">
+                        <button class="play-btn" onclick="play('${sound.id}_v1.mp3', this)">▶</button>
+                        <span class="v-label">变体1</span>
+                    </div>
+                    <div class="variant">
+                        <button class="play-btn" onclick="play('${sound.id}_v2.mp3', this)">▶</button>
+                        <span class="v-label">变体2</span>
+                    </div>
+                </div>
+            `;
+        }
+        
+        function createSecondaryRow(sound) {
+            return `
+                <div class="sound-row">
+                    <div class="sound-name">${sound.name}</div>
+                    <div class="variant">
+                        <button class="play-btn" onclick="play('${sound.id}.mp3', this)">▶</button>
+                        <span class="v-label">播放</span>
+                    </div>
+                    <span style="color: #4f4; margin-left: 10px;">✅ 可直接使用</span>
+                </div>
+            `;
+        }
+        
+        function play(filename, btn) {
+            // 停止其他音频
+            document.querySelectorAll('audio').forEach(a => a.remove());
+            document.querySelectorAll('.play-btn').forEach(b => b.classList.remove('active'));
+            
+            const audio = new Audio('../generated_audio/' + filename);
+            audio.play();
+            btn.classList.add('active');
+            
+            audio.onended = () => btn.classList.remove('active');
+        }
+        
+        // 渲染
+        document.getElementById('weapons').innerHTML = coreSounds.slice(0, 10).map(createCoreRow).join('');
+        document.getElementById('hits').innerHTML = coreSounds.slice(10).map(createCoreRow).join('');
+        document.getElementById('secondary').innerHTML = secondarySounds.map(createSecondaryRow).join('');
+    </script>
+</body>
+</html>

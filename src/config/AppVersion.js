@@ -1,4 +1,4 @@
-﻿/**
+/**
  * 统一版本入口
  * 让页面标题、存档版本和运行时展示尽量共享同一来源
  */
@@ -6,11 +6,11 @@
     'use strict';
 
     const AppVersion = Object.freeze({
-        number: '0.33.1',
-        codename: 'Runtime Consolidation',
-        display: 'v0.33.1 Runtime Consolidation',
-        saveVersion: '0.33.1',
-        buildDate: '2026-03-09'
+        number: '0.35.12',
+        codename: 'AutoPlay Perf Harness Pass',
+        display: 'v0.35.12 AutoPlay Perf Harness Pass',
+        saveVersion: '0.35.12',
+        buildDate: '2026-03-24'
     });
 
     global.AppVersion = AppVersion;

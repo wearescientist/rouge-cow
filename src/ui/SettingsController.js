@@ -13,18 +13,22 @@ class SettingsController {
         this.bgmValue = document.getElementById('bgmVolumeValue');
         this.masterSlider = null;
         this.masterValue = null;
+        this.brightnessSlider = null;
+        this.brightnessValue = null;
         this.autoPauseCheckbox = null;
         this.screenShakeCheckbox = null;
         this.damageNumbersCheckbox = null;
         this.hd2dCheckbox = null;
         this.tiltShiftCheckbox = null;
         this.dynamicLightingCheckbox = null;
-        this.enemySystemCheckbox = null;  // v0.34: 敌人系统选择
+        this.devModeCheckbox = null;
+        this.devModeHint = null;
 
         this.handleClose = this.close.bind(this);
         this.handleSfxInput = this.handleSfxInput.bind(this);
         this.handleBgmInput = this.handleBgmInput.bind(this);
         this.handleMasterInput = this.handleMasterInput.bind(this);
+        this.handleBrightnessInput = this.handleBrightnessInput.bind(this);
         this.handleThemeChange = this.handleThemeChange.bind(this);
         this.handleBackdropClick = this.handleBackdropClick.bind(this);
         this.handleCheckboxChange = this.handleCheckboxChange.bind(this);
@@ -50,6 +54,10 @@ class SettingsController {
 
         if (this.masterSlider) {
             this.masterSlider.oninput = this.handleMasterInput;
+        }
+
+        if (this.brightnessSlider) {
+            this.brightnessSlider.oninput = this.handleBrightnessInput;
         }
 
         if (this.themeSelect) {
@@ -80,8 +88,8 @@ class SettingsController {
             this.dynamicLightingCheckbox.onchange = this.handleCheckboxChange;
         }
 
-        if (this.enemySystemCheckbox) {
-            this.enemySystemCheckbox.onchange = this.handleEnemySystemChange.bind(this);
+        if (this.devModeCheckbox) {
+            this.devModeCheckbox.onchange = this.handleCheckboxChange;
         }
 
         if (this.modal) {
@@ -119,10 +127,12 @@ class SettingsController {
         const masterVolume = settings ? settings.masterVolume : (audio ? audio.masterVolume : 0.6);
         const bgmVolume = settings ? settings.bgmVolume : (audio ? audio.bgmVolume : 0.3);
         const sfxVolume = settings ? settings.sfxVolume : (audio ? audio.sfxVolume : 1.0);
+        const gameBrightness = settings ? settings.gameBrightness : 1.0;
 
         this.syncSlider(this.masterSlider, this.masterValue, masterVolume);
         this.syncSlider(this.sfxSlider, this.sfxValue, sfxVolume);
         this.syncSlider(this.bgmSlider, this.bgmValue, bgmVolume);
+        this.syncSlider(this.brightnessSlider, this.brightnessValue, gameBrightness);
 
         if (this.themeSelect && settings) {
             this.themeSelect.value = settings.theme;
@@ -154,9 +164,13 @@ class SettingsController {
             this.dynamicLightingCheckbox.disabled = !settings.enableHD2D;
         }
 
-        if (this.enemySystemCheckbox && settings) {
-            this.enemySystemCheckbox.checked = settings.useNewEnemySystem;
+        if (this.devModeCheckbox && settings) {
+            this.devModeCheckbox.checked = settings.devMode === true;
         }
+        if (this.devModeHint) {
+            this.devModeHint.textContent = (settings && settings.devMode) ? '已开启。现在可以用 F9 直接打开测试面板。' : '关闭时 F9 不会打开测试面板。切换后会自动刷新。';
+        }
+
     }
 
     syncSlider(slider, output, rawValue) {
@@ -194,52 +208,40 @@ class SettingsController {
         this.updateSettings({ masterVolume: value / 100 });
     }
 
+    handleBrightnessInput(event) {
+        const value = parseInt(event.target.value, 10);
+        if (this.brightnessValue) {
+            this.brightnessValue.textContent = `${value}%`;
+        }
+
+        this.updateSettings({ gameBrightness: value / 100 });
+    }
+
     handleThemeChange(event) {
         this.updateSettings({ theme: event.target.value });
     }
 
-    handleCheckboxChange() {
-        this.updateSettings({
+    handleCheckboxChange(event) {
+        const devToggled = event && event.target === this.devModeCheckbox;
+        const nextSettings = {
             autoPauseOnBlur: !!(this.autoPauseCheckbox && this.autoPauseCheckbox.checked),
             enableScreenShake: !!(this.screenShakeCheckbox && this.screenShakeCheckbox.checked),
             showDamageNumbers: !!(this.damageNumbersCheckbox && this.damageNumbersCheckbox.checked),
             enableHD2D: !!(this.hd2dCheckbox && this.hd2dCheckbox.checked),
             enableTiltShift: !!(this.tiltShiftCheckbox && this.tiltShiftCheckbox.checked),
-            enableDynamicLighting: !!(this.dynamicLightingCheckbox && this.dynamicLightingCheckbox.checked)
-        });
+            enableDynamicLighting: !!(this.dynamicLightingCheckbox && this.dynamicLightingCheckbox.checked),
+            devMode: !!(this.devModeCheckbox && this.devModeCheckbox.checked)
+        };
+
+        this.updateSettings(nextSettings, { devToggled, reloadOnDevToggle: true });
 
         const hd2dEnabled = !!(this.hd2dCheckbox && this.hd2dCheckbox.checked);
         if (this.tiltShiftCheckbox) this.tiltShiftCheckbox.disabled = !hd2dEnabled;
         if (this.dynamicLightingCheckbox) this.dynamicLightingCheckbox.disabled = !hd2dEnabled;
-    }
-
-    // v0.34: 敌人系统切换处理
-    handleEnemySystemChange() {
-        const useNew = !!(this.enemySystemCheckbox && this.enemySystemCheckbox.checked);
-        
-        // 更新设置
-        this.updateSettings({ useNewEnemySystem: useNew });
-        
-        // 立即应用到全局开关
-        window.USE_NEW_ENEMY_SYSTEM = useNew;
-        
-        // 显示提示
-        const game = this.gameGetter();
-        if (game && game.damageNumbers) {
-            const msg = useNew ? '新敌人系统已启用' : '已切换至经典敌人系统';
-            game.damageNumbers.spawn(
-                game.player?.x || 400,
-                game.player?.y || 300,
-                msg,
-                { color: useNew ? '#ff6b6b' : '#4ecdc4', size: 16, life: 3 }
-            );
-        }
-        
-        console.log(`[Settings] Enemy system switched to: ${useNew ? 'NEW' : 'LEGACY'}`);
-        
-        // 提示：需要重启房间才能生效
-        if (game && game.showToast) {
-            game.showToast('敌人系统已切换，进入下一房间生效');
+        if (this.devModeHint) {
+            this.devModeHint.textContent = nextSettings.devMode
+                ? '已开启。现在可以用 F9 直接打开测试面板。'
+                : '关闭时 F9 不会打开测试面板。切换后会自动刷新。';
         }
     }
 
@@ -261,6 +263,13 @@ class SettingsController {
                     <span id="masterVolumeValue">60%</span>
                 </label>
                 <input type="range" id="masterVolume" min="0" max="100" value="60" style="width:100%;">
+            </div>
+            <div class="settings-group">
+                <label class="settings-label">
+                    <span>画面亮度</span>
+                    <span id="gameBrightnessValue">100%</span>
+                </label>
+                <input type="range" id="gameBrightness" min="50" max="150" value="100" style="width:100%;">
             </div>
             <div class="settings-group">
                 <label class="settings-row">
@@ -288,7 +297,7 @@ class SettingsController {
             </div>
             <div class="settings-group">
                 <label class="settings-row">
-                    <span>🌀 移轴暗角</span>
+                    <span>🌀 聚焦暗角</span>
                     <input type="checkbox" id="enableTiltShift" checked>
                 </label>
             </div>
@@ -298,12 +307,12 @@ class SettingsController {
                     <input type="checkbox" id="enableDynamicLighting" checked>
                 </label>
             </div>
-            <div class="settings-group" style="border-top: 1px solid rgba(255,255,255,0.1); margin-top: 12px; padding-top: 12px;">
-                <label class="settings-row" title="实验性功能：使用新的楼层敌人系统">
-                    <span>🧪 新敌人系统 (实验性)</span>
-                    <input type="checkbox" id="useNewEnemySystem">
+            <div class="settings-group">
+                <label class="settings-row">
+                    <span>🛠 DEV 模式<small>开启后可使用 F9 测试面板；切换后会自动刷新</small></span>
+                    <input type="checkbox" id="enableDevMode">
                 </label>
-                <small style="color: rgba(255,255,255,0.5); display: block; margin-top: 4px;">切换后进入下一房间生效</small>
+                <div id="devModeHint" style="margin-top:8px;color:var(--hud-ink-soft);font-size:12px;line-height:1.5;">关闭时 F9 不会打开测试面板。切换后会自动刷新。</div>
             </div>
         `;
 
@@ -313,21 +322,28 @@ class SettingsController {
 
         this.masterSlider = document.getElementById('masterVolume');
         this.masterValue = document.getElementById('masterVolumeValue');
+        this.brightnessSlider = document.getElementById('gameBrightness');
+        this.brightnessValue = document.getElementById('gameBrightnessValue');
         this.autoPauseCheckbox = document.getElementById('autoPauseOnBlur');
         this.screenShakeCheckbox = document.getElementById('enableScreenShake');
         this.damageNumbersCheckbox = document.getElementById('showDamageNumbers');
         this.hd2dCheckbox = document.getElementById('enableHD2D');
         this.tiltShiftCheckbox = document.getElementById('enableTiltShift');
         this.dynamicLightingCheckbox = document.getElementById('enableDynamicLighting');
-        this.enemySystemCheckbox = document.getElementById('useNewEnemySystem');
+        this.devModeCheckbox = document.getElementById('enableDevMode');
+        this.devModeHint = document.getElementById('devModeHint');
     }
 
-    updateSettings(partialSettings) {
+    updateSettings(partialSettings, options = {}) {
         if (!this.settingsStore) return;
 
         const next = this.settingsStore.patch(partialSettings);
         const game = this.gameGetter();
         this.settingsStore.applyToGame(game, next);
+
+        if (options.devToggled && window.setDevModeEnabled) {
+            window.setDevModeEnabled(!!next.devMode, { reload: options.reloadOnDevToggle !== false, persistSettings: false });
+        }
     }
 }
 

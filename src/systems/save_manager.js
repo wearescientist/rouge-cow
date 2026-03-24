@@ -19,7 +19,7 @@ class SaveManager {
         this.currentSlot = 1;
         
         // 存档版本（用于迁移）
-        this.version = window.AppVersion?.saveVersion || window.AppVersion?.number || '0.33.1';
+        this.version = window.AppVersion?.saveVersion || window.AppVersion?.number || '0.35.0';
     }
     
     // ========== 基础存档操作 ==========
@@ -252,7 +252,8 @@ class SaveManager {
             currentRoom: data.currentRoom ?? null,
             playTime: data.playTime || 0,
             score: data.score || 0,
-            totems: Array.isArray(data.totems) ? data.totems : []
+            totems: Array.isArray(data.totems) ? data.totems : [],
+            hiddenRooms: data.hiddenRooms || null
         };
     }
 
@@ -342,7 +343,8 @@ class SaveManager {
             currentRoom: game.curRoom ? game.curRoom.id : null,
             playTime: game.playTime || 0,
             score: game.scoreManager ? game.scoreManager.score : 0,
-            totems: game.totems ? Array.from(game.totems.collected) : []
+            totems: game.totems ? Array.from(game.totems.collected) : [],
+            hiddenRooms: game.hiddenRooms ? JSON.parse(JSON.stringify(game.hiddenRooms)) : null
         };
     }
     

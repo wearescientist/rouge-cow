@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>音效方案对比测试工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #1a1a2e;
+            color: #eee;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+            color: #ffd700;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        
+        .volume-control {
+            background: #16213e;
+            padding: 15px 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .volume-control label {
+            font-weight: bold;
+        }
+        
+        .volume-control input[type="range"] {
+            width: 200px;
+        }
+        
+        .volume-value {
+            color: #ffd700;
+            min-width: 50px;
+        }
+        
+        .schemes {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .scheme-card {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            border: 2px solid #0f3460;
+            transition: border-color 0.3s;
+        }
+        
+        .scheme-card:hover {
+            border-color: #e94560;
+        }
+        
+        .scheme-card.active {
+            border-color: #ffd700;
+        }
+        
+        .scheme-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #0f3460;
+        }
+        
+        .scheme-number {
+            width: 36px;
+            height: 36px;
+            background: #e94560;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .scheme-card.active .scheme-number {
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+        
+        .scheme-title {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        
+        .scheme-desc {
+            font-size: 12px;
+            color: #888;
+        }
+        
+        .sound-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            gap: 8px;
+        }
+        
+        .sound-btn {
+            background: #0f3460;
+            border: none;
+            color: #fff;
+            padding: 12px 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+            transition: all 0.2s;
+            text-align: center;
+        }
+        
+        .sound-btn:hover {
+            background: #e94560;
+            transform: translateY(-2px);
+        }
+        
+        .sound-btn:active {
+            transform: translateY(0);
+        }
+        
+        .sound-btn.playing {
+            background: #ffd700;
+            color: #1a1a2e;
+        }
+        
+        .category {
+            margin-bottom: 15px;
+        }
+        
+        .category-title {
+            font-size: 13px;
+            color: #888;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .comparison-section {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .comparison-title {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .compare-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .compare-btn {
+            background: #e94560;
+            border: none;
+            color: #fff;
+            padding: 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        
+        .compare-btn:hover {
+            background: #ff6b6b;
+            transform: scale(1.05);
+        }
+        
+        .stats {
+            background: #0f3460;
+            padding: 15px;
+            border-radius: 10px;
+            font-size: 13px;
+            line-height: 1.8;
+        }
+        
+        .stats strong {
+            color: #ffd700;
+        }
+        
+        .export-section {
+            background: #16213e;
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .export-btn {
+            background: #4ecca3;
+            border: none;
+            color: #1a1a2e;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: bold;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .export-btn:hover {
+            background: #3db892;
+        }
+        
+        .recommendation {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin-top: 20px;
+        }
+        
+        .recommendation h3 {
+            color: #fff;
+            margin-bottom: 10px;
+        }
+        
+        .recommendation ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+        
+        .recommendation li {
+            margin-bottom: 5px;
+        }
+        
+        .tag {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            margin-left: 5px;
+        }
+        
+        .tag-pros {
+            background: #4ecca3;
+            color: #1a1a2e;
+        }
+        
+        .tag-cons {
+            background: #e94560;
+            color: #fff;
+        }
+        
+        @media (max-width: 768px) {
+            .compare-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .schemes {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🔊 音效方案对比测试工具</h1>
+    <p class="subtitle">测试四种音效生成方案，选择最适合你游戏的方案</p>
+    
+    <div class="volume-control">
+        <label>🎚️ 主音量:</label>
+        <input type="range" id="masterVolume" min="0" max="100" value="50">
+        <span class="volume-value" id="masterVolumeValue">50%</span>
+        
+        <label style="margin-left: 20px">🔊 SFX音量:</label>
+        <input type="range" id="sfxVolume" min="0" max="100" value="60">
+        <span class="volume-value" id="sfxVolumeValue">60%</span>
+    </div>
+    
+    <div class="schemes">
+        <!-- 方案1: jsfxr -->
+        <div class="scheme-card" id="scheme1">
+            <div class="scheme-header">
+                <div class="scheme-number">1</div>
+                <div>
+                    <div class="scheme-title">JSFXR 程序生成</div>
+                    <div class="scheme-desc">经典8-bit风格，代码生成，零依赖</div>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">武器音效</div>
+                <div class="sound-grid">
+                    <button class="sound-btn" onclick="playJSFXR('whip')">鞭子</button>
+                    <button class="sound-btn" onclick="playJSFXR('scythe')">镰刀</button>
+                    <button class="sound-btn" onclick="playJSFXR('knife')">飞刀</button>
+                    <button class="sound-btn" onclick="playJSFXR('axe')">斧头</button>
+                    <button class="sound-btn" onclick="playJSFXR('fireball')">火球</button>
+                    <button class="sound-btn" onclick="playJSFXR('icicle')">冰锥</button>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">命中/事件</div>
+                <div class="sound-grid">
+                    <button class="sound-btn" onclick="playJSFXR('hit_flesh')">击中</button>
+                    <button class="sound-btn" onclick="playJSFXR('hit_armor')">盔甲</button>
+                    <button class="sound-btn" onclick="playJSFXR('crit')">暴击</button>
+                    <button class="sound-btn" onclick="playJSFXR('pickup_coin')">金币</button>
+                    <button class="sound-btn" onclick="playJSFXR('levelup')">升级</button>
+                    <button class="sound-btn" onclick="playJSFXR('explosion')">爆炸</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 方案2: 外部音效库 -->
+        <div class="scheme-card" id="scheme2">
+            <div class="scheme-header">
+                <div class="scheme-number">2</div>
+                <div>
+                    <div class="scheme-title">外部音效库</div>
+                    <div class="scheme-desc">Kenney等免费资源，专业品质</div>
+                </div>
+            </div>
+            
+            <div style="padding: 20px; text-align: center; color: #888;">
+                <p>📦 需要下载外部音效文件</p>
+                <p style="font-size: 13px; margin-top: 10px;">
+                    1. 访问 <a href="https://kenney.nl/assets?q=audio" target="_blank" style="color: #4ecca3;">Kenney.nl</a><br>
+                    2. 下载音效包<br>
+                    3. 放入 assets/sounds/external/
+                </p>
+                <button class="sound-btn" style="margin-top: 15px;" onclick="openKenney()">打开下载页面</button>
+            </div>
+            
+            <div class="category" style="opacity: 0.5;">
+                <div class="category-title">示例音效 (需下载)</div>
+                <div class="sound-grid">
+                    <button class="sound-btn" disabled>剑击</button>
+                    <button class="sound-btn" disabled>弓箭</button>
+                    <button class="sound-btn" disabled>爆炸</button>
+                    <button class="sound-btn" disabled>金币</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 方案3: 高级合成 -->
+        <div class="scheme-card" id="scheme3">
+            <div class="scheme-header">
+                <div class="scheme-number">3</div>
+                <div>
+                    <div class="scheme-title">高级合成算法</div>
+                    <div class="scheme-desc">FM/物理建模/粒子合成</div>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">FM合成</div>
+                <div class="sound-grid">
+                    <button class="sound-btn" onclick="playFM('laser')">激光</button>
+                    <button class="sound-btn" onclick="playFM('bell')">铃声</button>
+                    <button class="sound-btn" onclick="playFM('bass')">低音</button>
+                    <button class="sound-btn" onclick="playFM('lead')">主音</button>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">物理建模</div>
+                <div class="sound-grid">
+                    <button class="sound-btn" onclick="playPhysical('flesh')">肉体</button>
+                    <button class="sound-btn" onclick="playPhysical('armor')">盔甲</button>
+                    <button class="sound-btn" onclick="playPhysical('wood')">木头</button>
+                    <button class="sound-btn" onclick="playPhysical('metal')">金属</button>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">粒子合成</div>
+                <div class="sound-grid">
+                    <button class="sound-btn" onclick="playParticle('small')">小爆炸</button>
+                    <button class="sound-btn" onclick="playParticle('medium')">中爆炸</button>
+                    <button class="sound-btn" onclick="playParticle('large')">大爆炸</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 方案4: 混合方案 -->
+        <div class="scheme-card active" id="scheme4">
+            <div class="scheme-header">
+                <div class="scheme-number">4</div>
+                <div>
+                    <div class="scheme-title">混合方案 ⭐推荐</div>
+                    <div class="scheme-desc">结合多种方案的优势</div>
+                </div>
+            </div>
+            
+            <div class="category">
+                <div class="category-title">智能切换</div>
+                <div class="sound-grid">
+                    <button class="sound-btn" onclick="playHybrid('weapon')">武器</button>
+                    <button class="sound-btn" onclick="playHybrid('hit')">命中</button>
+                    <button class="sound-btn" onclick="playHybrid('ui')">UI</button>
+                    <button class="sound-btn" onclick="playHybrid('ambient')">环境</button>
+                </div>
+            </div>
+            
+            <div style="padding: 15px; background: #0f3460; border-radius: 8px; margin-top: 10px; font-size: 13px;">
+                <strong style="color: #ffd700;">策略：</strong><br>
+                • 武器/技能 → FM合成<br>
+                • 命中/爆炸 → 物理/粒子<br>
+                • UI/小音效 → jsfxr<br>
+                • 特殊音效 → 外部库
+            </div>
+        </div>
+    </div>
+    
+    <div class="comparison-section">
+        <div class="comparison-title">⚡ 同音效多方案对比</div>
+        <p style="margin-bottom: 15px; color: #888;">点击按钮，同时触发不同方案的同类型音效</p>
+        
+        <div class="compare-grid">
+            <button class="compare-btn" onclick="compareAll('whip')">鞭子对比</button>
+            <button class="compare-btn" onclick="compareAll('hit')">命中对比</button>
+            <button class="compare-btn" onclick="compareAll('explosion')">爆炸对比</button>
+            <button class="compare-btn" onclick="compareAll('coin')">金币对比</button>
+        </div>
+        
+        <div class="stats" id="stats">
+            <strong>当前状态:</strong><br>
+            方案1 (jsfxR): <span id="s1-status">就绪</span><br>
+            方案3 (高级): <span id="s3-status">就绪</span><br>
+            缓存命中: <span id="cache-hits">0</span> | 生成耗时: <span id="gen-time">0</span>ms
+        </div>
+    </div>
+    
+    <div class="export-section">
+        <div class="comparison-title">💾 导出工具</div>
+        <button class="export-btn" onclick="exportJSFXR()">导出所有 jsfxr 音效</button>
+        <button class="export-btn" onclick="generateReport()">生成对比报告</button>
+        <button class="export-btn" onclick="clearCache()">清除缓存</button>
+    </div>
+    
+    <div class="recommendation">
+        <h3>📋 选择建议</h3>
+        <ul>
+            <li><strong>原型开发/Game Jam</strong> → 方案1 (jsfxr) <span class="tag tag-pros">快速</span> <span class="tag tag-pros">零依赖</span></li>
+            <li><strong>商业游戏/高品质</strong> → 方案2 (外部库) <span class="tag tag-pros">专业</span> <span class="tag tag-cons">需下载</span></li>
+            <li><strong>技术展示/独特风格</strong> → 方案3 (高级合成) <span class="tag tag-pros">独特</span> <span class="tag tag-cons">CPU高</span></li>
+            <li><strong>大多数项目</strong> → 方案4 (混合) <span class="tag tag-pros">平衡</span> <span class="tag tag-pros">灵活</span> <span class="tag tag-pros">推荐</span></li>
+        </ul>
+    </div>
+
+    <script>
+        // 全局音频上下文
+        let ctx = null;
+        let masterGain = null;
+        let masterVolume = 0.5;
+        let sfxVolume = 0.6;
+        let cache = new Map();
+        let cacheHits = 0;
+        
+        // 初始化音频
+        function initAudio() {
+            if (!ctx) {
+                ctx = new (window.AudioContext || window.webkitAudioContext)();
+                masterGain = ctx.createGain();
+                masterGain.gain.value = masterVolume;
+                masterGain.connect(ctx.destination);
+            }
+            if (ctx.state === 'suspended') {
+                ctx.resume();
+            }
+        }
+        
+        // ==================== jsfxr 简化版 ====================
+        const jsfxr = {
+            WAVE_SQUARE: 0, WAVE_SAWTOOTH: 1, WAVE_SINE: 2, WAVE_NOISE: 3,
+            
+            PRESETS: {
+                whip: { waveType: 3, p_env_attack: 0, p_env_sustain: 0.02, p_env_decay: 0.1, p_freq: 0.8, p_freq_slide: -0.3, sound_vol: 0.4 },
+                scythe: { waveType: 1, p_env_attack: 0, p_env_sustain: 0.05, p_env_decay: 0.3, p_freq: 0.2, p_freq_slide: -0.2, sound_vol: 0.5 },
+                knife: { waveType: 0, p_env_attack: 0, p_env_sustain: 0.01, p_env_decay: 0.1, p_freq: 0.6, sound_vol: 0.3 },
+                axe: { waveType: 1, p_env_attack: 0, p_env_sustain: 0.05, p_env_decay: 0.2, p_freq: 0.15, p_freq_slide: -0.1, sound_vol: 0.6 },
+                fireball: { waveType: 3, p_env_attack: 0.01, p_env_sustain: 0.1, p_env_decay: 0.4, p_freq: 0.3, p_freq_slide: 0.1, sound_vol: 0.5 },
+                icicle: { waveType: 2, p_env_attack: 0, p_env_sustain: 0.1, p_env_decay: 0.3, p_freq: 0.7, sound_vol: 0.4 },
+                hit_flesh: { waveType: 3, p_env_attack: 0, p_env_sustain: 0.02, p_env_decay: 0.1, p_freq: 0.4, sound_vol: 0.4 },
+                hit_armor: { waveType: 3, p_env_attack: 0, p_env_sustain: 0.01, p_env_decay: 0.15, p_freq: 0.7, sound_vol: 0.5 },
+                crit: { waveType: 1, p_env_attack: 0, p_env_sustain: 0.05, p_env_decay: 0.3, p_freq: 0.5, p_freq_slide: 0.3, sound_vol: 0.6 },
+                pickup_coin: { waveType: 0, p_env_attack: 0, p_env_sustain: 0.05, p_env_decay: 0.3, p_freq: 0.6, sound_vol: 0.4 },
+                levelup: { waveType: 0, p_env_attack: 0, p_env_sustain: 0.2, p_env_decay: 0.6, p_freq: 0.4, p_freq_slide: 0.2, sound_vol: 0.5 },
+                explosion: { waveType: 3, p_env_attack: 0, p_env_sustain: 0.1, p_env_decay: 0.5, p_freq: 0.1, sound_vol: 0.6 },
+            },
+            
+            generate(params) {
+                const sampleRate = 44100;
+                const totalSamples = Math.floor(sampleRate * (params.p_env_attack + params.p_env_sustain + params.p_env_decay + 0.1));
+                const data = new Float32Array(totalSamples);
+                let phase = 0;
+                let freq = params.p_freq;
+                
+                const attackSamples = Math.floor(sampleRate * params.p_env_attack);
+                const sustainSamples = Math.floor(sampleRate * params.p_env_sustain);
+                const decaySamples = Math.floor(sampleRate * params.p_env_decay);
+                
+                for (let i = 0; i < totalSamples; i++) {
+                    let envelope = 1;
+                    if (i < attackSamples) {
+                        envelope = i / attackSamples;
+                    } else if (i < attackSamples + sustainSamples) {
+                        envelope = 1;
+                    } else if (i < attackSamples + sustainSamples + decaySamples) {
+                        envelope = 1 - (i - attackSamples - sustainSamples) / decaySamples;
+                    } else {
+                        envelope = 0;
+                    }
+                    
+                    freq += params.p_freq_slide * 0.001;
+                    phase += freq;
+                    if (phase > 1) phase -= 1;
+                    
+                    let sample = 0;
+                    switch (params.waveType) {
+                        case 0: sample = phase < 0.5 ? 1 : -1; break;
+                        case 1: sample = 1 - phase * 2; break;
+                        case 2: sample = Math.sin(phase * Math.PI * 2); break;
+                        case 3: sample = Math.random() * 2 - 1; break;
+                    }
+                    
+                    data[i] = sample * envelope * params.sound_vol;
+                }
+                return data;
+            },
+            
+            toAudioBuffer(ctx, data) {
+                const buffer = ctx.createBuffer(1, data.length, 44100);
+                buffer.getChannelData(0).set(data);
+                return buffer;
+            }
+        };
+        
+        // ==================== 播放函数 ====================
+        
+        function playJSFXR(name) {
+            initAudio();
+            highlightButton('scheme1');
+            
+            const startTime = performance.now();
+            const cacheKey = 'jsfxr_' + name;
+            let buffer = cache.get(cacheKey);
+            
+            if (!buffer) {
+                const params = jsfxr.PRESETS[name];
+                if (!params) return;
+                const data = jsfxr.generate(params);
+                buffer = jsfxr.toAudioBuffer(ctx, data);
+                cache.set(cacheKey, buffer);
+            } else {
+                cacheHits++;
+            }
+            
+            const source = ctx.createBufferSource();
+            const gain = ctx.createGain();
+            source.buffer = buffer;
+            gain.gain.value = sfxVolume;
+            source.connect(gain);
+            gain.connect(masterGain);
+            source.start();
+            
+            updateStats(performance.now() - startTime);
+        }
+        
+        function playFM(type) {
+            initAudio();
+            highlightButton('scheme3');
+            
+            const configs = {
+                laser: { carrierFreq: 800, modulatorFreq: 200, modulationIndex: 200, decay: 0.2 },
+                bell: { carrierFreq: 500, modulatorFreq: 800, modulationIndex: 300, decay: 1.0 },
+                bass: { carrierFreq: 100, modulatorFreq: 50, modulationIndex: 50, decay: 0.3 },
+                lead: { carrierFreq: 440, modulatorFreq: 110, modulationIndex: 150, decay: 0.4 }
+            };
+            
+            const cfg = configs[type];
+            const t = ctx.currentTime;
+            
+            const mod = ctx.createOscillator();
+            const modGain = ctx.createGain();
+            mod.frequency.value = cfg.modulatorFreq;
+            modGain.gain.value = cfg.modulationIndex;
+            
+            const car = ctx.createOscillator();
+            car.type = 'sine';
+            const env = ctx.createGain();
+            env.gain.setValueAtTime(sfxVolume * 0.5, t);
+            env.gain.exponentialRampToValueAtTime(0.001, t + cfg.decay);
+            
+            mod.connect(modGain);
+            modGain.connect(car.frequency);
+            car.connect(env);
+            env.connect(masterGain);
+            
+            mod.start(t);
+            car.start(t);
+            mod.stop(t + cfg.decay);
+            car.stop(t + cfg.decay);
+        }
+        
+        function playPhysical(material) {
+            initAudio();
+            highlightButton('scheme3');
+            
+            const configs = {
+                flesh: { freq: 150, decay: 0.15, harmonics: 3 },
+                armor: { freq: 400, decay: 0.2, harmonics: 6 },
+                wood: { freq: 300, decay: 0.25, harmonics: 4 },
+                metal: { freq: 600, decay: 0.8, harmonics: 8 }
+            };
+            
+            const cfg = configs[material];
+            const t = ctx.currentTime;
+            
+            for (let i = 1; i <= cfg.harmonics; i++) {
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                osc.frequency.value = cfg.freq * i;
+                osc.type = i % 2 === 0 ? 'sine' : 'triangle';
+                gain.gain.setValueAtTime(sfxVolume / i, t);
+                gain.gain.exponentialRampToValueAtTime(0.001, t + cfg.decay / i);
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start(t);
+                osc.stop(t + cfg.decay);
+            }
+        }
+        
+        function playParticle(size) {
+            initAudio();
+            highlightButton('scheme3');
+            
+            const configs = { small: 15, medium: 30, large: 50 };
+            const count = configs[size];
+            const t = ctx.currentTime;
+            
+            for (let i = 0; i < count; i++) {
+                const start = t + Math.random() * 0.3;
+                const dur = 0.02 + Math.random() * 0.05;
+                const osc = ctx.createOscillator();
+                const gain = ctx.createGain();
+                
+                osc.type = ['sine', 'square', 'sawtooth'][Math.floor(Math.random() * 3)];
+                osc.frequency.value = 200 + Math.random() * 600;
+                
+                const vol = sfxVolume * 0.3 / Math.sqrt(count);
+                gain.gain.setValueAtTime(0, start);
+                gain.gain.linearRampToValueAtTime(vol, start + 0.005);
+                gain.gain.exponentialRampToValueAtTime(0.001, start + dur);
+                
+                osc.connect(gain);
+                gain.connect(masterGain);
+                osc.start(start);
+                osc.stop(start + dur);
+            }
+        }
+        
+        function playHybrid(type) {
+            initAudio();
+            highlightButton('scheme4');
+            
+            // 混合策略示例
+            switch(type) {
+                case 'weapon':
+                    playFM('laser');
+                    setTimeout(() => playJSFXR('whip'), 50);
+                    break;
+                case 'hit':
+                    playPhysical('flesh');
+                    break;
+                case 'ui':
+                    playJSFXR('pickup_coin');
+                    break;
+                case 'ambient':
+                    playParticle('small');
+                    break;
+            }
+        }
+        
+        // ==================== 工具函数 ====================
+        
+        function compareAll(type) {
+            initAudio();
+            const delay = 0.3;
+            
+            if (type === 'whip') {
+                playJSFXR('whip');
+                setTimeout(() => playFM('laser'), delay * 1000);
+            } else if (type === 'hit') {
+                playJSFXR('hit_flesh');
+                setTimeout(() => playPhysical('flesh'), delay * 1000);
+            } else if (type === 'explosion') {
+                playJSFXR('explosion');
+                setTimeout(() => playParticle('medium'), delay * 1000);
+            } else if (type === 'coin') {
+                playJSFXR('pickup_coin');
+                setTimeout(() => playFM('bell'), delay * 1000);
+            }
+        }
+        
+        function highlightButton(schemeId) {
+            document.querySelectorAll('.scheme-card').forEach(c => c.classList.remove('active'));
+            document.getElementById(schemeId).classList.add('active');
+        }
+        
+        function updateStats(genTime) {
+            document.getElementById('cache-hits').textContent = cacheHits;
+            document.getElementById('gen-time').textContent = genTime.toFixed(1);
+        }
+        
+        function openKenney() {
+            window.open('https://kenney.nl/assets?q=audio', '_blank');
+        }
+        
+        function exportJSFXR() {
+            const zip = [];
+            for (const name of Object.keys(jsfxr.PRESETS)) {
+                const data = jsfxr.generate(jsfxr.PRESETS[name]);
+                const blob = floatToWav(data);
+                zip.push({ name: name + '.wav', blob });
+            }
+            alert(`已生成 ${zip.length} 个音效文件\n\n在真实环境中，这里会触发下载ZIP文件`);
+        }
+        
+        function floatToWav(floatData) {
+            const length = floatData.length;
+            const buffer = new ArrayBuffer(44 + length * 2);
+            const view = new DataView(buffer);
+            
+            const writeString = (offset, string) => {
+                for (let i = 0; i < string.length; i++) {
+                    view.setUint8(offset + i, string.charCodeAt(i));
+                }
+            };
+            
+            writeString(0, 'RIFF');
+            view.setUint32(4, 36 + length * 2, true);
+            writeString(8, 'WAVE');
+            writeString(12, 'fmt ');
+            view.setUint32(16, 16, true);
+            view.setUint16(20, 1, true);
+            view.setUint16(22, 1, true);
+            view.setUint32(24, 44100, true);
+            view.setUint32(28, 88200, true);
+            view.setUint16(32, 2, true);
+            view.setUint16(34, 16, true);
+            writeString(36, 'data');
+            view.setUint32(40, length * 2, true);
+            
+            let offset = 44;
+            for (let i = 0; i < length; i++) {
+                const s = Math.max(-1, Math.min(1, floatData[i]));
+                view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+                offset += 2;
+            }
+            
+            return new Blob([buffer], { type: 'audio/wav' });
+        }
+        
+        function generateReport() {
+            const report = {
+                timestamp: new Date().toISOString(),
+                cacheSize: cache.size,
+                cacheHits: cacheHits,
+                schemes: {
+                    jsfxr: '24种预设音效',
+                    external: '需要手动下载',
+                    advanced: 'FM + 物理 + 粒子',
+                    hybrid: '智能切换策略'
+                },
+                recommendation: '方案4 (混合) 适合大多数项目'
+            };
+            console.table(report);
+            alert('报告已生成到控制台 (F12)');
+        }
+        
+        function clearCache() {
+            cache.clear();
+            cacheHits = 0;
+            updateStats(0);
+            alert('缓存已清除');
+        }
+        
+        // 音量控制
+        document.getElementById('masterVolume').oninput = function() {
+            masterVolume = this.value / 100;
+            document.getElementById('masterVolumeValue').textContent = this.value + '%';
+            if (masterGain) masterGain.gain.value = masterVolume;
+        };
+        
+        document.getElementById('sfxVolume').oninput = function() {
+            sfxVolume = this.value / 100;
+            document.getElementById('sfxVolumeValue').textContent = this.value + '%';
+        };
+    </script>
+</body>
+</html>

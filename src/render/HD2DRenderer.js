@@ -17,6 +17,8 @@ class HD2DRenderer {
         this.activePreset = 'cinematic';
         this.applyPreset(this.activePreset);
         this.roomBlur.setRoomSize(this.width, this.height);
+        this.tiltShift.enabled = false;
+        this.roomBlur.useFullScreenBlur = false;
         this.postProcessFocus = {
             x: this.width / 2,
             y: this.height / 2
@@ -41,10 +43,10 @@ class HD2DRenderer {
     renderPlayerBacklight(player, screenX, screenY, zoom = 1) {
         const canvas = this.ctx.canvas;
         this.shadow.render(screenX, screenY, zoom, {
+            fixedShadow: true,
             sizeMultiplier: 1.08,
-            alphaMultiplier: 1.02,
-            roomCenterX: (canvas.width || 960) / 2,
-            roomCenterY: (canvas.height || 960) / 2
+            alphaMultiplier: 0.94,
+            offsetY: 2
         });
     }
 
@@ -62,7 +64,9 @@ class HD2DRenderer {
             this.roomBlur.render(this.postProcessFocus.x, this.postProcessFocus.y);
         }
 
-        this.renderPlayerVignette(playerScreenX, playerScreenY);
+        if (!useRoomBlur) {
+            this.renderPlayerVignette(focusX, focusY);
+        }
         this.colorGrading.render();
     }
 
@@ -74,6 +78,9 @@ class HD2DRenderer {
         const canvas = this.ctx.canvas;
         const w = canvas.width || 900;
         const h = canvas.height || 600;
+        const hiddenRoom = window.game?.curRoom?.type === 'hidden';
+        const focusX = Number.isFinite(x) ? x : this.postProcessFocus.x || w / 2;
+        const focusY = Number.isFinite(y) ? y : this.postProcessFocus.y || h / 2;
         const canvasScale = Math.min(w, h) / 960;
         const currentFloor = window.game?.currentFloor || 1;
         const darknessBoost = currentFloor >= 6 ? 1.14 : 1;
@@ -88,13 +95,15 @@ class HD2DRenderer {
             this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         }
 
-        const lightGradient = this.ctx.createRadialGradient(x, y, 0, x, y, lightRadius);
-        lightGradient.addColorStop(0, 'rgba(255, 224, 170, 0.007)');
-        lightGradient.addColorStop(0.32, 'rgba(255, 206, 138, 0.002)');
-        lightGradient.addColorStop(1, 'rgba(255, 200, 120, 0)');
-        this.ctx.globalCompositeOperation = 'screen';
-        this.ctx.fillStyle = lightGradient;
-        this.ctx.fillRect(0, 0, w, h);
+        if (!hiddenRoom) {
+            const lightGradient = this.ctx.createRadialGradient(focusX, focusY, 0, focusX, focusY, lightRadius);
+            lightGradient.addColorStop(0, 'rgba(255, 224, 170, 0.007)');
+            lightGradient.addColorStop(0.32, 'rgba(255, 206, 138, 0.002)');
+            lightGradient.addColorStop(1, 'rgba(255, 200, 120, 0)');
+            this.ctx.globalCompositeOperation = 'screen';
+            this.ctx.fillStyle = lightGradient;
+            this.ctx.fillRect(0, 0, w, h);
+        }
 
         this.ctx.restore();
         this.ctx.save();
@@ -104,16 +113,21 @@ class HD2DRenderer {
             this.ctx.setTransform(1, 0, 0, 1, 0, 0);
         }
 
-        const grad = this.ctx.createRadialGradient(x, y, vignetteInner, x, y, vignetteOuter);
-        grad.addColorStop(0, 'rgba(5, 8, 12, 0)');
-        grad.addColorStop(0.18, 'rgba(5, 8, 12, 0)');
-        grad.addColorStop(0.34, `rgba(5, 7, 10, ${0.12 * darknessBoost})`);
-        grad.addColorStop(0.56, `rgba(4, 5, 8, ${0.28 * darknessBoost})`);
-        grad.addColorStop(0.76, `rgba(3, 4, 7, ${0.54 * darknessBoost})`);
-        grad.addColorStop(0.9, `rgba(2, 3, 5, ${0.76 * darknessBoost})`);
-        grad.addColorStop(1, `rgba(1, 2, 4, ${Math.min(0.94, 0.88 * darknessBoost)})`);
-        this.ctx.fillStyle = grad;
-        this.ctx.fillRect(0, 0, w, h);
+        if (hiddenRoom) {
+            this.ctx.fillStyle = 'rgba(2, 4, 8, 0.56)';
+            this.ctx.fillRect(0, 0, w, h);
+        } else {
+            const grad = this.ctx.createRadialGradient(focusX, focusY, vignetteInner, focusX, focusY, vignetteOuter);
+            grad.addColorStop(0, 'rgba(5, 8, 12, 0)');
+            grad.addColorStop(0.18, 'rgba(5, 8, 12, 0)');
+            grad.addColorStop(0.34, `rgba(5, 7, 10, ${0.12 * darknessBoost})`);
+            grad.addColorStop(0.56, `rgba(4, 5, 8, ${0.28 * darknessBoost})`);
+            grad.addColorStop(0.76, `rgba(3, 4, 7, ${0.54 * darknessBoost})`);
+            grad.addColorStop(0.9, `rgba(2, 3, 5, ${0.76 * darknessBoost})`);
+            grad.addColorStop(1, `rgba(1, 2, 4, ${Math.min(0.94, 0.88 * darknessBoost)})`);
+            this.ctx.fillStyle = grad;
+            this.ctx.fillRect(0, 0, w, h);
+        }
 
         this.ctx.restore();
     }
@@ -159,6 +173,7 @@ class HD2DRenderer {
             this.roomBlur.rHeavy = name === 'cinematic' ? 345 : 430;
             this.roomBlur.outerDimStrength = name === 'cinematic' ? 0.34 : 0.22;
             this.roomBlur.outerTintStrength = name === 'cinematic' ? 0.12 : 0.06;
+            this.roomBlur.useFullScreenBlur = false;
         }
     }
 }

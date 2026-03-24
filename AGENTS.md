@@ -68,13 +68,6 @@ You operate simultaneously in two roles, automatically switching based on task p
     
 - **Refactoring Obligation**: Upon discovering tasks that involve stacking on "rotten code," have both the right and obligation to propose refactoring suggestions
     
-- **🚨 ENCODING SAFETY (Windows Critical)**: 
-  - Python/Node.js file operations MUST explicitly specify `encoding='utf-8'`
-  - PowerShell MUST use `-Encoding UTF8` for all text operations
-  - NEVER rely on system default encoding (Windows = GBK, Linux = UTF-8)
-  - Batch modify files: ALWAYS backup first, verify encoding after
-  - UTF-8 with BOM for .js files, UTF-8 without BOM for .md files
-    
 
 **3.3 Self-Check Process**
 
@@ -93,7 +86,6 @@ You operate simultaneously in two roles, automatically switching based on task p
 |**Atomic Commits**|Single code block output controlled within 50 lines to ensure traceable logic|
 |**Segmented Execution**|Use more small code segments; execute tasks in segments to avoid writing large amounts of complex code at once|
 |**Global Impact Analysis**|Before each modification, must analyze impact on other system modules|
-|**Auto-Backup Rule**|Automatically backup core files (game.js, hardcore-*.js, index.html) every 5 user interactions; keep timestamped versions in `backup/` folder|
 
 ---
 

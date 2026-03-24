@@ -84,7 +84,9 @@ class ScreenFlowController {
         this.weaponOptions.innerHTML = starterWeapons.map((weapon) => `
             <div class="weapon-option" data-weapon="${weapon.key}" style="--w-accent:${weapon.color};">
                 <div class="weapon-card-top">
-                    <div class="weapon-icon-badge">${weapon.iconSprite ? `<img src="assets/sprites/weapons/${weapon.iconSprite}.png" alt="${weapon.name}" style="width:72%;height:72%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.35));">` : weapon.icon}</div>
+                    <div class="weapon-icon-badge">${window.WeaponIconResolver
+                        ? window.WeaponIconResolver.getMarkup(weapon, { style: 'width:72%;height:72%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.35));', altText: weapon.name })
+                        : (weapon.iconSprite ? `<img src="assets/runtime/sprites/weapons/${weapon.iconSprite}.png" alt="${weapon.name}" style="width:72%;height:72%;object-fit:contain;filter:drop-shadow(0 4px 10px rgba(0,0,0,0.35));">` : weapon.icon)}</div>
                     <div class="weapon-pick-label">起始武器</div>
                 </div>
                 <div class="weapon-title">${weapon.name}</div>

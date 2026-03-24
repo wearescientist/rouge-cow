@@ -1,0 +1,17 @@
+覆盖补丁说明
+
+把本压缩包内文件按原目录覆盖到工程根目录即可。
+
+本次改动文件：
+1. index.html
+2. src/render/systems/RoomBlurSystem.js
+
+本次优化内容：
+- particles.draw：增加屏外裁剪、低价值粒子跳帧、弱粒子降发光、减少不必要 transform/save/restore。
+- blood.draw：增加整团血迹快速裁剪、老血迹降采样、单房血迹上限。
+- roomBlur.render：增加压力自适应质量档，重压时降低 bloom/color pass 频率，并缩减灯光预算。
+- index 中 RoomBlurSystem.js 的版本参数已从 v=0342 提到 v=0343，避免浏览器继续吃旧缓存。
+
+建议：
+- 覆盖后强刷浏览器缓存一次（Ctrl+F5）。
+- 先直接跑你现有 autobench / AI bench 再看 profile。

@@ -14,7 +14,7 @@ class SpriteDataRegistry {
      * 从 JSON 文件加载元数据
      * @param {string} url - metadata.json 路径
      */
-    async load(url = 'assets/sprites/metadata.json') {
+    async load(url = 'assets/runtime/sprites/metadata.json') {
         try {
             const response = await fetch(url);
             if (!response.ok) {
@@ -57,7 +57,7 @@ class SpriteDataRegistry {
         let data = this.metadata.get(key);
         
         // v0.25-fix: 处理玩家动画帧 (player_0 到 player_7) -> player
-        // 支持 player/player_0 或 assets/sprites/player/player_0 格式
+        // 支持 player/player_0 或 assets/runtime/sprites/player/player_0 格式
         if (!data && /player[\/_]player_\d+/.test(key)) {
             data = this.metadata.get('player');
         }
@@ -169,6 +169,7 @@ class SpriteDataRegistry {
         return key
             .replace(/\\/g, '/')
             .replace(/\.[^.]+$/, '')
+            .replace(/^assets\/runtime\/sprites\//, '')
             .replace(/^assets\/sprites\//, '');
     }
 
@@ -199,7 +200,7 @@ class SpriteDataRegistry {
 
     _setupDefaults() {
         // 设置默认配置（当 metadata.json 加载失败时使用）
-        // 基于 ENEMY_TYPES 的 size 分析优化
+        // 基于敌人运行时尺寸分析优化
         const defaults = {
             // ==================== 玩家 ====================
             'player': { canvasWidth: 64, canvasHeight: 64, modelOffsetX: 16, modelOffsetY: 12, modelWidth: 32, modelHeight: 40, anchor: { center: { x: 32, y: 32 }, feet: { x: 32, y: 52 } }, hitboxRatio: { w: 0.85, h: 0.9 }, shadowOffsetY: 2 },

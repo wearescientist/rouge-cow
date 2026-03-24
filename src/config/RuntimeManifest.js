@@ -6,13 +6,15 @@
     'use strict';
 
     const RuntimeManifest = Object.freeze({
-        version: global.AppVersion?.number || '0.33.x',
+        version: global.AppVersion?.number || '0.35.x',
         bootstrap: Object.freeze({
             entry: 'index.html',
             bootMode: 'window.onload -> new Game() -> game.start()'
         }),
         activeCore: Object.freeze([
             'index.html::Game',
+            'src/data/enemy-types-new.js',
+            'src/systems/enemies/NewEnemy.js',
             'src/systems/Room.js',
             'src/systems/rooms/RoomLifecycle.js',
             'src/systems/rooms/RoomRendering.js',
@@ -28,9 +30,7 @@
         extensionModules: Object.freeze([
             ['src/systems/Room.js', 'src/systems/rooms/RoomLifecycle.js'],
             ['src/systems/Room.js', 'src/systems/rooms/RoomRendering.js'],
-            ['src/systems/weapons/Weapon.js', 'src/systems/weapons/WeaponFiring.js'],
-            ['src/systems/enemies/Enemy.js', 'src/systems/enemies/EnemyBossBehavior.js'],
-            ['src/systems/enemies/Enemy.js', 'src/systems/enemies/EnemyPresentation.js']
+            ['src/systems/weapons/Weapon.js', 'src/systems/weapons/WeaponFiring.js']
         ]),
         duplicateCandidates: Object.freeze([
             ['src/systems/Room.js', 'src/systems/rooms/Room.js'],

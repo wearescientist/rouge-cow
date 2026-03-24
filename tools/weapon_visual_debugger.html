@@ -1,0 +1,377 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>武器弹道与贴图调试器</title>
+<style>
+    :root {
+        --bg: #241b15;
+        --bg-soft: #34271e;
+        --line: rgba(246, 214, 164, 0.16);
+        --text: #f6e8cf;
+        --muted: #c8b792;
+        --accent: #ffb86b;
+        --danger: #ff8f8f;
+        --ok: #9de0a9;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font: 14px/1.5 "Microsoft YaHei", "PingFang SC", sans-serif;
+        background:
+            radial-gradient(circle at top, rgba(255, 195, 113, 0.08), transparent 34%),
+            linear-gradient(180deg, #423224 0%, #241b15 100%);
+    }
+
+    .page {
+        display: grid;
+        grid-template-columns: 390px minmax(0, 1fr);
+        min-height: 100vh;
+    }
+
+    .sidebar {
+        overflow-y: auto;
+        padding: 18px;
+        background: linear-gradient(180deg, rgba(38, 28, 21, 0.98), rgba(24, 18, 14, 0.98));
+        border-right: 1px solid var(--line);
+    }
+
+    h1 { margin: 0 0 8px; font-size: 24px; line-height: 1.15; }
+    .lead { margin: 0 0 14px; color: var(--muted); }
+
+    .group {
+        margin-top: 14px;
+        padding: 14px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .group h2 { margin: 0 0 10px; font-size: 15px; }
+    .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .grid-1 { display: grid; gap: 10px; }
+
+    label {
+        display: grid;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    input, select, textarea, button { font: inherit; }
+
+    input[type="text"],
+    input[type="number"],
+    select,
+    textarea {
+        width: 100%;
+        padding: 9px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        color: var(--text);
+        background: rgba(10, 9, 8, 0.4);
+        outline: none;
+    }
+
+    input[readonly] {
+        color: #d8ceb6;
+        background: rgba(255, 255, 255, 0.03);
+        cursor: default;
+    }
+
+    input[type="range"] { width: 100%; accent-color: var(--accent); }
+    input[type="file"] { width: 100%; color: var(--muted); }
+
+    textarea { min-height: 190px; resize: vertical; line-height: 1.4; }
+
+    .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+
+    button {
+        padding: 9px 12px;
+        border: 0;
+        border-radius: 10px;
+        color: #1b140e;
+        background: linear-gradient(180deg, #ffcf87, #ffb86b);
+        cursor: pointer;
+    }
+
+    button.secondary {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.08);
+    }
+
+    button.danger {
+        color: #2b1212;
+        background: linear-gradient(180deg, #ffb0b0, #ff8f8f);
+    }
+
+    .checkbox-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px 16px;
+        align-items: center;
+    }
+
+    .checkbox {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    .status {
+        margin-top: 8px;
+        min-height: 18px;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    .status.error { color: var(--danger); }
+    .status.ok { color: var(--ok); }
+    .hint { color: var(--muted); font-size: 12px; }
+    .hidden { display: none; }
+    .mode-row { display: flex; flex-wrap: wrap; gap: 8px; }
+    .mode-btn {
+        padding: 7px 10px;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.06);
+    }
+    .mode-btn.is-active {
+        color: #1b140e;
+        background: linear-gradient(180deg, #ffcf87, #ffb86b);
+    }
+    .source-chip {
+        margin-top: 8px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        color: #f3dcc0;
+        font-size: 12px;
+        background: rgba(255, 255, 255, 0.05);
+        word-break: break-all;
+    }
+    .compact-list {
+        margin: 0;
+        padding-left: 18px;
+        color: var(--muted);
+        font-size: 12px;
+    }
+    .compact-list li + li {
+        margin-top: 4px;
+    }
+
+    .stage {
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+        gap: 12px;
+        padding: 18px;
+    }
+
+    .bar {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 12px 16px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .summary { font-size: 13px; color: var(--muted); }
+    .summary strong { color: var(--text); }
+
+    .canvas-wrap {
+        overflow: hidden;
+        border: 1px solid rgba(246, 214, 164, 0.18);
+        border-radius: 18px;
+        background:
+            radial-gradient(circle at 50% 20%, rgba(255, 215, 160, 0.06), transparent 30%),
+            linear-gradient(180deg, #6b5846 0%, #4d3d30 100%);
+    }
+
+    canvas {
+        display: block;
+        width: 100%;
+        height: 100%;
+        max-height: calc(100vh - 180px);
+        min-height: 560px;
+        cursor: crosshair;
+    }
+
+    .legend {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    @media (max-width: 1120px) {
+        .page { grid-template-columns: 1fr; }
+        .sidebar { border-right: 0; border-bottom: 1px solid var(--line); }
+        canvas { min-height: 440px; }
+    }
+</style>
+</head>
+<body>
+<div class="page">
+    <aside class="sidebar">
+        <h1>武器弹道与贴图调试器</h1>
+        <p class="lead">左边调参数，右边直接点目标、拖目标、滚轮缩放、中键或右键拖动画布、双击回正。</p>
+
+        <section class="group">
+            <h2>武器与模式</h2>
+            <div class="grid-1">
+                <label>当前武器<select id="weaponSelect"></select></label>
+                <div class="grid">
+                    <label>预览类型<select id="sceneSelect"><option value="melee">近战</option><option value="projectile">投射</option><option value="orbit">环绕</option><option value="area">落地区域</option><option value="aura">光环</option><option value="laser">激光</option><option value="instant">瞬发链击</option></select></label>
+                    <label>渲染方式<select id="renderModeSelect"><option value="auto">自动</option><option value="sprite">仅贴图</option><option value="code">仅代码</option><option value="both">代码 + 贴图</option></select></label>
+                </div>
+                <label>代码样式<select id="codeStyleSelect"></select></label>
+            </div>
+            <div class="actions">
+                <button type="button" id="toggleAdvancedBtn" class="secondary">显示高级参数</button>
+                <button type="button" id="resetCurrentBtn" class="secondary">重置当前武器</button>
+                <button type="button" id="resetAllBtn" class="secondary">全部恢复预设</button>
+            </div>
+        </section>
+
+        <section class="group">
+            <h2>直接操作</h2>
+            <div id="toolModeRow" class="mode-row">
+                <button type="button" class="mode-btn" data-tool="auto">自动</button>
+                <button type="button" class="mode-btn" data-tool="target">目标</button>
+                <button type="button" class="mode-btn" data-tool="move">拖武器</button>
+                <button type="button" class="mode-btn" data-tool="anchor">锚点</button>
+                <button type="button" class="mode-btn" data-tool="rotate">旋转</button>
+                <button type="button" class="mode-btn" data-tool="scale">缩放</button>
+            </div>
+            <ul class="compact-list" style="margin-top: 10px;">
+                <li>自动：拖目标；拖武器本体改位置；滚轮缩放画布</li>
+                <li>锚点：在武器本体上拖，直接改锚点落点</li>
+                <li>旋转：围绕武器中心拖动，直接改朝向</li>
+                <li>缩放：拖动或在武器上滚轮，直接改大小</li>
+            </ul>
+        </section>
+
+        <section class="group">
+            <h2>贴图资源</h2>
+            <div class="grid-1">
+                <label>本地路径或相对路径<input id="spritePathInput" type="text" placeholder="例如 E:\AI\...\weapon_whip.png 或 ../assets/..."></label>
+                <label>或直接选文件预览<input id="spriteFileInput" type="file" accept=".png,.jpg,.jpeg,.webp,.bmp"></label>
+            </div>
+            <div class="actions">
+                <button type="button" id="useBuiltinBtn" class="secondary">使用内置贴图</button>
+                <button type="button" id="clearSpriteBtn" class="danger">清空贴图</button>
+            </div>
+            <div id="activeSpriteInfo" class="source-chip">当前生效来源：未加载</div>
+            <div id="imageStatus" class="status"></div>
+        </section>
+
+        <section class="group advanced-panel">
+            <h2>基础调节</h2>
+            <div class="grid">
+                <label>大小<input id="sizeInput" type="number" step="1"></label>
+                <label>朝向旋转（度）<input id="rotationInput" type="number" step="1"></label>
+                <label>自转速度（度/秒）<input id="spinSpeedInput" type="number" step="1"></label>
+                <label>预览进度（0-1）<input id="progressInput" type="number" step="0.01" min="0" max="1"></label>
+                <label>锚点 X（0-1）<input id="anchorXInput" type="number" step="0.01"></label>
+                <label>锚点 Y（0-1）<input id="anchorYInput" type="number" step="0.01"></label>
+                <label>偏移 X（像素）<input id="offsetXInput" type="number" step="1"></label>
+                <label>偏移 Y（像素）<input id="offsetYInput" type="number" step="1"></label>
+            </div>
+            <div class="checkbox-row" style="margin-top: 10px;">
+                <label class="checkbox"><input id="trimInput" type="checkbox">透明边裁剪</label>
+                <label class="checkbox"><input id="flipXInput" type="checkbox">水平翻转</label>
+                <label class="checkbox"><input id="animateInput" type="checkbox">播放动画</label>
+                <label class="checkbox"><input id="referenceInput" type="checkbox">显示参考范围</label>
+                <label class="checkbox"><input id="anchorInput" type="checkbox">显示锚点十字</label>
+                <label class="checkbox"><input id="hitboxInput" type="checkbox">显示目标框</label>
+            </div>
+        </section>
+
+        <section class="group advanced-panel">
+            <h2>目标与场景</h2>
+            <div class="grid">
+                <label>目标偏移 X<input id="targetXInput" type="number" step="1"></label>
+                <label>目标偏移 Y<input id="targetYInput" type="number" step="1"></label>
+                <label>目标框大小<input id="targetSizeInput" type="number" step="1" min="8"></label>
+                <label>场景缩放<input id="sceneZoomInput" type="number" step="0.05" min="0.2" max="3.5"></label>
+                <label>攻击半径 / 范围<input id="rangeInput" type="number" step="1" min="0" readonly></label>
+                <label>角度修正（度）<input id="aimOffsetInput" type="number" step="1"></label>
+            </div>
+            <div id="targetStatus" class="status"></div>
+        </section>
+
+        <section id="meleeGroup" class="group advanced-panel">
+            <h2>近战扇形参数</h2>
+            <div class="grid">
+                <label>扇形角度（度）<input id="arcAngleInput" type="number" step="1" readonly></label>
+                <label>手离身体距离<input id="handDistanceInput" type="number" step="1"></label>
+                <label>手部抬高<input id="handLiftInput" type="number" step="1"></label>
+                <label>攻击半径倍率<input id="reachMultiplierInput" type="number" step="0.01"></label>
+                <label>多段数量<input id="countInput" type="number" step="1" min="1" readonly></label>
+                <label>多段展开角（度）<input id="spreadInput" type="number" step="1" min="0" readonly></label>
+            </div>
+        </section>
+
+        <section id="projectileGroup" class="group advanced-panel">
+            <h2>投射参数</h2>
+            <div class="grid">
+                <label>弹体数量<input id="projectileCountInput" type="number" step="1" min="1" readonly></label>
+                <label>散射角（度）<input id="projectileSpreadInput" type="number" step="1" min="0" readonly></label>
+                <label>飞行距离<input id="travelDistanceInput" type="number" step="1" min="0" readonly></label>
+                <label>曲线预览<select id="curvedSelect"><option value="false">关闭</option><option value="true">开启</option></select></label>
+            </div>
+        </section>
+
+        <section id="specialGroup" class="group advanced-panel">
+            <h2>特殊参数</h2>
+            <div class="grid">
+                <label>环绕半径<input id="orbitRadiusInput" type="number" step="1" min="0" readonly></label>
+                <label>环绕速度（度/秒）<input id="orbitSpeedInput" type="number" step="1"></label>
+                <label>激光宽度<input id="beamWidthInput" type="number" step="1" min="1" readonly></label>
+                <label>抛物线高度<input id="throwArcInput" type="number" step="1" min="0" readonly></label>
+            </div>
+        </section>
+
+        <section class="group">
+            <h2>导出</h2>
+            <textarea id="exportOutput" placeholder="导出结果会显示在这里"></textarea>
+            <div class="actions">
+                <button type="button" id="exportCurrentBtn">导出当前武器</button>
+                <button type="button" id="exportAllBtn" class="secondary">导出全部武器</button>
+                <button type="button" id="copyBtn" class="secondary">复制文本</button>
+            </div>
+            <p class="hint">建议最终导出前把贴图路径改成真实本地路径，不要保留 blob 预览地址。</p>
+        </section>
+    </aside>
+
+    <main class="stage">
+        <div class="bar">
+            <div id="summary" class="summary"></div>
+            <div class="legend">
+                <span>近战扇形</span>
+                <span>发射路径</span>
+                <span>武器编辑框</span>
+                <span>角色中心</span>
+            </div>
+        </div>
+        <div class="canvas-wrap"><canvas id="previewCanvas" width="960" height="640"></canvas></div>
+        <div class="bar">
+            <div class="summary">操作：左键按当前模式拖动；滚轮默认缩放画布，在武器上滚轮可直接缩放武器；中键或右键拖动画布；双击画布回正视图。</div>
+            <div id="footerInfo" class="summary"></div>
+        </div>
+    </main>
+</div>
+<script src="../src/data/weapon_visual_data.js"></script>
+<script src="./weapon_visual_debugger.js"></script>
+</body>
+</html>

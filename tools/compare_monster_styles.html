@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怪物风格对比 - 原版 vs 玩家风格</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a14;
+            color: #eee;
+            padding: 20px;
+        }
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            margin-bottom: 20px;
+        }
+        .subtitle {
+            text-align: center;
+            color: #888;
+            margin-bottom: 30px;
+        }
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .dot { width: 12px; height: 12px; border-radius: 50%; }
+        .dot-original { background: #666; }
+        .dot-v2 { background: #3498db; }
+        .dot-v3 { background: #e67e22; }
+        .dot-player { background: #27ae60; }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        .monster-card {
+            background: #1a1a2a;
+            border-radius: 12px;
+            padding: 15px;
+            border: 1px solid #333;
+        }
+        
+        .monster-name {
+            text-align: center;
+            font-size: 14px;
+            margin-bottom: 12px;
+            color: #ffd700;
+        }
+        
+        .compare-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+        
+        .compare-item {
+            flex: 1;
+            text-align: center;
+        }
+        
+        .compare-label {
+            font-size: 10px;
+            color: #888;
+            margin-bottom: 5px;
+        }
+        
+        .sprite-box {
+            background: #0f0f1e;
+            border-radius: 8px;
+            padding: 10px;
+            height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #333;
+        }
+        
+        .sprite-box img {
+            max-width: 60px;
+            max-height: 60px;
+            image-rendering: pixelated;
+            image-rendering: crisp-edges;
+        }
+        
+        .stats {
+            font-size: 11px;
+            color: #666;
+            text-align: center;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🎨 怪物风格对比工具</h1>
+    <p class="subtitle">原版高清 → 处理后低像素风格（48x48px，匹配玩家）</p>
+    
+    <div class="legend">
+        <div class="legend-item">
+            <span class="dot dot-original"></span>
+            <span>原版（高清）</span>
+        </div>
+        <div class="legend-item">
+            <span class="dot dot-v2"></span>
+            <span>V2版（48px 块状）</span>
+        </div>
+        <div class="legend-item">
+            <span class="dot dot-v3"></span>
+            <span>V3版（64px 保特征）</span>
+        </div>
+        <div class="legend-item">
+            <span class="dot dot-player"></span>
+            <span>玩家（40px）</span>
+        </div>
+    </div>
+    
+    <div class="grid" id="monsterGrid"></div>
+
+    <script>
+        const floor1Monsters = [
+            { id: 'bat_v2', name: '小蝙蝠 v2', baseId: 'bat', version: 'v2' },
+            { id: 'bat_v3', name: '吸血蝙蝠 v3', baseId: 'bat', version: 'v3' },
+            { id: 'chick_spr', name: '变异小鸡', baseId: 'chick', version: 'spr' },
+            { id: 'crab_v4', name: '铁甲蟹 v4', baseId: 'crab', version: 'v4' },
+            { id: 'fox_v1', name: '幼狐 v1', baseId: 'fox', version: 'v1' },
+            { id: 'ghost_v3', name: '怨灵 v3', baseId: 'ghost', version: 'v3' },
+            { id: 'mimic_v1', name: '宝箱怪 v1', baseId: 'mimic', version: 'v1' },
+            { id: 'snail_v1', name: '蜗牛 v1', baseId: 'snail', version: 'v1' },
+        ];
+        
+        function createCard(monster) {
+            const card = document.createElement('div');
+            card.className = 'monster-card';
+            
+            const originalPath = `../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor1/${monster.baseId}/${monster.version}/walk/f01.png`;
+            const v2Path = `../generated_assets/monster_walk_player_style_v2/floor1/${monster.baseId}/${monster.version}/walk/f01.png`;
+            const v3Path = `../generated_assets/monster_walk_preserve_features/floor1/${monster.baseId}/${monster.version}/walk/f01.png`;
+            const playerPath = '../assets/sprites/player/variants_40x40/player_idle_0_crop_40.png';
+            
+            card.innerHTML = `
+                <div class="monster-name">${monster.name}</div>
+                <div class="compare-row">
+                    <div class="compare-item">
+                        <div class="compare-label">原版</div>
+                        <div class="sprite-box">
+                            <img src="${originalPath}" alt="original" onerror="this.style.display='none'">
+                        </div>
+                    </div>
+                    <div class="compare-item">
+                        <div class="compare-label">V2 (48px)</div>
+                        <div class="sprite-box">
+                            <img src="${v2Path}" alt="v2" onerror="this.style.display='none'">
+                        </div>
+                    </div>
+                </div>
+                <div class="compare-row">
+                    <div class="compare-item">
+                        <div class="compare-label" style="color:#e67e22;">V3 (64px) ✅</div>
+                        <div class="sprite-box">
+                            <img src="${v3Path}" alt="v3" onerror="this.style.display='none'">
+                        </div>
+                    </div>
+                    <div class="compare-item">
+                        <div class="compare-label" style="color:#27ae60;">玩家 (40px)</div>
+                        <div class="sprite-box">
+                            <img src="${playerPath}" alt="player" style="max-width:40px;max-height:40px;">
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            return card;
+        }
+        
+        const grid = document.getElementById('monsterGrid');
+        floor1Monsters.forEach(m => {
+            grid.appendChild(createCard(m));
+        });
+    </script>
+</body>
+</html>

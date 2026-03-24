@@ -1,4 +1,4 @@
-﻿class Weapon {
+class Weapon {
 
     constructor(key, level = 1, isSuper = false) {
 
@@ -30,6 +30,7 @@
 
         this.baseAttackCoeff = Number.isFinite(this.cfg?.attackCoeff) ? this.cfg.attackCoeff : null;
         this.superAttackCoeffBonus = 1;
+        this.fireSequence = 0;
         
 
         this.cd = 0;
@@ -37,6 +38,14 @@
         this.xp = 0;
 
         this.xpToNext = 100;
+
+        // 直接按指定等级创建武器时（调试、读档、测试面板）也要真正应用升级表，
+        // 否则会出现等级数字到了，但数量/机制没跟上的假升级。
+        if (!this.isSuper && this.level > 1 && typeof applyUpgrade === 'function') {
+            for (let lv = 2; lv <= this.level; lv++) {
+                applyUpgrade(this, lv);
+            }
+        }
 
         if (window.game && this.cfg?.subtype === 'guardian_knife' && typeof window.game.spawnGuardianKnives === 'function') {
             const initStats = window.game.currentCombatStats || window.game.passiveManager?.getStats?.() || null;
@@ -78,6 +87,22 @@
             hits: new Set()
         }, combatStats);
     }
+
+    getProjectileSpeedStageMultiplier(subtype = '') {
+        if (this.cfg?.type !== 'proj') return 1;
+        if (this.baseKey === 'knife' || subtype === 'guardian_knife') return 1;
+        const perKey = {
+            axe: 1.26,
+            fireball: 1.16,
+            wand: 1.10,
+            shuriken: 1.08,
+            cross: 1.10,
+            icicle: 1.12,
+            poison_dart: 1.10
+        };
+        return perKey[this.baseKey] || 1.12;
+    }
+
 
     
 
@@ -255,7 +280,7 @@
             whip: 1.0,
             scythe: 0.95,
             wand: 1.1,
-            knife: 0.62,
+            knife: 0.68,
             axe: 1.1,
             cross: 1.05,
             fireball: 1.35,
@@ -304,15 +329,16 @@
             case 'wand':
             case 'fireball':
             case 'poison_dart':
-                return count + Math.floor((this.level - 1) / 3);
+            case 'shuriken':
+            case 'cross':
+            case 'icicle':
+                return count;
             case 'knife':
                 return count;
-            case 'cross':
-                return count + Math.floor((this.level - 1) / 2);
+            case 'axe':
+                return 1;
             case 'bible':
                 return count;
-            case 'shuriken':
-                return count + Math.floor((this.level - 1) / 3);
             case 'holy_water':
             case 'laser':
             case 'lightning':
@@ -329,6 +355,7 @@
     getPierce() {
         let pierce = this.cfg.pierce || 0;
         if (this.isSuper) return pierce;
+        if (this.baseKey === 'icicle') return pierce;
         // 每2级增加1点穿透
         return pierce + Math.floor((this.level - 1) / 2);
     }
@@ -408,14 +435,14 @@
             scythe: [damageGrowthText, '斩环扩大', nextLevel >= 4 ? '处决线提高' : '击退增强'],
             wand: [damageGrowthText, '追踪更强', nextLevel % 3 === 0 ? '数量+1' : '飞行更稳'],
             knife: [damageGrowthText, '猎刀飞行更快', nextLevel === 4 ? '飞刀+1' : '追猎范围提升'],
-            axe: [damageGrowthText, '回旋更远', nextLevel % 2 === 1 ? '数量+1' : '回返重击增强'],
+            axe: [damageGrowthText, nextLevel <= 3 ? '飞行与回收更快' : '雷链范围扩大', nextLevel >= 7 ? '雷暴与雷区增强' : '落地雷击更强'],
             cross: [damageGrowthText, '弹跳更强', nextLevel % 2 === 1 ? '数量+1' : '回返更稳'],
-            fireball: [damageGrowthText, '爆炸范围扩大', nextLevel % 3 === 0 ? '火球+1' : '燃烧增强'],
+            fireball: [damageGrowthText, '冰火弹道更快', nextLevel >= 5 ? '一轮双组齐射' : '火场与冰控增强'],
             shuriken: [damageGrowthText, '散射切割增强', nextLevel % 3 === 0 ? '手里剑+1' : '回收更快'],
             icicle: [damageGrowthText, '冻结更强', nextLevel % 2 === 1 ? '穿透压制增强' : '射程提升'],
             laser: [damageGrowthText, '激光更粗', '持续时间提升'],
             poison_dart: [damageGrowthText, '毒性增强', nextLevel % 3 === 0 ? '毒镖+1' : '追踪更强'],
-            bible: [damageGrowthText, '圣环持续更久', nextLevel % 2 === 1 ? '圣环+1' : '旋转更快'],
+            bible: [damageGrowthText, '法典持续更久', nextLevel % 2 === 1 ? '书本+1' : '书化齐射增强'],
             lightning: [damageGrowthText, '连锁数提升', '链距扩大'],
             holy_water: [damageGrowthText, '圣池更大', '残留更久'],
             radiance: [damageGrowthText, '领域扩大', '灼烧更强']
@@ -440,6 +467,16 @@
             freezeChance: cfg.freezeChance || 0,
             freezeDuration: cfg.freezeDuration || 0,
             poisonDmg: this.getScaledCombatValue('poisonDmgCoeff', 'poisonDmg', stats),
+            poisonStacksOnHit: cfg.poisonStacksOnHit || 0,
+            poisonMaxStacks: cfg.poisonMaxStacks || 0,
+            poisonStackDmg: cfg.poisonStackDmg || 0,
+            poisonDuration: cfg.poisonDuration || 0,
+            poisonSpreadTargets: cfg.poisonSpreadTargets || 0,
+            poisonSpreadRange: cfg.poisonSpreadRange || 0,
+            poisonSpreadMaxGen: cfg.poisonSpreadMaxGen || 0,
+            poisonCloudOnDeath: !!cfg.poisonCloudOnDeath,
+            poisonCloudDuration: cfg.poisonCloudDuration || 0,
+            poisonCloudStacks: cfg.poisonCloudStacks || 0,
             blind: !!cfg.blind,
             knockback: cfg.knockback || 0,
             burnSpread: !!cfg.burnSpread,
@@ -451,9 +488,24 @@
             burstOnDeath: !!cfg.burstOnDeath,
             returnDamage: !!cfg.returnDamage,
             returnToPlayer: !!cfg.returnToPlayer,
-            spreadRange: cfg.spreadRange || 220
+            spreadRange: cfg.spreadRange || 220,
+            freezeMeterGain: cfg.freezeMeterGain || 0,
+            freezeBurst: !!cfg.freezeBurst,
+            freezeBurstRadius: cfg.freezeBurstRadius || 0,
+            freezeBurstMeterGain: cfg.freezeBurstMeterGain || 0,
+            centerDamageScale: cfg.centerDamageScale || 0,
+            centerDamageRadius: cfg.centerDamageRadius || 0,
+            codexWeaponized: !!cfg.codexWeaponized,
+            codexShotInterval: cfg.codexShotInterval || 0,
+            codexShotDmgScale: cfg.codexShotDmgScale || 0,
+            codexExtraShots: cfg.codexExtraShots || 0,
+            codexBurstChance: cfg.codexBurstChance || 0,
+            codexVolleyBudget: cfg.codexVolleyBudget || 1,
+            codexArsenal: Array.isArray(cfg.codexArsenal) ? [...cfg.codexArsenal] : [],
+            outerRingBonus: cfg.outerRingBonus || 0
         };
     }
+
 
     applyCombatStats(target, stats = null) {
         const combatStats = stats || window.game?.currentCombatStats || null;
@@ -471,7 +523,13 @@
         }
     }
 
-    canFire() { return this.cd <= 0; }
+    canFire() {
+        if (this.cfg?.subtype === 'boomerang' && typeof window !== 'undefined' && window.game && Array.isArray(window.game.bullets)) {
+            const active = window.game.bullets.some(b => b && b.subtype === 'boomerang' && b.weaponKey === this.baseKey && (b.state === 'out' || b.state === 'hover' || b.state === 'back') && (b.life || 0) > 0);
+            if (active) return false;
+        }
+        return this.cd <= 0;
+    }
 
     
 
@@ -518,12 +576,10 @@
     
 
     fire(player, target, stats) {
-        // v0.15.0优化：更平滑的CD计算，支持长CD武器
-        // v0.16.1 fix: 修复 cooldown 计算逻辑
+        this.fireSequence = (this.fireSequence || 0) + 1;
         let finalCd = this.cfg.cd;
         let effectiveFireRate = stats?.fireRate || 1;
-        
-        // fireRate 是攻速倍率，越高攻速越快，CD越短
+
         if (effectiveFireRate > 0) {
             if (this.cfg.type === 'area') {
                 effectiveFireRate = 1 + (effectiveFireRate - 1) * 0.28;
@@ -533,81 +589,167 @@
             }
             finalCd = finalCd / effectiveFireRate;
         }
-        
-        // cooldown 是冷却倍率（默认1.0），越小冷却越短
-        // 例如：cooldown=0.92 表示 8% CD缩减，finalCd = cfg.cd * 0.92
+
         if (stats && stats.cooldown > 0) {
-            finalCd = finalCd * stats.cooldown;  // 改为乘法，不是除法
+            finalCd = finalCd * stats.cooldown;
         }
-        
-        // v0.16.1 fix: 使用 cd 而不是 timer
+
         this.cd = Math.max(0.08, finalCd);
-        
-        // v0.22-fix: 只有aura类型使用tickRate作为CD，area类型保持正常CD
+        if (this.cfg.subtype === 'boomerang') {
+            this.cd = 0.02;
+        }
         if (this.cfg.type === 'aura') {
             this.cd = this.cfg.tickRate || 0.3;
         }
-        
-        // debug: 输出CD计算详情（首次发射或CD异常时）
-        if (this.cfg.cd > 0.5 && finalCd < 0.1) {
-            console.warn(`[武器CD警告] ${this.cfg.name}: 基础CD=${this.cfg.cd.toFixed(2)}, 最终CD=${finalCd.toFixed(2)}, fireRate=${stats?.fireRate}, effectiveFireRate=${effectiveFireRate}, cooldown=${stats?.cooldown}`);
-        }
-        
+
         const subtype = this.cfg.subtype || 'standard';
         const dmg = this.getDamage(stats);
-        
-        // 根据子类型分发到不同发射逻辑
+
+        let bullets = [];
         switch (this.cfg.type) {
-            case 'melee': return this.fireMelee(player, target, dmg, subtype, stats);
-            case 'proj': return this.fireProjectile(player, target, dmg, subtype, stats);
-            case 'orbit': return this.fireOrbit(player, dmg, stats);
-            case 'instant': return this.fireInstant(player, target, dmg, subtype, stats);
-            case 'area': return this.fireArea(player, target, dmg, stats);
-            case 'aura': return this.fireAura(player, dmg, stats);
-            case 'laser': return this.fireLaser(player, target, dmg, stats);
-            default: return [];
+            case 'melee':
+                bullets = this.fireMelee(player, target, dmg, subtype, stats);
+                break;
+            case 'proj':
+                bullets = this.fireProjectile(player, target, dmg, subtype, stats);
+                break;
+            case 'orbit':
+                bullets = this.fireOrbit(player, dmg, stats);
+                break;
+            case 'instant':
+                bullets = this.fireInstant(player, target, dmg, subtype, stats);
+                break;
+            case 'area':
+                bullets = this.fireArea(player, target, dmg, stats);
+                break;
+            case 'aura':
+                bullets = this.fireAura(player, dmg, stats);
+                break;
+            case 'laser':
+                bullets = this.fireLaser(player, target, dmg, stats);
+                break;
+            default:
+                bullets = [];
+                break;
         }
+
+        if (stats?.riftDrum && Array.isArray(bullets) && bullets.length > 0 && window.game) {
+            window.game._riftDrumCounter = (window.game._riftDrumCounter || 0) + 1;
+            if (window.game._riftDrumCounter % 4 === 0) {
+                const extra = this.createRiftDrumVolley(player, target, dmg, subtype, stats);
+                if (extra.length > 0) {
+                    bullets.push(...extra);
+                    if (window.game.damageNumbers && player) {
+                        window.game.damageNumbers.spawn(player.cx, player.cy - 28, '裂响鼓!', {
+                            color: '#b7ecff',
+                            size: 14,
+                            life: 0.7
+                        });
+                    }
+                }
+            }
+        }
+
+        return bullets;
     }
-    
+
+    createRiftDrumVolley(player, target, dmg, subtype, stats) {
+        const weakDmg = Math.max(1, Math.floor(dmg * 0.35));
+
+        if (this.cfg.type === 'proj') {
+            const speed = (this.cfg.speed || 300) * (1 + (stats?.projSpeed || 0)) * this.getProjectileSpeedStageMultiplier(subtype);
+            const baseAngle = target
+                ? Math.atan2(target.cy - player.cy, target.cx - player.cx)
+                : (player.facingRight ? 0 : Math.PI);
+
+            const savedSpread = this.cfg.spread;
+            const savedScatter = this.cfg.scatterAngle;
+            this.cfg.spread = Math.max(savedSpread || 0.24, 0.42);
+            this.cfg.scatterAngle = Math.max(savedScatter || 0.18, 0.32);
+
+            const volley = this.createProjectile(player, baseAngle, speed, weakDmg, subtype, stats, Math.max(3, Math.min(6, this.getProjectileCount() + 1)));
+
+            this.cfg.spread = savedSpread;
+            this.cfg.scatterAngle = savedScatter;
+
+            for (const bullet of volley) {
+                bullet.riftDrumEcho = true;
+                bullet.color = bullet.color || '#b7ecff';
+            }
+            return volley;
+        }
+
+        if (this.cfg.type === 'melee') {
+            const volley = this.fireMelee(player, target, weakDmg, subtype, stats);
+            for (const bullet of volley) {
+                bullet.riftDrumEcho = true;
+            }
+            return volley;
+        }
+
+        return [];
+    }
+
     // 近战攻击 - v0.18.0: 使用升级后的范围
     fireMelee(player, target, dmg, subtype, stats) {
-        // v0.18.0: 使用getRange()获取升级后的范围
         const range = this.getRange() * (1 + (stats.range || 0));
-        // v0.18.0: 使用敌人中心点(cx,cy)而不是脚底(x,y)计算角度
-        const angle = target ? Math.atan2(target.cy - player.cy, target.cx - player.cx) : 
-                         (player.facingRight ? 0 : Math.PI);
-        
-        // 添加打击感：屏幕震动
-        if (window.game && window.game.camera) {
-            window.game.camera.addShake(2);
+        const angle = target ? Math.atan2(target.cy - player.cy, target.cx - player.cx) : (player.facingRight ? 0 : Math.PI);
+        if (window.game && window.game.camera) window.game.camera.addShake(2);
+        const count = Math.max(1, this.getProjectileCount());
+        const angleOffset = (this.cfg.angleOffset || 0) * Math.PI / 180;
+        const bullets = [];
+        for (let i = 0; i < count; i++) {
+            const slashAngle = angle + (count > 1 ? (i - (count - 1) / 2) * angleOffset : 0);
+            bullets.push(this.applyCombatStats({
+                x: player.cx, y: player.cy,
+                type: 'melee', subtype: subtype,
+                angle: slashAngle, arcAngle: this.getArcAngle(),
+                range: range, dmg: dmg,
+                color: this.cfg.color, icon: this.cfg.icon,
+                life: 0.25, hits: new Set(),
+                knockback: this.cfg.knockback || 0,
+                playerX: player.cx, playerY: player.cy,
+                followSource: true,
+                sourceOwner: player,
+                sourceType: 'playerCenter',
+                sourceOffsetX: 0,
+                sourceOffsetY: 0,
+                weaponKey: this.baseKey,
+                weaponSprite: this.getWeaponSpriteKey(),
+                outerRingBonus: this.cfg.outerRingBonus || 0
+            }, stats));
         }
-        
-        return [this.applyCombatStats({
-            x: player.cx, y: player.cy,  // v0.16.3: 使用中心点
-            type: 'melee', subtype: subtype,
-            angle: angle, arcAngle: this.getArcAngle(),
-            range: range, dmg: dmg,
-            color: this.cfg.color, icon: this.cfg.icon,
-            life: 0.25, hits: new Set(),
-            knockback: this.cfg.knockback || 0,
-            playerX: player.cx, playerY: player.cy,  // v0.16.3: 使用中心点
-            followSource: true,
-            sourceOwner: player,
-            sourceType: 'playerCenter',
-            sourceOffsetX: 0,
-            sourceOffsetY: 0,
-            weaponKey: this.baseKey,
-            weaponSprite: this.getWeaponSpriteKey()
-        })];
+        if (this.cfg.waveShot) {
+            const waveCount = Math.max(1, this.cfg.waveShotCount || 1);
+            const waveDmg = Math.max(1, Math.floor(dmg * (this.cfg.waveShotDamageScale || 0.5)));
+            const waveSpeed = this.cfg.waveShotSpeed || 760;
+            const waveLife = this.cfg.waveShotLife || 0.8;
+            const wavePierce = this.cfg.waveShotPierce || 1;
+            for (let i = 0; i < waveCount; i++) {
+                const waveAngle = angle + (waveCount > 1 ? (i - (waveCount - 1) / 2) * 0.14 : 0);
+                const waveBullet = this.applyCombatStats({
+                    x: player.cx, y: player.cy,
+                    vx: Math.cos(waveAngle) * waveSpeed,
+                    vy: Math.sin(waveAngle) * waveSpeed,
+                    type: 'proj', subtype: 'penetrate',
+                    dmg: waveDmg, color: this.cfg.color, icon: this.cfg.icon,
+                    life: waveLife, pierce: wavePierce, maxPierce: wavePierce,
+                    hits: new Set(), weaponKey: this.baseKey, weaponSprite: this.getWeaponSpriteKey()
+                }, stats);
+                this.applyProjectileVisualConfig(waveBullet);
+                bullets.push(waveBullet);
+            }
+        }
+        return bullets;
     }
-    
+
     // 投射攻击 - v0.18.0: 使用升级后的数量和范围
     fireProjectile(player, target, dmg, subtype, stats) {
         if (subtype === 'guardian_knife') {
             return this.fireGuardianKnife(player, dmg, stats);
         }
         let bullets = [];
-        const speed = (this.cfg.speed || 300) * (1 + (stats.projSpeed || 0));
+        const speed = (this.cfg.speed || 300) * (1 + (stats.projSpeed || 0)) * this.getProjectileSpeedStageMultiplier(subtype);
         // 如果没有目标，根据玩家朝向发射
         // v0.18.0: 使用敌人中心点(cx,cy)而不是脚底(x,y)计算角度
         const baseAngle = target ? Math.atan2(target.cy - player.cy, target.cx - player.cx) : 
@@ -651,6 +793,22 @@
         else {
             bullets = this.createProjectile(player, baseAngle, speed, dmg, subtype, stats, count);
         }
+
+        if (subtype === 'fan' && Array.isArray(this.cfg.supplementaryWaves) && window.game) {
+            for (const wave of this.cfg.supplementaryWaves) {
+                const delay = Math.max(0, wave.delay || 0) * 1000;
+                setTimeout(() => {
+                    if (!window.game) return;
+                    const waveCount = Math.max(1, wave.count || 1);
+                    const waveSpread = wave.spread ?? this.cfg.spread;
+                    const waveDmg = Math.floor(dmg * (wave.damageScale || 1));
+                    const tempSpread = this.cfg.spread;
+                    this.cfg.spread = waveSpread;
+                    window.game.bullets.push(...this.createProjectile(player, baseAngle, speed, waveDmg, subtype, stats, waveCount));
+                    this.cfg.spread = tempSpread;
+                }, delay);
+            }
+        }
         
         return bullets;
     }
@@ -664,116 +822,154 @@
     createProjectile(player, baseAngle, speed, dmg, subtype, stats, count = 1, target = null) {
         const bullets = [];
         const weaponSprite = this.getWeaponSpriteKey();
-        
         switch (subtype) {
             case 'homing':
             case 'poison_homing':
                 for (let i = 0; i < count; i++) {
-                    const angle = baseAngle + (Math.random() - 0.5) * 0.2;
+                    const scatter = this.cfg.scatterAngle || 0.2;
+                    const angle = baseAngle + (Math.random() - 0.5) * scatter;
                     bullets.push(this.applyCombatStats({
-                        x: player.cx, y: player.cy,  // v0.16.3: 使用中心点
+                        x: player.cx, y: player.cy,
                         vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
                         type: 'proj', subtype: subtype,
                         dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
-                        // v0.18.0: 使用getPierce()获取升级后的穿透
-                        life: 3, pierce: this.getPierce(), maxPierce: this.getPierce(),
+                        life: this.cfg.projectileLife || 3, pierce: this.getPierce(), maxPierce: this.getPierce(),
                         homing: true, homingStrength: this.cfg.homingStrength || 0.5,
+                        homingDelay: this.cfg.homingDelay || 0,
+                        homingRange: this.cfg.homingRange || this.cfg.range || 260,
                         target: target, hits: new Set(),
                         poison: this.getScaledCombatValue('poisonCoeff', 'poison', stats)
                     }, stats));
                 }
                 break;
-                
-            case 'rapid':
-                const burst = this.cfg.burst || 3;
-                for (let i = 0; i < burst; i++) {
-                    const spreadAngle = (i - (burst - 1) / 2) * 0.1;
-                    const fireAngle = baseAngle + spreadAngle;
-                    bullets.push(this.applyCombatStats({
-                        x: player.cx, y: player.cy,  // v0.16.3: 使用中心点
-                        vx: Math.cos(fireAngle) * speed, vy: Math.sin(fireAngle) * speed,
-                        type: 'proj', subtype: subtype,
-                        dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
-                        // v0.18.0: 使用getPierce()获取升级后的穿透
-                        life: 3, pierce: this.getPierce(), maxPierce: this.getPierce(),
-                        hits: new Set(), delay: i * 0.03
-                    }));
-                }
-                break;
-                
             case 'boomerang':
-                for (let i = 0; i < count; i++) {
-                    const angleOffset = count > 1 ? (i - (count - 1) / 2) * 0.3 : 0;
-                    const angle = baseAngle + angleOffset;
+                for (let i = 0; i < Math.min(1, count); i++) {
+                    const angle = baseAngle;
                     bullets.push(this.applyCombatStats({
-                        x: player.cx, y: player.cy,  // v0.16.3: 使用中心点
+                        x: player.cx, y: player.cy,
                         vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
                         type: 'proj', subtype: subtype,
                         dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
-                        life: 4, pierce: 99,
-                        // v0.18.0: 使用getRange()获取升级后的范围
+                        life: 4.8, pierce: 99,
                         range: this.getRange(),
-                        originX: player.x, originY: player.y,
-                        state: 'out', hits: new Set()
-                    }));
+                        originX: player.cx, originY: player.cy,
+                        state: 'out', hoverDuration: this.cfg.hoverDuration || 0.08,
+                        returnSpeed: this.cfg.returnSpeed || speed * 2.1,
+                        stateLockedByReturn: true,
+                        hits: new Set(),
+                        impactLightning: !!this.cfg.impactLightning,
+                        impactRadius: this.cfg.impactRadius || 70,
+                        impactShockwaveRadius: this.cfg.impactShockwaveRadius || Math.max((this.cfg.impactRadius || 70) * 1.45, (this.cfg.impactRadius || 70) + 36),
+                        impactLightningChain: this.cfg.impactLightningChain || 0,
+                        impactLightningRange: this.cfg.impactLightningRange || 180,
+                        impactLightningDmgScale: this.cfg.impactLightningDmgScale || 0.6,
+                        impactStorm: !!this.cfg.impactStorm,
+                        impactStormDelay: this.cfg.impactStormDelay || 0.22,
+                        impactStormDamageScale: this.cfg.impactStormDamageScale || 0.42,
+                        impactField: !!this.cfg.impactField,
+                        impactFieldRadius: this.cfg.impactFieldRadius || 90,
+                        impactFieldDuration: this.cfg.impactFieldDuration || 0.9,
+                        impactFieldTick: this.cfg.impactFieldTick || 0.22
+                    }, stats));
                 }
                 break;
-                
-            case 'bounce':
-                for (let i = 0; i < count; i++) {
-                    const angleOffset = count > 1 ? (i - (count - 1) / 2) * 0.2 : 0;
-                    const angle = baseAngle + angleOffset;
-                    bullets.push(this.applyCombatStats({
-                        x: player.cx, y: player.cy,  // v0.16.3: 使用中心点
-                        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
-                        type: 'proj', subtype: subtype,
-                        dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
-                        life: 5, pierce: 99,
-                        bounce: this.cfg.bounce || 3,
-                        bouncesLeft: this.cfg.bounce || 3,
-                        hits: new Set()
-                    }));
-                }
-                break;
-                
             case 'explode':
                 for (let i = 0; i < count; i++) {
                     const angleOffset = count > 1 ? (i - (count - 1) / 2) * 0.15 : 0;
                     const angle = baseAngle + angleOffset;
                     bullets.push(this.applyCombatStats({
-                        x: player.cx, y: player.cy,  // v0.16.3: 使用中心点
+                        x: player.cx, y: player.cy,
                         vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
                         type: 'proj', subtype: subtype,
                         dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
                         life: 3, pierce: 0,
                         explodeRadius: this.cfg.explodeRadius || 80,
+                        burnFieldDuration: this.cfg.burnFieldDuration || 0,
+                        burnFieldRange: this.cfg.burnFieldRange || 0,
+                        burnFieldDmg: this.cfg.burnFieldDmg || 0,
+                        burnFieldTick: this.cfg.burnFieldTick || 0.2,
+                        centerDamageScale: this.cfg.centerDamageScale || 0,
+                        centerDamageRadius: this.cfg.centerDamageRadius || 0,
                         hits: new Set()
-                    }));
+                    }, stats));
                 }
                 break;
-                
+            case 'dragon_breath': {
+                const shotCount = Math.max(1, count);
+                const staggerDelay = Math.max(0, this.cfg.staggerDelay || 0.06);
+                const fireSpeed = speed * 0.98;
+                const iceSpeed = speed * 1.04;
+                const fireLife = this.cfg.projectileLife || 0.92;
+                const iceLife = (this.cfg.projectileLife || 0.92) * 1.08;
+                const fireExplodeRadius = this.cfg.explodeRadius || 78;
+                const icePierce = this.cfg.pierce || 2;
+                const sequenceSeed = this.fireSequence || 0;
+
+                const pushElementalShot = (elementType, angle, delay) => {
+                    if (elementType === 'fire') {
+                        bullets.push(this.applyCombatStats({
+                            x: player.cx, y: player.cy,
+                            vx: Math.cos(angle) * fireSpeed, vy: Math.sin(angle) * fireSpeed,
+                            type: 'proj', subtype: 'explode',
+                            weaponKey: this.key,
+                            elementalType: 'fire',
+                            dmg: Math.max(4, Math.floor(dmg * 1.02)),
+                            color: '#ff7a40', icon: '🔥',
+                            life: fireLife, pierce: 0,
+                            explodeRadius: fireExplodeRadius,
+                            burnFieldDuration: this.cfg.burnFieldDuration || 1.2,
+                            burnFieldRange: this.cfg.burnFieldRange || 68,
+                            burnFieldDmg: this.cfg.burnFieldDmg || 5,
+                            burnFieldTick: this.cfg.burnFieldTick || 0.24,
+                            delay,
+                            hits: new Set()
+                        }, stats));
+                        return;
+                    }
+                    bullets.push(this.applyCombatStats({
+                        x: player.cx, y: player.cy,
+                        vx: Math.cos(angle) * iceSpeed, vy: Math.sin(angle) * iceSpeed,
+                        type: 'proj', subtype: 'penetrate',
+                        weaponKey: this.key,
+                        elementalType: 'ice',
+                        dmg: Math.max(4, Math.floor(dmg * 0.96)),
+                        color: '#9bd9ff', icon: '❄️',
+                        life: iceLife, pierce: icePierce, maxPierce: icePierce,
+                        slow: this.cfg.slow || 0.22,
+                        slowDuration: this.cfg.slowDuration || 0.9,
+                        freezeMeterGain: this.cfg.freezeMeterGain || 0.34,
+                        freezeDuration: this.cfg.freezeDuration || 1.0,
+                        delay,
+                        hits: new Set()
+                    }, stats));
+                };
+
+                for (let i = 0; i < shotCount; i++) {
+                    const laneOffset = shotCount > 1 ? (i - (shotCount - 1) / 2) * 0.06 : 0;
+                    const elementType = ((sequenceSeed + i) % 2 === 0) ? 'fire' : 'ice';
+                    pushElementalShot(elementType, baseAngle + laneOffset, i * staggerDelay);
+                }
+                this.fireSequence = sequenceSeed + shotCount;
+                break;
+            }
             case 'fan':
-                // v0.18.0 fix: 优化扇形射击角度计算，确保命中目标
                 const spread = (this.cfg.spread || 25) * Math.PI / 180;
                 for (let i = 0; i < count; i++) {
-                    // 当count=1时朝向正前方，count>1时均匀分布
                     const angle = count === 1 ? baseAngle : baseAngle - spread / 2 + (spread / (count - 1)) * i;
                     bullets.push(this.applyCombatStats({
-                        x: player.cx, y: player.cy,  // v0.16.3: 使用中心点
+                        x: player.cx, y: player.cy,
                         vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
                         type: 'proj', subtype: subtype,
                         dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
-                        // v0.18.0: 使用getPierce()获取升级后的穿透
                         life: 2.5, pierce: this.getPierce(), maxPierce: this.getPierce(),
+                        afterImageDamageScale: this.cfg.afterImageDamageScale || 0,
                         hits: new Set()
-                    }));
+                    }, stats));
                 }
                 break;
-                
             case 'penetrate':
                 for (let i = 0; i < count; i++) {
                     const angle = baseAngle + (Math.random() - 0.5) * 0.1;
-                    // v0.18.0: 使用getPierce()获取升级后的穿透
                     const pierce = this.getPierce();
                     bullets.push(this.applyCombatStats({
                         x: player.cx, y: player.cy,
@@ -782,68 +978,95 @@
                         dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
                         life: 4, pierce: pierce || 99, maxPierce: pierce || 99,
                         slow: this.cfg.slow || 0,
+                        slowDuration: this.cfg.slowDuration || 1,
+                        freezeMeterGain: this.cfg.freezeMeterGain || 0,
+                        freezeDuration: this.cfg.freezeDuration || 1.2,
+                        freezeBurst: !!this.cfg.freezeBurst,
+                        freezeBurstRadius: this.cfg.freezeBurstRadius || 0,
+                        freezeBurstMeterGain: this.cfg.freezeBurstMeterGain || 0,
                         hits: new Set()
                     }));
                 }
                 break;
-                
-            case 'orbit_proj':
-                // v0.18.3: 超武环绕物是永久的，不需要重新生成
-                if (this.isSuper) return [];
-                
+            case 'poison_dart':
                 for (let i = 0; i < count; i++) {
-                    const startAngle = (Math.PI * 2 / count) * i;
-                    // v0.18.0: 使用getPierce()获取升级后的穿透
-                    const pierce = this.getPierce();
+                    const angle = baseAngle + (Math.random() - 0.5) * 0.08;
                     bullets.push(this.applyCombatStats({
                         x: player.cx, y: player.cy,
+                        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
                         type: 'proj', subtype: subtype,
                         dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
-                        life: this.cfg.orbitDuration || 2,
-                        orbitRadius: this.cfg.orbitRadius || 100,
-                        orbitAngle: startAngle,
-                        orbitSpeed: 3,
-                        state: 'orbit',
-                        target: target, speed: speed,
-                        pierce: pierce, maxPierce: pierce,
+                        life: this.cfg.projectileLife || 2.2, pierce: 0,
+                        poisonStacksOnHit: this.cfg.poisonStacksOnHit || 1,
+                        poisonMaxStacks: this.cfg.poisonMaxStacks || 5,
+                        poisonStackDmg: this.cfg.poisonStackDmg || 4,
+                        poisonDuration: this.cfg.poisonDuration || 3.5,
+                        poisonSpreadTargets: this.cfg.poisonSpreadTargets || 0,
+                        poisonSpreadRange: this.cfg.poisonSpreadRange || 200,
+                        poisonSpreadMaxGen: this.cfg.poisonSpreadMaxGen || 0,
+                        poisonCloudOnDeath: !!this.cfg.poisonCloudOnDeath,
+                        poisonCloudDuration: this.cfg.poisonCloudDuration || 0,
+                        poisonCloudStacks: this.cfg.poisonCloudStacks || 0,
+                        poisonSpreadGen: 0,
                         hits: new Set()
                     }));
                 }
                 break;
+            case 'cross_return':
+                for (let i = 0; i < count; i++) {
+                    const angle = baseAngle + (Math.random() - 0.5) * 0.06;
+                    bullets.push(this.applyCombatStats({
+                        x: player.cx, y: player.cy,
+                        vx: Math.cos(angle) * speed, vy: Math.sin(angle) * speed,
+                        type: 'proj', subtype: subtype,
+                        dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
+                        life: 6, range: this.getRange(), originX: player.cx, originY: player.cy,
+                        state: 'out', hoverDuration: this.cfg.hoverDuration || 0.2, hoverTick: this.cfg.hoverTick || 0.3, hoverRadius: this.cfg.hoverRadius || 0,
+                        hoverDamageScale: this.cfg.hoverDamageScale || 0, hoverPull: this.cfg.hoverPull || 0,
+                        hoverNova: !!this.cfg.hoverNova, hoverNovaRadius: this.cfg.hoverNovaRadius || 120, hoverNovaDmgScale: this.cfg.hoverNovaDmgScale || 0.4,
+                        returnSpeed: this.cfg.returnSpeed || speed * 1.5, returnDamageScale: this.cfg.returnDamageScale || 1,
+                        returnNova: !!this.cfg.returnNova, returnNovaRadius: this.cfg.returnNovaRadius || 140,
+                        splitCount: this.cfg.splitCount || 0, splitRemaining: this.cfg.splitTimes || 0, splitRadius: this.cfg.splitRadius || 220, splitDamageScale: this.cfg.splitDamageScale || 0.75,
+                        pierce: 999, maxPierce: 999, hits: new Set()
+                    }));
+                }
+                break;
+            case 'orbit_proj':
+                if (this.isSuper) return [];
+                for (let i = 0; i < count; i++) {
+                    const startAngle = (Math.PI * 2 / count) * i;
+                    const pierce = this.getPierce();
+                    bullets.push(this.applyCombatStats({
+                        x: player.cx, y: player.cy, type: 'proj', subtype: subtype,
+                        dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
+                        life: this.cfg.orbitDuration || 2, orbitRadius: this.cfg.orbitRadius || 100, orbitAngle: startAngle, orbitSpeed: 3,
+                        state: 'orbit', target: target, speed: speed,
+                        pierce: pierce, maxPierce: pierce, hits: new Set()
+                    }));
+                }
+                break;
         }
-        
-        // v0.18.3: 为超武投射物添加标记
-        if (this.isSuper) {
-            for (const b of bullets) b.isSuper = true;
-        }
-        
-        // v0.18.4 fix: 应用道具效果到所有子弹
+        if (this.isSuper) for (const b of bullets) b.isSuper = true;
         for (const b of bullets) {
             b.weaponKey = b.weaponKey || this.baseKey;
             b.weaponSprite = b.weaponSprite || weaponSprite;
             if (b.visualSeed === undefined) b.visualSeed = Math.random() * 1000;
-            // homing效果：给子弹添加追踪能力
             if (stats.homing && !b.homing) {
                 b.homing = true;
                 b.homingStrength = stats.homing;
                 b.target = target;
                 b.hits = b.hits || new Set();
             }
-            // bounce效果：给子弹添加弹跳能力
             if (stats.bounce && !b.bounce) {
                 b.bounce = stats.bounce;
                 b.bouncesLeft = stats.bounce;
             }
-            // projSize效果：子弹大小
-            if (stats.projSize) {
-                b.scale = 1 + stats.projSize;
-            }
+            if (stats.projSize) b.scale = 1 + stats.projSize;
             this.applyProjectileVisualConfig(b);
         }
-        
         return bullets;
     }
-    
+
     getWeaponSpriteKey() {
         const fallbackMap = {
             whip: 'weapon_whip',
@@ -867,35 +1090,36 @@
         const configMap = {
             homing: { sprite: 'bullet_lightning', size: 9, hitRadius: 6, renderStyle: 'magic_orb' },
             poison_homing: { sprite: 'bullet_lightning', size: 8.5, hitRadius: 5, renderStyle: 'poison_dart' },
+            poison_dart: { sprite: 'bullet_lightning', size: 8.5, hitRadius: 5, renderStyle: 'poison_dart' },
             rapid: { sprite: 'bullet_arrow', size: 7.2, hitRadius: 4.4, renderStyle: 'knife_throw' },
             guardian_knife: { sprite: 'weapon_knife', size: 22, hitRadius: 10, renderStyle: 'knife_guardian' },
             boomerang: { sprite: 'bullet_arrow', size: 12, hitRadius: 7.8, renderStyle: 'axe_spin' },
             bounce: { sprite: 'bullet_lightning', size: 10, hitRadius: 6, renderStyle: 'cross_bounce' },
+            cross_return: { sprite: 'bullet_lightning', size: 10.5, hitRadius: 6.4, renderStyle: 'cross_bounce' },
             explode: { sprite: 'weapon_fireball', size: 12, hitRadius: 6.5, renderStyle: 'fireball' },
+            dragon_breath: { sprite: 'weapon_fireball', size: 11.5, hitRadius: 6.5, renderStyle: 'fireball_tail' },
             fan: { sprite: 'bullet_arrow', size: 9, hitRadius: 5.2, renderStyle: 'shuriken' },
             penetrate: { sprite: 'bullet_ice', size: 12, hitRadius: 7, renderStyle: 'icicle' },
             orbit_proj: { sprite: 'bullet_lightning', size: 40, hitRadius: 11, renderStyle: 'orbit_bible' }
         };
         const cfg = { ...(configMap[subtype] || { sprite: 'bullet_arrow', size: 10, hitRadius: 6 }) };
         const scale = b.scale || 1;
-        
-        // 武器优先级修正：按武器逻辑使用对应贴图
-        if (b.weaponKey === 'knife' && (subtype === 'rapid' || subtype === 'guardian_knife')) {
-            cfg.sprite = 'weapon_knife';
-        } else if (b.weaponKey === 'axe' && subtype === 'boomerang') {
-            cfg.sprite = 'weapon_axe';
-        } else if (b.weaponKey === 'bible' && subtype === 'orbit_proj') {
-            cfg.sprite = 'weapon_bible';
-        } else if (b.weaponKey === 'fireball' && subtype === 'explode') {
-            cfg.sprite = 'weapon_fireball';
-        }
-        
+        if (b.weaponKey === 'knife' && (subtype === 'rapid' || subtype === 'guardian_knife')) cfg.sprite = 'weapon_knife';
+        else if (b.weaponKey === 'axe' && subtype === 'boomerang') cfg.sprite = 'weapon_axe';
+        else if (b.weaponKey === 'cross' && (subtype === 'bounce' || subtype === 'cross_return')) cfg.sprite = 'weapon_cross';
+        else if (b.weaponKey === 'bible' && subtype === 'orbit_proj') cfg.sprite = 'weapon_bible';
+        else if (b.weaponKey === 'poison_dart' && (subtype === 'poison_dart' || subtype === 'poison_homing')) cfg.sprite = 'weapon_poison_dart';
+        else if (b.weaponKey === 'fireball' && subtype === 'explode') cfg.sprite = 'weapon_fireball';
+        else if (b.weaponKey === 'fireball' && subtype === 'penetrate' && b.elementalType === 'ice') { cfg.sprite = 'weapon_icicle'; cfg.renderStyle = 'icicle'; cfg.size = 13.5; cfg.hitRadius = 7; }
+        else if (b.weaponKey === 'hellfire' && subtype === 'explode') { cfg.sprite = 'weapon_hellfire'; cfg.renderStyle = 'fireball'; cfg.size = 16.5; cfg.hitRadius = 8; }
+        else if (b.weaponKey === 'fireball' && subtype === 'dragon_breath' && b.elementalType === 'ice') { cfg.sprite = 'weapon_icicle'; cfg.renderStyle = 'icicle'; cfg.size = 13.5; cfg.hitRadius = 7; }
         b.sprite = cfg.sprite;
         b.size = (cfg.size || 16) * scale;
         b.hitRadius = (cfg.hitRadius || 8) * scale;
         b.renderStyle = cfg.renderStyle || 'default';
     }
-    
+
+
     // 环绕攻击（圣经）
     fireOrbit(player, dmg, stats) {
         // v0.18.3: 超武环绕物是永久的，不需要重新生成
@@ -916,6 +1140,8 @@
             orbitalDrawSize: this.cfg.orbitalDrawSize || 30,
             orbitHitPadding: this.cfg.orbitHitPadding || 44,
             orbitVisualSpinSpeed: this.cfg.orbitVisualSpinSpeed || 2,
+            codexArsenal: Array.isArray(this.cfg.codexArsenal) ? [...this.cfg.codexArsenal] : [],
+            codexVolleyBudget: this.cfg.codexVolleyBudget || 1,
             hits: new Set(),
             weaponKey: this.baseKey,
             weaponSprite: this.getWeaponSpriteKey()
@@ -964,55 +1190,30 @@
         const lingerScale = stats.lingeringFieldScale || 0;
         const lingerDuration = stats.lingeringFieldDuration || 0;
         const lingerTickRateMul = stats.lingeringTickRateMul || 1;
-        const poolRadius = Math.max(85, Math.min(260, range * 0.24));
+        const poolRadius = Math.max(70, Math.min(260, range * 0.24));
         const spawnRadius = Math.max(120, Math.min(range * 0.58, 360));
-        const maxActivePools = this.baseKey === 'holy_water'
-            ? (this.isSuper ? 8 : 6)
-            : (count + (this.isSuper ? 3 : 2));
-
-        if (window.game && Array.isArray(window.game.bullets)) {
-            const activePools = window.game.bullets
-                .filter(b => b.type === 'area' && b.weaponKey === this.baseKey && !b.isLingeringField)
-                .sort((a, b) => (a.spawnAt || 0) - (b.spawnAt || 0));
-            while (activePools.length + count > maxActivePools) {
-                const stale = activePools.shift();
-                const staleIdx = window.game.bullets.indexOf(stale);
-                if (staleIdx >= 0) window.game.bullets.splice(staleIdx, 1);
-            }
-        }
-        
         for (let i = 0; i < count; i++) {
             const angle = (Math.PI * 2 * i) / count + Math.random() * 0.35;
             const distance = spawnRadius * (0.35 + Math.random() * 0.65);
             const tx = player.cx + Math.cos(angle) * distance;
             const ty = player.cy + Math.sin(angle) * distance;
             bullets.push(this.applyCombatStats({
-                x: tx, y: ty,
-                type: 'area', subtype: this.cfg.subtype || 'burn',
+                x: tx, y: ty, type: 'area', subtype: this.cfg.subtype || 'burn',
                 dmg: dmg, color: this.cfg.color, icon: this.cfg.icon,
-                range: poolRadius, spawnRadius: spawnRadius, duration: areaDuration,
-                tickRate: (this.cfg.tickRate || 0.5) * lingerTickRateMul,
-                slow: this.cfg.slow || 0,
-                life: areaDuration,
-                homing: !!this.cfg.homing,
-                lingeringScale: lingerScale,
-                lingeringDuration: lingerDuration,
-                hits: new Set(), lastTick: 0,
-                weaponKey: this.baseKey,
-                weaponSprite: this.getWeaponSpriteKey(),
-                sprite: 'effect_particle_glow',
-                renderStyle: 'holy_water_pool',
-                sourceX: player.cx,
-                sourceY: player.cy,
-                spawnAt: Date.now() / 1000,
-                bottleFlight: 0.28,
-                visualSeed: Math.random() * 1000
-            }));
+                range: this.cfg.growFrom || poolRadius, spawnRadius: spawnRadius, duration: areaDuration,
+                tickRate: (this.cfg.tickRate || 0.5) * lingerTickRateMul, slow: this.cfg.slow || 0, life: areaDuration,
+                homing: !!this.cfg.homing, lingeringScale: lingerScale, lingeringDuration: lingerDuration,
+                hits: new Set(), lastTick: 0, weaponKey: this.baseKey, weaponSprite: this.getWeaponSpriteKey(),
+                sprite: 'effect_particle_glow', renderStyle: 'holy_water_pool', sourceX: player.cx, sourceY: player.cy,
+                spawnAt: Date.now() / 1000, bottleFlight: 0.28, visualSeed: Math.random() * 1000,
+                growFrom: this.cfg.growFrom || poolRadius, growTo: this.cfg.growTo || poolRadius, growthDelay: this.cfg.growthDelay || 0.75,
+                maxBurstDmgScale: this.cfg.maxBurstDmgScale || 0, exposeMultiplier: this.cfg.exposeMultiplier || 0, exposeDuration: this.cfg.exposeDuration || 0
+            }, stats));
         }
-        
         return bullets;
     }
-    
+
+
     // v0.30: 激光攻击 - 贯穿全屏的粗光束
     fireLaser(player, target, dmg, stats) {
         // v0.30: 使用武器配置中的全屏射程

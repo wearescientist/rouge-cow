@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>怪物总控台</title>
+<style>
+    :root { --bg:#0d1118; --bg-soft:#151b24; --panel:rgba(19,25,36,.96); --line:rgba(132,183,255,.14); --text:#edf3ff; --muted:#8e9db4; --accent:#75c9ff; --accent-strong:#3ea4f0; --gold:#f5c86a; --ok:#8fd2a4; --danger:#ff9898; }
+    * { box-sizing:border-box; }
+    body { margin:0; min-height:100vh; color:var(--text); font:14px/1.6 "Microsoft YaHei","Segoe UI",sans-serif; background:radial-gradient(circle at top left, rgba(106,171,255,.14), transparent 28%), radial-gradient(circle at top right, rgba(34,87,138,.18), transparent 26%), linear-gradient(180deg,#101722 0%,#0a0f17 100%); }
+    button,input,select,textarea { font:inherit; }
+    .page { width:min(1600px,calc(100vw - 28px)); margin:0 auto; padding:18px 0 28px; }
+    .hero,.panel,.meta-card,.monster-item,.draft-item { border:1px solid var(--line); border-radius:16px; background:var(--panel); }
+    .hero { padding:20px; border-radius:22px; background:linear-gradient(135deg, rgba(117,201,255,.14), transparent 36%), linear-gradient(180deg, rgba(20,28,40,.98), rgba(10,15,23,.98)); }
+    .hero-top,.tab-row,.subtool-row,.quick-row,.distribution-row,.pill-row,.editor-toolbar,.editor-actions,.wave-tier-row,.wave-toolbar,.room-chip-row,.mode-card-row,.panel-header { display:flex; flex-wrap:wrap; gap:10px; }
+    .hero-top { justify-content:space-between; align-items:flex-start; }
+    h1,h2,h3,p { margin:0; }
+    h1 { font-size:clamp(26px,4vw,38px); line-height:1.1; }
+    .lead { max-width:760px; margin-top:10px; color:var(--muted); }
+    .action-btn,.tab-btn,.subtool-btn,.mini-btn { padding:9px 13px; border:1px solid rgba(255,255,255,.08); border-radius:11px; color:var(--text); background:rgba(255,255,255,.04); cursor:pointer; }
+    .action-btn.primary,.tab-btn.active,.subtool-btn.active,.mini-btn.primary { color:#08131d; border-color:transparent; background:linear-gradient(180deg,var(--accent),var(--accent-strong)); }
+    .meta-grid { display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); gap:12px; margin-top:18px; }
+    .meta-card,.panel { padding:16px; }
+    .meta-card strong { display:block; font-size:24px; line-height:1.1; color:var(--gold); }
+    .layout { display:grid; grid-template-columns:minmax(0,1fr); gap:16px; margin-top:16px; }
+    .stack { display:grid; gap:12px; }
+    .search-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; }
+    .search-input,.draft-form input,.draft-form select { width:100%; padding:10px 11px; border:1px solid rgba(255,255,255,.08); border-radius:10px; color:var(--text); background:rgba(4,10,17,.42); outline:none; }
+    .monster-list { max-height:calc(100vh - 340px); overflow-y:auto; display:grid; gap:10px; }
+    .monster-item { display:grid; gap:8px; padding:12px; cursor:pointer; }
+    .monster-item.active { border-color:rgba(117,201,255,.44); box-shadow:inset 0 0 0 1px rgba(117,201,255,.28); }
+    .monster-item-top { display:flex; justify-content:space-between; gap:8px; align-items:flex-start; }
+    .monster-item strong { display:block; font-size:14px; }
+    .monster-id { color:var(--muted); font-size:11px; }
+    .pill { padding:4px 8px; border-radius:999px; font-size:11px; color:#cce8ff; background:rgba(117,201,255,.1); border:1px solid rgba(117,201,255,.14); }
+    .detail-card { display:grid; gap:14px; }
+    .detail-top { display:grid; grid-template-columns:180px minmax(0,1fr); gap:14px; }
+    .preview-box { position:relative; min-height:180px; border:1px solid var(--line); border-radius:16px; background:radial-gradient(circle at 50% 20%, rgba(117,201,255,.14), transparent 34%), linear-gradient(180deg,#101a27 0%,#0b121c 100%); overflow:hidden; }
+    .preview-box img { width:100%; height:100%; object-fit:contain; image-rendering:pixelated; }
+    .preview-empty { position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:var(--muted); text-align:center; padding:20px; }
+    .info-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .info-block,.distribution-card,.editor-card,.wave-card,.spawn-item,.room-chip,.mode-card,.section-card { padding:12px; border:1px solid var(--line); border-radius:14px; background:rgba(255,255,255,.03); }
+    .info-block strong,.distribution-card strong,.wave-card strong,.spawn-item strong,.room-chip strong,.mode-card strong,.section-card strong { display:block; margin-bottom:4px; color:var(--gold); }
+    .path-box { padding:10px 12px; border-radius:12px; background:rgba(255,255,255,.04); color:var(--muted); word-break:break-all; }
+    .draft-form { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    .draft-actions { display:flex; gap:10px; margin-top:12px; }
+    .draft-list { display:grid; gap:10px; }
+    .draft-item { padding:12px; }
+    .editor-card,.section-card { display:grid; gap:12px; }
+    .editor-layout { display:grid; gap:12px; }
+    .editor-kpi { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:10px; }
+    .field-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:10px; }
+    .field-grid.two { grid-template-columns:repeat(2,minmax(0,1fr)); }
+    .field-grid.three { grid-template-columns:repeat(3,minmax(0,1fr)); }
+    .field-grid.four { grid-template-columns:repeat(4,minmax(0,1fr)); }
+    .field-grid label,.wave-tier-row label,.stack label { display:grid; gap:6px; color:var(--muted); font-size:12px; }
+    .field-grid input,.field-grid select,.field-grid textarea,.wave-tier-row input,.wave-tier-row select,.stack textarea { width:100%; padding:10px 11px; border:1px solid rgba(255,255,255,.08); border-radius:10px; color:var(--text); background:rgba(4,10,17,.42); outline:none; }
+    .field-grid textarea,.stack textarea { min-height:88px; resize:vertical; }
+    .wave-list,.spawn-list { display:grid; gap:10px; }
+    .wave-card,.spawn-item { display:grid; gap:10px; }
+    .wave-tier-row { display:grid; grid-template-columns:72px repeat(2,minmax(0,1fr)); align-items:end; }
+    .wave-tier-tag { display:inline-flex; align-items:center; justify-content:center; min-width:56px; padding:10px 12px; border-radius:10px; color:#08131d; background:linear-gradient(180deg,var(--accent),var(--accent-strong)); }
+    .mini-meta { color:var(--muted); font-size:12px; }
+    .editor-subtitle { color:var(--muted); font-size:13px; }
+    .room-chip-row,.mode-card-row { display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); }
+    .room-chip,.mode-card { text-align:left; color:var(--text); cursor:pointer; }
+    .room-chip.active,.mode-card.active { border-color:rgba(117,201,255,.44); box-shadow:inset 0 0 0 1px rgba(117,201,255,.28); background:linear-gradient(180deg, rgba(117,201,255,.12), rgba(255,255,255,.03)); }
+    .panel-header { justify-content:space-between; align-items:center; }
+    .section-divider { height:1px; background:var(--line); margin:2px 0; }
+    .status.warn { color:var(--gold); }
+    .hidden-input { display:none !important; }
+    .hidden { display:none; }
+    .status { min-height:18px; color:var(--muted); font-size:12px; }
+    .status.ok { color:var(--ok); }
+    .status.error { color:var(--danger); }
+    @media (max-width:1380px) { .layout { grid-template-columns:1fr; } }
+    @media (max-width:1280px) { .editor-kpi,.field-grid,.field-grid.two,.field-grid.three,.field-grid.four,.wave-tier-row { grid-template-columns:1fr; } }
+    @media (max-width:960px) { .meta-grid,.layout,.detail-top,.info-grid,.draft-form,.room-chip-row,.mode-card-row { grid-template-columns:1fr; } .monster-list { max-height:360px; } }
+</style>
+</head>
+<body>
+<div class="page">
+    <header class="hero">
+        <div class="hero-top">
+            <div>
+                <h1>怪物总控台</h1>
+                <p class="lead">只保留房间分布编辑能力，围绕房型、模式、波次、进房生成和清房生成来配置，不再塞入无关的怪物索引和工作区。</p>
+            </div>
+            <div class="quick-row">
+                <button id="openWorkbenchBtn" class="action-btn" type="button">返回调试工作台</button>
+            </div>
+        </div>
+        <div class="meta-grid" id="summaryStats"></div>
+    </header>
+
+    <main class="layout">
+        <section class="panel">
+            <div class="stack">
+                <div id="distributionPanel" class="stack"></div>
+            </div>
+        </section>
+    </main>
+</div>
+<script src="../floor-data.js"></script>
+<script src="./monster_control_center.js"></script>
+</body>
+</html>

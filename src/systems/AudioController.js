@@ -9,7 +9,7 @@ class AudioController {
     constructor(game) {
         this.game = game;
         this.audio = game.audio;
-        this.basePath = 'assets/audio/';
+        this.basePath = 'assets/runtime/audio/';
         
         // 音频缓存
         this.cache = new Map();
@@ -130,6 +130,9 @@ class AudioController {
      */
     play(soundId) {
         if (!this.audio || !this.audio.ctx) return;
+        if (this.audio.ctx.state === 'suspended') {
+            this.audio.ctx.resume().catch(() => {});
+        }
         
         const cfg = this.registry[soundId];
         if (!cfg) {

@@ -1,4 +1,4 @@
-﻿/**
+/**
  * WeaponVisuals.js - logic-driven weapon visuals
  */
 
@@ -59,6 +59,7 @@ class WeaponVisuals {
         }
 
         this.weaponVisualConfig = this.buildWeaponVisualConfig();
+        this.presentationEmissiveConfig = this.buildPresentationEmissiveConfig();
     }
 
     buildWeaponVisualConfig() {
@@ -655,6 +656,7 @@ class WeaponVisuals {
     drawAreaOrAura(bullet, screenX, screenY, zoom, time) {
         const key = bullet.weaponKey || '';
         const style = bullet.renderStyle || '';
+        this.drawAuraPseudoLight(bullet, screenX, screenY, zoom, time);
         if (style === 'holy_water_pool' || key === 'holy_water' || key === 'la_borra') {
             this.drawHolyWaterArea(bullet, screenX, screenY, zoom, time);
             return;
@@ -664,6 +666,30 @@ class WeaponVisuals {
             return;
         }
         this.drawSoftArea(bullet, screenX, screenY, zoom);
+    }
+
+    drawAuraPseudoLight(bullet, screenX, screenY, zoom, time) {
+        const ctx = this.ctx;
+        const key = bullet.weaponKey || '';
+        const baseRadius = Math.max(18, (bullet.range || 96) * zoom * 0.34);
+        const pulse = 0.94 + Math.sin((time || 0) * 4.8 + (bullet.visualSeed || 0) * 0.001) * 0.06;
+        const radius = baseRadius * pulse;
+        const color = key === 'radiance' || key === 'solar_radiance'
+            ? '#ffbf52'
+            : (key === 'holy_water' || key === 'la_borra' ? '#88d9ff' : (bullet.color || '#ffffff'));
+        const alpha = key === 'radiance' || key === 'solar_radiance' ? 0.18 : 0.12;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        const gradient = ctx.createRadialGradient(screenX, screenY, 0, screenX, screenY, radius);
+        gradient.addColorStop(0, this.hexToRgba(color, alpha));
+        gradient.addColorStop(0.5, this.hexToRgba(color, alpha * 0.45));
+        gradient.addColorStop(1, this.hexToRgba(color, 0));
+        ctx.fillStyle = gradient;
+        ctx.beginPath();
+        ctx.arc(screenX, screenY, radius, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
     }
 
     drawSoftArea(bullet, screenX, screenY, zoom) {
@@ -881,34 +907,44 @@ class WeaponVisuals {
             minSize: Math.max(6, width * 1.08)
         })) return;
 
+        const isSuper = !!bullet?.isSuper;
         const len = Math.max(5.8, width * 1.08);
         const half = Math.max(1.1, width * 0.11);
+        const bladeColor = isSuper ? '#f0c34a' : '#ff2a2a';
+        const edgeColor = isSuper ? '#fff2b6' : '#ffd0d0';
+        const trailColor = isSuper ? 'rgba(246,211,111,0.72)' : 'rgba(255,74,74,0.72)';
         ctx.save();
         ctx.rotate(angle);
-        // blade
-        ctx.fillStyle = '#f4f6fb';
+        ctx.shadowBlur = isSuper ? Math.max(4, width * 0.45) : Math.max(2, width * 0.28);
+        ctx.shadowColor = bladeColor;
+        // blade body
+        ctx.fillStyle = bladeColor;
         ctx.beginPath();
-        ctx.moveTo(len * 0.55, 0);
-        ctx.lineTo(-len * 0.18, -half);
+        ctx.moveTo(len * 0.56, 0);
+        ctx.lineTo(-len * 0.12, -half * 1.15);
         ctx.lineTo(-len * 0.32, 0);
-        ctx.lineTo(-len * 0.18, half);
+        ctx.lineTo(-len * 0.12, half * 1.15);
         ctx.closePath();
         ctx.fill();
-        // spine
-        ctx.strokeStyle = 'rgba(160,175,200,0.9)';
+        // bright edge
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = edgeColor;
         ctx.lineWidth = Math.max(1, width * 0.08);
         ctx.beginPath();
-        ctx.moveTo(-len * 0.2, 0);
-        ctx.lineTo(len * 0.38, 0);
+        ctx.moveTo(-len * 0.08, 0);
+        ctx.lineTo(len * 0.42, 0);
         ctx.stroke();
-        // short tail
-        const grad = ctx.createLinearGradient(-len * 0.9, 0, -len * 0.15, 0);
-        grad.addColorStop(0, 'rgba(220,230,255,0)');
-        grad.addColorStop(1, 'rgba(220,230,255,0.35)');
-        ctx.fillStyle = grad;
+        // red/gold tail only, no radial source bloom
+        const grad = ctx.createLinearGradient(-len * 0.95, 0, -len * 0.08, 0);
+        grad.addColorStop(0, isSuper ? 'rgba(246,211,111,0)' : 'rgba(255,74,74,0)');
+        grad.addColorStop(0.55, trailColor);
+        grad.addColorStop(1, isSuper ? 'rgba(255,242,182,0.18)' : 'rgba(255,208,208,0.14)');
+        ctx.strokeStyle = grad;
+        ctx.lineWidth = Math.max(1.2, width * 0.22);
         ctx.beginPath();
-        ctx.ellipse(-len * 0.5, 0, len * 0.45, half * 0.9, 0, 0, Math.PI * 2);
-        ctx.fill();
+        ctx.moveTo(-len * 0.82, 0);
+        ctx.lineTo(-len * 0.06, 0);
+        ctx.stroke();
         ctx.restore();
         if (renderMode === 'both') {
             this.drawConfiguredProjectileSprite(ctx, bullet, zoom, {
@@ -1489,6 +1525,149 @@ class WeaponVisuals {
         ctx.fill();
     }
 
+    buildPresentationEmissiveConfig() {
+        return {
+            knife: { kind: 'knife', color: '#ff3b3b', core: '#ffd0d0', alpha: 0.44, tailAlpha: 0.28 },
+            knife_super: { kind: 'knife', color: '#f0c34a', core: '#fff1b4', alpha: 0.5, tailAlpha: 0.34 },
+            laser: { kind: 'beam', color: '#ff4a4a', alpha: 0.42, width: 12, blur: 16 },
+            wand: { kind: 'orb', color: '#7ec4ff', alpha: 0.24, radius: 18 },
+            fireball: { kind: 'orb', color: '#ff7d3e', alpha: 0.34, radius: 20 },
+            cross: { kind: 'orb', color: '#ffe2a6', alpha: 0.22, radius: 16 },
+            bible: { kind: 'orb', color: '#f2ddb5', alpha: 0.16, radius: 13 },
+            holy_water: { kind: 'orb', color: '#8ad8ff', alpha: 0.2, radius: 16 },
+            lightning: { kind: 'orb', color: '#b4d4ff', alpha: 0.2, radius: 15 }
+        };
+    }
+
+    getPresentationEmissiveSpec(entity) {
+        if (!entity) return null;
+        const key = entity.weaponKey || entity.baseKey || entity.type || '';
+        if (key === 'knife' || entity.familyKey === 'knife') {
+            return entity.isSuper ? this.presentationEmissiveConfig.knife_super : this.presentationEmissiveConfig.knife;
+        }
+        if (key === 'laser' || entity.type === 'laser') return this.presentationEmissiveConfig.laser;
+        if (key === 'wand') return this.presentationEmissiveConfig.wand;
+        if (key === 'fireball') return this.presentationEmissiveConfig.fireball;
+        if (key === 'cross' || key === 'heaven_sword') return this.presentationEmissiveConfig.cross;
+        if (key === 'bible' || key === 'unholy_vespers') return this.presentationEmissiveConfig.bible;
+        if (key === 'holy_water' || key === 'holywater') return this.presentationEmissiveConfig.holy_water;
+        if (key === 'lightning' || key === 'storm_arc') return this.presentationEmissiveConfig.lightning;
+        return null;
+    }
+
+    renderPresentationOrb(ctx, pos, spec, pulse = 1) {
+        const radius = Math.max(6, spec.radius || 16);
+        const color = this.hexToRgb(spec.color || '#ffffff');
+        const outer = ctx.createRadialGradient(pos.x, pos.y, radius * 0.12, pos.x, pos.y, radius * 1.12);
+        outer.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.22, spec.alpha * 0.72) * pulse})`);
+        outer.addColorStop(0.45, `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.12, spec.alpha * 0.42) * pulse})`);
+        outer.addColorStop(1, 'rgba(0,0,0,0)');
+        ctx.fillStyle = outer;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, radius * 1.12, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.shadowBlur = radius * 0.55;
+        ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.62, spec.alpha * 0.95)})`;
+        ctx.fillStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.34, spec.alpha)})`;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, Math.max(1.8, radius * 0.18), 0, Math.PI * 2);
+        ctx.fill();
+        ctx.shadowBlur = 0;
+    }
+
+    renderPresentationBeam(ctx, entity, spec) {
+        const points = Array.isArray(entity.pathPoints) && entity.pathPoints.length > 1
+            ? entity.pathPoints
+            : [{ x: entity.x, y: entity.y }, { x: entity.x + Math.cos(entity.angle || 0) * (entity.range || 300), y: entity.y + Math.sin(entity.angle || 0) * (entity.range || 300) }];
+        const color = this.hexToRgb(spec.color || '#ffffff');
+        ctx.save();
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.28, spec.alpha * 0.7)})`;
+        ctx.lineWidth = Math.max(6, spec.width || 12);
+        ctx.shadowBlur = spec.blur || 16;
+        ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.68, spec.alpha)})`;
+        ctx.beginPath();
+        points.forEach((point, index) => {
+            const pos = this.game.camera.worldToScreen(point.x, point.y);
+            if (index === 0) ctx.moveTo(pos.x, pos.y);
+            else ctx.lineTo(pos.x, pos.y);
+        });
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    renderPresentationKnife(ctx, entity, spec, time = Date.now() / 1000) {
+        const pos = this.game.camera.worldToScreen(entity.x, entity.y);
+        const angle = Math.atan2(entity.vy || 0, entity.vx || 1);
+        const size = entity.drawSize || entity.size || (entity.isSuper ? 34 : 20);
+        const len = size * (entity.isSuper ? 1.18 : 1.06) * (this.game.camera.zoom || 1);
+        const tailLen = len * 0.95;
+        const width = Math.max(2.2, len * 0.11);
+        const color = this.hexToRgb(spec.color || '#ffffff');
+        const pulse = 0.94 + Math.sin(time * 7.5 + (entity.slotIndex || 0)) * 0.05;
+
+        ctx.save();
+        ctx.translate(pos.x, pos.y);
+        ctx.rotate(angle);
+        const tailGrad = ctx.createLinearGradient(-tailLen, 0, len * 0.15, 0);
+        tailGrad.addColorStop(0, `rgba(${color.r}, ${color.g}, ${color.b}, 0)`);
+        tailGrad.addColorStop(0.62, `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.26, spec.tailAlpha || 0.22) * pulse})`);
+        tailGrad.addColorStop(1, `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.14, spec.alpha * 0.28) * pulse})`);
+        ctx.strokeStyle = tailGrad;
+        ctx.lineWidth = width * 1.35;
+        ctx.lineCap = 'round';
+        ctx.beginPath();
+        ctx.moveTo(-tailLen, 0);
+        ctx.lineTo(len * 0.08, 0);
+        ctx.stroke();
+
+        ctx.strokeStyle = `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.38, spec.alpha * 0.82) * pulse})`;
+        ctx.lineWidth = width;
+        ctx.shadowBlur = width * 2.2;
+        ctx.shadowColor = `rgba(${color.r}, ${color.g}, ${color.b}, ${Math.min(0.62, spec.alpha)})`;
+        ctx.beginPath();
+        ctx.moveTo(-len * 0.04, 0);
+        ctx.lineTo(len * 0.58, 0);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    renderPresentationEmissives(time = Date.now() / 1000) {
+        const ctx = this.ctx;
+        const camera = this.game?.camera;
+        if (!ctx || !camera) return;
+
+        const projectiles = [
+            ...(Array.isArray(this.game?.bullets) ? this.game.bullets : []),
+            ...(Array.isArray(this.game?.guardianKnives) ? this.game.guardianKnives : [])
+        ];
+        if (projectiles.length === 0) return;
+
+        ctx.save();
+        ctx.globalCompositeOperation = 'screen';
+        for (const entity of projectiles) {
+            if (!entity) continue;
+            if (entity.type === 'guardian_knife_spawn') continue;
+            if (!camera.isVisible || camera.isVisible(entity.x, entity.y, 120)) {
+                const spec = this.getPresentationEmissiveSpec(entity);
+                if (!spec) continue;
+                if (spec.kind === 'beam') {
+                    this.renderPresentationBeam(ctx, entity, spec);
+                    continue;
+                }
+                if (spec.kind === 'knife') {
+                    this.renderPresentationKnife(ctx, entity, spec, time);
+                    continue;
+                }
+                const pos = camera.worldToScreen(entity.x, entity.y);
+                this.renderPresentationOrb(ctx, pos, spec, 0.94 + Math.sin(time * 5.2) * 0.04);
+            }
+        }
+        ctx.restore();
+    }
+
     getProjectileSprite(bullet) {
         const key = bullet.sprite || this.projectileSpriteMap[bullet.subtype || ''] || null;
         return key ? this.game.sprites?.get(key) : null;
@@ -1497,6 +1676,17 @@ class WeaponVisuals {
     getWeaponSprite(bullet) {
         const key = bullet.weaponSprite || this.weaponSpriteMap[bullet.weaponKey || ''] || null;
         return key ? this.game.sprites?.get(key) : null;
+    }
+
+    hexToRgb(hex) {
+        if (!hex || typeof hex !== 'string' || !hex.startsWith('#') || hex.length < 7) {
+            return { r: 255, g: 255, b: 255 };
+        }
+        return {
+            r: parseInt(hex.slice(1, 3), 16),
+            g: parseInt(hex.slice(3, 5), 16),
+            b: parseInt(hex.slice(5, 7), 16)
+        };
     }
 
     hexToRgba(hex, alpha) {

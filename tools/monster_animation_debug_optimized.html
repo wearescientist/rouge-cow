@@ -1,0 +1,966 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boss 帧编辑器</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0e1218; color: #eef3f8; font-family: 'Segoe UI', 'PingFang SC', sans-serif; }
+    .wrap { display: grid; grid-template-columns: 380px 1fr; gap: 14px; padding: 14px; min-height: 100vh; }
+    .panel, .main { background: #171d27; border: 1px solid #2b3646; border-radius: 10px; }
+    .panel { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .main { padding: 12px; display: grid; grid-template-rows: auto auto 1fr; gap: 10px; }
+    .title { font-size: 14px; color: #f6c969; }
+    .section { padding: 10px; border: 1px solid #293548; border-radius: 8px; background: #121823; }
+    .section + .section { margin-top: 2px; }
+    .btns { display: flex; flex-wrap: wrap; gap: 6px; }
+    button { background: #1f2734; color: #d8e0ea; border: 1px solid #314055; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 12px; }
+    button.active { border-color: #f6c969; color: #f6c969; }
+    button:hover { border-color: #4e6686; }
+    .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+    .row.tight { gap: 6px; }
+    .row > label { min-width: 56px; }
+    .tip { color: #9fb0c8; font-size: 12px; line-height: 1.5; }
+    .subtip { color: #7f94b1; font-size: 11px; line-height: 1.45; }
+    .strip { max-height: 38vh; overflow: auto; border: 1px solid #2b3646; border-radius: 8px; padding: 8px; background: #121823; }
+    .item { display: grid; grid-template-columns: 48px 1fr auto; gap: 8px; align-items: center; padding: 6px; border: 1px solid #2c394c; border-radius: 8px; margin-bottom: 6px; background: #1a2230; cursor: pointer; }
+    .item.sel { border-color: #f6c969; }
+    .item.playing { box-shadow: inset 0 0 0 1px rgba(102, 205, 255, 0.8); }
+    .item img { width: 48px; height: 48px; object-fit: contain; image-rendering: pixelated; background: linear-gradient(45deg,#1a1f2a 25%,#212839 25%,#212839 50%,#1a1f2a 50%,#1a1f2a 75%,#212839 75%,#212839 100%); background-size: 10px 10px; border-radius: 4px; }
+    .name { font-size: 12px; color: #dce5f2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .meta { font-size: 11px; color: #97a9c2; }
+    .canvases { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    canvas { width: 100%; height: 360px; border: 1px solid #2d3a4d; border-radius: 8px; background: #0e1420; }
+    .export { width: 100%; min-height: 180px; background: #0f1622; color: #dce5f2; border: 1px solid #2f3f57; border-radius: 8px; padding: 8px; font-family: Consolas, monospace; font-size: 12px; }
+    .toolbar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .controlGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .state-fps { display: grid; gap: 6px; }
+    .state-fps-row { display: grid; grid-template-columns: 92px 1fr 1fr; gap: 8px; align-items: center; }
+    .state-fps-row .label { color: #d8e0ea; font-size: 12px; }
+    .mini { font-size: 11px; color: #97a9c2; }
+    .playRow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+    .chk { display: flex; align-items: center; gap: 6px; color: #d8e0ea; font-size: 12px; }
+    input[type="file"] { display: none; }
+    input[type="number"], select {
+      width: 100%;
+      background: #111a28;
+      color: #e8eef7;
+      border: 1px solid #32465f;
+      border-radius: 6px;
+      padding: 5px 8px;
+      font-size: 12px;
+    }
+    input[type="checkbox"] { accent-color: #f6c969; }
+    @media (max-width: 1100px) {
+      .wrap { grid-template-columns: 1fr; }
+      .canvases { grid-template-columns: 1fr; }
+      .toolbar, .controlGrid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="title">Boss 帧编辑器（调 7 层 / 支持漂浮预览）</div>
+
+      <div class="section">
+        <div class="tip">楼层</div>
+        <div class="btns" id="floorBtns"></div>
+      </div>
+
+      <div class="section">
+        <div class="tip">动作轨道</div>
+        <div class="btns" id="stateBtns">
+          <button data-state="move" class="active">天空移动</button>
+          <button data-state="skill">技能释放</button>
+          <button data-state="transform">觉醒变身</button>
+          <button data-state="phase2Move">堕落冲刺</button>
+          <button data-state="phase2Skill">堕落技能</button>
+        </div>
+      </div>
+
+      <div class="section toolbar">
+        <div class="btns">
+          <button id="btnLoadFromConfig">载入当前层配置</button>
+          <button id="btnImportConfig">导入配置JSON</button>
+          <button id="btnImport">导入图片</button>
+          <button id="btnDelete">删除选中</button>
+          <button id="btnClear">清空轨道</button>
+        </div>
+        <div class="btns">
+          <button id="btnCutoutOne">选中帧扣背景</button>
+          <button id="btnCutoutAll">全部扣背景</button>
+          <button id="btnFlipX">选中帧左右翻转</button>
+          <button id="btnReset">重置选中变换</button>
+          <button id="btnAlignTrack">整轨对齐参考</button>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="tip">当前轨速度 / 播放</div>
+        <div class="controlGrid">
+          <div>
+            <div class="mini">当前轨 FPS</div>
+            <input id="stateFpsInput" type="number" min="1" max="60" step="0.1" value="8" />
+          </div>
+          <div>
+            <div class="mini">当前轨间隔(ms)</div>
+            <input id="stateIntervalInput" type="number" min="16" max="1000" step="1" value="125" />
+          </div>
+        </div>
+        <div style="height:8px"></div>
+        <div class="playRow">
+          <button id="btnPlayPause">暂停</button>
+          <button id="btnRestart">重播</button>
+          <button id="btnPrevFrame">上一帧</button>
+          <button id="btnNextFrame">下一帧</button>
+          <span class="mini">预览倍速</span>
+          <select id="playbackSpeedSelect" style="width:92px;">
+            <option value="0.25">0.25x</option>
+            <option value="0.5">0.5x</option>
+            <option value="1" selected>1x</option>
+            <option value="1.5">1.5x</option>
+            <option value="2">2x</option>
+            <option value="3">3x</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="tip">一阶段漂浮（预览与导出）</div>
+        <div class="row tight">
+          <label class="chk"><input id="floatEnabled" type="checkbox" />启用</label>
+          <span class="mini">作用于：天空移动 / 技能释放 / 觉醒变身</span>
+        </div>
+        <div class="controlGrid" style="margin-top:8px;">
+          <div>
+            <div class="mini">漂浮幅度(px)</div>
+            <input id="floatAmpInput" type="number" min="0" max="120" step="1" value="12" />
+          </div>
+          <div>
+            <div class="mini">漂浮速度(Hz)</div>
+            <input id="floatSpeedInput" type="number" min="0.1" max="10" step="0.1" value="1.6" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="tip">展示逻辑 / 参考对位</div>
+        <div class="row tight">
+          <label class="chk"><input id="showReferenceInput" type="checkbox" checked />显示参考影像</label>
+          <span class="mini">一阶段参考 move 首帧，二阶段参考 phase2Move 首帧</span>
+        </div>
+        <div class="controlGrid" style="margin-top:8px;">
+          <div>
+            <div class="mini">展示高度(px)</div>
+            <input id="contentHeightInput" type="number" min="80" max="420" step="1" value="180" />
+          </div>
+          <div>
+            <div class="mini">地平线偏移(px)</div>
+            <input id="horizonOffsetInput" type="number" min="20" max="180" step="1" value="80" />
+          </div>
+        </div>
+      </div>
+
+      <div class="section">
+        <div class="tip">每个轨道帧率</div>
+        <div id="stateFpsControls" class="state-fps"></div>
+      </div>
+
+      <div class="section">
+        <div class="tip">帧列表（拖拽排序）</div>
+        <div class="strip" id="frameStrip"></div>
+      </div>
+
+      <div class="section tip">
+        左键拖动：位移；滚轮：缩放；右键横向拖动：旋转。<br>
+        这版额外补了：一阶段漂浮、整轨对齐参考、逐轨速度、播放控制、参考影像预览。
+      </div>
+
+      <input id="fileInput" type="file" multiple accept="image/png,image/jpeg,image/webp" />
+      <input id="configInput" type="file" accept=".json,application/json" />
+    </div>
+
+    <div class="main">
+      <div class="canvases">
+        <div>
+          <div class="tip">单帧编辑预览（当前选中）</div>
+          <canvas id="editCanvas" width="640" height="360"></canvas>
+        </div>
+        <div>
+          <div class="tip">动画预览（当前轨道）</div>
+          <canvas id="animCanvas" width="640" height="360"></canvas>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button id="btnModePath" class="active">短路径导出</button>
+        <button id="btnModeEmbed">内嵌导出</button>
+        <button id="btnCopy">复制配置 JSON</button>
+        <button id="btnDownload">下载配置 JSON</button>
+      </div>
+
+      <textarea id="jsonOut" class="export" spellcheck="false"></textarea>
+    </div>
+  </div>
+
+  <script src="../src/data/boss-animation-config.js?v=20260319_editor2"></script>
+  <script>
+    const STATE_KEYS = ['move', 'skill', 'transform', 'phase2Move', 'phase2Skill'];
+    const STATE_LABELS = {
+      move: '天空移动',
+      skill: '技能释放',
+      transform: '觉醒变身',
+      phase2Move: '堕落冲刺',
+      phase2Skill: '堕落技能'
+    };
+    const DEFAULT_STATE_FPS = {
+      move: 8,
+      skill: 8,
+      transform: 10,
+      phase2Move: 10,
+      phase2Skill: 9
+    };
+
+    const model = {
+      floor: 1,
+      state: 'move',
+      states: STATE_KEYS.reduce((acc, key) => { acc[key] = []; return acc; }, {}),
+      selected: -1,
+      playFrame: 0,
+      playTimer: 0,
+      previewTime: 0,
+      playPaused: false,
+      playbackSpeed: 1,
+      exportMode: 'path',
+      stateFps: { ...DEFAULT_STATE_FPS },
+      phase1Float: { enabled: false, amplitude: 12, speed: 1.6 },
+      preview: { contentHeight: 180, horizonOffset: 80, showReference: true }
+    };
+
+    const floorBtns = document.getElementById('floorBtns');
+    const frameStrip = document.getElementById('frameStrip');
+    const fileInput = document.getElementById('fileInput');
+    const configInput = document.getElementById('configInput');
+    const stateFpsInput = document.getElementById('stateFpsInput');
+    const stateIntervalInput = document.getElementById('stateIntervalInput');
+    const playbackSpeedSelect = document.getElementById('playbackSpeedSelect');
+    const floatEnabledInput = document.getElementById('floatEnabled');
+    const floatAmpInput = document.getElementById('floatAmpInput');
+    const floatSpeedInput = document.getElementById('floatSpeedInput');
+    const showReferenceInput = document.getElementById('showReferenceInput');
+    const contentHeightInput = document.getElementById('contentHeightInput');
+    const horizonOffsetInput = document.getElementById('horizonOffsetInput');
+    const stateFpsControls = document.getElementById('stateFpsControls');
+    const editCanvas = document.getElementById('editCanvas');
+    const animCanvas = document.getElementById('animCanvas');
+    const editCtx = editCanvas.getContext('2d');
+    const animCtx = animCanvas.getContext('2d');
+
+    let dragIndex = -1;
+    let mouseMode = null;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
+    function uid() { return Math.random().toString(36).slice(2, 10); }
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+    function currentFrames() { return model.states[model.state] || []; }
+    function currentFps() { return model.stateFps[model.state] || DEFAULT_STATE_FPS[model.state] || 8; }
+    function stateUsesFloat(state) { return state === 'move' || state === 'skill' || state === 'transform'; }
+    function getReferenceState(state) {
+      if (state === 'phase2Skill') return 'phase2Move';
+      if (state === 'skill' || state === 'transform') return 'move';
+      return null;
+    }
+    function sanitizeFileName(name) {
+      return String(name || 'frame.png').replace(/[\\/:*?"<>|]/g, '_');
+    }
+    function resolvePreviewSrc(src) {
+      const s = String(src || '');
+      return s.startsWith('./') ? s.replace('./', '../') : s;
+    }
+
+    function makeFrame(src, name, exportSrc = null, opts = null) {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        try { renderAll(); } catch (e) {}
+      };
+      return {
+        id: uid(),
+        name: name || 'frame',
+        src,
+        exportSrc: exportSrc || src,
+        img,
+        x: Number.isFinite(opts?.x) ? opts.x : 0,
+        y: Number.isFinite(opts?.y) ? opts.y : 0,
+        scale: Number.isFinite(opts?.scale) ? opts.scale : 1,
+        rot: Number.isFinite(opts?.rot) ? opts.rot : 0,
+        flipX: !!opts?.flipX,
+        _bounds: null
+      };
+    }
+
+    function parseFramesFromConfigArray(arr) {
+      const safe = Array.isArray(arr) ? arr : [];
+      return safe.map((p, i) => {
+        if (typeof p === 'string') {
+          const src = String(p);
+          return makeFrame(resolvePreviewSrc(src), `f${String(i + 1).padStart(2, '0')}`, src);
+        }
+        const src = String(p?.src || '');
+        return makeFrame(resolvePreviewSrc(src), `f${String(i + 1).padStart(2, '0')}`, src, {
+          x: Number.isFinite(Number(p?.x)) ? Number(p.x) : 0,
+          y: Number.isFinite(Number(p?.y)) ? Number(p.y) : 0,
+          scale: Number.isFinite(Number(p?.scale)) ? Number(p.scale) : 1,
+          rot: Number.isFinite(Number(p?.rot)) ? Number(p.rot) : 0,
+          flipX: !!p?.flipX
+        });
+      });
+    }
+
+    function checker(ctx, w, h) {
+      ctx.fillStyle = '#101623';
+      ctx.fillRect(0, 0, w, h);
+      for (let y = 0; y < h; y += 20) {
+        for (let x = 0; x < w; x += 20) {
+          ctx.fillStyle = ((x + y) / 20) % 2 ? '#151f2f' : '#1b2638';
+          ctx.fillRect(x, y, 20, 20);
+        }
+      }
+    }
+
+    function getSequenceBaseline(frames) {
+      const first = frames && frames[0];
+      if (!first || !first.img || !first.img.complete) return null;
+      const imgH = Math.max(1, first.img.height || 1);
+      const imgW = Math.max(1, first.img.width || 1);
+      const baseScaleRaw = model.preview.contentHeight / imgH;
+      const s0 = baseScaleRaw * (Number.isFinite(first.scale) ? first.scale : 1);
+      return {
+        firstX: Number.isFinite(first.x) ? first.x : 0,
+        firstY: Number.isFinite(first.y) ? first.y : 0,
+        anchorX: (imgW / 2) * s0,
+        bottomY: imgH * s0,
+        baseScale: baseScaleRaw
+      };
+    }
+
+    function drawSceneBase(ctx, canvas, state) {
+      checker(ctx, canvas.width, canvas.height);
+      const horizonY = canvas.height - model.preview.horizonOffset;
+      ctx.strokeStyle = 'rgba(246,201,105,0.75)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, horizonY);
+      ctx.lineTo(canvas.width, horizonY);
+      ctx.stroke();
+
+      ctx.fillStyle = '#9fb0c8';
+      ctx.font = '12px Segoe UI, PingFang SC, sans-serif';
+      const floatText = model.phase1Float.enabled && stateUsesFloat(state)
+        ? `漂浮 ON 振幅:${model.phase1Float.amplitude}px 速度:${model.phase1Float.speed}Hz`
+        : '漂浮 OFF';
+      ctx.fillText(`轨道：${STATE_LABELS[state] || state}`, 12, 22);
+      ctx.fillText(`FPS：${currentFps().toFixed(1)}  预览倍速：${model.playbackSpeed}x  ${floatText}`, 12, 40);
+      return horizonY;
+    }
+
+    function drawAlignedFrameInstance(ctx, canvas, baseFrames, frame, options = {}) {
+      const base = getSequenceBaseline(baseFrames);
+      if (!frame || !frame.img || !frame.img.complete || !base) return;
+      const horizonY = canvas.height - model.preview.horizonOffset;
+      const scale = (base.baseScale || (model.preview.contentHeight / Math.max(1, frame.img.height || 1)))
+        * (Number.isFinite(frame.scale) ? frame.scale : 1);
+      const drawW = frame.img.width * scale;
+      const drawH = frame.img.height * scale;
+      const relX = (Number.isFinite(frame.x) ? frame.x : 0) - base.firstX;
+      const relY = (Number.isFinite(frame.y) ? frame.y : 0) - base.firstY;
+      const drawX = -base.anchorX + relX;
+      const drawY = -base.bottomY + relY + (options.extraY || 0);
+      const cx = canvas.width * 0.5;
+      const mirror = !!frame.flipX;
+      const imageX = mirror ? (-drawX - drawW) : drawX;
+
+      ctx.save();
+      ctx.globalAlpha = Number.isFinite(options.alpha) ? options.alpha : 1;
+      ctx.translate(cx, horizonY);
+      if (Number.isFinite(frame.rot) && frame.rot !== 0) {
+        ctx.rotate(frame.rot * Math.PI / 180);
+      }
+      if (mirror) ctx.scale(-1, 1);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(frame.img, imageX, drawY, drawW, drawH);
+      if (options.showGuide) {
+        ctx.strokeStyle = options.guideColor || '#f6c969';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(imageX, drawY, drawW, drawH);
+      }
+      ctx.restore();
+    }
+
+    function drawReferenceOverlay(ctx, canvas, state) {
+      if (!model.preview.showReference) return;
+      const refState = getReferenceState(state);
+      if (!refState) return;
+      const refFrames = model.states[refState] || [];
+      if (!refFrames.length) return;
+      drawAlignedFrameInstance(ctx, canvas, refFrames, refFrames[0], {
+        alpha: 0.22,
+        showGuide: true,
+        guideColor: '#66d9ff'
+      });
+      ctx.save();
+      ctx.fillStyle = '#66d9ff';
+      ctx.font = '12px Segoe UI, PingFang SC, sans-serif';
+      ctx.fillText(`参考：${STATE_LABELS[refState]}`, 12, 58);
+      ctx.restore();
+    }
+
+    function getFloatOffset(state) {
+      if (!model.phase1Float.enabled || !stateUsesFloat(state)) return 0;
+      return Math.sin(model.previewTime * model.phase1Float.speed * Math.PI * 2) * model.phase1Float.amplitude;
+    }
+
+    function renderEditCanvas() {
+      const frames = currentFrames();
+      drawSceneBase(editCtx, editCanvas, model.state);
+      drawReferenceOverlay(editCtx, editCanvas, model.state);
+      if (model.selected >= 0 && model.selected < frames.length) {
+        drawAlignedFrameInstance(editCtx, editCanvas, frames, frames[model.selected], { showGuide: true });
+      }
+    }
+
+    function renderAnimCanvas() {
+      const frames = currentFrames();
+      drawSceneBase(animCtx, animCanvas, model.state);
+      drawReferenceOverlay(animCtx, animCanvas, model.state);
+      if (frames.length > 0) {
+        const index = clamp(model.playFrame, 0, frames.length - 1);
+        drawAlignedFrameInstance(animCtx, animCanvas, frames, frames[index], {
+          extraY: getFloatOffset(model.state)
+        });
+      }
+    }
+
+    function renderStrip() {
+      const frames = currentFrames();
+      frameStrip.innerHTML = '';
+      frames.forEach((f, i) => {
+        const el = document.createElement('div');
+        const playing = i === model.playFrame;
+        el.className = 'item' + (i === model.selected ? ' sel' : '') + (playing ? ' playing' : '');
+        el.draggable = true;
+        const flipText = f.flipX ? 'F' : '-';
+        el.innerHTML = `<img src="${f.src}"><div><div class="name">${f.name}</div><div class="meta">x:${f.x.toFixed(1)} y:${f.y.toFixed(1)} s:${f.scale.toFixed(2)} r:${f.rot.toFixed(1)} fx:${flipText}</div></div><div class="meta">#${i + 1}</div>`;
+        el.onclick = () => { model.selected = i; renderAll(); };
+        el.ondragstart = () => { dragIndex = i; };
+        el.ondragover = (e) => e.preventDefault();
+        el.ondrop = (e) => {
+          e.preventDefault();
+          if (dragIndex < 0 || dragIndex === i) return;
+          const moved = frames.splice(dragIndex, 1)[0];
+          frames.splice(i, 0, moved);
+          model.selected = i;
+          dragIndex = -1;
+          renderAll();
+        };
+        frameStrip.appendChild(el);
+      });
+    }
+
+    function renderStateFpsControls() {
+      stateFpsControls.innerHTML = '';
+      STATE_KEYS.forEach((state) => {
+        const row = document.createElement('div');
+        row.className = 'state-fps-row';
+        const fps = model.stateFps[state] || DEFAULT_STATE_FPS[state] || 8;
+        row.innerHTML = `
+          <div class="label">${STATE_LABELS[state]}</div>
+          <div><input data-kind="fps" data-state="${state}" type="number" min="1" max="60" step="0.1" value="${fps.toFixed(1)}"></div>
+          <div><input data-kind="ms" data-state="${state}" type="number" min="16" max="1000" step="1" value="${Math.max(1, Math.round(1000 / fps))}"></div>
+        `;
+        stateFpsControls.appendChild(row);
+      });
+
+      stateFpsControls.querySelectorAll('input').forEach((input) => {
+        input.oninput = () => {
+          const state = input.dataset.state;
+          if (input.dataset.kind === 'fps') {
+            setStateFps(state, input.value, false);
+          } else {
+            const ms = clamp(Number(input.value) || 125, 16, 1000);
+            setStateFps(state, 1000 / ms, false);
+          }
+          syncCurrentTrackSpeedInputs();
+          renderStateFpsControls();
+          renderAll();
+        };
+      });
+    }
+
+    function syncCurrentTrackSpeedInputs() {
+      const fps = currentFps();
+      stateFpsInput.value = String(+fps.toFixed(3));
+      stateIntervalInput.value = String(Math.max(1, Math.round(1000 / fps)));
+    }
+
+    function syncPreviewInputs() {
+      floatEnabledInput.checked = !!model.phase1Float.enabled;
+      floatAmpInput.value = String(model.phase1Float.amplitude);
+      floatSpeedInput.value = String(model.phase1Float.speed);
+      showReferenceInput.checked = !!model.preview.showReference;
+      contentHeightInput.value = String(model.preview.contentHeight);
+      horizonOffsetInput.value = String(model.preview.horizonOffset);
+      playbackSpeedSelect.value = String(model.playbackSpeed);
+      document.getElementById('btnPlayPause').textContent = model.playPaused ? '播放' : '暂停';
+    }
+
+    function setStateFps(state, value, render = true) {
+      const fps = clamp(Number(value) || DEFAULT_STATE_FPS[state] || 8, 1, 60);
+      model.stateFps[state] = fps;
+      if (render) {
+        syncCurrentTrackSpeedInputs();
+        renderStateFpsControls();
+        renderAll();
+      }
+    }
+
+    function toConfig() {
+      const convert = (arr) => arr.map((f) => {
+        let outSrc = f.src;
+        if (model.exportMode === 'path') {
+          if (f.exportSrc && !String(f.exportSrc).startsWith('data:image/')) {
+            outSrc = f.exportSrc;
+          } else {
+            outSrc = `./assets/runtime/sprites/enemies/boss/${model.floor}/${sanitizeFileName(f.name)}`;
+          }
+        }
+        return {
+          src: outSrc,
+          x: +f.x.toFixed(3),
+          y: +f.y.toFixed(3),
+          scale: +f.scale.toFixed(4),
+          rot: +f.rot.toFixed(3),
+          flipX: !!f.flipX
+        };
+      });
+      return {
+        floor: model.floor,
+        exportMode: model.exportMode,
+        moveFps: +model.stateFps.move.toFixed(3),
+        moveFrameIntervalMs: Math.max(1, Math.round(1000 / model.stateFps.move)),
+        stateFps: Object.fromEntries(STATE_KEYS.map((k) => [k, +model.stateFps[k].toFixed(3)])),
+        phase1Float: {
+          enabled: !!model.phase1Float.enabled,
+          amplitude: +model.phase1Float.amplitude.toFixed(3),
+          speed: +model.phase1Float.speed.toFixed(3)
+        },
+        editorPreview: {
+          contentHeight: +model.preview.contentHeight,
+          horizonOffset: +model.preview.horizonOffset,
+          showReference: !!model.preview.showReference
+        },
+        move: convert(model.states.move),
+        skill: convert(model.states.skill),
+        transform: convert(model.states.transform),
+        phase2Move: convert(model.states.phase2Move),
+        phase2Skill: convert(model.states.phase2Skill)
+      };
+    }
+
+    function applyImportedConfigObject(cfg) {
+      const importedFloor = Number(cfg?.floor);
+      if (Number.isFinite(importedFloor) && importedFloor >= 1 && importedFloor <= 7) {
+        model.floor = importedFloor;
+        updateFloorBtnActive(model.floor);
+      }
+
+      if (cfg?.stateFps && typeof cfg.stateFps === 'object') {
+        STATE_KEYS.forEach((state) => {
+          const v = Number(cfg.stateFps[state]);
+          if (Number.isFinite(v) && v > 0) model.stateFps[state] = clamp(v, 1, 60);
+        });
+      } else {
+        const cfgFps = Number(cfg?.moveFps);
+        const cfgInterval = Number(cfg?.moveFrameIntervalMs);
+        if (Number.isFinite(cfgFps) && cfgFps > 0) model.stateFps.move = clamp(cfgFps, 1, 60);
+        else if (Number.isFinite(cfgInterval) && cfgInterval > 0) model.stateFps.move = clamp(1000 / cfgInterval, 1, 60);
+      }
+
+      if (cfg?.phase1Float) {
+        model.phase1Float.enabled = !!cfg.phase1Float.enabled;
+        if (Number.isFinite(Number(cfg.phase1Float.amplitude))) model.phase1Float.amplitude = clamp(Number(cfg.phase1Float.amplitude), 0, 120);
+        if (Number.isFinite(Number(cfg.phase1Float.speed))) model.phase1Float.speed = clamp(Number(cfg.phase1Float.speed), 0.1, 10);
+      }
+
+      const previewCfg = cfg?.editorPreview || cfg?.preview || null;
+      if (previewCfg) {
+        if (Number.isFinite(Number(previewCfg.contentHeight))) model.preview.contentHeight = clamp(Number(previewCfg.contentHeight), 80, 420);
+        if (Number.isFinite(Number(previewCfg.horizonOffset))) model.preview.horizonOffset = clamp(Number(previewCfg.horizonOffset), 20, 180);
+        if (typeof previewCfg.showReference === 'boolean') model.preview.showReference = previewCfg.showReference;
+      }
+
+      model.states.move = parseFramesFromConfigArray(cfg?.move);
+      model.states.skill = parseFramesFromConfigArray(cfg?.skill);
+      model.states.transform = parseFramesFromConfigArray(cfg?.transform);
+      model.states.phase2Move = parseFramesFromConfigArray(cfg?.phase2Move);
+      model.states.phase2Skill = parseFramesFromConfigArray(cfg?.phase2Skill);
+      model.selected = currentFrames().length ? 0 : -1;
+      model.playFrame = 0;
+      model.playTimer = 0;
+      renderStateFpsControls();
+      syncCurrentTrackSpeedInputs();
+      syncPreviewInputs();
+      renderAll();
+    }
+
+    function updateFloorBtnActive(floor) {
+      [...floorBtns.querySelectorAll('button')].forEach((btn) => {
+        btn.classList.toggle('active', Number(btn.textContent.replace('层', '')) === Number(floor));
+      });
+    }
+
+    async function loadFloorFromConfig(floor) {
+      model.floor = floor;
+      const cfg = window.BOSS_ANIMATION_CONFIG?.[floor] || { move: [], skill: [], transform: [], phase2Move: [], phase2Skill: [] };
+      applyImportedConfigObject({ ...cfg, floor });
+    }
+
+    function cutoutFrame(frame) {
+      if (!frame || !frame.img || !frame.img.complete) return;
+      const c = document.createElement('canvas');
+      c.width = frame.img.width;
+      c.height = frame.img.height;
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(frame.img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, c.width, c.height);
+      const d = imageData.data;
+      const w = c.width;
+      const h = c.height;
+      const seen = new Uint8Array(w * h);
+      const q = [];
+      let sr = 0, sg = 0, sb = 0, n = 0;
+
+      const push = (x, y) => {
+        if (x < 0 || y < 0 || x >= w || y >= h) return;
+        const id = y * w + x;
+        if (seen[id]) return;
+        seen[id] = 1;
+        q.push(id);
+      };
+      const sample = (x, y) => {
+        const i = (y * w + x) * 4;
+        if (d[i + 3] < 8) return;
+        sr += d[i]; sg += d[i + 1]; sb += d[i + 2]; n++;
+      };
+
+      for (let x = 0; x < w; x++) { sample(x, 0); sample(x, h - 1); push(x, 0); push(x, h - 1); }
+      for (let y = 0; y < h; y++) { sample(0, y); sample(w - 1, y); push(0, y); push(w - 1, y); }
+      if (!n) return;
+      const br = sr / n, bg = sg / n, bb = sb / n, t2 = 66 * 66;
+
+      while (q.length) {
+        const id = q.pop();
+        const x = id % w;
+        const y = (id / w) | 0;
+        const i = id * 4;
+        if (d[i + 3] < 8) continue;
+        const dr = d[i] - br, dg = d[i + 1] - bg, db = d[i + 2] - bb;
+        if (dr * dr + dg * dg + db * db > t2) continue;
+        d[i + 3] = 0;
+        push(x - 1, y); push(x + 1, y); push(x, y - 1); push(x, y + 1);
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      frame.src = c.toDataURL('image/png');
+      frame.img = new Image();
+      frame.img.src = frame.src;
+      frame._bounds = null;
+    }
+
+    function alignCurrentTrackToReference() {
+      const refState = getReferenceState(model.state);
+      if (!refState) {
+        alert('当前轨道没有参考轨可以对齐');
+        return;
+      }
+      const frames = currentFrames();
+      const refFrames = model.states[refState] || [];
+      if (!frames.length || !refFrames.length) {
+        alert('当前轨道或参考轨为空，无法对齐');
+        return;
+      }
+      const dx = (refFrames[0].x || 0) - (frames[0].x || 0);
+      const dy = (refFrames[0].y || 0) - (frames[0].y || 0);
+      frames.forEach((frame) => {
+        frame.x += dx;
+        frame.y += dy;
+      });
+      renderAll();
+    }
+
+    function renderAll() {
+      renderStrip();
+      renderEditCanvas();
+      renderAnimCanvas();
+      document.getElementById('jsonOut').value = JSON.stringify(toConfig(), null, 2);
+    }
+
+    function bindEvents() {
+      for (let i = 1; i <= 7; i++) {
+        const b = document.createElement('button');
+        b.textContent = `${i}层`;
+        if (i === model.floor) b.classList.add('active');
+        b.onclick = async () => {
+          updateFloorBtnActive(i);
+          await loadFloorFromConfig(i);
+        };
+        floorBtns.appendChild(b);
+      }
+
+      document.querySelectorAll('#stateBtns button').forEach((b) => {
+        b.onclick = () => {
+          document.querySelectorAll('#stateBtns button').forEach((x) => x.classList.remove('active'));
+          b.classList.add('active');
+          model.state = b.dataset.state;
+          model.selected = currentFrames().length ? clamp(model.selected, 0, currentFrames().length - 1) : -1;
+          model.playFrame = 0;
+          model.playTimer = 0;
+          syncCurrentTrackSpeedInputs();
+          renderAll();
+        };
+      });
+
+      document.getElementById('btnLoadFromConfig').onclick = () => loadFloorFromConfig(model.floor);
+      document.getElementById('btnImportConfig').onclick = () => configInput.click();
+      document.getElementById('btnImport').onclick = () => fileInput.click();
+      document.getElementById('btnAlignTrack').onclick = () => alignCurrentTrackToReference();
+
+      configInput.onchange = async () => {
+        const file = configInput.files && configInput.files[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const cfg = JSON.parse(text);
+          applyImportedConfigObject(cfg);
+        } catch (err) {
+          alert('配置导入失败：JSON格式不正确');
+        } finally {
+          configInput.value = '';
+        }
+      };
+
+      fileInput.onchange = async () => {
+        const files = [...fileInput.files];
+        const frames = currentFrames();
+        for (const file of files) {
+          const src = URL.createObjectURL(file);
+          const exportSrc = `./assets/runtime/sprites/enemies/boss/${model.floor}/${sanitizeFileName(file.name)}`;
+          frames.push(makeFrame(src, file.name, exportSrc));
+        }
+        model.selected = frames.length - 1;
+        renderAll();
+        fileInput.value = '';
+      };
+
+      document.getElementById('btnModePath').onclick = () => {
+        model.exportMode = 'path';
+        document.getElementById('btnModePath').classList.add('active');
+        document.getElementById('btnModeEmbed').classList.remove('active');
+        renderAll();
+      };
+      document.getElementById('btnModeEmbed').onclick = () => {
+        model.exportMode = 'embed';
+        document.getElementById('btnModeEmbed').classList.add('active');
+        document.getElementById('btnModePath').classList.remove('active');
+        renderAll();
+      };
+
+      document.getElementById('btnDelete').onclick = () => {
+        const frames = currentFrames();
+        if (model.selected < 0 || model.selected >= frames.length) return;
+        frames.splice(model.selected, 1);
+        model.selected = frames.length ? clamp(model.selected, 0, frames.length - 1) : -1;
+        model.playFrame = clamp(model.playFrame, 0, Math.max(0, frames.length - 1));
+        renderAll();
+      };
+
+      document.getElementById('btnClear').onclick = () => {
+        model.states[model.state] = [];
+        model.selected = -1;
+        model.playFrame = 0;
+        renderAll();
+      };
+
+      document.getElementById('btnReset').onclick = () => {
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        f.x = 0; f.y = 0; f.scale = 1; f.rot = 0; f.flipX = false;
+        renderAll();
+      };
+
+      document.getElementById('btnFlipX').onclick = () => {
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        f.flipX = !f.flipX;
+        renderAll();
+      };
+
+      document.getElementById('btnCutoutOne').onclick = () => {
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        cutoutFrame(f);
+        setTimeout(renderAll, 10);
+      };
+      document.getElementById('btnCutoutAll').onclick = () => {
+        currentFrames().forEach(cutoutFrame);
+        setTimeout(renderAll, 10);
+      };
+
+      document.getElementById('btnCopy').onclick = async () => {
+        const text = JSON.stringify(toConfig(), null, 2);
+        try { await navigator.clipboard.writeText(text); } catch (e) {}
+      };
+      document.getElementById('btnDownload').onclick = () => {
+        const blob = new Blob([JSON.stringify(toConfig(), null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `boss_floor${model.floor}_anim_config.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      };
+
+      stateFpsInput.oninput = () => setStateFps(model.state, stateFpsInput.value);
+      stateIntervalInput.oninput = () => {
+        const ms = clamp(Number(stateIntervalInput.value) || 125, 16, 1000);
+        setStateFps(model.state, 1000 / ms);
+      };
+
+      playbackSpeedSelect.onchange = () => {
+        model.playbackSpeed = clamp(Number(playbackSpeedSelect.value) || 1, 0.25, 3);
+        renderAll();
+      };
+
+      document.getElementById('btnPlayPause').onclick = () => {
+        model.playPaused = !model.playPaused;
+        syncPreviewInputs();
+        renderAll();
+      };
+      document.getElementById('btnRestart').onclick = () => {
+        model.playFrame = 0;
+        model.playTimer = 0;
+        model.previewTime = 0;
+        renderAll();
+      };
+      document.getElementById('btnPrevFrame').onclick = () => {
+        const frames = currentFrames();
+        if (!frames.length) return;
+        model.playPaused = true;
+        model.playFrame = (model.playFrame - 1 + frames.length) % frames.length;
+        syncPreviewInputs();
+        renderAll();
+      };
+      document.getElementById('btnNextFrame').onclick = () => {
+        const frames = currentFrames();
+        if (!frames.length) return;
+        model.playPaused = true;
+        model.playFrame = (model.playFrame + 1) % frames.length;
+        syncPreviewInputs();
+        renderAll();
+      };
+
+      floatEnabledInput.onchange = () => {
+        model.phase1Float.enabled = !!floatEnabledInput.checked;
+        renderAll();
+      };
+      floatAmpInput.oninput = () => {
+        model.phase1Float.amplitude = clamp(Number(floatAmpInput.value) || 0, 0, 120);
+        renderAll();
+      };
+      floatSpeedInput.oninput = () => {
+        model.phase1Float.speed = clamp(Number(floatSpeedInput.value) || 1.6, 0.1, 10);
+        renderAll();
+      };
+      showReferenceInput.onchange = () => {
+        model.preview.showReference = !!showReferenceInput.checked;
+        renderAll();
+      };
+      contentHeightInput.oninput = () => {
+        model.preview.contentHeight = clamp(Number(contentHeightInput.value) || 180, 80, 420);
+        renderAll();
+      };
+      horizonOffsetInput.oninput = () => {
+        model.preview.horizonOffset = clamp(Number(horizonOffsetInput.value) || 80, 20, 180);
+        renderAll();
+      };
+
+      editCanvas.oncontextmenu = (e) => e.preventDefault();
+      editCanvas.onmousedown = (e) => {
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        mouseMode = e.button === 2 ? 'rotate' : 'move';
+        lastMouseX = e.offsetX;
+        lastMouseY = e.offsetY;
+      };
+      editCanvas.onmouseup = () => { mouseMode = null; };
+      editCanvas.onmouseleave = () => { mouseMode = null; };
+      editCanvas.onmousemove = (e) => {
+        const f = currentFrames()[model.selected];
+        if (!f || !mouseMode) return;
+        const dx = e.offsetX - lastMouseX;
+        const dy = e.offsetY - lastMouseY;
+        lastMouseX = e.offsetX;
+        lastMouseY = e.offsetY;
+        if (mouseMode === 'move') {
+          f.x += dx;
+          f.y += dy;
+        } else {
+          f.rot += dx * 0.7;
+        }
+        renderAll();
+      };
+      editCanvas.onwheel = (e) => {
+        e.preventDefault();
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        const ratio = e.deltaY < 0 ? 1.06 : 0.94;
+        f.scale = clamp(f.scale * ratio, 0.05, 10);
+        renderAll();
+      };
+    }
+
+    function tick(ts) {
+      if (!tick.last) tick.last = ts;
+      const dt = (ts - tick.last) / 1000;
+      tick.last = ts;
+      const frames = currentFrames();
+
+      if (!model.playPaused) {
+        model.previewTime += dt;
+        if (frames.length > 0) {
+          model.playTimer += dt;
+          const frameDuration = 1 / (currentFps() * model.playbackSpeed);
+          if (model.playTimer >= frameDuration) {
+            model.playTimer = 0;
+            model.playFrame = (model.playFrame + 1) % frames.length;
+            renderStrip();
+          }
+        }
+      }
+
+      renderAnimCanvas();
+      requestAnimationFrame(tick);
+    }
+
+    bindEvents();
+    renderStateFpsControls();
+    syncCurrentTrackSpeedInputs();
+    syncPreviewInputs();
+    loadFloorFromConfig(1);
+    renderAll();
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>

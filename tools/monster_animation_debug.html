@@ -1,0 +1,699 @@
+﻿<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Boss 帧编辑器</title>
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #0e1218; color: #eef3f8; font-family: 'Segoe UI', 'PingFang SC', sans-serif; }
+    .wrap { display: grid; grid-template-columns: 360px 1fr; gap: 14px; padding: 14px; min-height: 100vh; }
+    .panel, .main { background: #171d27; border: 1px solid #2b3646; border-radius: 10px; }
+    .panel { padding: 12px; display: flex; flex-direction: column; gap: 10px; }
+    .title { font-size: 14px; color: #f6c969; }
+    .btns { display: flex; flex-wrap: wrap; gap: 6px; }
+    button { background: #1f2734; color: #d8e0ea; border: 1px solid #314055; border-radius: 6px; padding: 6px 10px; cursor: pointer; font-size: 12px; }
+    button.active { border-color: #f6c969; color: #f6c969; }
+    button:hover { border-color: #4e6686; }
+    .row { display: flex; gap: 8px; align-items: center; }
+    .tip { color: #9fb0c8; font-size: 12px; line-height: 1.5; }
+    .strip { max-height: 46vh; overflow: auto; border: 1px solid #2b3646; border-radius: 8px; padding: 8px; background: #121823; }
+    .item { display: grid; grid-template-columns: 48px 1fr auto; gap: 8px; align-items: center; padding: 6px; border: 1px solid #2c394c; border-radius: 8px; margin-bottom: 6px; background: #1a2230; cursor: pointer; }
+    .item.sel { border-color: #f6c969; }
+    .item img { width: 48px; height: 48px; object-fit: contain; image-rendering: pixelated; background: linear-gradient(45deg,#1a1f2a 25%,#212839 25%,#212839 50%,#1a1f2a 50%,#1a1f2a 75%,#212839 75%,#212839 100%); background-size: 10px 10px; border-radius: 4px; }
+    .name { font-size: 12px; color: #dce5f2; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .meta { font-size: 11px; color: #97a9c2; }
+    .main { padding: 12px; display: grid; grid-template-rows: auto auto 1fr; gap: 10px; }
+    .canvases { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    canvas { width: 100%; height: 320px; border: 1px solid #2d3a4d; border-radius: 8px; background: #0e1420; }
+    .export { width: 100%; min-height: 150px; background: #0f1622; color: #dce5f2; border: 1px solid #2f3f57; border-radius: 8px; padding: 8px; font-family: Consolas, monospace; font-size: 12px; }
+    input[type="file"] { display: none; }
+    @media (max-width: 1000px) { .wrap { grid-template-columns: 1fr; } .canvases { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="panel">
+      <div class="title">Boss 帧编辑器（鼠标操作）</div>
+
+      <div>
+        <div class="tip">楼层</div>
+        <div class="btns" id="floorBtns"></div>
+      </div>
+
+      <div>
+        <div class="tip">动作轨道</div>
+      <div class="btns" id="stateBtns">
+        <button data-state="move" class="active">天空移动</button>
+        <button data-state="skill">技能释放</button>
+        <button data-state="transform">觉醒变身</button>
+        <button data-state="phase2Move">堕落冲刺</button>
+        <button data-state="phase2Skill">堕落技能</button>
+      </div>
+      </div>
+
+      <div class="btns">
+        <button id="btnLoadFromConfig">载入当前层配置</button>
+        <button id="btnImportConfig">导入配置JSON</button>
+        <button id="btnImport">导入图片</button>
+        <button id="btnDelete">删除选中</button>
+        <button id="btnClear">清空轨道</button>
+      </div>
+
+      <div class="btns">
+        <button id="btnCutoutOne">选中帧扣背景</button>
+        <button id="btnCutoutAll">全部扣背景</button>
+        <button id="btnFlipX">选中帧左右翻转</button>
+        <button id="btnReset">重置选中变换</button>
+      </div>
+
+      <div>
+        <div class="tip">移动帧速度</div>
+        <div class="row small-row">
+          <span class="tip">FPS</span>
+          <input id="moveFpsInput" type="number" min="1" max="60" step="0.1" value="8" style="width:90px;background:#111a28;color:#e8eef7;border:1px solid #32465f;border-radius:6px;padding:5px;">
+          <span class="tip">间隔(ms)</span>
+          <input id="moveIntervalInput" type="number" min="16" max="1000" step="1" value="125" style="width:95px;background:#111a28;color:#e8eef7;border:1px solid #32465f;border-radius:6px;padding:5px;">
+        </div>
+      </div>
+
+      <div>
+        <div class="tip">每个轨道帧率</div>
+        <div id="stateFpsControls" class="state-fps"></div>
+      </div>
+
+      <div class="tip">帧列表（拖拽排序）</div>
+      <div class="strip" id="frameStrip"></div>
+
+      <div class="tip">
+        左键拖动：位移；滚轮：缩放；右键横向拖动：旋转。<br>
+        目标：全程鼠标即可调帧，不需要改代码。
+      </div>
+
+      <input id="fileInput" type="file" multiple accept="image/png,image/jpeg,image/webp" />
+      <input id="configInput" type="file" accept=".json,application/json" />
+    </div>
+
+    <div class="main">
+      <div class="canvases">
+        <div>
+          <div class="tip">单帧编辑预览（当前选中）</div>
+          <canvas id="editCanvas" width="640" height="320"></canvas>
+        </div>
+        <div>
+          <div class="tip">动画预览（当前轨道）</div>
+          <canvas id="animCanvas" width="640" height="320"></canvas>
+        </div>
+      </div>
+
+      <div class="btns">
+        <button id="btnModePath" class="active">短路径导出</button>
+        <button id="btnModeEmbed">内嵌导出</button>
+        <button id="btnCopy">复制配置 JSON</button>
+        <button id="btnDownload">下载配置 JSON</button>
+      </div>
+
+      <textarea id="jsonOut" class="export" spellcheck="false"></textarea>
+    </div>
+  </div>
+
+  <script src="../src/data/boss-animation-config.js?v=20260319_editor2"></script>
+  <script>
+    const model = {
+      floor: 1,
+      state: 'move',
+      states: { move: [], skill: [], transform: [], phase2Move: [], phase2Skill: [] },
+      selected: -1,
+      playFrame: 0,
+      playTimer: 0,
+      fps: 8,
+      moveFps: 8,
+      exportMode: 'path'
+    };
+
+    const floorBtns = document.getElementById('floorBtns');
+    const frameStrip = document.getElementById('frameStrip');
+    const fileInput = document.getElementById('fileInput');
+    const configInput = document.getElementById('configInput');
+    const moveFpsInput = document.getElementById('moveFpsInput');
+    const moveIntervalInput = document.getElementById('moveIntervalInput');
+    const editCanvas = document.getElementById('editCanvas');
+    const animCanvas = document.getElementById('animCanvas');
+    const editCtx = editCanvas.getContext('2d');
+    const animCtx = animCanvas.getContext('2d');
+    const PREVIEW_CONTENT_HEIGHT = 180;
+    const HORIZON_OFFSET = 80;
+
+    let dragIndex = -1;
+    let mouseMode = null;
+    let lastMouseX = 0;
+    let lastMouseY = 0;
+
+    function uid() { return Math.random().toString(36).slice(2, 10); }
+    function currentFrames() { return model.states[model.state] || []; }
+    function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+
+    function sanitizeFileName(name) {
+      return String(name || 'frame.png').replace(/[\\/:*?\"<>|]/g, '_');
+    }
+
+    function makeFrame(src, name, exportSrc = null, opts = null) {
+      const img = new Image();
+      img.src = src;
+      img.onload = () => {
+        try { renderAll(); } catch (e) {}
+      };
+      return {
+        id: uid(),
+        name: name || 'frame',
+        src,
+        exportSrc: exportSrc || src,
+        img,
+        x: Number.isFinite(opts?.x) ? opts.x : 0,
+        y: Number.isFinite(opts?.y) ? opts.y : 0,
+        scale: Number.isFinite(opts?.scale) ? opts.scale : 1,
+        rot: Number.isFinite(opts?.rot) ? opts.rot : 0,
+        flipX: !!opts?.flipX,
+        _bounds: null
+      };
+    }
+
+    function checker(ctx, w, h) {
+      ctx.fillStyle = '#101623'; ctx.fillRect(0, 0, w, h);
+      for (let y = 0; y < h; y += 20) {
+        for (let x = 0; x < w; x += 20) {
+          ctx.fillStyle = ((x + y) / 20) % 2 ? '#151f2f' : '#1b2638';
+          ctx.fillRect(x, y, 20, 20);
+        }
+      }
+    }
+
+    function drawFrame(ctx, canvas, frame, showGuide) {
+      checker(ctx, canvas.width, canvas.height);
+      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
+      ctx.beginPath(); ctx.moveTo(0, canvas.height - 40); ctx.lineTo(canvas.width, canvas.height - 40); ctx.stroke();
+
+      if (!frame || !frame.img || !frame.img.complete) return;
+      const cx = canvas.width * 0.5;
+      const cy = canvas.height - 80;
+      const base = Math.min(220 / frame.img.width, 220 / frame.img.height);
+
+      ctx.save();
+      ctx.translate(cx + frame.x, cy + frame.y);
+      ctx.rotate(frame.rot * Math.PI / 180);
+      const sx = (frame.flipX ? -1 : 1) * base * frame.scale;
+      const sy = base * frame.scale;
+      ctx.scale(sx, sy);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(frame.img, -frame.img.width / 2, -frame.img.height / 2);
+      if (showGuide) {
+        ctx.strokeStyle = '#f6c969';
+        ctx.lineWidth = 1 / (base * frame.scale);
+        ctx.strokeRect(-frame.img.width / 2, -frame.img.height / 2, frame.img.width, frame.img.height);
+      }
+      ctx.restore();
+    }
+
+    function getContentBounds(frame) {
+      if (!frame || !frame.img || !frame.img.complete) {
+        return { x: 0, y: 0, width: 1, height: 1 };
+      }
+      if (frame._bounds) return frame._bounds;
+      try {
+        const c = document.createElement('canvas');
+        c.width = frame.img.width;
+        c.height = frame.img.height;
+        const ctx = c.getContext('2d', { willReadFrequently: true });
+        ctx.drawImage(frame.img, 0, 0);
+        const d = ctx.getImageData(0, 0, c.width, c.height).data;
+        let minX = c.width, minY = c.height, maxX = -1, maxY = -1;
+        for (let y = 0; y < c.height; y++) {
+          for (let x = 0; x < c.width; x++) {
+            const a = d[(y * c.width + x) * 4 + 3];
+            if (a > 10) {
+              if (x < minX) minX = x;
+              if (y < minY) minY = y;
+              if (x > maxX) maxX = x;
+              if (y > maxY) maxY = y;
+            }
+          }
+        }
+        if (maxX < minX || maxY < minY) {
+          frame._bounds = { x: 0, y: 0, width: c.width, height: c.height };
+        } else {
+          frame._bounds = { x: minX, y: minY, width: maxX - minX + 1, height: maxY - minY + 1 };
+        }
+      } catch (e) {
+        // file:// 或跨源读取失败时，回退为整图边界，避免预览空白
+        frame._bounds = { x: 0, y: 0, width: frame.img.width || 1, height: frame.img.height || 1 };
+      }
+      return frame._bounds;
+    }
+
+    function getSequenceBaseline(frames) {
+      const first = frames && frames[0];
+      if (!first || !first.img || !first.img.complete) return null;
+      const imgH = Math.max(1, first.img.height || 1);
+      const imgW = Math.max(1, first.img.width || 1);
+      const baseScaleRaw = PREVIEW_CONTENT_HEIGHT / imgH;
+      const s0 = baseScaleRaw * (Number.isFinite(first.scale) ? first.scale : 1);
+      return {
+        firstX: Number.isFinite(first.x) ? first.x : 0,
+        firstY: Number.isFinite(first.y) ? first.y : 0,
+        anchorX: (imgW / 2) * s0,
+        bottomY: imgH * s0,
+        baseScale: baseScaleRaw
+      };
+    }
+
+    function drawFrameAligned(ctx, canvas, frames, index, showGuide = false) {
+      checker(ctx, canvas.width, canvas.height);
+      const horizonY = canvas.height - HORIZON_OFFSET;
+      ctx.strokeStyle = 'rgba(246,201,105,0.75)';
+      ctx.lineWidth = 1;
+      ctx.beginPath(); ctx.moveTo(0, horizonY); ctx.lineTo(canvas.width, horizonY); ctx.stroke();
+
+      const frame = frames[index] || null;
+      const base = getSequenceBaseline(frames);
+      if (!frame || !frame.img || !frame.img.complete || !base) return;
+
+      const scale = (base.baseScale || (PREVIEW_CONTENT_HEIGHT / Math.max(1, frame.img.height || 1)))
+        * (Number.isFinite(frame.scale) ? frame.scale : 1);
+      const drawW = frame.img.width * scale;
+      const drawH = frame.img.height * scale;
+
+      const relX = (Number.isFinite(frame.x) ? frame.x : 0) - base.firstX;
+      const relY = (Number.isFinite(frame.y) ? frame.y : 0) - base.firstY;
+      const drawX = -base.anchorX + relX;
+      const drawY = -base.bottomY + relY;
+
+      const cx = canvas.width * 0.5;
+      const mirror = !!frame.flipX;
+      const imageX = mirror ? (-drawX - drawW) : drawX;
+
+      ctx.save();
+      ctx.translate(cx, horizonY);
+      if (Number.isFinite(frame.rot) && frame.rot !== 0) {
+        ctx.rotate(frame.rot * Math.PI / 180);
+      }
+      if (mirror) ctx.scale(-1, 1);
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(frame.img, imageX, drawY, drawW, drawH);
+      if (showGuide) {
+        ctx.strokeStyle = '#f6c969';
+        ctx.strokeRect(imageX, drawY, drawW, drawH);
+      }
+      ctx.restore();
+    }
+
+    function renderStrip() {
+      const frames = currentFrames();
+      frameStrip.innerHTML = '';
+      frames.forEach((f, i) => {
+        const el = document.createElement('div');
+        el.className = 'item' + (i === model.selected ? ' sel' : '');
+        el.draggable = true;
+        const flipText = f.flipX ? 'F' : '-';
+        el.innerHTML = `<img src="${f.src}"><div><div class="name">${f.name}</div><div class="meta">x:${f.x.toFixed(1)} y:${f.y.toFixed(1)} s:${f.scale.toFixed(2)} r:${f.rot.toFixed(1)} fx:${flipText}</div></div><div class="meta">#${i+1}</div>`;
+        el.onclick = () => { model.selected = i; renderAll(); };
+        el.ondragstart = () => { dragIndex = i; };
+        el.ondragover = (e) => e.preventDefault();
+        el.ondrop = (e) => {
+          e.preventDefault();
+          if (dragIndex < 0 || dragIndex === i) return;
+          const moved = frames.splice(dragIndex, 1)[0];
+          frames.splice(i, 0, moved);
+          model.selected = i;
+          dragIndex = -1;
+          renderAll();
+        };
+        frameStrip.appendChild(el);
+      });
+    }
+
+    function toConfig() {
+      const convert = (arr) => arr.map(f => {
+        let outSrc = f.src;
+        if (model.exportMode === 'path') {
+          if (f.exportSrc && !String(f.exportSrc).startsWith('data:image/')) {
+            outSrc = f.exportSrc;
+          } else {
+            outSrc = `./assets/runtime/sprites/enemies/boss/${model.floor}/${sanitizeFileName(f.name)}`;
+          }
+        }
+        return {
+          src: outSrc,
+          x: +f.x.toFixed(3),
+          y: +f.y.toFixed(3),
+          scale: +f.scale.toFixed(4),
+          rot: +f.rot.toFixed(3),
+          flipX: !!f.flipX
+        };
+      });
+      return {
+        floor: model.floor,
+        exportMode: model.exportMode,
+        moveFps: +model.moveFps.toFixed(3),
+        moveFrameIntervalMs: Math.max(1, Math.round(1000 / model.moveFps)),
+        move: convert(model.states.move),
+        skill: convert(model.states.skill),
+        transform: convert(model.states.transform),
+        phase2Move: convert(model.states.phase2Move),
+        phase2Skill: convert(model.states.phase2Skill)
+      };
+    }
+
+    function updateFloorBtnActive(floor) {
+      [...floorBtns.querySelectorAll('button')].forEach((btn) => {
+        btn.classList.toggle('active', Number(btn.textContent.replace('层', '')) === Number(floor));
+      });
+    }
+
+    function parseFramesFromConfigArray(arr) {
+      const safe = Array.isArray(arr) ? arr : [];
+      return safe.map((p, i) => {
+        if (typeof p === 'string') {
+          const src = String(p);
+          const previewSrc = src.startsWith('./') ? src.replace('./', '../') : src;
+          return makeFrame(previewSrc, `f${String(i + 1).padStart(2, '0')}`, src);
+        }
+        const src = String(p?.src || '');
+        const previewSrc = src.startsWith('./') ? src.replace('./', '../') : src;
+        return makeFrame(previewSrc, `f${String(i + 1).padStart(2, '0')}`, src, {
+          x: Number.isFinite(Number(p?.x)) ? Number(p.x) : 0,
+          y: Number.isFinite(Number(p?.y)) ? Number(p.y) : 0,
+          scale: Number.isFinite(Number(p?.scale)) ? Number(p.scale) : 1,
+          rot: Number.isFinite(Number(p?.rot)) ? Number(p.rot) : 0,
+          flipX: !!p?.flipX
+        });
+      });
+    }
+
+    function applyImportedConfigObject(cfg) {
+      const importedFloor = Number(cfg?.floor);
+      if (Number.isFinite(importedFloor) && importedFloor >= 1 && importedFloor <= 7) {
+        model.floor = importedFloor;
+        updateFloorBtnActive(model.floor);
+      }
+
+      const cfgFps = Number(cfg?.moveFps);
+      const cfgInterval = Number(cfg?.moveFrameIntervalMs);
+      if (Number.isFinite(cfgFps) && cfgFps > 0) setMoveFps(cfgFps);
+      else if (Number.isFinite(cfgInterval) && cfgInterval > 0) setMoveFps(1000 / cfgInterval);
+
+      model.states.move = parseFramesFromConfigArray(cfg?.move);
+      model.states.skill = parseFramesFromConfigArray(cfg?.skill);
+      model.states.transform = parseFramesFromConfigArray(cfg?.transform);
+      model.states.phase2Move = parseFramesFromConfigArray(cfg?.phase2Move);
+      model.states.phase2Skill = parseFramesFromConfigArray(cfg?.phase2Skill);
+      model.selected = currentFrames().length ? 0 : -1;
+      renderAll();
+    }
+
+    function setMoveFps(v) {
+      const fps = clamp(Number(v) || 8, 1, 60);
+      model.moveFps = fps;
+      moveFpsInput.value = String(+fps.toFixed(3));
+      moveIntervalInput.value = String(Math.max(1, Math.round(1000 / fps)));
+    }
+
+    function renderAll() {
+      renderStrip();
+      const frames = currentFrames();
+      const selected = frames[model.selected] || null;
+      drawFrameAligned(editCtx, editCanvas, frames, model.selected, true);
+
+      if (frames.length > 0) {
+        model.playFrame = model.playFrame % frames.length;
+        drawFrameAligned(animCtx, animCanvas, frames, model.playFrame, false);
+      } else {
+        drawFrameAligned(animCtx, animCanvas, [], 0, false);
+      }
+
+      document.getElementById('jsonOut').value = JSON.stringify(toConfig(), null, 2);
+    }
+
+    async function loadFloorFromConfig(floor) {
+      model.floor = floor;
+      const cfg = window.BOSS_ANIMATION_CONFIG?.[floor] || { move: [], skill: [], transform: [], phase2Move: [], phase2Skill: [] };
+      const cfgFps = Number(cfg?.moveFps);
+      const cfgInterval = Number(cfg?.moveFrameIntervalMs);
+      if (Number.isFinite(cfgFps) && cfgFps > 0) setMoveFps(cfgFps);
+      else if (Number.isFinite(cfgInterval) && cfgInterval > 0) setMoveFps(1000 / cfgInterval);
+      else setMoveFps(8);
+      model.states.move = parseFramesFromConfigArray(cfg.move || []);
+      model.states.skill = parseFramesFromConfigArray(cfg.skill || []);
+      model.states.transform = parseFramesFromConfigArray(cfg.transform || []);
+      model.states.phase2Move = parseFramesFromConfigArray(cfg.phase2Move || []);
+      model.states.phase2Skill = parseFramesFromConfigArray(cfg.phase2Skill || []);
+      model.selected = model.states[model.state].length ? 0 : -1;
+      renderAll();
+    }
+
+    function cutoutFrame(frame) {
+      if (!frame || !frame.img || !frame.img.complete) return;
+      const c = document.createElement('canvas');
+      c.width = frame.img.width;
+      c.height = frame.img.height;
+      const ctx = c.getContext('2d', { willReadFrequently: true });
+      ctx.drawImage(frame.img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, c.width, c.height);
+      const d = imageData.data;
+      const w = c.width;
+      const h = c.height;
+      const seen = new Uint8Array(w * h);
+      const q = [];
+      let sr = 0, sg = 0, sb = 0, n = 0;
+
+      const push = (x, y) => {
+        if (x < 0 || y < 0 || x >= w || y >= h) return;
+        const id = y * w + x;
+        if (seen[id]) return;
+        seen[id] = 1;
+        q.push(id);
+      };
+      const sample = (x, y) => {
+        const i = (y * w + x) * 4;
+        if (d[i + 3] < 8) return;
+        sr += d[i]; sg += d[i + 1]; sb += d[i + 2]; n++;
+      };
+
+      for (let x = 0; x < w; x++) { sample(x, 0); sample(x, h - 1); push(x, 0); push(x, h - 1); }
+      for (let y = 0; y < h; y++) { sample(0, y); sample(w - 1, y); push(0, y); push(w - 1, y); }
+      if (!n) return;
+      const br = sr / n, bg = sg / n, bb = sb / n, t2 = 66 * 66;
+
+      while (q.length) {
+        const id = q.pop();
+        const x = id % w;
+        const y = (id / w) | 0;
+        const i = id * 4;
+        if (d[i + 3] < 8) continue;
+        const dr = d[i] - br, dg = d[i + 1] - bg, db = d[i + 2] - bb;
+        if (dr * dr + dg * dg + db * db > t2) continue;
+        d[i + 3] = 0;
+        push(x - 1, y); push(x + 1, y); push(x, y - 1); push(x, y + 1);
+      }
+
+      ctx.putImageData(imageData, 0, 0);
+      frame.src = c.toDataURL('image/png');
+      frame.img = new Image();
+      frame.img.src = frame.src;
+      frame._bounds = null;
+    }
+
+    function bindEvents() {
+      for (let i = 1; i <= 7; i++) {
+        const b = document.createElement('button');
+        b.textContent = `${i}层`;
+        if (i === model.floor) b.classList.add('active');
+        b.onclick = async () => {
+          [...floorBtns.querySelectorAll('button')].forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          await loadFloorFromConfig(i);
+        };
+        floorBtns.appendChild(b);
+      }
+
+      document.querySelectorAll('#stateBtns button').forEach(b => {
+        b.onclick = () => {
+          document.querySelectorAll('#stateBtns button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+          model.state = b.dataset.state;
+          model.selected = currentFrames().length ? 0 : -1;
+          renderAll();
+        };
+      });
+
+      document.getElementById('btnLoadFromConfig').onclick = () => loadFloorFromConfig(model.floor);
+      document.getElementById('btnImportConfig').onclick = () => configInput.click();
+      document.getElementById('btnImport').onclick = () => fileInput.click();
+
+      configInput.onchange = async () => {
+        const file = configInput.files && configInput.files[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const cfg = JSON.parse(text);
+          applyImportedConfigObject(cfg);
+        } catch (err) {
+          alert('配置导入失败：JSON格式不正确');
+        } finally {
+          configInput.value = '';
+        }
+      };
+
+      fileInput.onchange = async () => {
+        const files = [...fileInput.files];
+        const frames = currentFrames();
+        for (const file of files) {
+          const src = URL.createObjectURL(file);
+          const exportSrc = `./assets/runtime/sprites/enemies/boss/${model.floor}/${sanitizeFileName(file.name)}`;
+          frames.push(makeFrame(src, file.name, exportSrc));
+        }
+        model.selected = frames.length - 1;
+        fileInput.value = '';
+        renderAll();
+      };
+
+      document.getElementById('btnModePath').onclick = () => {
+        model.exportMode = 'path';
+        document.getElementById('btnModePath').classList.add('active');
+        document.getElementById('btnModeEmbed').classList.remove('active');
+        renderAll();
+      };
+      document.getElementById('btnModeEmbed').onclick = () => {
+        model.exportMode = 'embed';
+        document.getElementById('btnModeEmbed').classList.add('active');
+        document.getElementById('btnModePath').classList.remove('active');
+        renderAll();
+      };
+
+      document.getElementById('btnDelete').onclick = () => {
+        const frames = currentFrames();
+        if (model.selected < 0 || model.selected >= frames.length) return;
+        frames.splice(model.selected, 1);
+        model.selected = clamp(model.selected, 0, frames.length - 1);
+        if (frames.length === 0) model.selected = -1;
+        renderAll();
+      };
+
+      document.getElementById('btnClear').onclick = () => {
+        model.states[model.state] = [];
+        model.selected = -1;
+        renderAll();
+      };
+
+      document.getElementById('btnReset').onclick = () => {
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        f.x = 0; f.y = 0; f.scale = 1; f.rot = 0; f.flipX = false;
+        renderAll();
+      };
+
+      document.getElementById('btnFlipX').onclick = () => {
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        f.flipX = !f.flipX;
+        renderAll();
+      };
+
+      document.getElementById('btnCutoutOne').onclick = () => {
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        cutoutFrame(f);
+        setTimeout(renderAll, 10);
+      };
+
+      document.getElementById('btnCutoutAll').onclick = () => {
+        currentFrames().forEach(cutoutFrame);
+        setTimeout(renderAll, 10);
+      };
+
+      document.getElementById('btnCopy').onclick = async () => {
+        const text = JSON.stringify(toConfig(), null, 2);
+        try { await navigator.clipboard.writeText(text); } catch (e) {}
+      };
+
+      document.getElementById('btnDownload').onclick = () => {
+        const blob = new Blob([JSON.stringify(toConfig(), null, 2)], { type: 'application/json' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = `boss_floor${model.floor}_anim_config.json`;
+        a.click();
+        URL.revokeObjectURL(a.href);
+      };
+
+      moveFpsInput.oninput = () => {
+        setMoveFps(moveFpsInput.value);
+        renderAll();
+      };
+      moveIntervalInput.oninput = () => {
+        const ms = clamp(Number(moveIntervalInput.value) || 125, 16, 1000);
+        setMoveFps(1000 / ms);
+        renderAll();
+      };
+
+      editCanvas.oncontextmenu = (e) => e.preventDefault();
+      editCanvas.onmousedown = (e) => {
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        mouseMode = e.button === 2 ? 'rotate' : 'move';
+        lastMouseX = e.offsetX;
+        lastMouseY = e.offsetY;
+      };
+      editCanvas.onmouseup = () => { mouseMode = null; };
+      editCanvas.onmouseleave = () => { mouseMode = null; };
+      editCanvas.onmousemove = (e) => {
+        const f = currentFrames()[model.selected];
+        if (!f || !mouseMode) return;
+        const dx = e.offsetX - lastMouseX;
+        const dy = e.offsetY - lastMouseY;
+        lastMouseX = e.offsetX;
+        lastMouseY = e.offsetY;
+        if (mouseMode === 'move') {
+          f.x += dx;
+          f.y += dy;
+        } else {
+          f.rot += dx * 0.7;
+        }
+        renderAll();
+      };
+      editCanvas.onwheel = (e) => {
+        e.preventDefault();
+        const f = currentFrames()[model.selected];
+        if (!f) return;
+        const ratio = e.deltaY < 0 ? 1.06 : 0.94;
+        f.scale = clamp(f.scale * ratio, 0.05, 10);
+        renderAll();
+      };
+    }
+
+    function tick(ts) {
+      const frames = currentFrames();
+      if (!tick.last) tick.last = ts;
+      const dt = (ts - tick.last) / 1000;
+      tick.last = ts;
+      const activeFps = model.state === 'move' ? model.moveFps : model.fps;
+
+      if (frames.length > 0) {
+        model.playTimer += dt;
+        if (model.playTimer >= 1 / activeFps) {
+          model.playTimer = 0;
+          model.playFrame = (model.playFrame + 1) % frames.length;
+          drawFrameAligned(animCtx, animCanvas, frames, model.playFrame, false);
+        }
+      } else {
+        drawFrameAligned(animCtx, animCanvas, [], 0, false);
+      }
+      requestAnimationFrame(tick);
+    }
+
+    bindEvents();
+    setMoveFps(8);
+    loadFloorFromConfig(1);
+    renderAll();
+    requestAnimationFrame(tick);
+  </script>
+</body>
+</html>

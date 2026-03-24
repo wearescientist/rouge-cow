@@ -21,6 +21,24 @@ class ShadowSystem {
         const { radiusX, radiusY, alpha, offsetY, blur } = this.params;
         const sizeMultiplier = options.sizeMultiplier ?? 1;
         const alphaMultiplier = options.alphaMultiplier ?? 1;
+        const fixedShadow = options.fixedShadow === true;
+        const footX = x;
+        const footY = y + (options.offsetY ?? offsetY);
+
+        if (fixedShadow) {
+            const shadowRadiusX = radiusX * scale * sizeMultiplier;
+            const shadowRadiusY = radiusY * scale * sizeMultiplier;
+            const shadowAlpha = alpha * alphaMultiplier * (0.82 + 0.18 * scale);
+            this.ctx.save();
+            this.ctx.filter = `blur(${Math.max(1, blur * 0.8)}px)`;
+            this.ctx.fillStyle = `rgba(0, 0, 0, ${Math.min(0.7, shadowAlpha)})`;
+            this.ctx.beginPath();
+            this.ctx.ellipse(footX, footY, shadowRadiusX, shadowRadiusY, 0, 0, Math.PI * 2);
+            this.ctx.fill();
+            this.ctx.restore();
+            return;
+        }
+
         const roomCenterX = options.roomCenterX ?? ((this.ctx.canvas.width || 960) / 2);
         const roomCenterY = options.roomCenterY ?? ((this.ctx.canvas.height || 960) / 2);
         const dx = x - roomCenterX;
@@ -30,9 +48,6 @@ class ShadowSystem {
         const dirY = dist > 0.001 ? dy / dist : 1;
         const maxRadius = Math.max(1, Math.min(this.ctx.canvas.width || 960, this.ctx.canvas.height || 960) * 0.5);
         const normalizedDist = Math.min(1, dist / maxRadius);
-
-        const footX = x;
-        const footY = y + offsetY;
 
         const cast = (1 + normalizedDist * 4.5) * scale;
         const tailX = footX + dirX * cast;

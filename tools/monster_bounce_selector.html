@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怪物颠簸效果选择器</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0a0a14;
+            color: #eee;
+            min-height: 100vh;
+            padding: 15px;
+        }
+        
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 15px;
+        }
+        
+        .help-box {
+            max-width: 1000px;
+            margin: 0 auto 15px;
+            padding: 10px 15px;
+            background: #1a1a2a;
+            border-radius: 8px;
+            border-left: 3px solid #ffd700;
+            font-size: 11px;
+            color: #888;
+        }
+        
+        .help-box strong { color: #ffd700; }
+        
+        .main-layout {
+            display: grid;
+            grid-template-columns: 250px 1fr;
+            gap: 15px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        /* 左侧面板 */
+        .left-panel {
+            background: #1a1a2a;
+            border-radius: 10px;
+            padding: 12px;
+            height: fit-content;
+        }
+        
+        .panel-title {
+            color: #ffd700;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        
+        .floor-tabs {
+            display: flex;
+            gap: 4px;
+            margin-bottom: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .floor-btn {
+            padding: 5px 10px;
+            border: 1px solid #333;
+            background: #0f0f1e;
+            color: #888;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        
+        .floor-btn:hover { border-color: #555; color: #fff; }
+        .floor-btn.active { border-color: #ffd700; color: #ffd700; }
+        
+        .stats {
+            font-size: 11px;
+            color: #888;
+            margin-bottom: 10px;
+            padding: 8px;
+            background: #0f0f1e;
+            border-radius: 6px;
+        }
+        
+        .stats span { margin-right: 12px; }
+        .stats .count { color: #ffd700; font-weight: bold; }
+        
+        .monster-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .monster-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            margin-bottom: 4px;
+            background: #0f0f1e;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+            border: 1px solid transparent;
+        }
+        
+        .monster-item:hover { background: #252538; }
+        .monster-item.active { border-color: #ffd700; }
+        .monster-item.no-bounce { border-left: 3px solid #27ae60; }
+        .monster-item.has-bounce { border-left: 3px solid #e74c3c; }
+        
+        .monster-name { flex: 1; color: #fff; }
+        
+        .bounce-toggle {
+            width: 36px;
+            height: 18px;
+            background: #333;
+            border-radius: 9px;
+            position: relative;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .bounce-toggle.active {
+            background: #e74c3c;
+        }
+        
+        .bounce-toggle::after {
+            content: '';
+            position: absolute;
+            width: 14px;
+            height: 14px;
+            background: #fff;
+            border-radius: 50%;
+            top: 2px;
+            left: 2px;
+            transition: transform 0.2s;
+        }
+        
+        .bounce-toggle.active::after {
+            transform: translateX(18px);
+        }
+        
+        /* 右侧预览区 */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .preview-box {
+            background: #1a1a2a;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .preview-title {
+            text-align: center;
+            color: #888;
+            font-size: 13px;
+            margin-bottom: 10px;
+        }
+        
+        .compare-canvas {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(180deg, #0f0f1e 0%, #050510 100%);
+            border-radius: 8px;
+            image-rendering: pixelated;
+        }
+        
+        .preview-labels {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 10px;
+            font-size: 12px;
+        }
+        
+        .label-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        
+        .dot { width: 10px; height: 10px; border-radius: 50%; }
+        .dot-green { background: #27ae60; }
+        .dot-red { background: #e74c3c; }
+        
+        /* 全局设置 */
+        .global-settings {
+            background: #1a1a2a;
+            border-radius: 10px;
+            padding: 15px;
+        }
+        
+        .settings-row {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        
+        .setting-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+        }
+        
+        input[type="range"] {
+            width: 100px;
+            height: 4px;
+            background: #333;
+            border-radius: 2px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 12px;
+            height: 12px;
+            background: #ffd700;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        
+        .btn-primary { background: #27ae60; color: #fff; }
+        .btn-primary:hover { background: #2ecc71; }
+        
+        .btn-secondary { background: #666; color: #fff; }
+        .btn-secondary:hover { background: #888; }
+    </style>
+</head>
+<body>
+    <h1>⬆️⬇️ 怪物颠簸效果选择器</h1>
+    <p class="subtitle">选择哪些怪物需要"上下颠簸"模拟移动效果</p>
+    
+    <div class="help-box">
+        <strong>使用说明：</strong>左侧列表点击开关切换颠簸效果。右侧预览显示<strong>动态对比</strong>：
+        <strong style="color:#27ae60">左侧</strong> = 正常行走动画（多帧轮播，无颠簸），
+        <strong style="color:#e74c3c">右侧</strong> = 行走+颠簸（多帧轮播+上下跳动）。
+        蜗牛等单帧怪物建议关闭颠簸，多帧动画怪物可以开启。
+    </div>
+    
+    <div class="main-layout">
+        <div class="left-panel">
+            <div class="panel-title">怪物列表</div>
+            <div class="floor-tabs">
+                <button class="floor-btn active" data-floor="1">1层</button>
+                <button class="floor-btn" data-floor="2">2层</button>
+                <button class="floor-btn" data-floor="3">3层</button>
+                <button class="floor-btn" data-floor="4">4层</button>
+                <button class="floor-btn" data-floor="5">5层</button>
+                <button class="floor-btn" data-floor="6">6层</button>
+            </div>
+            <div class="stats">
+                <span>有颠簸: <span class="count" id="countWith">0</span></span>
+                <span>无颠簸: <span class="count" id="countWithout">0</span></span>
+            </div>
+            <div class="monster-list" id="monsterList"></div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="preview-box">
+                <div class="preview-title" id="previewTitle">请选择怪物</div>
+                <canvas class="compare-canvas" id="compareCanvas" width="700" height="200"></canvas>
+                <div class="preview-labels">
+                    <div class="label-item">
+                        <span class="dot dot-green"></span>
+                        <span>无颠簸 (静态)</span>
+                    </div>
+                    <div class="label-item">
+                        <span class="dot dot-red"></span>
+                        <span>有颠簸 (上下跳动)</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="global-settings">
+                <div class="panel-title">全局设置</div>
+                <div class="settings-row">
+                    <div class="setting-item">
+                        <label>颠簸幅度:</label>
+                        <input type="range" id="bounceAmp" min="0" max="10" value="2">
+                        <span id="ampValue">2px</span>
+                    </div>
+                    <div class="setting-item">
+                        <label>颠簸速度:</label>
+                        <input type="range" id="bounceSpeed" min="1" max="20" value="10">
+                        <span id="speedValue">10</span>
+                    </div>
+                    <button class="btn btn-secondary" onclick="clearAllBounce()">全部关闭</button>
+                    <button class="btn btn-primary" onclick="exportData()">导出配置</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 怪物数据
+        const floorsData = {
+            1: [
+                { id: 'bat_v2', name: '小蝙蝠', baseId: 'bat', version: 'v2' },
+                { id: 'bat_v3', name: '吸血蝙蝠', baseId: 'bat', version: 'v3' },
+                { id: 'chick_spr', name: '变异小鸡', baseId: 'chick', version: 'spr' },
+                { id: 'crab_v4', name: '铁甲蟹', baseId: 'crab', version: 'v4' },
+                { id: 'fox_v1', name: '幼狐', baseId: 'fox', version: 'v1' },
+                { id: 'fox_v3', name: '狡猾狐狸', baseId: 'fox', version: 'v3' },
+                { id: 'ghost_v3', name: '怨灵', baseId: 'ghost', version: 'v3' },
+                { id: 'ghost_v4', name: '恶灵', baseId: 'ghost', version: 'v4' },
+                { id: 'mimic_v1', name: '宝箱怪', baseId: 'mimic', version: 'v1' },
+                { id: 'mimic_v5', name: '守卫宝箱怪', baseId: 'mimic', version: 'v5' },
+                { id: 'panther_v1', name: '幼豹', baseId: 'panther', version: 'v1' },
+                { id: 'pigeon_v1', name: '变异鸽子', baseId: 'pigeon', version: 'v1' },
+                { id: 'pigeon_v4', name: '毒鸽', baseId: 'pigeon', version: 'v4' },
+                { id: 'rabbit2_v2', name: '疯兔', baseId: 'rabbit2', version: 'v2' },
+                { id: 'rabbit2_v4', name: '暴徒兔', baseId: 'rabbit2', version: 'v4' },
+                { id: 'snail_v1', name: '蜗牛', baseId: 'snail', version: 'v1' },
+                { id: 'snail_v4', name: '铁壳蜗牛', baseId: 'snail', version: 'v4' },
+                { id: 'snake_v4', name: '毒蛇', baseId: 'snake', version: 'v4' },
+            ],
+            2: [
+                { id: 'bat_v9', name: '蝙蝠王', baseId: 'bat', version: 'v9' },
+                { id: 'crab_spr', name: '小螃蟹', baseId: 'crab', version: 'spr' },
+                { id: 'fox_v7', name: '妖狐', baseId: 'fox', version: 'v7' },
+                { id: 'mimic_v7', name: '宝箱守护者', baseId: 'mimic', version: 'v7' },
+                { id: 'nibei_spr', name: '小泥龟', baseId: 'nibei', version: 'spr' },
+                { id: 'pigeon_v7', name: '飞鸽', baseId: 'pigeon', version: 'v7' },
+                { id: 'pigeon_v8', name: '鸽王', baseId: 'pigeon', version: 'v8' },
+                { id: 'snail_spr', name: '寄生蜗牛', baseId: 'snail', version: 'spr' },
+                { id: 'snail_v7', name: '蜗牛王', baseId: 'snail', version: 'v7' },
+                { id: 'snake_v7', name: '蟒蛇', baseId: 'snake', version: 'v7' },
+                { id: 'yinya_v7', name: '狼王银牙', baseId: 'yinya', version: 'v7' },
+            ],
+            3: [
+                { id: 'bat_v8', name: '巨蝙蝠', baseId: 'bat', version: 'v8' },
+                { id: 'crab_v8', name: '蟹王', baseId: 'crab', version: 'v8' },
+                { id: 'fox_v8', name: '九尾狐', baseId: 'fox', version: 'v8' },
+                { id: 'ghost_v8', name: '盲眼', baseId: 'ghost', version: 'v8' },
+                { id: 'mimic_v8', name: '宝箱王', baseId: 'mimic', version: 'v8' },
+                { id: 'mimic_v10', name: '传说宝箱怪', baseId: 'mimic', version: 'v10' },
+                { id: 'nibei_v6', name: '泥背', baseId: 'nibei', version: 'v6' },
+                { id: 'nibei_v8', name: '巨泥龟', baseId: 'nibei', version: 'v8' },
+                { id: 'rabbit2_v8', name: '兔王', baseId: 'rabbit2', version: 'v8' },
+                { id: 'snail_v2', name: '硬壳蜗牛', baseId: 'snail', version: 'v2' },
+                { id: 'snail_v8', name: '传说蜗牛', baseId: 'snail', version: 'v8' },
+                { id: 'snake_v8', name: '巨蛇', baseId: 'snake', version: 'v8' },
+            ],
+            4: [
+                { id: 'ghost_v2', name: '游荡幽灵', baseId: 'ghost', version: 'v2' },
+                { id: 'ghost_v10', name: '幽灵王', baseId: 'ghost', version: 'v10' },
+                { id: 'panther_v10', name: '豹王', baseId: 'panther', version: 'v10' },
+                { id: 'pigeon_v10', name: '传说鸽', baseId: 'pigeon', version: 'v10' },
+                { id: 'snail_v10', name: '神蜗牛', baseId: 'snail', version: 'v10' },
+                { id: 'snake_v10', name: '蛇王', baseId: 'snake', version: 'v10' },
+                { id: 'wolf_king_v2', name: '狼王', baseId: 'wolf_king', version: 'v2' },
+            ],
+            5: [
+                { id: 'bee_v6', name: '毒蜂', baseId: 'bee', version: 'v6' },
+                { id: 'crab_v2', name: '螃蟹', baseId: 'crab', version: 'v2' },
+                { id: 'crab_v6', name: '巨钳蟹', baseId: 'crab', version: 'v6' },
+                { id: 'fox_v6', name: '狐王', baseId: 'fox', version: 'v6' },
+                { id: 'ghost_v6', name: '凶灵', baseId: 'ghost', version: 'v6' },
+                { id: 'goose_v6', name: '守卫鹅', baseId: 'goose', version: 'v6' },
+                { id: 'mimic_v6', name: '精英宝箱怪', baseId: 'mimic', version: 'v6' },
+                { id: 'mother_v6', name: '母虫', baseId: 'mother', version: 'v6' },
+                { id: 'mother_v7', name: '深渊母虫', baseId: 'mother', version: 'v7' },
+                { id: 'panther_v2', name: '黑豹', baseId: 'panther', version: 'v2' },
+                { id: 'pigeon_v2', name: '腐化鸽', baseId: 'pigeon', version: 'v2' },
+                { id: 'pigeon_v6', name: '巨鸽', baseId: 'pigeon', version: 'v6' },
+                { id: 'snail_v6', name: '巨蜗牛', baseId: 'snail', version: 'v6' },
+            ],
+            6: [
+                { id: 'fox_v10', name: '天狐', baseId: 'fox', version: 'v10' },
+                { id: 'ghost_spr', name: '幽灵', baseId: 'ghost', version: 'spr' },
+                { id: 'goose_v10', name: '鹅王', baseId: 'goose', version: 'v10' },
+                { id: 'mimic_spr', name: '小宝箱怪', baseId: 'mimic', version: 'spr' },
+                { id: 'mother_v2', name: '母虫幼体', baseId: 'mother', version: 'v2' },
+                { id: 'mother_v3', name: '深渊母体', baseId: 'mother', version: 'v3' },
+                { id: 'mother_v8', name: '千根母虫', baseId: 'mother', version: 'v8' },
+                { id: 'mother_v10', name: '群星母体', baseId: 'mother', version: 'v10' },
+            ]
+        };
+        
+        // 颠簸配置（默认全部关闭）
+        const bounceConfig = {};
+        let currentFloor = 1;
+        let currentMonster = null;
+        let walkCycle = 0;
+        let lastTime = 0;
+        let bounceAmp = 2;
+        let bounceSpeed = 10;
+        
+        // 缓存贴图
+        const spriteCache = {};
+        let currentSprites = []; // 当前怪物的所有帧
+        let animFrame = 0;
+        let animTimer = 0;
+        
+        function loadImage(src) {
+            return new Promise((resolve, reject) => {
+                if (spriteCache[src]) {
+                    resolve(spriteCache[src]);
+                    return;
+                }
+                const img = new Image();
+                img.onload = () => {
+                    spriteCache[src] = img;
+                    resolve(img);
+                };
+                img.onerror = reject;
+                img.src = src;
+            });
+        }
+        
+        async function loadMonsterSprites(monster) {
+            const sprites = [];
+            for (let i = 1; i <= 4; i++) {
+                const frameNum = i.toString().padStart(2, '0');
+                const path = `../generated_assets/monster_walk_curated_by_floor_reworked_v2/floor${currentFloor}/${monster.baseId}/${monster.version}/walk/f${frameNum}.png`;
+                try {
+                    const img = await loadImage(path);
+                    sprites.push(img);
+                } catch (e) {
+                    break;
+                }
+            }
+            return sprites;
+        }
+        
+        function init() {
+            // 初始化所有怪物为无颠簸
+            for (let f = 1; f <= 6; f++) {
+                floorsData[f].forEach(m => {
+                    bounceConfig[m.id] = false;
+                });
+            }
+            
+            // 楼层切换
+            document.querySelectorAll('.floor-btn').forEach(btn => {
+                btn.onclick = () => {
+                    currentFloor = parseInt(btn.dataset.floor);
+                    document.querySelectorAll('.floor-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    renderMonsterList();
+                };
+            });
+            
+            // 滑块
+            document.getElementById('bounceAmp').oninput = (e) => {
+                bounceAmp = parseInt(e.target.value);
+                document.getElementById('ampValue').textContent = bounceAmp + 'px';
+            };
+            
+            document.getElementById('bounceSpeed').oninput = (e) => {
+                bounceSpeed = parseInt(e.target.value);
+                document.getElementById('speedValue').textContent = bounceSpeed;
+            };
+            
+            renderMonsterList();
+            requestAnimationFrame(animate);
+        }
+        
+        function renderMonsterList() {
+            const list = document.getElementById('monsterList');
+            list.innerHTML = '';
+            
+            floorsData[currentFloor].forEach(m => {
+                const item = document.createElement('div');
+                const hasBounce = bounceConfig[m.id];
+                item.className = `monster-item ${hasBounce ? 'has-bounce' : 'no-bounce'}`;
+                if (currentMonster?.id === m.id) item.classList.add('active');
+                
+                item.innerHTML = `
+                    <span class="monster-name">${m.name}</span>
+                    <div class="bounce-toggle ${hasBounce ? 'active' : ''}" data-id="${m.id}"></div>
+                `;
+                
+                // 点击整个项选择
+                item.onclick = (e) => {
+                    if (e.target.classList.contains('bounce-toggle')) return;
+                    selectMonster(m);
+                };
+                
+                // 点击开关切换
+                item.querySelector('.bounce-toggle').onclick = (e) => {
+                    e.stopPropagation();
+                    const id = e.target.dataset.id;
+                    bounceConfig[id] = !bounceConfig[id];
+                    e.target.classList.toggle('active', bounceConfig[id]);
+                    item.className = `monster-item ${bounceConfig[id] ? 'has-bounce' : 'no-bounce'}${currentMonster?.id === id ? ' active' : ''}`;
+                    updateStats();
+                    
+                    if (currentMonster?.id === id) {
+                        drawPreview();
+                    }
+                };
+                
+                list.appendChild(item);
+            });
+            
+            updateStats();
+        }
+        
+        async function selectMonster(monster) {
+            currentMonster = monster;
+            document.getElementById('previewTitle').textContent = `${monster.name} - 动态对比：左(正常行走) vs 右(行走+颠簸)`;
+            
+            document.querySelectorAll('.monster-item').forEach(item => {
+                item.classList.toggle('active', item.querySelector('.bounce-toggle').dataset.id === monster.id);
+            });
+            
+            // 加载所有帧
+            currentSprites = await loadMonsterSprites(monster);
+            animFrame = 0;
+            animTimer = 0;
+        }
+        
+        function animate(timestamp) {
+            const dt = (timestamp - lastTime) / 1000;
+            lastTime = timestamp;
+            
+            walkCycle += dt * bounceSpeed;
+            
+            // 更新行走动画帧 (8fps)
+            if (currentSprites.length > 0) {
+                animTimer += dt;
+                animFrame = Math.floor(animTimer * 8) % currentSprites.length;
+            }
+            
+            drawPreview();
+            
+            requestAnimationFrame(animate);
+        }
+        
+        function drawPreview() {
+            const canvas = document.getElementById('compareCanvas');
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            const groundY = h - 30;
+            
+            ctx.clearRect(0, 0, w, h);
+            
+            // 地面线
+            ctx.strokeStyle = 'rgba(255,255,255,0.2)';
+            ctx.beginPath();
+            ctx.moveTo(0, groundY);
+            ctx.lineTo(w, groundY);
+            ctx.stroke();
+            
+            if (!currentMonster || currentSprites.length === 0) {
+                ctx.fillStyle = '#666';
+                ctx.font = '14px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('请选择左侧怪物查看动态对比', w/2, h/2);
+                return;
+            }
+            
+            const sprite = currentSprites[animFrame];
+            const bounce = Math.sin(walkCycle) * bounceAmp;
+            
+            // 左侧：正常行走动画（无颠簸）
+            drawMonsterSprite(ctx, w * 0.25, groundY, sprite, 0, '#27ae60', '正常行走');
+            
+            // 右侧：行走+颠簸（根据设置）
+            const hasBounce = bounceConfig[currentMonster.id];
+            const actualBounce = hasBounce ? bounce : 0;
+            const rightColor = hasBounce ? '#e74c3c' : '#666';
+            const rightLabel = hasBounce ? '行走+颠簸（已启用）' : '行走+颠簸（未启用）';
+            drawMonsterSprite(ctx, w * 0.75, groundY, sprite, actualBounce, rightColor, rightLabel);
+            
+            // 当前状态标签
+            ctx.fillStyle = hasBounce ? '#e74c3c' : '#27ae60';
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`当前设置: ${hasBounce ? '启用颠簸' : '禁用颠簸'} | 帧: f0${animFrame+1}/${currentSprites.length}`, w/2, 25);
+        }
+        
+        function drawMonsterSprite(ctx, centerX, groundY, sprite, bounceY, borderColor, label) {
+            const size = 70;
+            
+            // 绘制区域背景（带颜色边框）
+            const x = centerX - size;
+            const y = groundY - size * 2;
+            
+            // 边框
+            ctx.strokeStyle = borderColor;
+            ctx.lineWidth = 2;
+            ctx.strokeRect(x, y, size * 2, size * 2);
+            
+            // 地面参考线
+            ctx.strokeStyle = 'rgba(255,255,255,0.1)';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(x, groundY);
+            ctx.lineTo(x + size * 2, groundY);
+            ctx.stroke();
+            
+            if (sprite) {
+                // 计算绘制尺寸（保持比例）
+                const aspect = sprite.width / sprite.height;
+                const drawH = size * 1.2;
+                const drawW = drawH * aspect;
+                
+                const drawX = centerX - drawW / 2;
+                const drawY = groundY - drawH + bounceY;
+                
+                ctx.save();
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(sprite, drawX, drawY, drawW, drawH);
+                ctx.restore();
+            } else {
+                // 贴图加载失败显示占位
+                ctx.fillStyle = '#333';
+                ctx.fillRect(centerX - 20, groundY - 40 + bounceY, 40, 40);
+                ctx.fillStyle = '#666';
+                ctx.font = '10px sans-serif';
+                ctx.textAlign = 'center';
+                ctx.fillText('无贴图', centerX, groundY - 20 + bounceY);
+            }
+            
+            // 标签
+            ctx.fillStyle = borderColor;
+            ctx.font = 'bold 12px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(label, centerX, groundY + 20);
+            
+            // Y轴偏移指示线
+            if (bounceY !== 0) {
+                ctx.strokeStyle = '#ffd700';
+                ctx.lineWidth = 1;
+                ctx.setLineDash([3, 3]);
+                ctx.beginPath();
+                ctx.moveTo(centerX + size/2 + 5, groundY - size);
+                ctx.lineTo(centerX + size/2 + 5, groundY - size + bounceY);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                ctx.fillStyle = '#ffd700';
+                ctx.font = '10px sans-serif';
+                ctx.fillText(`+${Math.round(bounceY)}px`, centerX + size/2 + 25, groundY - size + bounceY/2);
+            }
+        }
+        
+        function updateStats() {
+            let withBounce = 0, without = 0;
+            for (let f = 1; f <= 6; f++) {
+                floorsData[f].forEach(m => {
+                    if (bounceConfig[m.id]) withBounce++;
+                    else without++;
+                });
+            }
+            document.getElementById('countWith').textContent = withBounce;
+            document.getElementById('countWithout').textContent = without;
+        }
+        
+        function clearAllBounce() {
+            for (let f = 1; f <= 6; f++) {
+                floorsData[f].forEach(m => {
+                    bounceConfig[m.id] = false;
+                });
+            }
+            renderMonsterList();
+        }
+        
+        function exportData() {
+            const withBounceIds = [];
+            for (let f = 1; f <= 6; f++) {
+                floorsData[f].forEach(m => {
+                    if (bounceConfig[m.id]) withBounceIds.push(m.id);
+                });
+            }
+            
+            const output = {
+                bounceEnabledIds: withBounceIds,
+                bounceAmp: bounceAmp,
+                bounceSpeed: bounceSpeed
+            };
+            
+            const json = JSON.stringify(output, null, 2);
+            navigator.clipboard.writeText(json).then(() => {
+                alert(`颠簸配置已复制！\n\n启用颠簸的怪物 (${withBounceIds.length}个):\n${withBounceIds.join(', ')}`);
+            });
+        }
+        
+        init();
+    </script>
+</body>
+</html>

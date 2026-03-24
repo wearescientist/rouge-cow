@@ -10,84 +10,56 @@
 
 // 盲眼对话剧本 - 6层对应6组对话，逐层揭示真相
 const BLIND_DIALOGUES = {
-    // 第1层 - 初次见面，神秘氛围
     floor1: [
-        { speaker: 'blind', text: '...有脚步声。是新的气味。' },
-        { speaker: 'blind', text: '角族的血脉...你是铁角的儿子。' },
-        { speaker: 'niuniu', text: '你是谁？你怎么知道我父亲？' },
-        { speaker: 'blind', text: '呵...我是谁？一个在这黑暗中待了四十年的...旁观者。' },
-        { speaker: 'blind', text: '你父亲...是个固执的傻瓜。明知道下来是送死，还是跟着那歌声走了。' },
-        { speaker: 'niuniu', text: '他还活着吗？！' },
-        { speaker: 'blind', text: '活着？那要看你怎么定义"活着"了...' },
-        { speaker: 'blind', text: '这里的生物都被"改造"过了。跳跳、铁爪...他们曾是你的朋友吧？' }
+        { speaker: 'blind', text: '既到此处，先歇片刻。人一慌，手里的兵刃也会跟着失了准头。' },
+        { speaker: 'niuniu', text: '下面到底是什么？' },
+        { speaker: 'blind', text: '地底之物，本就凶顽，如今又沾了秽气，自然更难应付。你初下此间，先顾全自己，再谈往后。' },
+        { speaker: 'niuniu', text: '这些东西，真能用得上？' },
+        { speaker: 'blind', text: '手中有备，心里便稳。心若稳了，路才能走远。' }
     ],
-    
-    // 第2层 - 揭示母虫真相
     floor2: [
-        { speaker: 'niuniu', text: '跳跳他们...还能恢复吗？' },
-        { speaker: 'blind', text: '恢复？呵...年轻人，你还没理解你面对的是什么。' },
-        { speaker: 'blind', text: '千年前，一颗陨星坠入草原。带来的不是财富，而是一种...格式塔。' },
-        { speaker: 'blind', text: '它不是生命，而是生命的"模板"。它读取、学习、同化。' },
-        { speaker: 'niuniu', text: '格式塔...' },
-        { speaker: 'blind', text: '它认为统一所有意识是"完美"。没有孤独，没有死亡，也没有...自由意志。' },
-        { speaker: 'blind', text: '你祖先用生命封印了它。但封印需要"守护者血脉"作为锚点。' },
-        { speaker: 'blind', text: '现在，封印松动了。而你父母...被选中了。' }
+        { speaker: 'blind', text: '再往下走，感染会愈发深重。' },
+        { speaker: 'niuniu', text: '我方才见到的东西……有些古怪。' },
+        { speaker: 'blind', text: '这便是了。许多东西，外相仍似旧日，内里却早已坏透。' },
+        { speaker: 'niuniu', text: '所以，不能迟疑？' },
+        { speaker: 'blind', text: '正是。你若心软一瞬，它们便会借你这一瞬近身。' }
     ],
-    
-    // 第3层 - 揭示父母状况
     floor3: [
-        { speaker: 'niuniu', text: '被选中...是什么意思？' },
-        { speaker: 'blind', text: '母虫需要他们的基因。草原动物的DNA太原始了，它需要更"高等"的样本。' },
-        { speaker: 'blind', text: '守护者血脉能让它创造出适应地表环境的完美寄生体。' },
-        { speaker: 'niuniu', text: '那我父母现在...' },
-        { speaker: 'blind', text: '在核心。在那团不断做梦的肉质中央。' },
-        { speaker: 'blind', text: '母虫正在"拆解"他们。学习他们的记忆、情感、一切。' },
-        { speaker: 'blind', text: '它特别困惑一件事：为什么这些生物会为"别人"牺牲自己？' },
-        { speaker: 'blind', text: '这对它来说...很新奇。' }
+        { speaker: 'blind', text: '你能行至此处，倒比我先前料想的更沉得住气。' },
+        { speaker: 'niuniu', text: '为什么下面那些怪物，越来越像活人？' },
+        { speaker: 'blind', text: '感染深了，便会学。学人声，学人形，学你熟悉的一切。愈是如此，愈不可轻信。' },
+        { speaker: 'niuniu', text: '连这些也能学会？' },
+        { speaker: 'blind', text: '世间最难防的，从来不是面目可怖之物，而是披着旧影前来的东西。' }
     ],
-    
-    // 第4层 - 歌声的真相
     floor4: [
-        { speaker: 'niuniu', text: '我听到的歌声...' },
-        { speaker: 'blind', text: '是的，那首歌。你小时候每次做噩梦，她用来安抚你的歌。' },
-        { speaker: 'blind', text: '母虫读取了你母亲的记忆，模仿出那首歌。' },
-        { speaker: 'niuniu', text: '模仿？' },
-        { speaker: 'blind', text: '它学会了"爱"的概念...就像学会了一种武器。' },
-        { speaker: 'blind', text: '那首歌是诱饵，让你父亲走进陷阱。但也是真实的...' },
-        { speaker: 'blind', text: '因为母虫不理解：如果只是"模仿"，为什么这些生物会响应？' },
-        { speaker: 'blind', text: '它开始疑惑：难道"爱"不只是记忆和激素？' }
+        { speaker: 'blind', text: '走到这里，最忌心神摇动。' },
+        { speaker: 'niuniu', text: '我总觉得，它们不像只想杀我，更像是在拦我。' },
+        { speaker: 'blind', text: '你走得愈深，它们便愈知道你要去往何处。会拦你，并不奇怪。' },
+        { speaker: 'niuniu', text: '这么说，我走对了？' },
+        { speaker: 'blind', text: '路既至此，便没有轻易回头的道理。你若在此止步，前面受的苦，便都白受了。' }
     ],
-    
-    // 第5层 - 给予萃取液，揭示希望
     floor5: [
-        { speaker: 'niuniu', text: '我该怎么救他们？' },
-        { speaker: 'blind', text: '救？你以为这是那种...英雄救美的故事吗？' },
-        { speaker: 'blind', text: '...但也许，还有一丝可能。' },
-        { speaker: 'blind', text: '这个给你。我用四十年的分泌物浓缩而成。' },
-        { speaker: 'niuniu', text: '这是...?' },
-        { speaker: 'blind', text: '能暂时屏蔽母虫精神控制的...唯一一次机会。' },
-        { speaker: 'blind', text: '在第六层的核心使用它。如果你还想保留自己的意志的话。' },
-        { speaker: 'blind', text: '你父亲让我转告你...他说："你已经比我伟大了。"' }
+        { speaker: 'blind', text: '这一层不会轻松，先把该带的带上。' },
+        { speaker: 'niuniu', text: '这里的怪物……竟还会说话。' },
+        { speaker: 'blind', text: '不足为奇。感染到了深处，残存的意识反倒会更分明。' },
+        { speaker: 'niuniu', text: '残存的意识？' },
+        { speaker: 'blind', text: '嗯。它或许还认得你，也或许还记得从前的一些事。只是记得归记得，它终究已不是旧日之人了。' },
+        { speaker: 'niuniu', text: '……' },
+        { speaker: 'blind', text: '你须记住，像人的东西，未必还是人。' }
     ],
-    
-    // 第6层 - 最后的准备
     floor6: [
-        { speaker: 'blind', text: '你来了。我能感觉到...核心的脉动。' },
-        { speaker: 'blind', text: '母虫庭院就在前面。那里有两个茧，你父母在里面。' },
-        { speaker: 'niuniu', text: '我该怎么做？' },
-        { speaker: 'blind', text: '记住：母虫无法理解"选择"。它以为牺牲是逻辑的决定。' },
-        { speaker: 'blind', text: '但你父母证明了：牺牲是因为"爱"，而爱不是程序。' },
-        { speaker: 'blind', text: '用你的双角，用地脉共鸣，去让它看看什么是它永远无法解析的"错误"。' },
-        { speaker: 'blind', text: '最后的建议：无论发生什么，记住你父母的话...' },
-        { speaker: 'blind', text: '"别下来。活下去。"' },
-        { speaker: 'blind', text: '但你选择了下来。你选择了战斗。这就是你比他们伟大的地方。' }
+        { speaker: 'blind', text: '终究还是走到这里了。' },
+        { speaker: 'niuniu', text: '越往下，我越觉得不对。' },
+        { speaker: 'blind', text: '近母体之处，污染最盛，也最擅借人心行事。它会循着你最挂念的东西而来，也会化作你最不忍下手的模样。' },
+        { speaker: 'niuniu', text: '那我该怎么办？' },
+        { speaker: 'blind', text: '守住本心，莫受其惑。你走到今日，不是为了在最后一步前乱了分寸。' },
+        { speaker: 'niuniu', text: '……' },
+        { speaker: 'blind', text: '去吧。把这一切了结了，你也该回家了。' }
     ],
-    
-    // 后续对话 - 随机提示（已完成所有层后）
     random: [
-        ['跳跳、铁爪、银牙...他们都曾是勇士。'],
-        ['别相信"完美统一"的幻象...'],
-        ['你的双角...那是地脉共鸣的标志。']
+        ['再往深处走，最先乱的往往不是手，而是心。'],
+        ['像人的东西，未必还是人。'],
+        ['心若稳了，路才能走远。']
     ]
 };
 
@@ -126,6 +98,156 @@ class ShopNPCSystem {
         }
         return 1;
     }
+
+    getAnchorScreenPosition(entity, anchor = 'center') {
+        if (!window.game || !entity) return null;
+
+        const canvas = window.game.canvas;
+        const rect = canvas?.getBoundingClientRect?.();
+        if (!rect) return null;
+
+        let anchorY = entity.y;
+        if (anchor === 'head') {
+            const entityHeight = entity.height || entity.size || entity.radius * 2 || 100;
+            anchorY -= entityHeight * 0.62;
+        }
+
+        if (window.game.camera?.worldToScreen) {
+            const pos = window.game.camera.worldToScreen(entity.x, anchorY);
+            const scaleX = rect.width / Math.max(canvas.width || rect.width, 1);
+            const scaleY = rect.height / Math.max(canvas.height || rect.height, 1);
+            return {
+                x: rect.left + pos.x * scaleX,
+                y: rect.top + pos.y * scaleY
+            };
+        }
+
+        return {
+            x: rect.left + (entity.x / 2000) * rect.width,
+            y: rect.top + (anchorY / 2000) * rect.height
+        };
+    }
+
+    getShopkeeperRenderAnchor(kind = 'bubble') {
+        const game = window.game;
+        const renderData = game?.shopkeeperPresentationData;
+        const canvas = game?.canvas;
+        const rect = canvas?.getBoundingClientRect?.();
+        if (!renderData || !canvas || !rect) return null;
+
+        const scaleX = rect.width / Math.max(canvas.width || rect.width, 1);
+        const scaleY = rect.height / Math.max(canvas.height || rect.height, 1);
+        const left = rect.left + renderData.drawX * scaleX;
+        const top = rect.top + renderData.drawY * scaleY;
+        const width = renderData.drawW * scaleX;
+        const height = renderData.drawH * scaleY;
+
+        const profiles = {
+            prompt: { x: 0.50, y: 0.16 },
+            bubble: { x: 0.56, y: 0.34 }
+        };
+        const profile = profiles[kind] || profiles.bubble;
+        return {
+            x: left + width * profile.x,
+            y: top + height * profile.y,
+            left,
+            top,
+            width,
+            height
+        };
+    }
+
+    getDialogueBubblePosition(entity, side) {
+        const pos = this.getAnchorScreenPosition(entity, 'head');
+        if (!pos) return null;
+
+        const entityWidth = entity.width || entity.size || entity.radius * 2 || 100;
+        const sideOffset = entityWidth * 0.42 + 16;
+
+        return {
+            x: pos.x + (side === 'right' ? sideOffset : -sideOffset),
+            y: pos.y - 8
+        };
+    }
+
+
+    getViewportRect() {
+        const canvas = window.game?.canvas;
+        const rect = canvas?.getBoundingClientRect?.();
+        if (!rect) return null;
+        return rect;
+    }
+
+    clampPosition(left, top, width, height, padding = 12) {
+        const rect = this.getViewportRect();
+        if (!rect) return { left, top };
+        return {
+            left: Math.max(rect.left + padding, Math.min(left, rect.right - width - padding)),
+            top: Math.max(rect.top + padding, Math.min(top, rect.bottom - height - padding))
+        };
+    }
+
+    getPromptScreenPosition(npc) {
+        const anchor = this.getShopkeeperRenderAnchor('prompt') || this.getAnchorScreenPosition(npc, 'head');
+        if (!anchor) return null;
+        return {
+            left: anchor.x,
+            top: anchor.y - 18,
+            transform: 'translate(-50%, -100%)'
+        };
+    }
+
+    getNpcBubbleScreenPosition(npc, bubble) {
+        const anchor = this.getShopkeeperRenderAnchor('bubble') || this.getAnchorScreenPosition(npc, 'head');
+        if (!anchor || !bubble) return null;
+        const width = bubble.offsetWidth || 360;
+        const height = bubble.offsetHeight || 120;
+        const left = anchor.x - width * 0.5;
+        const top = anchor.y - height - 18;
+        return this.clampPosition(left, top, width, height, 16);
+    }
+
+    getPlayerBubbleScreenPosition(player, bubble) {
+        const anchor = this.getAnchorScreenPosition(player, 'head');
+        if (!anchor || !bubble) return null;
+        const width = bubble.offsetWidth || 360;
+        const height = bubble.offsetHeight || 120;
+        const left = anchor.x - width * 0.5;
+        const top = anchor.y - height - 18;
+        return this.clampPosition(left, top, width, height, 16);
+    }
+
+    applyPosition(element, pos) {
+        if (!element || !pos) return;
+        element.style.left = pos.left + 'px';
+        element.style.top = pos.top + 'px';
+        if (pos.transform) {
+            element.style.transform = pos.transform;
+        }
+    }
+
+    shouldHideDialogueUi() {
+        const game = window.game;
+        if (!game) return false;
+        return !!(
+            game.manualPaused ||
+            game.paused ||
+            game.settingsOpen ||
+            game.levelUpOpen ||
+            game.chestOpen ||
+            game.shopOpen ||
+            game.weaponBoxOpen ||
+            game.confirmDialogOpen
+        );
+    }
+
+    syncDialogueUiVisibility() {
+        const hidden = this.shouldHideDialogueUi();
+        const prompt = document.getElementById('npcInteractPrompt');
+        if (prompt) prompt.style.display = hidden ? 'none' : 'block';
+        if (this.npcBubble) this.npcBubble.style.display = hidden ? 'none' : 'block';
+        if (this.playerBubble) this.playerBubble.style.display = hidden ? 'none' : 'block';
+    }
     
     // 显示NPC头顶交互提示 - 简洁两排设计
     showInteractPrompt(npcX, npcY) {
@@ -141,10 +263,9 @@ class ShopNPCSystem {
             color: #fff;
             font-family: Arial, sans-serif;
             font-size: 22px;
-            z-index: 5000;
+            z-index: 520;
             pointer-events: none;
             transform: translate(-50%, -100%);
-            margin-top: -60px;
             white-space: nowrap;
         `;
         prompt.innerHTML = `
@@ -154,20 +275,13 @@ class ShopNPCSystem {
         
         // 计算屏幕位置 - 使用 camera 正确转换
         if (window.game) {
-            let screenX, screenY;
-            const canvas = window.game.canvas;
-            const rect = canvas.getBoundingClientRect();
-            if (window.game.camera && window.game.camera.worldToScreen) {
-                const pos = window.game.camera.worldToScreen(npcX, npcY);
-                screenX = rect.left + pos.x;
-                screenY = rect.top + pos.y;
-            } else {
-                screenX = rect.left + (npcX / 2000) * rect.width;
-                screenY = rect.top + (npcY / 2000) * rect.height;
+            const targetNpc = window.game.curRoom?.npc || { x: npcX, y: npcY, height: 100, size: 100 };
+            const pos = this.getPromptScreenPosition(targetNpc);
+            if (pos) {
+                this.applyPosition(prompt, pos);
             }
-            prompt.style.left = screenX + 'px';
-            prompt.style.top = screenY + 'px';
         }
+        this.syncDialogueUiVisibility();
         
         document.body.appendChild(prompt);
     }
@@ -210,6 +324,7 @@ class ShopNPCSystem {
         this.dialogueIndex = 0;
         this.talkCount++;
         this.saveProgress();
+        window.collectionCodex?.onBlindDialogueStart?.(floor);
         
         // 显示第一句
         this.showNextLine();
@@ -290,93 +405,58 @@ class ShopNPCSystem {
         const npc = window.game.curRoom.npc;
         this.currentFullText = text;
         
-        // 获取情感色彩
         const emotionColor = this.getEmotionColor(text);
-        const isIntense = emotionColor !== '#888';
-        
         const bubble = document.createElement('div');
         bubble.id = 'npcDialogueBubble';
         bubble.style.cssText = `
             position: fixed;
-            background: rgba(40, 35, 30, 0.98);
-            border: 3px solid ${emotionColor};
-            border-radius: 14px;
-            padding: 20px 24px;
-            color: #ddd;
+            background: rgba(0, 0, 0, 0.62);
+            border: 1px solid rgba(255,255,255,0.14);
+            border-top: 2px solid ${emotionColor};
+            border-radius: 12px;
+            padding: 12px 16px 14px;
+            color: #f4f2ef;
             font-family: Arial, sans-serif;
             font-size: 18px;
-            max-width: 360px;
+            min-width: 220px;
+            max-width: 420px;
             line-height: 1.6;
-            z-index: 6000;
-            box-shadow: 0 4px 20px ${emotionColor}40;
-            transform: translate(-100%, -50%);
-            margin-left: -20px;
+            z-index: 520;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.30);
+            backdrop-filter: blur(3px);
+            transform: none;
             pointer-events: none;
-            animation: ${isIntense ? 'breathe 2s ease-in-out infinite' : 'none'};
         `;
         bubble.innerHTML = `
-            <div style="color: ${emotionColor}; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px; font-weight: bold;">盲眼</div>
-            <div class="dialogue-text"></div>
-            <div style="position: absolute; right: -12px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 12px solid ${emotionColor};"></div>
+            <div style="color: ${emotionColor}; font-size: 12px; margin-bottom: 6px; letter-spacing: 0.12em; font-weight: bold;">盲眼</div>
+            <div class="dialogue-text" style="white-space: pre-wrap;"></div>
         `;
         
-        // 添加呼吸动画样式（如果强烈情感）
-        if (isIntense && !document.getElementById('emotionAnimStyle')) {
-            const style = document.createElement('style');
-            style.id = 'emotionAnimStyle';
-            style.textContent = `
-                @keyframes breathe {
-                    0%, 100% { box-shadow: 0 4px 20px ${emotionColor}40; }
-                    50% { box-shadow: 0 4px 30px ${emotionColor}80; }
-                }
-            `;
-            document.head.appendChild(style);
-        }
-        
-        // 使用 camera 正确转换世界坐标到屏幕坐标
-        let screenX, screenY;
-        const canvas = window.game.canvas;
-        const rect = canvas.getBoundingClientRect();
-        if (window.game.camera && window.game.camera.worldToScreen) {
-            const pos = window.game.camera.worldToScreen(npc.x, npc.y);
-            screenX = rect.left + pos.x;
-            screenY = rect.top + pos.y;
-        } else {
-            // 备用：直接计算
-            screenX = rect.left + (npc.x / 2000) * rect.width;
-            screenY = rect.top + (npc.y / 2000) * rect.height;
-        }
-        bubble.style.left = screenX + 'px';
-        bubble.style.top = screenY + 'px';
-        
         document.body.appendChild(bubble);
+        this.applyPosition(bubble, this.getNpcBubbleScreenPosition(npc, bubble));
         this.npcBubble = bubble;
         this.currentBubble = bubble;
+        this.syncDialogueUiVisibility();
         
-        // 打字机效果 + 音效
         const textEl = bubble.querySelector('.dialogue-text');
         let charIndex = 0;
-        
-        // 播放盲眼说话音效（低频沙哑）
         this.playTypingSound('blind');
         
         this.typingTimer = setInterval(() => {
             if (charIndex < text.length) {
                 textEl.textContent += text[charIndex];
                 charIndex++;
-                // 每5个字播放一次音效
-                if (charIndex % 5 === 0) {
+                if (charIndex % 3 === 0) {
                     this.playTypingSound('blind');
                 }
             } else {
                 clearInterval(this.typingTimer);
                 this.typingTimer = null;
-                // 打字完成，设置自动下一句
                 this.autoAdvanceTimer = setTimeout(() => {
                     if (this.isTalking) this.showNextLine();
                 }, 1500);
             }
-        }, 40); // 每字40ms
+        }, 38);
     }
     
     // 显示玩家气泡（右侧对话布局，带打字机效果）
@@ -390,60 +470,43 @@ class ShopNPCSystem {
         bubble.id = 'playerDialogueBubble';
         bubble.style.cssText = `
             position: fixed;
-            background: rgba(30, 40, 35, 0.98);
-            border: 2px solid #4f4;
-            border-radius: 14px;
-            padding: 20px 24px;
+            background: rgba(0, 0, 0, 0.62);
+            border: 1px solid rgba(255,255,255,0.14);
+            border-top: 2px solid #78d99d;
+            border-radius: 12px;
+            padding: 12px 16px 14px;
             color: #fff;
             font-family: Arial, sans-serif;
             font-size: 18px;
-            max-width: 360px;
+            min-width: 220px;
+            max-width: 420px;
             line-height: 1.6;
-            z-index: 6000;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-            transform: translate(0, -50%);
-            margin-left: 20px;
+            z-index: 520;
+            box-shadow: 0 10px 26px rgba(0,0,0,0.30);
+            backdrop-filter: blur(3px);
+            transform: none;
             pointer-events: none;
         `;
         bubble.innerHTML = `
-            <div style="color: #4f4; font-size: 14px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 1px;">牛牛</div>
-            <div class="dialogue-text"></div>
-            <div style="position: absolute; left: -10px; top: 50%; transform: translateY(-50%); width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent; border-right: 10px solid #4f4;"></div>
+            <div style="color: #9fe6b8; font-size: 12px; margin-bottom: 6px; letter-spacing: 0.12em; font-weight: bold;">牛牛</div>
+            <div class="dialogue-text" style="white-space: pre-wrap;"></div>
         `;
         
-        // 使用 camera 正确转换世界坐标到屏幕坐标
-        let screenX, screenY;
-        const canvas = window.game.canvas;
-        const rect = canvas.getBoundingClientRect();
-        if (window.game.camera && window.game.camera.worldToScreen) {
-            const pos = window.game.camera.worldToScreen(player.x, player.y);
-            screenX = rect.left + pos.x;
-            screenY = rect.top + pos.y;
-        } else {
-            // 备用：直接计算
-            screenX = rect.left + (player.x / 2000) * rect.width;
-            screenY = rect.top + (player.y / 2000) * rect.height;
-        }
-        bubble.style.left = screenX + 'px';
-        bubble.style.top = screenY + 'px';
-        
         document.body.appendChild(bubble);
+        this.applyPosition(bubble, this.getPlayerBubbleScreenPosition(player, bubble));
         this.playerBubble = bubble;
         this.currentBubble = bubble;
+        this.syncDialogueUiVisibility();
         
-        // 打字机效果（玩家打字更快）+ 音效
         const textEl = bubble.querySelector('.dialogue-text');
         let charIndex = 0;
-        
-        // 播玩家说话音效（清晰中频）
         this.playTypingSound('player');
         
         this.typingTimer = setInterval(() => {
             if (charIndex < text.length) {
                 textEl.textContent += text[charIndex];
                 charIndex++;
-                // 每4个字播放一次音效
-                if (charIndex % 4 === 0) {
+                if (charIndex % 3 === 0) {
                     this.playTypingSound('player');
                 }
             } else {
@@ -453,7 +516,7 @@ class ShopNPCSystem {
                     if (this.isTalking) this.showNextLine();
                 }, 1200);
             }
-        }, 30); // 每字30ms（更快）
+        }, 32);
     }
     
     // 清除气泡
@@ -492,49 +555,44 @@ class ShopNPCSystem {
         }
     }
     
+    finishCurrentLine() {
+        if (!this.currentBubble || !this.currentFullText) return false;
+        const textEl = this.currentBubble.querySelector('.dialogue-text');
+        if (!textEl) return false;
+        if (this.typingTimer) {
+            clearInterval(this.typingTimer);
+            this.typingTimer = null;
+        }
+        textEl.textContent = this.currentFullText;
+        return true;
+    }
+
     // 跳过当前对话（点击/按键）
     skipLine() {
         if (!this.isTalking) return;
-        
+        if (this.typingTimer) {
+            this.finishCurrentLine();
+            return;
+        }
         if (this.autoAdvanceTimer) {
             clearTimeout(this.autoAdvanceTimer);
+            this.autoAdvanceTimer = null;
         }
         this.showNextLine();
+    }
+
+    skipDialogue() {
+        if (!this.isTalking) return;
+        this.endDialogue();
     }
     
     // 播放打字音效
     playTypingSound(speaker) {
-        try {
-            const AudioContext = window.AudioContext || window.webkitAudioContext;
-            if (!AudioContext) return;
-            
-            const ctx = new AudioContext();
-            const osc = ctx.createOscillator();
-            const gain = ctx.createGain();
-            
-            osc.connect(gain);
-            gain.connect(ctx.destination);
-            
-            if (speaker === 'blind') {
-                // 盲眼：低频沙哑，类似老人声音
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(150, ctx.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.05);
-                gain.gain.setValueAtTime(0.1, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.05);
-            } else {
-                // 玩家：中频清晰
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(300, ctx.currentTime);
-                gain.gain.setValueAtTime(0.08, ctx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.03);
-            }
-            
-            osc.start(ctx.currentTime);
-            osc.stop(ctx.currentTime + 0.05);
-        } catch (e) {
-            // 音频失败静默处理
-        }
+        window.AudioRuntimeBridge?.playPulse(
+            speaker === 'blind'
+                ? { type: 'sine', startFreq: 150, endFreq: 100, volume: 0.1, duration: 0.05 }
+                : { type: 'triangle', startFreq: 300, endFreq: 240, volume: 0.08, duration: 0.03 }
+        );
     }
     
     // 切换对话历史面板
@@ -620,60 +678,25 @@ class ShopNPCSystem {
     
     // 更新NPC提示位置（跟随移动）
     updatePromptPosition() {
-        const canvas = window.game.canvas;
-        const rect = canvas.getBoundingClientRect();
-        
-        // 更新交互提示位置
-        if (!this.isTalking && window.game && window.game.curRoom && window.game.curRoom.npc) {
-            const npc = window.game.curRoom.npc;
+        this.syncDialogueUiVisibility();
+        if (!window.game) return;
+
+        if (!this.isTalking && window.game.curRoom?.npc) {
             const prompt = document.getElementById('npcInteractPrompt');
             if (prompt) {
-                let screenX, screenY;
-                if (window.game.camera && window.game.camera.worldToScreen) {
-                    const pos = window.game.camera.worldToScreen(npc.x, npc.y);
-                    screenX = rect.left + pos.x;
-                    screenY = rect.top + pos.y;
-                } else {
-                    screenX = rect.left + (npc.x / 2000) * rect.width;
-                    screenY = rect.top + (npc.y / 2000) * rect.height;
-                }
-                prompt.style.left = screenX + 'px';
-                prompt.style.top = screenY + 'px';
+                this.applyPosition(prompt, this.getPromptScreenPosition(window.game.curRoom.npc));
             }
         }
-        
-        // 更新对话气泡位置
-        if (this.npcBubble && window.game && window.game.curRoom && window.game.curRoom.npc) {
-            const npc = window.game.curRoom.npc;
-            let screenX, screenY;
-            if (window.game.camera && window.game.camera.worldToScreen) {
-                const pos = window.game.camera.worldToScreen(npc.x, npc.y);
-                screenX = rect.left + pos.x;
-                screenY = rect.top + pos.y;
-            } else {
-                screenX = rect.left + (npc.x / 2000) * rect.width;
-                screenY = rect.top + (npc.y / 2000) * rect.height;
-            }
-            this.npcBubble.style.left = screenX + 'px';
-            this.npcBubble.style.top = screenY + 'px';
+
+        if (this.npcBubble && window.game.curRoom?.npc) {
+            this.applyPosition(this.npcBubble, this.getNpcBubbleScreenPosition(window.game.curRoom.npc, this.npcBubble));
         }
-        
-        if (this.playerBubble && window.game && window.game.player) {
-            const player = window.game.player;
-            let screenX, screenY;
-            if (window.game.camera && window.game.camera.worldToScreen) {
-                const pos = window.game.camera.worldToScreen(player.x, player.y);
-                screenX = rect.left + pos.x;
-                screenY = rect.top + pos.y;
-            } else {
-                screenX = rect.left + (player.x / 2000) * rect.width;
-                screenY = rect.top + (player.y / 2000) * rect.height;
-            }
-            this.playerBubble.style.left = screenX + 'px';
-            this.playerBubble.style.top = screenY + 'px';
+
+        if (this.playerBubble && window.game.player) {
+            this.applyPosition(this.playerBubble, this.getPlayerBubbleScreenPosition(window.game.player, this.playerBubble));
         }
     }
-    
+
     // 清理所有UI
     destroy() {
         this.clearBubbles();

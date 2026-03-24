@@ -67,7 +67,7 @@ class AudioSystem {
         this.bgmCache = {};
         this.bgmSource = null;
         this.bgmBuffer = null;
-        this.basePath = 'assets/audio/';
+        this.basePath = 'assets/runtime/audio/';
     }
 
     init() {

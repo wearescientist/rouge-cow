@@ -1,0 +1,46 @@
+project_root=E:\AI\game\rougelike-cow
+mode=apply
+archive_root=E:\AI\game\rougelike-cow\src\_archive\stage1_legacy\20260323_234832
+
+MOVE src/game.js -> src\_archive\stage1_legacy\20260323_234832\src\game.js
+MOVE src/game_complete.js -> src\_archive\stage1_legacy\20260323_234832\src\game_complete.js
+MOVE src/game_final.js -> src\_archive\stage1_legacy\20260323_234832\src\game_final.js
+MOVE src/game_fullscreen.js -> src\_archive\stage1_legacy\20260323_234832\src\game_fullscreen.js
+MOVE src/game_isaac_style.js -> src\_archive\stage1_legacy\20260323_234832\src\game_isaac_style.js
+MOVE src/game_simple.js -> src\_archive\stage1_legacy\20260323_234832\src\game_simple.js
+MOVE src/game_stable.js -> src\_archive\stage1_legacy\20260323_234832\src\game_stable.js
+MOVE src/game_unified.js -> src\_archive\stage1_legacy\20260323_234832\src\game_unified.js
+MOVE src/game_v1.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v1.js
+MOVE src/game_v11.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v11.js
+MOVE src/game_v12.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v12.js
+MOVE src/game_v13.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v13.js
+MOVE src/game_v14.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v14.js
+MOVE src/game_v15.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v15.js
+MOVE src/game_v16.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v16.js
+MOVE src/game_v17.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v17.js
+MOVE src/game_v18.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v18.js
+MOVE src/game_v19.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v19.js
+MOVE src/game_v2.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v2.js
+MOVE src/game_v2.1.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v2.1.js
+MOVE src/game_v2.2.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v2.2.js
+MOVE src/game_v2.3.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v2.3.js
+MOVE src/game_v2.4.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v2.4.js
+MOVE src/game_v2.5.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v2.5.js
+MOVE src/game_v2.6.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v2.6.js
+MOVE src/game_v2.7.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v2.7.js
+MOVE src/game_v2.8.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v2.8.js
+MOVE src/game_v3.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v3.js
+MOVE src/game_v4.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v4.js
+MOVE src/game_v5.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v5.js
+MOVE src/game_v6.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v6.js
+MOVE src/game_v7.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v7.js
+MOVE src/game_v8.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v8.js
+MOVE src/game_v9.js -> src\_archive\stage1_legacy\20260323_234832\src\game_v9.js
+MOVE src/game_with_sprites.js -> src\_archive\stage1_legacy\20260323_234832\src\game_with_sprites.js
+MOVE src/core_engine.js -> src\_archive\stage1_legacy\20260323_234832\src\core_engine.js
+MOVE src/engine.js -> src\_archive\stage1_legacy\20260323_234832\src\engine.js
+MOVE src/vampire_engine.js -> src\_archive\stage1_legacy\20260323_234832\src\vampire_engine.js
+MOVE src/isaac_room_system.js -> src\_archive\stage1_legacy\20260323_234832\src\isaac_room_system.js
+MOVE src/items_visual.js -> src\_archive\stage1_legacy\20260323_234832\src\items_visual.js
+MOVE src/room_rewards.js -> src\_archive\stage1_legacy\20260323_234832\src\room_rewards.js
+MOVE src/sprites_manager.js -> src\_archive\stage1_legacy\20260323_234832\src\sprites_manager.js

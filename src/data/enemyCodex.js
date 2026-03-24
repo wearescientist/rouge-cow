@@ -64,34 +64,34 @@ const ENEMY_CODEX_DATA = {
         quote: '"群体的力量变成了群体的诅咒。"'
     },
     
-    // 第五层 - 盲眼（未完全寄生的老鼹鼠）
+    // 第五层 - 假结局视角中的“父之拟态”
     turtle: {
-        name: '盲眼',
-        title: '最后的清醒者',
-        realName: '盲眼 - 地底的见证者',
+        name: '拟父者',
+        title: '保留父亲口吻的高阶感染体',
+        realName: '假结局视角条目',
         story: [
-            '盲眼是一只老迈的鼹鼠，他住在墙壁上的隔离腔室里，周围涂满了抑制菌丝生长的分泌物。',
-            '他是唯一一个没有被完全寄生的存在，数十年来一直观察着母虫的动静。',
-            '"你父亲……是个固执的傻瓜。他明知道下来就是送死，还是跟着歌声走了。"'
+            '它的动作、停顿和称呼都太像父亲，所以也最容易让人动摇。',
+            '正因如此，牛牛只能逼自己相信：越像父亲，就越说明这是感染最恶毒的拟态。',
+            '第五层这一战，不像清剿，更像一次把亲情亲手按进泥里的处决。'
         ],
         unlockCondition: '击败第5层Boss',
         floor: 5,
-        quote: '"他选择了黑暗，只为守护最后一丝光明。"'
+        quote: '“越像家人，越该先斩。”'
     },
     
-    // 第六层 - 深渊母体（母虫）
+    // 第六层 - 假结局视角中的最终感染体
     mother: {
-        name: '深渊母体',
-        title: '母虫的显现形态',
-        realName: '母虫 - 来自群星的格式塔',
+        name: '绒影母体',
+        title: '会叫你小名的终末感染体',
+        realName: '假结局视角条目',
         story: [
-            '母虫并非单纯的怪物，而是大地本身的病变。千年前，一颗陨星坠入草原深处，带来了来自群星的种子。',
-            '那东西不是生命，而是生命的模板，一种能够优化、统一、同化所有生物的格式塔意识。',
-            '它无法理解为什么这些生物会为了别人而牺牲自己。这对它来说……很新奇。'
+            '她会叫出最熟悉的小名，也会说出最普通的家常话。',
+            '正因为太像真的，牛牛才只能把她理解成最深处、最会借记忆行事的高阶感染体。',
+            '可当这一战结束时，真正落下来的不是胜利，而是几乎无法解释的空。'
         ],
-        unlockCondition: '击败深渊母体',
+        unlockCondition: '击败第6层Boss',
         floor: 6,
-        quote: '"它学会了爱的概念，就像学会了一种武器。"'
+        quote: '“当怪物开始说出母亲的话，刀反而更难停下。”'
     }
 };
 
@@ -105,6 +105,7 @@ class EnemyCodex {
         if (ENEMY_CODEX_DATA[enemyType] && !this.unlocked.has(enemyType)) {
             this.unlocked.add(enemyType);
             this.saveProgress();
+            window.collectionCodex?.unlockEnemy?.(enemyType);
             this.showUnlockNotification(enemyType);
             return true;
         }
@@ -302,5 +303,6 @@ class EnemyCodex {
     }
 }
 
+window.ENEMY_CODEX_DATA = ENEMY_CODEX_DATA;
 // 创建全局实例
 window.enemyCodex = new EnemyCodex();

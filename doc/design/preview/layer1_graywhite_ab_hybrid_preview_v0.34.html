@@ -1,0 +1,555 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>第一层灰白菌丝完整镜头样板 v0.34</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #090b0d;
+            --panel: rgba(16, 19, 24, 0.9);
+            --line: rgba(255,255,255,0.08);
+            --text: #f1ede4;
+            --muted: #a6abad;
+            --shadow: rgba(0,0,0,0.34);
+            --hud-shell: rgba(14, 17, 21, 0.7);
+            --hud-box: rgba(255,255,255,0.045);
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
+            margin: 0;
+            min-height: 100%;
+            background:
+                radial-gradient(circle at top, rgba(130, 145, 162, 0.08), transparent 28%),
+                linear-gradient(180deg, #0e1218 0%, #090b0d 100%);
+            color: var(--text);
+            font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+        }
+
+        .page {
+            width: min(1560px, calc(100% - 40px));
+            margin: 0 auto;
+            padding: 24px 0 48px;
+        }
+
+        .hero, .panel {
+            border: 1px solid var(--line);
+            border-radius: 26px;
+            background: var(--panel);
+            box-shadow: 0 22px 56px var(--shadow);
+        }
+
+        .hero {
+            padding: 24px 26px;
+            margin-bottom: 18px;
+        }
+
+        .eyebrow {
+            color: #d8c9b6;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            margin-bottom: 10px;
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+            font-family: "Palatino Linotype", "Book Antiqua", "Microsoft YaHei UI", serif;
+        }
+
+        h1 {
+            font-size: clamp(30px, 4vw, 52px);
+            line-height: 1.06;
+            margin-bottom: 12px;
+        }
+
+        .lead {
+            color: var(--muted);
+            max-width: 1040px;
+            line-height: 1.85;
+            font-size: 15px;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: minmax(0, 1.42fr) minmax(320px, 0.78fr);
+            gap: 18px;
+        }
+
+        .panel {
+            padding: 18px;
+        }
+
+        .preview {
+            position: relative;
+            aspect-ratio: 16 / 9;
+            overflow: hidden;
+            border-radius: 22px;
+            background:
+                radial-gradient(circle at 50% 14%, rgba(214, 224, 236, 0.05), transparent 20%),
+                linear-gradient(180deg, #131821 0%, #0a0c10 100%);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .layer {
+            position: absolute;
+            pointer-events: none;
+        }
+
+        .back-cave {
+            inset: 0;
+            background:
+                radial-gradient(circle at 50% 10%, rgba(229, 237, 245, 0.08), transparent 14%),
+                radial-gradient(circle at 18% 40%, rgba(159, 167, 176, 0.10), transparent 17%),
+                radial-gradient(circle at 82% 40%, rgba(159, 167, 176, 0.10), transparent 17%),
+                linear-gradient(180deg, #4f5864 0%, #282d33 40%, #111419 100%);
+            filter: blur(18px);
+            opacity: 0.88;
+        }
+
+        .far-door-glow {
+            left: 50%;
+            top: 4%;
+            width: 34%;
+            height: 26%;
+            transform: translateX(-50%);
+            border-radius: 0 0 42px 42px;
+            background:
+                radial-gradient(circle at 50% 18%, rgba(239, 245, 252, 0.22), transparent 18%),
+                linear-gradient(180deg, rgba(188, 198, 209, 0.14), rgba(44, 49, 56, 0.08));
+            filter: blur(14px);
+            opacity: 0.82;
+        }
+
+        .hud-buffer-left,
+        .hud-buffer-right {
+            top: 5%;
+            bottom: 5%;
+            width: 18%;
+            border-radius: 30px;
+            background:
+                linear-gradient(180deg, rgba(122, 117, 110, 0.18), rgba(34, 35, 38, 0.08)),
+                rgba(10, 13, 16, 0.22);
+            filter: blur(18px);
+            opacity: 0.44;
+        }
+
+        .hud-buffer-left { left: 1.4%; }
+        .hud-buffer-right { right: 1.4%; }
+
+        .side-cave-left,
+        .side-cave-right {
+            top: 9%;
+            bottom: 11%;
+            width: 18%;
+            background:
+                linear-gradient(180deg, rgba(116, 111, 104, 0.84), rgba(50, 47, 45, 0.92)),
+                radial-gradient(circle at 50% 34%, rgba(213, 205, 193, 0.10), transparent 18%);
+            filter: blur(2px);
+            opacity: 0.78;
+        }
+
+        .side-cave-left {
+            left: -2%;
+            border-radius: 0 30px 30px 0;
+            transform: perspective(600px) rotateY(12deg);
+        }
+
+        .side-cave-right {
+            right: -2%;
+            border-radius: 30px 0 0 30px;
+            transform: perspective(600px) rotateY(-12deg);
+        }
+
+        .cave-frame {
+            left: 50%;
+            top: 52%;
+            width: 58%;
+            height: 78%;
+            transform: translate(-50%, -50%);
+            border-radius: 34px;
+            background:
+                linear-gradient(180deg, rgba(113, 106, 99, 0.86), rgba(51, 46, 44, 0.92));
+            box-shadow:
+                inset 0 0 0 1px rgba(255,255,255,0.03),
+                inset 0 0 0 24px rgba(70, 65, 61, 0.78),
+                inset 0 20px 32px rgba(255,255,255,0.02),
+                0 16px 28px rgba(0,0,0,0.18);
+            opacity: 0.72;
+        }
+
+        .frame-shadow {
+            left: 50%;
+            top: 52%;
+            width: 60%;
+            height: 80%;
+            transform: translate(-50%, -50%);
+            border-radius: 36px;
+            background:
+                radial-gradient(circle at 50% 54%, rgba(255,255,255,0) 0%, rgba(255,255,255,0) 34%, rgba(13, 16, 21, 0.14) 64%, rgba(7, 9, 12, 0.42) 100%);
+            mix-blend-mode: multiply;
+        }
+
+        .corner {
+            width: 9.8%;
+            height: 14%;
+            border-radius: 24px;
+            background:
+                linear-gradient(145deg, rgba(214, 208, 198, 0.10), rgba(94, 89, 85, 0.08)),
+                linear-gradient(180deg, #746e67 0%, #4e4944 44%, #2a2727 100%);
+            box-shadow:
+                inset 0 0 0 1px rgba(255,255,255,0.03),
+                inset 0 10px 18px rgba(255,255,255,0.03),
+                0 10px 18px rgba(0,0,0,0.14);
+            opacity: 0.78;
+        }
+
+        .corner::after {
+            content: "";
+            position: absolute;
+            inset: 24%;
+            border-radius: 18px;
+            background: radial-gradient(circle, rgba(214, 208, 198, 0.08), transparent 72%);
+            opacity: 0.7;
+        }
+
+        .corner.tl { top: 13%; left: 22%; }
+        .corner.tr { top: 13%; right: 22%; }
+        .corner.bl { bottom: 15%; left: 22%; }
+        .corner.br { bottom: 15%; right: 22%; }
+
+        .stage {
+            left: 50%;
+            top: 52%;
+            width: 49.5%;
+            height: 69%;
+            transform: translate(-50%, -50%);
+            border-radius: 28px;
+            background:
+                radial-gradient(circle at 50% 50%, rgba(233, 228, 218, 0.20), transparent 16%),
+                radial-gradient(circle at 30% 35%, rgba(255,255,255,0.08), transparent 22%),
+                linear-gradient(180deg, #b2a99f 0%, #7a7269 42%, #58524d 100%);
+            box-shadow:
+                inset 0 0 0 1px rgba(255,255,255,0.05),
+                inset 0 0 92px rgba(0,0,0,0.22),
+                0 18px 32px rgba(0,0,0,0.28);
+        }
+
+        .stage::before {
+            content: "";
+            position: absolute;
+            inset: 8%;
+            border-radius: 20px;
+            background:
+                repeating-linear-gradient(140deg, rgba(255,255,255,0.04) 0 12px, rgba(0,0,0,0.03) 12px 22px),
+                radial-gradient(circle at 28% 32%, rgba(255,255,255,0.08), transparent 22%),
+                radial-gradient(circle at 72% 64%, rgba(255,255,255,0.06), transparent 22%),
+                repeating-radial-gradient(circle at 40% 58%, rgba(244, 241, 236, 0.05) 0 2px, transparent 2px 14px);
+            mix-blend-mode: screen;
+            opacity: 0.52;
+        }
+
+        .stage::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            border-radius: inherit;
+            background:
+                radial-gradient(circle at 50% 52%, rgba(255,255,255,0.10), transparent 22%),
+                radial-gradient(circle at 50% 54%, rgba(194, 186, 176, 0.14), transparent 52%);
+            filter: blur(8px);
+        }
+
+        .door {
+            left: 50%;
+            width: 9%;
+            transform: translateX(-50%);
+            border-radius: 24px;
+            background:
+                radial-gradient(circle at 50% 42%, rgba(255,255,255,0.14), transparent 24%),
+                linear-gradient(180deg, #b4aba0 0%, #7d756d 36%, #4b4746 100%);
+            box-shadow: inset 0 0 0 1px rgba(255,255,255,0.04);
+        }
+
+        .door.top {
+            top: 10%;
+            height: 16%;
+        }
+
+        .door.bottom {
+            bottom: 10%;
+            height: 12%;
+            transform: translateX(-50%) rotate(180deg);
+        }
+
+        .mist {
+            inset: 0;
+            background:
+                radial-gradient(circle at 50% 54%, rgba(248, 250, 252, 0.10), transparent 18%),
+                radial-gradient(circle at 50% 56%, rgba(207, 201, 193, 0.16), transparent 44%),
+                radial-gradient(circle at 50% 56%, rgba(123, 117, 109, 0.10), transparent 70%);
+            filter: blur(22px);
+            opacity: 0.84;
+        }
+
+        .spores {
+            inset: 0;
+            background:
+                radial-gradient(circle at 22% 20%, rgba(223, 230, 240, 0.8) 0 1px, transparent 2px),
+                radial-gradient(circle at 31% 30%, rgba(223, 230, 240, 0.7) 0 1px, transparent 2px),
+                radial-gradient(circle at 67% 18%, rgba(223, 230, 240, 0.8) 0 1px, transparent 2px),
+                radial-gradient(circle at 75% 26%, rgba(223, 230, 240, 0.7) 0 1px, transparent 2px),
+                radial-gradient(circle at 58% 10%, rgba(223, 230, 240, 0.75) 0 1px, transparent 2px),
+                radial-gradient(circle at 48% 16%, rgba(223, 230, 240, 0.62) 0 1px, transparent 2px);
+            filter: blur(0.4px);
+            opacity: 0.55;
+        }
+
+        .foreground {
+            left: -2%;
+            right: -2%;
+            bottom: -6%;
+            height: 28%;
+            background:
+                radial-gradient(circle at 10% 76%, rgba(76, 74, 71, 0.92), transparent 18%),
+                radial-gradient(circle at 24% 90%, rgba(148, 141, 133, 0.52), transparent 20%),
+                radial-gradient(circle at 46% 102%, rgba(71, 70, 67, 0.84), transparent 16%),
+                radial-gradient(circle at 72% 90%, rgba(148, 141, 133, 0.52), transparent 20%),
+                radial-gradient(circle at 90% 76%, rgba(76, 74, 71, 0.92), transparent 18%);
+            filter: blur(14px);
+            opacity: 0.9;
+        }
+
+        .mycelium-curtain {
+            left: 12%;
+            right: 12%;
+            bottom: 0;
+            height: 20%;
+            background:
+                radial-gradient(circle at 18% 100%, rgba(206, 200, 191, 0.10), transparent 16%),
+                radial-gradient(circle at 36% 94%, rgba(224, 220, 211, 0.09), transparent 12%),
+                radial-gradient(circle at 58% 100%, rgba(198, 192, 184, 0.08), transparent 14%),
+                radial-gradient(circle at 76% 96%, rgba(223, 220, 213, 0.08), transparent 12%);
+            filter: blur(12px);
+            opacity: 0.58;
+        }
+
+        .hud-left,
+        .hud-right {
+            top: 4%;
+            bottom: 4%;
+            width: 17%;
+            border-radius: 24px;
+            background:
+                linear-gradient(180deg, rgba(178, 171, 160, 0.08), rgba(34, 37, 42, 0.14)),
+                var(--hud-shell);
+            border: 1px solid rgba(255,255,255,0.08);
+            box-shadow:
+                inset 0 0 0 1px rgba(255,255,255,0.03),
+                0 10px 24px rgba(0,0,0,0.24);
+            backdrop-filter: blur(10px);
+        }
+
+        .hud-left { left: 1.4%; }
+        .hud-right { right: 1.4%; }
+
+        .hud-box {
+            position: absolute;
+            left: 10%;
+            right: 10%;
+            height: 10%;
+            border-radius: 16px;
+            background: var(--hud-box);
+            border: 1px solid rgba(255,255,255,0.04);
+        }
+
+        .hud-left .hud-box:nth-child(1),
+        .hud-right .hud-box:nth-child(1) { top: 8%; }
+        .hud-left .hud-box:nth-child(2),
+        .hud-right .hud-box:nth-child(2) { top: 22%; }
+        .hud-left .hud-box:nth-child(3),
+        .hud-right .hud-box:nth-child(3) { top: 36%; }
+        .hud-left .hud-box:nth-child(4),
+        .hud-right .hud-box:nth-child(4) { top: 50%; }
+        .hud-left .hud-box:nth-child(5),
+        .hud-right .hud-box:nth-child(5) { top: 64%; }
+
+        .hud-top {
+            left: 35%;
+            right: 35%;
+            top: 3.5%;
+            height: 7%;
+            border-radius: 18px;
+            background:
+                linear-gradient(180deg, rgba(188, 180, 168, 0.08), rgba(18, 22, 28, 0.16)),
+                rgba(13, 16, 20, 0.64);
+            border: 1px solid rgba(255,255,255,0.06);
+            backdrop-filter: blur(10px);
+        }
+
+        .vignette {
+            inset: 0;
+            background: radial-gradient(circle at 50% 54%, rgba(4, 7, 10, 0) 0%, rgba(4, 7, 10, 0) 20%, rgba(4, 7, 10, 0.10) 42%, rgba(2, 5, 8, 0.56) 100%);
+            mix-blend-mode: multiply;
+        }
+
+        .caption {
+            position: absolute;
+            left: 19%;
+            right: 19%;
+            bottom: 3%;
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(10, 12, 15, 0.62);
+            border: 1px solid rgba(255,255,255,0.06);
+            color: #e9e3d7;
+            font-size: 12px;
+            line-height: 1.7;
+            backdrop-filter: blur(8px);
+        }
+
+        .stack {
+            display: grid;
+            gap: 14px;
+        }
+
+        .card {
+            border: 1px solid var(--line);
+            border-radius: 18px;
+            background: rgba(255,255,255,0.03);
+            padding: 14px 16px;
+        }
+
+        .card h3 {
+            font-size: 15px;
+            margin-bottom: 10px;
+        }
+
+        .card p, .card li {
+            color: var(--muted);
+            line-height: 1.75;
+            font-size: 13px;
+        }
+
+        .card ul {
+            margin: 0;
+            padding-left: 18px;
+        }
+
+        .tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+        }
+
+        .tag {
+            padding: 7px 11px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: #f4eee1;
+            background: rgba(214, 204, 190, 0.12);
+            border: 1px solid rgba(214, 204, 190, 0.16);
+        }
+
+        @media (max-width: 1120px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="eyebrow">Layer 1 Full Scene Template / v0.34</div>
+            <h1>第一层灰白菌丝 完整镜头样板</h1>
+            <div class="lead">
+                这是把第一层推荐的 `A + B` 混合方向，正式并入 `16:9 完整镜头 + 8x8 核心舞台 + HUD 上浮` 之后的第一版样板。目标不是把旧房间缩小一点，而是让整张画面都变成灰白菌丝洞穴，只把中景保留给真正的战斗与读图。 
+            </div>
+        </section>
+
+        <section class="layout">
+            <section class="panel">
+                <div class="preview">
+                    <div class="layer back-cave"></div>
+                    <div class="layer far-door-glow"></div>
+                    <div class="layer hud-buffer-left"></div>
+                    <div class="layer hud-buffer-right"></div>
+                    <div class="layer side-cave-left"></div>
+                    <div class="layer side-cave-right"></div>
+                    <div class="layer cave-frame"></div>
+                    <div class="layer corner tl"></div>
+                    <div class="layer corner tr"></div>
+                    <div class="layer corner bl"></div>
+                    <div class="layer corner br"></div>
+                    <div class="layer door top"></div>
+                    <div class="layer door bottom"></div>
+                    <div class="layer stage"></div>
+                    <div class="layer mist"></div>
+                    <div class="layer spores"></div>
+                    <div class="layer mycelium-curtain"></div>
+                    <div class="layer foreground"></div>
+                    <div class="layer hud-top"></div>
+                    <div class="layer hud-left">
+                        <div class="hud-box"></div><div class="hud-box"></div><div class="hud-box"></div><div class="hud-box"></div><div class="hud-box"></div>
+                    </div>
+                    <div class="layer hud-right">
+                        <div class="hud-box"></div><div class="hud-box"></div><div class="hud-box"></div><div class="hud-box"></div><div class="hud-box"></div>
+                    </div>
+                    <div class="layer frame-shadow"></div>
+                    <div class="layer vignette"></div>
+                    <div class="caption">
+                        样板重点：HUD 现在压着完整世界镜头，而不是黑边；核心战斗区退成中景舞台；上下左右则由灰白菌腔、骨质侧壁、前景菌丝帘和孢子空气共同接管。这样第一层终于开始像一个完整洞穴镜头，而不是一块被放大的棋盘。 
+                    </div>
+                </div>
+            </section>
+
+            <section class="stack">
+                <div class="card">
+                    <h3>这版合并了什么</h3>
+                    <ul>
+                        <li><strong>A 的结构骨架：</strong>稳定核心舞台、厚转角、菌骨混合壁、上下裂膜门阈值。</li>
+                        <li><strong>B 的空间气氛：</strong>外围洞穴框景、下方菌丝前景、上方远景菌腔、标本箱式微缩感。</li>
+                        <li><strong>完整镜头结构：</strong>16:9 全幅世界镜头、HUD 上浮、HUD 后方缓冲带、完整上下左右景别。</li>
+                    </ul>
+                    <div class="tags">
+                        <span class="tag">灰白菌丝</span>
+                        <span class="tag">完整镜头</span>
+                        <span class="tag">核心舞台缩小</span>
+                        <span class="tag">HUD 上浮</span>
+                        <span class="tag">外围洞穴接管</span>
+                        <span class="tag">微缩电影感</span>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>空间结构</h3>
+                    <p>
+                        这次不是“房间 + 边框”，而是“完整洞穴镜头 + 中景舞台”。中央仍然保持最清楚的走位与判定，上方是更深的灰白菌腔和门外微光，下方是失焦菌丝帘与碎骨，两侧是退后的骨质洞壁，HUD 只是在这张世界镜头上加了一层信息层。 
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>材质与层级</h3>
+                    <p>
+                        地面继续坚持灰白菌丝覆盖的骨灰洞面，外圈洞壁偏骨质硬壳，转角是厚实结节，门是裂开的菌膜阈值。HUD 后方被刻意压成更暗、更低频、更少高亮的缓冲带，避免信息层压在最躁动的材质热点上。 
+                    </p>
+                </div>
+
+                <div class="card">
+                    <h3>下一步落正式样板</h3>
+                    <ul>
+                        <li>先把正式场景里的核心舞台占比压到和本样板接近，不再让房间边框成为第一视觉。</li>
+                        <li>再把第一层真实材质接入四周景别：上远景、下前景、左右侧景、HUD 后缓冲带。</li>
+                        <li>最后让光照、失焦和体积感跟随“完整镜头中的核心舞台”运作，而不是继续跟随旧房间盒子。</li>
+                    </ul>
+                </div>
+            </section>
+        </section>
+    </div>
+</body>
+</html>

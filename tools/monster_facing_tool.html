@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>怪物朝向校准工具</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background: linear-gradient(180deg, #0c1018 0%, #080b12 100%);
+            color: #eef2f7;
+            font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        h1 {
+            color: #f5c451;
+            font-size: 26px;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+        .subtitle {
+            color: #8f9bad;
+            text-align: center;
+            margin-bottom: 18px;
+            font-size: 13px;
+        }
+        .panel {
+            max-width: 1500px;
+            margin: 0 auto 18px;
+            background: rgba(20, 27, 40, 0.92);
+            border: 1px solid #263245;
+            border-radius: 14px;
+            padding: 16px 18px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+        }
+        .help-box {
+            color: #b6c0cf;
+            font-size: 13px;
+            line-height: 1.7;
+        }
+        .help-box strong { color: #f5c451; }
+        .toolbar {
+            display: grid;
+            grid-template-columns: repeat(5, minmax(0, 1fr));
+            gap: 12px;
+            align-items: end;
+        }
+        .field {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .field label {
+            color: #8f9bad;
+            font-size: 12px;
+        }
+        .btn-row, .tab-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        button, select, input {
+            border: 1px solid #304057;
+            border-radius: 8px;
+            background: #131b29;
+            color: #eef2f7;
+            padding: 9px 12px;
+            font-size: 13px;
+        }
+        button { cursor: pointer; }
+        button:hover, select:hover {
+            border-color: #4e6a8f;
+        }
+        .tab-btn.active, .toggle-btn.active, .filter-btn.active {
+            background: #1f3c63;
+            border-color: #69a7ff;
+            color: #fff;
+        }
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 18px;
+            color: #b6c0cf;
+            font-size: 13px;
+        }
+        .stats strong { color: #f5c451; }
+        .grid {
+            max-width: 1500px;
+            margin: 0 auto 24px;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+        }
+        .card {
+            background: rgba(17, 23, 34, 0.96);
+            border: 2px solid #243042;
+            border-radius: 14px;
+            padding: 14px;
+        }
+        .card.flagged {
+            border-color: #d96464;
+            box-shadow: 0 0 0 1px rgba(217, 100, 100, 0.2);
+        }
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+        .monster-name { font-size: 15px; color: #fff; }
+        .monster-meta {
+            color: #7f8ba0;
+            font-size: 11px;
+            text-align: right;
+        }
+        .badge-row {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 10px;
+        }
+        .badge {
+            border-radius: 999px;
+            padding: 3px 8px;
+            font-size: 11px;
+            background: #1e2a3d;
+            color: #b8c7dc;
+        }
+        .scene {
+            width: 100%;
+            height: 110px;
+            border-radius: 10px;
+            background:
+                radial-gradient(circle at 50% 12%, rgba(129, 169, 255, 0.12), transparent 34%),
+                linear-gradient(180deg, #101826 0%, #0a1018 100%);
+            border: 1px solid #1e2a3a;
+            margin-bottom: 10px;
+            image-rendering: pixelated;
+        }
+        .hint {
+            color: #7f8ba0;
+            font-size: 11px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .control-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .control-btn.on {
+            background: #2d6747;
+            border-color: #57c07a;
+            color: #fff;
+        }
+        .control-btn.off {
+            background: #6b2f39;
+            border-color: #d96464;
+            color: #fff;
+        }
+        .asset-path {
+            color: #7f8ba0;
+            font-size: 11px;
+            word-break: break-all;
+            line-height: 1.5;
+        }
+        .missing {
+            color: #ff8d8d;
+            font-size: 11px;
+            margin-top: 6px;
+        }
+        .export-box {
+            margin-top: 14px;
+            width: 100%;
+            min-height: 220px;
+            resize: vertical;
+            font-family: Consolas, monospace;
+            line-height: 1.5;
+        }
+        .footer-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .mode-note {
+            color: #8f9bad;
+            font-size: 12px;
+            margin-top: 6px;
+        }
+        .copy-btn {
+            background: #2d6747;
+            border-color: #57c07a;
+        }
+        .secondary-btn {
+            background: #1f2a3d;
+        }
+        @media (max-width: 960px) {
+            .toolbar {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>怪物朝向校准工具</h1>
+    <p class="subtitle">默认按唯一怪物模板去重显示，避免通用 T1 在 6 层重复出现；也可切回楼层视图做运行时核对~Meow</p>
+
+    <div class="panel help-box">
+        <strong>使用说明：</strong>怪物会自动朝向玩家。如果你看到怪物背对玩家，就标记为 <strong>需要翻转</strong>。<br>
+        工具会直接读取当前楼层怪物池，贴图路径按运行时规则拼接：`generated_assets/monster_walk_preserve_features/floor{N}/T{tier}/{baseId}_{version}/walk/f01.png`。<br>
+        导出区会生成 `VISUAL_CONFIG` 代码块，默认同时保留 `hasBounce` 字段，方便直接回填运行时配置。
+    </div>
+
+    <div class="panel">
+        <div class="toolbar">
+            <div class="field">
+                <label>视图模式</label>
+                <div class="btn-row">
+                    <button class="mode-btn active" id="templateModeBtn">唯一模板</button>
+                    <button class="mode-btn" id="floorModeBtn">当前楼层</button>
+                </div>
+                <div class="mode-note" id="modeNote">当前按 `baseId_version` 去重，适合做朝向校准</div>
+            </div>
+            <div class="field">
+                <label>楼层</label>
+                <div class="tab-row" id="floorTabs"></div>
+            </div>
+            <div class="field">
+                <label>站位</label>
+                <div class="btn-row">
+                    <button class="toggle-btn active" id="playerLeftBtn">玩家左 / 怪物右</button>
+                    <button class="toggle-btn" id="playerRightBtn">怪物左 / 玩家右</button>
+                </div>
+            </div>
+            <div class="field">
+                <label>筛选</label>
+                <div class="btn-row">
+                    <button class="filter-btn active" data-filter="all">全部</button>
+                    <button class="filter-btn" data-filter="flagged">仅需翻转</button>
+                    <button class="filter-btn" data-filter="clean">仅正常</button>
+                </div>
+            </div>
+            <div class="field">
+                <label for="searchInput">搜索</label>
+                <input id="searchInput" type="text" placeholder="按 id / 名称 / baseId 搜索">
+            </div>
+        </div>
+    </div>
+
+    <div class="panel">
+        <div class="stats" id="statsBar"></div>
+    </div>
+
+    <div class="grid" id="monsterGrid"></div>
+
+    <div class="panel">
+        <div class="field">
+            <label for="exportBox">导出结果</label>
+            <textarea id="exportBox" class="export-box"></textarea>
+        </div>
+        <div class="footer-actions">
+            <button class="copy-btn" id="copyBtn">复制 VISUAL_CONFIG</button>
+            <button class="secondary-btn" id="resetFloorBtn">重置当前楼层</button>
+            <button class="secondary-btn" id="resetAllBtn">重置全部</button>
+        </div>
+    </div>
+
+    <script src="../floor-data.js"></script>
+    <script>
+        const EXISTING_VISUAL_CONFIG = {
+            bat_v2: { needsFlip: true, hasBounce: true },
+            bat_v3: { needsFlip: true, hasBounce: true },
+            bat_v8: { needsFlip: true, hasBounce: true },
+            bat_v9: { needsFlip: false, hasBounce: true },
+            bee_v6: { needsFlip: true, hasBounce: true },
+            chick_spr: { needsFlip: false, hasBounce: false },
+            crab_spr: { needsFlip: false, hasBounce: false },
+            crab_v2: { needsFlip: false, hasBounce: false },
+            crab_v4: { needsFlip: false, hasBounce: false },
+            crab_v6: { needsFlip: false, hasBounce: false },
+            crab_v8: { needsFlip: false, hasBounce: false },
+            fox_v1: { needsFlip: false, hasBounce: false },
+            fox_v10: { needsFlip: false, hasBounce: false },
+            fox_v3: { needsFlip: false, hasBounce: false },
+            fox_v6: { needsFlip: false, hasBounce: false },
+            fox_v7: { needsFlip: false, hasBounce: false },
+            fox_v8: { needsFlip: false, hasBounce: false },
+            ghost_spr: { needsFlip: true, hasBounce: true },
+            ghost_v10: { needsFlip: true, hasBounce: true },
+            ghost_v2: { needsFlip: true, hasBounce: true },
+            ghost_v3: { needsFlip: true, hasBounce: true },
+            ghost_v4: { needsFlip: true, hasBounce: true },
+            ghost_v6: { needsFlip: true, hasBounce: true },
+            ghost_v8: { needsFlip: true, hasBounce: true },
+            goose_v6: { needsFlip: false, hasBounce: false },
+            mimic_spr: { needsFlip: true, hasBounce: false },
+            mimic_v1: { needsFlip: true, hasBounce: false },
+            mimic_v5: { needsFlip: true, hasBounce: false },
+            mimic_v6: { needsFlip: true, hasBounce: false },
+            mimic_v7: { needsFlip: true, hasBounce: false },
+            mimic_v8: { needsFlip: true, hasBounce: false },
+            mother_v10: { needsFlip: false, hasBounce: false },
+            mother_v2: { needsFlip: false, hasBounce: false },
+            mother_v3: { needsFlip: false, hasBounce: false },
+            mother_v6: { needsFlip: false, hasBounce: false },
+            mother_v7: { needsFlip: false, hasBounce: false },
+            mother_v8: { needsFlip: false, hasBounce: false },
+            nibei_v6: { needsFlip: true, hasBounce: false },
+            nibei_v8: { needsFlip: false, hasBounce: false },
+            panther_v1: { needsFlip: true, hasBounce: false },
+            panther_v10: { needsFlip: true, hasBounce: false },
+            pigeon_v1: { needsFlip: true, hasBounce: true },
+            pigeon_v10: { needsFlip: false, hasBounce: true },
+            pigeon_v2: { needsFlip: true, hasBounce: true },
+            pigeon_v4: { needsFlip: true, hasBounce: true },
+            pigeon_v6: { needsFlip: true, hasBounce: true },
+            pigeon_v7: { needsFlip: false, hasBounce: true },
+            pigeon_v8: { needsFlip: true, hasBounce: true },
+            rabbit2_v2: { needsFlip: true, hasBounce: true },
+            rabbit2_v4: { needsFlip: false, hasBounce: true },
+            snail_v1: { needsFlip: false, hasBounce: false },
+            snail_v10: { needsFlip: false, hasBounce: false },
+            snail_v2: { needsFlip: true, hasBounce: false },
+            snail_v4: { needsFlip: false, hasBounce: false },
+            snail_v6: { needsFlip: false, hasBounce: false },
+            snail_v7: { needsFlip: true, hasBounce: false },
+            snail_v8: { needsFlip: true, hasBounce: false },
+            snake_v10: { needsFlip: true, hasBounce: false },
+            snake_v4: { needsFlip: true, hasBounce: false },
+            snake_v7: { needsFlip: true, hasBounce: false },
+            snake_v8: { needsFlip: true, hasBounce: false },
+            yinya_v7: { needsFlip: false, hasBounce: false }
+        };
+
+        const FALLBACK_VISUALS = {
+            bat: { needsFlip: true, hasBounce: true },
+            ghost: { needsFlip: true, hasBounce: true },
+            snake: { needsFlip: true, hasBounce: false },
+            pigeon: { needsFlip: false, hasBounce: true },
+            bee: { needsFlip: false, hasBounce: true },
+            rabbit2: { needsFlip: false, hasBounce: true }
+        };
+
+        const state = {
+            currentFloor: 1,
+            viewMode: 'template',
+            playerOnLeft: true,
+            filter: 'all',
+            search: '',
+            visuals: {},
+            spriteCache: new Map()
+        };
+
+        let playerSprite = null;
+
+        function getDefaultVisual(monster) {
+            const key = `${monster.baseId}_${monster.version}`;
+            if (EXISTING_VISUAL_CONFIG[key]) {
+                return { ...EXISTING_VISUAL_CONFIG[key] };
+            }
+            if (FALLBACK_VISUALS[monster.baseId]) {
+                return { ...FALLBACK_VISUALS[monster.baseId] };
+            }
+            return { needsFlip: false, hasBounce: false };
+        }
+
+        function getFloorMonsters(floorNum) {
+            const floorKey = `floor${floorNum}`;
+            const floor = window.FLOOR_DATA?.floors?.[floorKey];
+            if (!floor?.monsters) return [];
+
+            const seen = new Set();
+            return floor.monsters
+                .map(monster => ({
+                    ...monster,
+                    key: `${monster.baseId}_${monster.version}`,
+                    floor: floorNum
+                }))
+                .filter(monster => {
+                    if (seen.has(monster.key)) return false;
+                    seen.add(monster.key);
+                    return true;
+                })
+                .sort((a, b) => {
+                    if ((a.tier || 1) !== (b.tier || 1)) {
+                        return (a.tier || 1) - (b.tier || 1);
+                    }
+                    return a.id.localeCompare(b.id);
+                });
+        }
+
+        function getTemplateMonsters() {
+            const templateMap = new Map();
+            for (let floor = 1; floor <= 6; floor++) {
+                getFloorMonsters(floor).forEach(monster => {
+                    const existing = templateMap.get(monster.key);
+                    if (!existing) {
+                        templateMap.set(monster.key, {
+                            ...monster,
+                            floors: [floor],
+                            tiers: [monster.tier || 1],
+                            types: [monster.type || 'common']
+                        });
+                        return;
+                    }
+                    existing.floors.push(floor);
+                    if (!existing.tiers.includes(monster.tier || 1)) {
+                        existing.tiers.push(monster.tier || 1);
+                    }
+                    if (!existing.types.includes(monster.type || 'common')) {
+                        existing.types.push(monster.type || 'common');
+                    }
+                    if ((monster.tier || 1) < (existing.tier || 1)) {
+                        existing.floor = floor;
+                        existing.tier = monster.tier;
+                        existing.type = monster.type;
+                        existing.id = monster.id;
+                        existing.name = monster.name;
+                    }
+                });
+            }
+            return Array.from(templateMap.values()).sort((a, b) => {
+                if ((a.tier || 1) !== (b.tier || 1)) {
+                    return (a.tier || 1) - (b.tier || 1);
+                }
+                return a.key.localeCompare(b.key);
+            });
+        }
+
+        function getAllMonsters() {
+            const all = [];
+            for (let floor = 1; floor <= 6; floor++) {
+                all.push(...getFloorMonsters(floor));
+            }
+            return all;
+        }
+
+        function initVisualState() {
+            getAllMonsters().forEach(monster => {
+                if (!state.visuals[monster.key]) {
+                    state.visuals[monster.key] = getDefaultVisual(monster);
+                }
+            });
+        }
+
+        function createFloorTabs() {
+            const wrap = document.getElementById('floorTabs');
+            wrap.innerHTML = '';
+            for (let floor = 1; floor <= 6; floor++) {
+                const btn = document.createElement('button');
+                btn.className = `tab-btn${floor === state.currentFloor ? ' active' : ''}`;
+                btn.textContent = `第${floor}层`;
+                btn.onclick = () => {
+                    state.currentFloor = floor;
+                    createFloorTabs();
+                    render();
+                };
+                wrap.appendChild(btn);
+            }
+        }
+
+        function bindControls() {
+            document.getElementById('templateModeBtn').onclick = () => {
+                state.viewMode = 'template';
+                syncModeButtons();
+                render();
+            };
+            document.getElementById('floorModeBtn').onclick = () => {
+                state.viewMode = 'floor';
+                syncModeButtons();
+                render();
+            };
+            document.getElementById('playerLeftBtn').onclick = () => {
+                state.playerOnLeft = true;
+                syncToggleButtons();
+                renderGrid();
+            };
+            document.getElementById('playerRightBtn').onclick = () => {
+                state.playerOnLeft = false;
+                syncToggleButtons();
+                renderGrid();
+            };
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.onclick = () => {
+                    state.filter = btn.dataset.filter;
+                    syncFilterButtons();
+                    render();
+                };
+            });
+            document.getElementById('searchInput').addEventListener('input', event => {
+                state.search = event.target.value.trim().toLowerCase();
+                render();
+            });
+            document.getElementById('copyBtn').onclick = async () => {
+                const text = document.getElementById('exportBox').value;
+                await navigator.clipboard.writeText(text);
+                alert('VISUAL_CONFIG 已复制到剪贴板~Meow');
+            };
+            document.getElementById('resetFloorBtn').onclick = () => {
+                getFloorMonsters(state.currentFloor).forEach(monster => {
+                    state.visuals[monster.key] = getDefaultVisual(monster);
+                });
+                render();
+            };
+            document.getElementById('resetAllBtn').onclick = () => {
+                Object.keys(state.visuals).forEach(key => delete state.visuals[key]);
+                initVisualState();
+                render();
+            };
+        }
+
+        function syncToggleButtons() {
+            document.getElementById('playerLeftBtn').classList.toggle('active', state.playerOnLeft);
+            document.getElementById('playerRightBtn').classList.toggle('active', !state.playerOnLeft);
+        }
+
+        function syncModeButtons() {
+            const isTemplate = state.viewMode === 'template';
+            document.getElementById('templateModeBtn').classList.toggle('active', isTemplate);
+            document.getElementById('floorModeBtn').classList.toggle('active', !isTemplate);
+            document.getElementById('modeNote').textContent = isTemplate
+                ? '当前按 `baseId_version` 去重，适合做朝向校准'
+                : '当前按 `floor-data.js` 的楼层池展示，适合核对运行时分布';
+        }
+
+        function syncFilterButtons() {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.filter === state.filter);
+            });
+        }
+
+        function getViewMonsters() {
+            return state.viewMode === 'template' ? getTemplateMonsters() : getFloorMonsters(state.currentFloor);
+        }
+
+        function getVisibleMonsters() {
+            return getViewMonsters().filter(monster => {
+                const visual = state.visuals[monster.key] || getDefaultVisual(monster);
+                const matchesFilter =
+                    state.filter === 'all' ||
+                    (state.filter === 'flagged' && visual.needsFlip) ||
+                    (state.filter === 'clean' && !visual.needsFlip);
+                if (!matchesFilter) return false;
+
+                if (!state.search) return true;
+                return [
+                    monster.id,
+                    monster.name,
+                    monster.baseId,
+                    monster.version,
+                    `tier${monster.tier || 1}`,
+                    (monster.floors || []).join(' ')
+                ].join(' ').toLowerCase().includes(state.search);
+            });
+        }
+
+        function getSpritePath(monster) {
+            return `../generated_assets/monster_walk_preserve_features/floor${monster.floor}/T${monster.tier}/${monster.baseId}_${monster.version}/walk/f01.png`;
+        }
+
+        function loadImage(src) {
+            if (state.spriteCache.has(src)) {
+                return state.spriteCache.get(src);
+            }
+            const promise = new Promise(resolve => {
+                const img = new Image();
+                img.onload = () => resolve({ ok: true, img });
+                img.onerror = () => resolve({ ok: false, img: null });
+                img.src = src;
+            });
+            state.spriteCache.set(src, promise);
+            return promise;
+        }
+
+        function buildStats(monsters) {
+            const source = getViewMonsters();
+            const flagged = source.filter(monster => state.visuals[monster.key]?.needsFlip).length;
+            const bounced = source.filter(monster => state.visuals[monster.key]?.hasBounce).length;
+            document.getElementById('statsBar').innerHTML = [
+                `当前模式: <strong>${state.viewMode === 'template' ? '唯一模板' : `楼层${state.currentFloor}`}</strong>`,
+                `显示数量: <strong>${monsters.length}</strong>`,
+                `需翻转: <strong>${flagged}</strong>`,
+                `带颠簸: <strong>${bounced}</strong>`
+            ].map(item => `<span>${item}</span>`).join('');
+        }
+
+        function createBadge(text) {
+            return `<span class="badge">${text}</span>`;
+        }
+
+        function renderGrid() {
+            const grid = document.getElementById('monsterGrid');
+            const monsters = getVisibleMonsters();
+            buildStats(monsters);
+            grid.innerHTML = '';
+
+            monsters.forEach(monster => {
+                const visual = state.visuals[monster.key];
+                const spritePath = getSpritePath(monster);
+                const card = document.createElement('div');
+                card.className = `card${visual.needsFlip ? ' flagged' : ''}`;
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div>
+                            <div class="monster-name">${monster.name}</div>
+                            <div class="monster-meta">${monster.key}</div>
+                        </div>
+                        <div class="monster-meta">${monster.id}</div>
+                    </div>
+                    <div class="badge-row">
+                        ${createBadge(`T${monster.tier || 1}`)}
+                        ${createBadge(monster.type || 'common')}
+                        ${createBadge(monster.baseId)}
+                        ${monster.floors ? createBadge(`F${monster.floors.join('/')}`) : ''}
+                        ${monster.tiers && monster.tiers.length > 1 ? createBadge(`T${monster.tiers.join('/')}`) : ''}
+                        ${visual.hasBounce ? createBadge('hasBounce') : ''}
+                    </div>
+                    <canvas class="scene" id="scene_${monster.key}" width="320" height="110"></canvas>
+                    <div class="hint">玩家${state.playerOnLeft ? '在左' : '在右'}，怪物应始终面向玩家</div>
+                    <div class="control-row">
+                        <button class="control-btn ${visual.needsFlip ? 'off' : 'on'}" data-key="${monster.key}" data-action="flip-false">正常朝向</button>
+                        <button class="control-btn ${visual.needsFlip ? 'on' : 'off'}" data-key="${monster.key}" data-action="flip-true">需要翻转</button>
+                    </div>
+                    <div class="control-row">
+                        <button class="control-btn ${visual.hasBounce ? 'on' : 'off'}" data-key="${monster.key}" data-action="bounce-true">有颠簸</button>
+                        <button class="control-btn ${visual.hasBounce ? 'off' : 'on'}" data-key="${monster.key}" data-action="bounce-false">无颠簸</button>
+                    </div>
+                    <div class="asset-path">${spritePath}</div>
+                    <div class="missing" id="missing_${monster.key}"></div>
+                `;
+                grid.appendChild(card);
+                card.querySelectorAll('button[data-key]').forEach(btn => {
+                    btn.onclick = () => applyCardAction(monster, btn.dataset.action);
+                });
+                drawScene(monster);
+            });
+
+            updateExportBox();
+        }
+
+        function applyCardAction(monster, action) {
+            const visual = state.visuals[monster.key];
+            if (action === 'flip-true') visual.needsFlip = true;
+            if (action === 'flip-false') visual.needsFlip = false;
+            if (action === 'bounce-true') visual.hasBounce = true;
+            if (action === 'bounce-false') visual.hasBounce = false;
+            render();
+        }
+
+        async function drawScene(monster) {
+            const canvas = document.getElementById(`scene_${monster.key}`);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            const groundY = 88;
+            const playerX = state.playerOnLeft ? 30 : 250;
+            const monsterX = state.playerOnLeft ? 230 : 40;
+            const playerSize = 44;
+            const visual = state.visuals[monster.key];
+
+            ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+            ctx.beginPath();
+            ctx.moveTo(14, groundY);
+            ctx.lineTo(canvas.width - 14, groundY);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(0,0,0,0.28)';
+            ctx.beginPath();
+            ctx.ellipse(playerX + playerSize / 2, groundY + 2, 18, 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            if (playerSprite) {
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(playerSprite, playerX, groundY - playerSize, playerSize, playerSize);
+            } else {
+                ctx.fillStyle = '#4b86d9';
+                ctx.fillRect(playerX + 8, groundY - 34, 26, 34);
+            }
+            ctx.fillStyle = '#69a7ff';
+            ctx.font = '11px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText('玩家', playerX + playerSize / 2, 18);
+
+            const spritePath = getSpritePath(monster);
+            const imageResult = await loadImage(spritePath);
+            const missing = document.getElementById(`missing_${monster.key}`);
+
+            if (!imageResult.ok) {
+                ctx.fillStyle = '#384457';
+                ctx.fillRect(monsterX, groundY - 42, 42, 42);
+                ctx.fillStyle = '#c7d4e5';
+                ctx.fillText('?', monsterX + 21, groundY - 15);
+                if (missing) {
+                    missing.textContent = '贴图未找到，请检查当前 floor / tier / version 对应资源';
+                }
+                return;
+            }
+
+            if (missing) {
+                missing.textContent = '';
+            }
+
+            const sprite = imageResult.img;
+            const drawH = Math.max(42, Math.min(monster.size || 48, 74));
+            const scale = drawH / sprite.height;
+            const drawW = Math.max(24, sprite.width * scale);
+            const shouldFaceLeft = state.playerOnLeft;
+            const faceLeftAfterFix = shouldFaceLeft !== visual.needsFlip;
+            const bounceOffset = visual.hasBounce ? Math.sin(Date.now() / 220) * 3 : 0;
+
+            ctx.fillStyle = 'rgba(0,0,0,0.28)';
+            ctx.beginPath();
+            ctx.ellipse(monsterX + drawW / 2, groundY + 2, Math.max(16, drawW * 0.32), 6, 0, 0, Math.PI * 2);
+            ctx.fill();
+
+            ctx.save();
+            ctx.imageSmoothingEnabled = false;
+            if (faceLeftAfterFix) {
+                ctx.translate(monsterX + drawW, groundY - drawH + bounceOffset);
+                ctx.scale(-1, 1);
+                ctx.drawImage(sprite, 0, 0, drawW, drawH);
+            } else {
+                ctx.drawImage(sprite, monsterX, groundY - drawH + bounceOffset, drawW, drawH);
+            }
+            ctx.restore();
+
+            ctx.fillStyle = faceLeftAfterFix ? '#ff8d8d' : '#8ce0a6';
+            ctx.fillText(faceLeftAfterFix ? '←' : '→', monsterX + drawW / 2, 18);
+            ctx.fillStyle = '#dce6f3';
+            ctx.fillText(monster.name, monsterX + drawW / 2, 32);
+        }
+
+        function buildExportConfig() {
+            const lines = ['const VISUAL_CONFIG = {'];
+            const keys = Object.keys(state.visuals).sort((a, b) => a.localeCompare(b));
+            keys.forEach(key => {
+                const visual = state.visuals[key];
+                lines.push(`    ${key}: { needsFlip: ${visual.needsFlip}, hasBounce: ${visual.hasBounce} },`);
+            });
+            lines.push('};');
+            return lines.join('\n');
+        }
+
+        function updateExportBox() {
+            document.getElementById('exportBox').value = buildExportConfig();
+        }
+
+        function render() {
+            createFloorTabs();
+            syncToggleButtons();
+            syncModeButtons();
+            syncFilterButtons();
+            renderGrid();
+        }
+
+        async function initPlayerSprite() {
+            const result = await loadImage('../assets/sprites/player/variants_40x40/player_idle_0_crop_40.png');
+            if (result.ok) {
+                playerSprite = result.img;
+            }
+        }
+
+        async function init() {
+            initVisualState();
+            bindControls();
+            await initPlayerSprite();
+            render();
+            setInterval(() => {
+                document.querySelectorAll('.scene').forEach(canvas => {
+                    const key = canvas.id.replace('scene_', '');
+                    const monster = getFloorMonsters(state.currentFloor).find(item => item.key === key);
+                    if (monster && state.visuals[key]?.hasBounce) {
+                        drawScene(monster);
+                    }
+                });
+            }, 180);
+        }
+
+        init();
+    </script>
+</body>
+</html>

@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>六层房间材质预览 v0.34</title>
+    <style>
+        :root {
+            color-scheme: dark;
+            --bg: #090a0d;
+            --panel: rgba(18, 22, 28, 0.86);
+            --panel-soft: rgba(27, 33, 40, 0.74);
+            --line: rgba(255, 255, 255, 0.08);
+            --text: #f0eadf;
+            --muted: #a8abaf;
+            --shadow: rgba(0, 0, 0, 0.34);
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html, body {
+            margin: 0;
+            background:
+                radial-gradient(circle at top, rgba(74, 86, 104, 0.16), transparent 34%),
+                linear-gradient(180deg, #0e1117 0%, #090a0d 100%);
+            color: var(--text);
+            font-family: "Segoe UI", "Microsoft YaHei UI", sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+        }
+
+        .page {
+            width: min(1400px, calc(100% - 48px));
+            margin: 0 auto;
+            padding: 40px 0 64px;
+        }
+
+        .hero {
+            display: grid;
+            gap: 18px;
+            padding: 28px 30px;
+            border: 1px solid var(--line);
+            border-radius: 28px;
+            background:
+                linear-gradient(135deg, rgba(239, 231, 212, 0.06), rgba(133, 101, 76, 0.03)),
+                rgba(12, 15, 20, 0.9);
+            box-shadow: 0 26px 60px var(--shadow);
+        }
+
+        .eyebrow {
+            color: #d7c2a2;
+            font-size: 12px;
+            letter-spacing: 0.22em;
+            text-transform: uppercase;
+        }
+
+        h1, h2, h3 {
+            margin: 0;
+            font-family: "Palatino Linotype", "Book Antiqua", "Microsoft YaHei UI", serif;
+            font-weight: 700;
+        }
+
+        h1 {
+            font-size: clamp(34px, 4vw, 58px);
+            line-height: 1.05;
+        }
+
+        .hero-copy {
+            color: var(--muted);
+            max-width: 980px;
+            font-size: 15px;
+            line-height: 1.8;
+        }
+
+        .callouts {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .callout {
+            padding: 16px 18px;
+            border-radius: 18px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .callout strong {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            letter-spacing: 0.06em;
+        }
+
+        .callout span {
+            color: var(--muted);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .nav {
+            position: sticky;
+            top: 14px;
+            z-index: 20;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 20px 0 28px;
+            padding: 12px;
+            border: 1px solid var(--line);
+            border-radius: 20px;
+            background: rgba(9, 11, 15, 0.78);
+            backdrop-filter: blur(16px);
+        }
+
+        .nav a {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            color: #f3ede0;
+            text-decoration: none;
+            font-size: 13px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .floors {
+            display: grid;
+            gap: 24px;
+        }
+
+        .floor-card {
+            border-radius: 28px;
+            border: 1px solid var(--line);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent 30%),
+                var(--panel);
+            box-shadow: 0 22px 54px rgba(0, 0, 0, 0.28);
+            overflow: hidden;
+        }
+
+        .floor-head {
+            display: grid;
+            gap: 10px;
+            padding: 26px 28px 22px;
+            border-bottom: 1px solid var(--line);
+            background:
+                radial-gradient(circle at right top, color-mix(in srgb, var(--accent) 28%, transparent), transparent 46%),
+                rgba(255, 255, 255, 0.02);
+        }
+
+        .floor-meta {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .floor-index {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            border: 1px solid color-mix(in srgb, var(--accent) 56%, rgba(255,255,255,0.1));
+            background: color-mix(in srgb, var(--accent) 18%, rgba(255,255,255,0.03));
+            color: #fff7ee;
+            font-size: 15px;
+        }
+
+        .floor-title {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .floor-title h2 {
+            font-size: 30px;
+        }
+
+        .subtitle {
+            color: color-mix(in srgb, var(--accent) 60%, #e8ded1);
+            font-size: 14px;
+            letter-spacing: 0.06em;
+        }
+
+        .floor-summary {
+            color: var(--muted);
+            font-size: 14px;
+            line-height: 1.8;
+            max-width: 1024px;
+        }
+
+        .floor-body {
+            display: grid;
+            grid-template-columns: minmax(0, 1.05fr) minmax(420px, 1.25fr);
+            gap: 18px;
+            padding: 22px 22px 26px;
+        }
+
+        .column {
+            display: grid;
+            gap: 18px;
+        }
+
+        .panel {
+            border-radius: 22px;
+            border: 1px solid var(--line);
+            background: var(--panel-soft);
+            padding: 18px;
+        }
+
+        .panel h3 {
+            font-size: 16px;
+            margin-bottom: 14px;
+        }
+
+        .asset-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 12px;
+        }
+
+        figure {
+            margin: 0;
+        }
+
+        .asset {
+            overflow: hidden;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(0, 0, 0, 0.16);
+        }
+
+        .asset img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 1;
+            object-fit: cover;
+            image-rendering: pixelated;
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        .asset figcaption {
+            padding: 10px 12px 12px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .room-preview {
+            position: relative;
+            overflow: hidden;
+            min-height: 420px;
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background:
+                radial-gradient(circle at center, rgba(255, 255, 255, 0.03), transparent 58%),
+                linear-gradient(180deg, #0d1015, #090b0f);
+        }
+
+        .room-floor,
+        .room-floor-tint,
+        .room-walls,
+        .room-ambience,
+        .room-vignette,
+        .room-focus,
+        .room-door,
+        .room-corner {
+            position: absolute;
+        }
+
+        .room-floor {
+            inset: 14% 12%;
+            border-radius: 34px;
+            background-position: center;
+            background-repeat: repeat;
+            background-size: 168px 168px;
+            image-rendering: pixelated;
+            box-shadow: inset 0 0 70px rgba(0, 0, 0, 0.42);
+        }
+
+        .room-floor-tint {
+            inset: 14% 12%;
+            border-radius: 34px;
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.08)),
+                radial-gradient(circle at 50% 55%, var(--glow-soft), transparent 58%);
+            mix-blend-mode: screen;
+            opacity: 0.72;
+        }
+
+        .room-walls {
+            pointer-events: none;
+        }
+
+        .wall {
+            position: absolute;
+            background-repeat: repeat;
+            background-size: 128px 128px;
+            image-rendering: pixelated;
+            filter: saturate(0.94) contrast(1.02);
+        }
+
+        .wall.top,
+        .wall.bottom {
+            left: 13%;
+            right: 13%;
+            height: 15%;
+        }
+
+        .wall.left,
+        .wall.right {
+            top: 15%;
+            bottom: 15%;
+            width: 12%;
+        }
+
+        .wall.top {
+            top: 4%;
+            border-radius: 28px 28px 0 0;
+            box-shadow: 0 18px 22px rgba(0, 0, 0, 0.24);
+        }
+
+        .wall.bottom {
+            bottom: 4%;
+            border-radius: 0 0 28px 28px;
+            transform: scaleY(-1);
+            box-shadow: 0 -18px 22px rgba(0, 0, 0, 0.24);
+        }
+
+        .wall.left {
+            left: 3.6%;
+            transform: scaleX(-1);
+            border-radius: 28px 0 0 28px;
+        }
+
+        .wall.right {
+            right: 3.6%;
+            border-radius: 0 28px 28px 0;
+        }
+
+        .room-corner {
+            width: 18%;
+            opacity: 0.97;
+            image-rendering: pixelated;
+            filter: contrast(1.04) saturate(0.96);
+        }
+
+        .corner-tl { top: 2.5%; left: 1.5%; }
+        .corner-tr { top: 2.5%; right: 1.5%; transform: rotate(90deg); }
+        .corner-br { bottom: 2.5%; right: 1.5%; transform: rotate(180deg); }
+        .corner-bl { bottom: 2.5%; left: 1.5%; transform: rotate(270deg); }
+
+        .room-door {
+            width: 12%;
+            left: 50%;
+            transform: translateX(-50%);
+            image-rendering: pixelated;
+            filter: saturate(0.94) contrast(1.04);
+            opacity: 0.96;
+        }
+
+        .door-top { top: 2.8%; }
+        .door-bottom { bottom: 2.8%; transform: translateX(-50%) rotate(180deg); }
+
+        .room-ambience {
+            inset: 8%;
+            border-radius: 38px;
+            background:
+                radial-gradient(circle at 50% 52%, var(--glow-core), transparent 18%),
+                radial-gradient(circle at 50% 54%, var(--glow-soft), transparent 44%),
+                radial-gradient(circle at 50% 54%, var(--ambient-ring), transparent 72%);
+            opacity: 0.95;
+            pointer-events: none;
+        }
+
+        .room-focus {
+            inset: 18% 22% 20%;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.10), transparent 66%);
+            opacity: 0.56;
+        }
+
+        .room-vignette {
+            inset: 0;
+            background: radial-gradient(circle at 50% 55%, rgba(5, 8, 12, 0) 0%, rgba(5, 8, 12, 0) 24%, rgba(4, 7, 11, 0.15) 54%, rgba(2, 5, 8, 0.56) 100%);
+            mix-blend-mode: multiply;
+        }
+
+        .preview-note {
+            position: absolute;
+            left: 18px;
+            right: 18px;
+            bottom: 18px;
+            padding: 10px 12px;
+            border-radius: 14px;
+            background: rgba(10, 12, 15, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            color: #ede6d7;
+            font-size: 12px;
+            line-height: 1.6;
+            backdrop-filter: blur(8px);
+        }
+
+        .chip-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .chip {
+            padding: 8px 12px;
+            border-radius: 999px;
+            font-size: 12px;
+            color: #f4edde;
+            background: color-mix(in srgb, var(--accent) 18%, rgba(255,255,255,0.03));
+            border: 1px solid color-mix(in srgb, var(--accent) 36%, rgba(255,255,255,0.06));
+        }
+
+        .issue-list,
+        .upgrade-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+
+        .issue-list li,
+        .upgrade-list li {
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--muted);
+            line-height: 1.7;
+            font-size: 13px;
+        }
+
+        .issue-list strong,
+        .upgrade-list strong {
+            color: #f0eadf;
+        }
+
+        .palette {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .swatch {
+            flex: 1 1 110px;
+            min-width: 110px;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            background: rgba(255, 255, 255, 0.03);
+        }
+
+        .swatch-color {
+            height: 54px;
+        }
+
+        .swatch-meta {
+            padding: 9px 10px 11px;
+            color: var(--muted);
+            font-size: 12px;
+            line-height: 1.5;
+        }
+
+        .footer {
+            margin-top: 24px;
+            padding: 18px 20px;
+            border-radius: 20px;
+            border: 1px solid var(--line);
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--muted);
+            line-height: 1.8;
+            font-size: 13px;
+        }
+
+        @media (max-width: 1100px) {
+            .floor-body,
+            .callouts {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 720px) {
+            .page {
+                width: min(100% - 24px, 1400px);
+                padding-top: 24px;
+            }
+
+            .floor-head,
+            .floor-body,
+            .hero {
+                padding-left: 18px;
+                padding-right: 18px;
+            }
+
+            .asset-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .room-preview {
+                min-height: 320px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <section class="hero">
+            <div class="eyebrow">Material Preview / v0.34</div>
+            <h1>六层房间材质升级预览</h1>
+            <div class="hero-copy">
+                目标不是重做世界观，而是把现有六层主题升级成同一套有厚度、有空间逻辑的房间材质系统。当前正式资产最强的是地板主题，最弱的是转角与门的空间感；本页因此把每层的 <strong>Current / Proposed</strong> 并排展示，先锁定方向，再决定正式替换顺序。第一层已按纠偏要求固定为 <strong>白色菌丝压暗后的灰白体系</strong>，不再往灰绿误读。
+            </div>
+            <div class="callouts">
+                <div class="callout">
+                    <strong>一层颜色纠偏</strong>
+                    <span>菌丝区保留苍白菌丝、冷灰洞穴与孢子意象。压暗后的正确观感是灰白、骨白、灰褐，而不是灰绿苔藓。该结论同步约束开场动画与封面。</span>
+                </div>
+                <div class="callout">
+                    <strong>真正短板</strong>
+                    <span>当前最大的断层不是地板，而是转角与门。转角不像房间结构节点，门更像图标，导致整体质感被拉平。</span>
+                </div>
+                <div class="callout">
+                    <strong>提案原则</strong>
+                    <span>六层主题 DNA 不改，只提升厚度、受光关系、空间锚点和材质完成度。换素材时必须整套推进，不能只换地板。</span>
+                </div>
+            </div>
+        </section>
+
+        <nav class="nav" id="nav"></nav>
+        <div class="floors" id="floors"></div>
+
+        <section class="footer">
+            预览页仅用于方向确认，不直接替换正式游戏素材。若某一层方向成立，下一步应先选一层作为正式资产样板间，再整体推进 `地板 / 墙 / 转角 / 门` 的成套替换。建议优先验证第一层和第三层，因为它们最能检验“灰白菌丝”和“紫色神经束”两种完全不同的材质语言是否被正确保留。
+        </section>
+    </div>
+
+    <script>
+        const root = '../../../assets/sprites/tiles';
+        const floorSuffix = ['floor_mycelium', 'floor_greenhouse', 'floor_nerve', 'floor_furnace', 'floor_courtyard', 'floor_core'];
+        const floors = [
+            {
+                id: 'floor-1',
+                index: '01',
+                name: '菌丝区',
+                subtitle: 'White Mycelium / 灰白菌丝洞穴',
+                summary: '保留苍白菌丝、孢子、冷灰洞穴的死亡感，去掉被压暗后偏向灰绿的误读。该层要像“白色生命体被黑暗吞没”，不是苔藓温室。',
+                keep: ['白色菌丝', '灰白孢子', '冷灰洞穴'],
+                issues: [
+                    ['问题焦点', '正式地板压暗后容易被读成灰绿，削弱开场视觉辨识。'],
+                    ['转角断层', '正式转角与地板、墙体不是同一套材质语言，房间边框显得空心。'],
+                    ['门阈值不足', '门框识别有了，但更像关卡符号，不像真正的菌丝洞穴开口。']
+                ],
+                upgrades: [
+                    ['地板方向', '菌丝丝束改读为灰白骨纤维，亮部保留象牙白，暗部压到灰褐而不是青绿。'],
+                    ['墙与角', '让墙体像被菌丝包裹的骨质结构，转角变成厚实的堆叠节点。'],
+                    ['门口语气', '门应像裂开的菌丝膜层阈值，通道感高于图标感。']
+                ],
+                palette: [
+                    ['骨白高光', '#d8d1c7'],
+                    ['灰白主体', '#b8b0a4'],
+                    ['冷灰中调', '#7f796f'],
+                    ['灰褐暗部', '#5b5753']
+                ],
+                accent: '#d4cdc2',
+                glowCore: 'rgba(224, 216, 206, 0.16)',
+                glowSoft: 'rgba(198, 189, 178, 0.18)',
+                ambientRing: 'rgba(114, 104, 96, 0.10)',
+                floorFilter: 'saturate(0.48) hue-rotate(-26deg) brightness(1.10) contrast(0.94)',
+                wallFilter: 'saturate(0.54) hue-rotate(-18deg) brightness(1.04) contrast(0.98)',
+                note: '一层提案故意把地板调回灰白，不再保留明显灰绿。该纠偏优先级高于“忠实照搬当前原始贴图观感”。'
+            },
+            {
+                id: 'floor-2',
+                index: '02',
+                name: '孵化温室',
+                subtitle: 'Incubation Greenhouse / 潮湿培养腔',
+                summary: '主题正确，应继续强化“湿、闷、长、孵化”的感觉。不是普通森林绿，而是有膜感、有囊泡、有培养液残渍的温室腔体。',
+                keep: ['湿润深绿', '囊泡感', '培养腔体'],
+                issues: [
+                    ['问题焦点', '当前材质还偏平面花纹，潮湿与膜感不够。'],
+                    ['转角断层', '绿色主题到转角处突然失去有机组织感。'],
+                    ['门太平', '门像标记，不像温室隔离舱或培养室阀门。']
+                ],
+                upgrades: [
+                    ['地板方向', '增加潮湿反光、培养液渗迹和囊膜层次。'],
+                    ['墙与角', '墙角表现为半透明组织壁与苔膜堆积，而不是普通硬石角。'],
+                    ['门口语气', '门应像隔离舱瓣膜或培养室封口。']
+                ],
+                palette: [
+                    ['湿苔高光', '#81966d'],
+                    ['温室主体', '#58704a'],
+                    ['泥炭中调', '#334129'],
+                    ['培养暗部', '#182018']
+                ],
+                accent: '#7f9a6a',
+                glowCore: 'rgba(186, 214, 153, 0.15)',
+                glowSoft: 'rgba(114, 156, 90, 0.17)',
+                ambientRing: 'rgba(61, 92, 48, 0.12)',
+                floorFilter: 'saturate(1.06) brightness(0.98) contrast(1.02)',
+                wallFilter: 'saturate(1.08) brightness(0.96)',
+                note: '二层不用追求“更亮的绿”，而是追求更湿、更闷、更有培养腔压迫感。'
+            },
+            {
+                id: 'floor-3',
+                index: '03',
+                name: '神经索',
+                subtitle: 'Nerve Conduit / 紫色神经网络',
+                summary: '这一层的世界观辨识度很高，问题主要不是主题，而是结构材质还不够支持“导电神经束穿过房间”的空间感。',
+                keep: ['冷紫神经束', '脉冲网络', '导电感'],
+                issues: [
+                    ['问题焦点', '神经地板纹理有主题，但房间边框缺乏同等级的神经结构延续。'],
+                    ['转角断层', '转角没有成为“神经缠结节点”，只是普通块体。'],
+                    ['门阈值不足', '门不像电性通道或神经闸口。']
+                ],
+                upgrades: [
+                    ['地板方向', '保留紫色脉冲纹理，但让亮暗节律更有传导感。'],
+                    ['墙与角', '转角要像神经束交汇结节，墙体要有冷紫导电纹与黑质支撑。'],
+                    ['门口语气', '门像被激活的导电闸口，而不是一块带符号的板。']
+                ],
+                palette: [
+                    ['神经亮紫', '#8e72bf'],
+                    ['紫黑主体', '#4f3a70'],
+                    ['冷紫中调', '#2b1f3e'],
+                    ['绝缘暗部', '#120d19']
+                ],
+                accent: '#8563c6',
+                glowCore: 'rgba(178, 146, 255, 0.16)',
+                glowSoft: 'rgba(114, 84, 188, 0.20)',
+                ambientRing: 'rgba(65, 45, 116, 0.14)',
+                floorFilter: 'saturate(1.14) brightness(1.02)',
+                wallFilter: 'saturate(1.12) brightness(0.98)',
+                note: '三层的升级重点是把“神经”从平面纹理推成真正的房间结构语言。'
+            },
+            {
+                id: 'floor-4',
+                index: '04',
+                name: '消化熔炉',
+                subtitle: 'Digestive Furnace / 内脏炉膛',
+                summary: '需要的是高温和炭黑的材质反差。当前橙红主题对了，但还缺“炉壁”“灼痕”“消化裂缝”的空间压迫。',
+                keep: ['熔橙裂纹', '炉膛高温', '消化腔体'],
+                issues: [
+                    ['问题焦点', '高温主题清晰，但房间体块没有足够的烧灼厚度。'],
+                    ['转角断层', '转角没体现炉腔边缘结壳与熔蚀。'],
+                    ['门阈值不足', '门像图块，不像灼热腔体通道。']
+                ],
+                upgrades: [
+                    ['地板方向', '加强炭黑裂纹与橙色热核的温差。'],
+                    ['墙与角', '墙体像被消化液和热流侵蚀过的厚壳，转角是结焦堆积点。'],
+                    ['门口语气', '门需要像炉膛咽喉或熔腔闸门。']
+                ],
+                palette: [
+                    ['熔橙核心', '#d87532'],
+                    ['烧灼外层', '#8f4520'],
+                    ['焦壳中调', '#3b1f13'],
+                    ['炉腔暗部', '#150b08']
+                ],
+                accent: '#d06e30',
+                glowCore: 'rgba(255, 171, 87, 0.18)',
+                glowSoft: 'rgba(214, 101, 35, 0.20)',
+                ambientRing: 'rgba(99, 41, 12, 0.14)',
+                floorFilter: 'saturate(1.12) brightness(0.99) contrast(1.03)',
+                wallFilter: 'saturate(1.10) brightness(0.95)',
+                note: '四层应该更像内脏炉膛，不是普通岩浆洞。'
+            },
+            {
+                id: 'floor-5',
+                index: '05',
+                name: '母虫庭院',
+                subtitle: 'Brood Courtyard / 血肉母体空间',
+                summary: '第五层已经拥有血肉和庭院叙事，但正式材质仍需更明确地摆脱灰绿残留，走向血、根、囊、母体组织的完整体系。',
+                keep: ['血肉根须', '母体囊泡', '庭院仪式感'],
+                issues: [
+                    ['问题焦点', '旧串色容易把这一层拖回灰绿，破坏血肉主语。'],
+                    ['转角断层', '转角没有成为根须缠结或子宫结构节点。'],
+                    ['门阈值不足', '门还不够像活体肉膜开口。']
+                ],
+                upgrades: [
+                    ['地板方向', '强化血色基底、根须走向和囊泡组织。'],
+                    ['墙与角', '墙体应像被根须和组织包裹的母体穹壁，转角成为缠结节点。'],
+                    ['门口语气', '门要像能开合的活体肉膜阈值。']
+                ],
+                palette: [
+                    ['血囊高光', '#a84a5e'],
+                    ['母体主体', '#772b3a'],
+                    ['根须中调', '#42141f'],
+                    ['子宫暗部', '#17090d']
+                ],
+                accent: '#9a4357',
+                glowCore: 'rgba(211, 109, 137, 0.15)',
+                glowSoft: 'rgba(135, 43, 67, 0.20)',
+                ambientRing: 'rgba(72, 20, 34, 0.16)',
+                floorFilter: 'saturate(1.10) brightness(0.98)',
+                wallFilter: 'saturate(1.08) brightness(0.94)',
+                note: '五层的关键不是更花，而是更统一地说“血肉母体”，不能再混进灰绿潮湿房的语气。'
+            },
+            {
+                id: 'floor-6',
+                index: '06',
+                name: '千根之心',
+                subtitle: 'Heart of Roots / 金紫圣核',
+                summary: '最终层要有仪式感与秩序感，不只是更深的紫。当前方向可保留，但要让根脉、金纹和圣所结构真正统一起来。',
+                keep: ['金紫圣核', '根脉秩序', '最终圣所'],
+                issues: [
+                    ['问题焦点', '有最终层配色，但结构和材质没有完全支撑“圣核”概念。'],
+                    ['转角断层', '转角没有读出仪式性与结构秩序，仍偏占位。'],
+                    ['门阈值不足', '门不像圣所大门或核心封印。']
+                ],
+                upgrades: [
+                    ['地板方向', '强化金色纹路在深紫底上的秩序感。'],
+                    ['墙与角', '墙体和角应像神殿化的根脉骨架，稳定而庄严。'],
+                    ['门口语气', '门应像核心封印门或仪式门槛。']
+                ],
+                palette: [
+                    ['圣金高光', '#c8a16a'],
+                    ['王紫主体', '#694b86'],
+                    ['深紫中调', '#2c1c38'],
+                    ['核心得暗', '#0f0915']
+                ],
+                accent: '#b69059',
+                glowCore: 'rgba(229, 192, 120, 0.15)',
+                glowSoft: 'rgba(136, 98, 175, 0.18)',
+                ambientRing: 'rgba(78, 49, 104, 0.15)',
+                floorFilter: 'saturate(1.06) brightness(1.00)',
+                wallFilter: 'saturate(1.08) brightness(0.95)',
+                note: '六层不该只是更暗更紫，而要像真正的最终圣所。'
+            }
+        ].map((item, idx) => ({
+            ...item,
+            floorImg: `${root}/floors/layer${idx + 1}_${floorSuffix[idx]}.png`,
+            wallImg: `${root}/walls/layer${idx + 1}_wall.png`,
+            cornerImg: `${root}/walls/layer${idx + 1}_corner_tl.png`,
+            doorImg: `${root}/walls/layer${idx + 1}_door_closed.png`,
+            seamlessCornerImg: `${root}/corner_walls/layer${idx + 1}_v10_seamless_corner.png`
+        }));
+
+        const nav = document.getElementById('nav');
+        const container = document.getElementById('floors');
+
+        function renderSwatches(palette) {
+            return palette.map(([label, color]) => `
+                <div class="swatch">
+                    <div class="swatch-color" style="background:${color}"></div>
+                    <div class="swatch-meta">${label}<br>${color}</div>
+                </div>
+            `).join('');
+        }
+
+        function renderList(items) {
+            return items.map(([title, text]) => `
+                <li><strong>${title}</strong><br>${text}</li>
+            `).join('');
+        }
+
+        nav.innerHTML = floors.map((floor) => `
+            <a href="#${floor.id}">${floor.index} · ${floor.name}</a>
+        `).join('');
+
+        container.innerHTML = floors.map((floor) => `
+            <section class="floor-card" id="${floor.id}" style="--accent:${floor.accent}; --glow-core:${floor.glowCore}; --glow-soft:${floor.glowSoft}; --ambient-ring:${floor.ambientRing};">
+                <div class="floor-head">
+                    <div class="floor-meta">
+                        <div class="floor-index">${floor.index}</div>
+                        <div class="floor-title">
+                            <h2>${floor.name}</h2>
+                            <div class="subtitle">${floor.subtitle}</div>
+                        </div>
+                    </div>
+                    <div class="chip-row">
+                        ${floor.keep.map((item) => `<span class="chip">${item}</span>`).join('')}
+                    </div>
+                    <div class="floor-summary">${floor.summary}</div>
+                </div>
+                <div class="floor-body">
+                    <div class="column">
+                        <div class="panel">
+                            <h3>Current Asset Kit</h3>
+                            <div class="asset-grid">
+                                <figure class="asset">
+                                    <img src="${floor.floorImg}" alt="${floor.name} 地板">
+                                    <figcaption>正式地板<br>当前主题基因主要由这一张撑住。</figcaption>
+                                </figure>
+                                <figure class="asset">
+                                    <img src="${floor.wallImg}" alt="${floor.name} 墙体">
+                                    <figcaption>正式墙体<br>配色有了，但结构受光与厚度还不够。</figcaption>
+                                </figure>
+                                <figure class="asset">
+                                    <img src="${floor.cornerImg}" alt="${floor.name} 当前转角">
+                                    <figcaption>正式转角<br>当前最弱的一环，容易把整体拉回占位图质感。</figcaption>
+                                </figure>
+                                <figure class="asset">
+                                    <img src="${floor.doorImg}" alt="${floor.name} 当前门">
+                                    <figcaption>正式门<br>识别性够，但更像图标而不是空间阈值。</figcaption>
+                                </figure>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <h3>诊断与升级重点</h3>
+                            <ul class="issue-list">${renderList(floor.issues)}</ul>
+                        </div>
+                    </div>
+                    <div class="column">
+                        <div class="panel">
+                            <h3>Proposed Room Preview</h3>
+                            <div class="room-preview">
+                                <div class="room-floor" style="background-image:url('${floor.floorImg}'); filter:${floor.floorFilter};"></div>
+                                <div class="room-floor-tint"></div>
+                                <div class="room-walls">
+                                    <div class="wall top" style="background-image:url('${floor.wallImg}'); filter:${floor.wallFilter};"></div>
+                                    <div class="wall right" style="background-image:url('${floor.wallImg}'); filter:${floor.wallFilter};"></div>
+                                    <div class="wall bottom" style="background-image:url('${floor.wallImg}'); filter:${floor.wallFilter};"></div>
+                                    <div class="wall left" style="background-image:url('${floor.wallImg}'); filter:${floor.wallFilter};"></div>
+                                </div>
+                                <img class="room-corner corner-tl" src="${floor.seamlessCornerImg}" alt="">
+                                <img class="room-corner corner-tr" src="${floor.seamlessCornerImg}" alt="">
+                                <img class="room-corner corner-br" src="${floor.seamlessCornerImg}" alt="">
+                                <img class="room-corner corner-bl" src="${floor.seamlessCornerImg}" alt="">
+                                <img class="room-door door-top" src="${floor.doorImg}" alt="">
+                                <img class="room-door door-bottom" src="${floor.doorImg}" alt="">
+                                <div class="room-ambience"></div>
+                                <div class="room-focus"></div>
+                                <div class="room-vignette"></div>
+                                <div class="preview-note">${floor.note}</div>
+                            </div>
+                        </div>
+                        <div class="panel">
+                            <h3>提案材质语言</h3>
+                            <ul class="upgrade-list">${renderList(floor.upgrades)}</ul>
+                        </div>
+                        <div class="panel">
+                            <h3>建议色板</h3>
+                            <div class="palette">${renderSwatches(floor.palette)}</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        `).join('');
+    </script>
+</body>
+</html>

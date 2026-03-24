@@ -1,126 +1,85 @@
 ﻿const ITEMS = {
-    // ========== 基础攻击类 (1-15) ==========
-    1: { id: 1, name: '多重射击', icon: '🎯', rarity: 'common', effect: 'projCount', value: 1, desc: '子弹+1', price: 40 },
-    2: { id: 2, name: '巨大化', icon: '📏', rarity: 'common', effect: 'projSize', value: 0.3, desc: '子弹大小+30%', price: 35 },
-    3: { id: 3, name: '快速射击', icon: '⚡', rarity: 'common', effect: 'fireRate', value: 0.15, desc: '射速+15%', price: 45 },
-    4: { id: 4, name: '穿甲弹', icon: '🔩', rarity: 'rare', effect: 'pierce', value: 1, desc: '穿透+1', price: 80 },
-    5: { id: 5, name: '暴击镜片', icon: '🔍', rarity: 'rare', effect: 'crit', value: 0.1, desc: '暴击率+10%', price: 75 },
-    6: { id: 6, name: '狙击镜', icon: '🔭', rarity: 'epic', effect: 'critDmg', value: 0.5, desc: '暴击伤害+50%', price: 130 },
-    7: { id: 7, name: '连发装置', icon: '🔫', rarity: 'epic', effect: 'burst', value: 1, desc: '连射+1发', price: 150 },
-    8: { id: 8, name: '追踪芯片', icon: '🧿', rarity: 'rare', effect: 'homing', value: 0.5, desc: '子弹追踪能力+50%', price: 95 },
-    9: { id: 9, name: '弹跳子弹', icon: '🎱', rarity: 'rare', effect: 'bounce', value: 1, desc: '弹跳+1次', price: 85 },
-    10: { id: 10, name: '四向射击', icon: '➕', rarity: 'legendary', effect: 'quad', value: 1, desc: '四向发射，单发伤害-30%', price: 350 },
-    11: { id: 11, name: '狂暴之血', icon: '🩸', rarity: 'rare', effect: 'crit', value: 0.1, desc: '暴击率+10%', price: 80 },
-    12: { id: 12, name: '冰冻核心', icon: '❄️', rarity: 'rare', effect: 'slow', value: 0.2, desc: '减速敌人20%', price: 80 },
-    13: { id: 13, name: '雷电宝珠', icon: '⚡', rarity: 'epic', effect: 'chain', value: 1, desc: '连锁攻击+1', price: 140 },
-    14: { id: 14, name: '眼泪炸弹', icon: '💧', rarity: 'rare', effect: 'splitTear', value: 3, desc: '命中分裂3个泪弹', price: 170 },
-    15: { id: 15, name: '科技2', icon: '🔦', rarity: 'epic', effect: 'tech2', value: 1, desc: '副武器：持续小激光', price: 240 },
-    
-    // ========== 基础防御/生存类 (16-25) ==========
-    16: { id: 16, name: '心之容器', icon: '❤️', rarity: 'common', effect: 'maxHp', value: 1, desc: '生命上限+1', price: 50 },
-    17: { id: 17, name: '复活币', icon: '🪙', rarity: 'legendary', effect: 'maxHp', value: 1, desc: '生命上限+1，死亡时复活', price: 500 },
-    18: { id: 18, name: '九命猫', icon: '🐱', rarity: 'mythic', effect: 'nineLives', value: 1, desc: '死亡原地复活，血量上限变2', price: 800 },
-    19: { id: 19, name: '幽灵靴', icon: '👻', rarity: 'epic', effect: 'armor', value: 2, desc: '护甲+2，格挡概率提升', price: 130 },
-    20: { id: 20, name: '飞行翅膀', icon: '🦅', rarity: 'epic', effect: 'fly', value: 1, desc: '可以飞行，越过障碍', price: 150 },
-    21: { id: 21, name: '瞬移装置', icon: '🌀', rarity: 'epic', effect: 'dashDist', value: 0.5, desc: '冲刺距离+50%', price: 120 },
-    
-    // ========== 资源/经济类 (26-32) ==========
-    22: { id: 22, name: '金蛋', icon: '🥚', rarity: 'epic', effect: 'goldBonus', value: 0.5, desc: '金币获取+50%', price: 120 },
-    23: { id: 23, name: '贪婪之手', icon: '🤲', rarity: 'rare', effect: 'goldOnKill', value: 2, desc: '击杀金币+2', price: 95 },
-    24: { id: 24, name: '幸运币', icon: '🍀', rarity: 'rare', effect: 'luck', value: 1, desc: '幸运+1，提升高级掉落率', price: 110 },
-    25: { id: 25, name: '经验书', icon: '📚', rarity: 'common', effect: 'expBonus', value: 0.1, desc: '经验获取+10%', price: 40 },
-    26: { id: 26, name: '疾风靴', icon: '👢', rarity: 'epic', effect: 'speed', value: 0.3, desc: '移速+30%', price: 140 },
-    27: { id: 27, name: '加速靴', icon: '👟', rarity: 'common', effect: 'speed', value: 0.1, desc: '移速+10%', price: 40 },
-    28: { id: 28, name: '藏宝图', icon: '🗺️', rarity: 'rare', effect: 'mapReveal', value: 1, desc: '显示特殊房间位置', price: 150 },
-    
-    // ========== 预留位置 (29-31) ==========
-    // 29-31号位置已预留，待后续添加新道具
-    // 原宠物道具已移除，避免系统复杂性
-    
-    // ========== 诅咒类道具 (32-39) ==========
-    
-    // ========== 诅咒类 (39-48) ==========
-    32: { id: 32, name: '玻璃大炮', icon: '🔮', rarity: 'cursed', effect: 'glassCannon', value: 1, desc: '伤害+100%，生命上限-50%', price: 100 },
-    33: { id: 33, name: '豆浆', icon: '🥛', rarity: 'cursed', effect: 'soyMilk', value: 1, desc: '伤害-50%，射速+200%，弹道变小', price: 80 },
-    34: { id: 34, name: '参孙之怒', icon: '😤', rarity: 'cursed', effect: 'samson', value: 1, desc: '受伤后本层伤害+50%，最多3次', price: 120 },
-    // 35号位置已预留，原墨菲定律已移除
-    36: { id: 36, name: '进化因子', icon: '🧬', rarity: 'epic', effect: 'evolution', value: 1, desc: '每层全属性+10%', price: 250 },
-    37: { id: 37, name: '达尔文奖', icon: '🏆', rarity: 'legendary', effect: 'darwin', value: 1, desc: '每击杀500敌人伤害×1.3', price: 400 },
-    38: { id: 38, name: '适应装甲', icon: '🛡️', rarity: 'epic', effect: 'adaptiveArmor', value: 1, desc: '每层护甲+1，火焰伤害+5%', price: 250 },
-    39: { id: 39, name: '收藏家', icon: '🏛️', rarity: 'legendary', effect: 'collector', value: 1, desc: '每个收集的道具+2%全属性', price: 450 },
-    
-    // ========== 特殊/神话 (40-45) ==========
-    40: { id: 40, name: '薛定谔的猫', icon: '🐱', rarity: 'mythic', effect: 'schrodinger', value: 1, desc: '死亡时50%概率复活', price: 1200 },
-    41: { id: 41, name: '基因锁', icon: '🔒', rarity: 'mythic', effect: 'geneLock', value: 1, desc: '低血量时全属性+100%', price: 1000 },
-    42: { id: 42, name: '量子态', icon: '⚛️', rarity: 'mythic', effect: 'quantumState', value: 1, desc: '50%概率格挡伤害', price: 1500 },
-    // 43号位置已预留，原天选之人已移除
-    // 44号位置已预留，原概率坍缩已移除
-    45: { id: 45, name: '傲慢王冠', icon: '👑', rarity: 'cursed', effect: 'prideCrown', value: 1, desc: '满血伤害翻倍，不满血减半', price: 2000 },
-    
-    // ========== 宠物解锁道具 (46-60) ==========
-    // 这些道具解锁对应宠物，获得后宠物加入宠物池可召唤
-    46: { id: 46, name: '硫磺火之角', icon: '🔥', rarity: 'epic', effect: 'unlockPet', value: 1, petId: 'brimstone', desc: '解锁宠物：硫磺火牛', price: 300 },
-    47: { id: 47, name: '科技芯片', icon: '🔬', rarity: 'epic', effect: 'unlockPet', value: 1, petId: 'tech', desc: '解锁宠物：科技牛', price: 300 },
-    48: { id: 48, name: '眼泪瓶', icon: '💧', rarity: 'rare', effect: 'unlockPet', value: 1, petId: 'tear', desc: '解锁宠物：眼泪牛', price: 200 },
-    49: { id: 49, name: '炸弹袋', icon: '💣', rarity: 'rare', effect: 'unlockPet', value: 1, petId: 'bomb', desc: '解锁宠物：炸弹牛', price: 200 },
-    50: { id: 50, name: '飞刀鞘', icon: '🔪', rarity: 'rare', effect: 'unlockPet', value: 1, petId: 'knife', desc: '解锁宠物：飞刀牛', price: 220 },
-    51: { id: 51, name: '黑洞核心', icon: '🕳️', rarity: 'legendary', effect: 'unlockPet', value: 1, petId: 'blackhole', desc: '解锁宠物：黑洞牛', price: 500 },
-    52: { id: 52, name: '光环石', icon: '✨', rarity: 'epic', effect: 'unlockPet', value: 1, petId: 'aura', desc: '解锁宠物：光环牛', price: 350 },
-    53: { id: 53, name: '导弹遥控器', icon: '🎯', rarity: 'epic', effect: 'unlockPet', value: 1, petId: 'missile', desc: '解锁宠物：导弹牛', price: 350 },
-    54: { id: 54, name: '复制镜', icon: '🪞', rarity: 'legendary', effect: 'unlockPet', value: 1, petId: 'copy', desc: '解锁宠物：复制牛', price: 600 },
-    55: { id: 55, name: '冰冻之心', icon: '❄️', rarity: 'rare', effect: 'unlockPet', value: 1, petId: 'ice', desc: '解锁宠物：冰冻牛', price: 200 },
-    56: { id: 56, name: '雷电水晶', icon: '⚡', rarity: 'rare', effect: 'unlockPet', value: 1, petId: 'thunder', desc: '解锁宠物：雷电牛', price: 220 },
-    57: { id: 57, name: '神圣符文', icon: '💖', rarity: 'legendary', effect: 'unlockPet', value: 1, petId: 'holy', desc: '解锁宠物：圣心牛', price: 800 },
-    58: { id: 58, name: '神性碎片', icon: '✨', rarity: 'mythic', effect: 'unlockPet', value: 1, petId: 'godhead', desc: '解锁宠物：神性牛', price: 1500 },
-    59: { id: 59, name: '龙蛋', icon: '🐉', rarity: 'epic', effect: 'unlockPet', value: 1, petId: 'dragon', desc: '解锁宠物：幼龙', price: 400 },
-    60: { id: 60, name: '精灵球', icon: '🔮', rarity: 'rare', effect: 'unlockPet', value: 1, petId: 'fairy', desc: '解锁宠物：小精灵', price: 180 },
-    
-    // ========== v0.26 基础属性道具系列 (101-130) ==========
-    // 6层架构：普通(1-2层) → 稀有(3-4层) → 史诗(5-6层) → 传说(Boss掉落)
-    
-    // --- 攻击力系列 ---
-    101: { id: 101, name: '生锈短剑', icon: '🗡️', rarity: 'common', effect: 'dmgMult', value: 0.12, desc: '伤害+12%', price: 50, unlockFloor: 1 },
-    102: { id: 102, name: '精钢长剑', icon: '⚔️', rarity: 'rare', effect: 'dmgMult', value: 0.25, desc: '伤害+25%', price: 120, unlockFloor: 3 },
-    103: { id: 103, name: '附魔利剑', icon: '🗡️✨', rarity: 'epic', effect: 'dmgMult', value: 0.40, desc: '伤害+40%', price: 280, unlockFloor: 5 },
-    104: { id: 104, name: '传说圣剑', icon: '🏆', rarity: 'legendary', effect: 'dmgMult', value: 0.60, desc: '伤害+60%', price: 0, unlockFloor: 1, bossDrop: true },
-    
-    // --- 射速系列 ---
-    105: { id: 105, name: '发条装置', icon: '⏱️', rarity: 'common', effect: 'fireRateMult', value: 0.10, desc: '射速+10%', price: 45, unlockFloor: 1 },
-    106: { id: 106, name: '涡轮引擎', icon: '⚙️', rarity: 'rare', effect: 'fireRateMult', value: 0.20, desc: '射速+20%', price: 110, unlockFloor: 3 },
-    107: { id: 107, name: '时间加速器', icon: '⏩', rarity: 'epic', effect: 'fireRateMult', value: 0.35, desc: '射速+35%', price: 260, unlockFloor: 5 },
-    108: { id: 108, name: '无限齿轮', icon: '♾️', rarity: 'legendary', effect: 'fireRateMult', value: 0.50, desc: '射速+50%', price: 0, unlockFloor: 1, bossDrop: true },
-    
-    // --- 移速系列 ---
-    109: { id: 109, name: '草鞋', icon: '🩴', rarity: 'common', effect: 'speedMult', value: 0.10, desc: '移速+10%', price: 40, unlockFloor: 1 },
-    110: { id: 110, name: '皮靴', icon: '👢', rarity: 'rare', effect: 'speedMult', value: 0.20, desc: '移速+20%', price: 100, unlockFloor: 3 },
-    111: { id: 111, name: '羽靴', icon: '🕊️', rarity: 'epic', effect: 'speedMult', value: 0.35, desc: '移速+35%', price: 240, unlockFloor: 5 },
-    112: { id: 112, name: '赫尔墨斯之靴', icon: '👟✨', rarity: 'legendary', effect: 'speedMult', value: 0.50, desc: '移速+50%', price: 0, unlockFloor: 1, bossDrop: true },
-    
-    // --- 暴击系列 ---
-    113: { id: 113, name: '幸运币', icon: '🪙', rarity: 'common', effect: 'critAdd', value: 0.08, desc: '暴击率+8%', price: 55, unlockFloor: 1 },
-    114: { id: 114, name: '四叶草', icon: '🍀', rarity: 'rare', effect: 'critAdd', value: 0.15, desc: '暴击率+15%', price: 130, unlockFloor: 3 },
-    115: { id: 115, name: '鹰眼透镜', icon: '🔍', rarity: 'epic', effect: 'critAdd', value: 0.25, desc: '暴击率+25%', price: 300, unlockFloor: 5 },
-    116: { id: 116, name: '命运之眼', icon: '👁️', rarity: 'legendary', effect: 'critAdd', value: 0.35, desc: '暴击率+35%', price: 0, unlockFloor: 1, bossDrop: true },
-    
-    // --- 生命系列 ---
-    117: { id: 117, name: '野果', icon: '🪰', rarity: 'common', effect: 'maxHpAdd', value: 1, desc: '生命上限+1', price: 45, unlockFloor: 1 },
-    118: { id: 118, name: '肉干', icon: '🥩', rarity: 'rare', effect: 'maxHpAdd', value: 2, desc: '生命上限+2', price: 110, unlockFloor: 3 },
-    119: { id: 119, name: '生命药水', icon: '🧪❤️', rarity: 'epic', effect: 'maxHpAdd', value: 3, desc: '生命上限+3', price: 260, unlockFloor: 5 },
-    120: { id: 120, name: '凤凰之血', icon: '🩸🔥', rarity: 'legendary', effect: 'maxHpAdd', value: 4, desc: '生命上限+4', price: 0, unlockFloor: 1, bossDrop: true },
-    
-    // --- 护甲系列 ---
-    121: { id: 121, name: '破布甲', icon: '🦺', rarity: 'common', effect: 'armorAdd', value: 1, desc: '护甲+1，格挡+5.5%', price: 50, unlockFloor: 1 },
-    122: { id: 122, name: '铁片甲', icon: '⛓️', rarity: 'rare', effect: 'armorAdd', value: 2, desc: '护甲+2，格挡+10.5%', price: 120, unlockFloor: 3 },
-    123: { id: 123, name: '精钢甲', icon: '🛡️', rarity: 'epic', effect: 'armorAdd', value: 4, desc: '护甲+4，格挡+19%', price: 280, unlockFloor: 5 },
-    124: { id: 124, name: '龙鳞甲', icon: '🐉', rarity: 'legendary', effect: 'armorAdd', value: 6, desc: '护甲+6，格挡+26%', price: 0, unlockFloor: 1, bossDrop: true },
-    
-    // --- 穿透系列 ---
-    125: { id: 125, name: '尖刺', icon: '📌', rarity: 'common', effect: 'pierceAdd', value: 1, desc: '穿透+1', price: 60, unlockFloor: 1 },
-    126: { id: 126, name: '长矛', icon: '🎯', rarity: 'rare', effect: 'pierceAdd', value: 2, desc: '穿透+2', price: 140, unlockFloor: 3 },
-    127: { id: 127, name: '溃灭之刺', icon: '🌑', rarity: 'epic', effect: 'pierceAdd', value: 3, desc: '穿透+3', price: 320, unlockFloor: 5 },
-    
-    // --- 子弹数量系列 ---
-    128: { id: 128, name: '分叉箭', icon: '🏹', rarity: 'common', effect: 'projCountAdd', value: 1, desc: '子弹+1，散射+5°', price: 70, unlockFloor: 1 },
-    129: { id: 129, name: '散射核心', icon: '💠', rarity: 'rare', effect: 'projCountAdd', value: 1, desc: '子弹+1，散射+10°', price: 160, unlockFloor: 3 },
-    130: { id: 130, name: '风暴之眼', icon: '🌀', rarity: 'epic', effect: 'projCountAdd', value: 2, desc: '子弹+2，散射+15°', price: 380, unlockFloor: 5 }
+    // ========== 固定属性（按导出文件重建） ==========
+    101: { id: 101, name: "生锈短剑", icon: "🗡️", rarity: "common", effect: "dmgMult", value: 0.06, desc: "伤害+6%", price: 50, unlockFloor: 1 },
+    102: { id: 102, name: "精钢长剑", icon: "🗡️", rarity: "rare", effect: "dmgMult", value: 0.12, desc: "伤害+12%", price: 110, unlockFloor: 2 },
+    103: { id: 103, name: "附魔利剑", icon: "🗡️", rarity: "epic", effect: "dmgMult", value: 0.2, desc: "伤害+20%", price: 220, unlockFloor: 4 },
+    104: { id: 104, name: "传说圣剑", icon: "🗡️", rarity: "legendary", effect: "dmgMult", value: 0.3, desc: "伤害+30%", price: 360, unlockFloor: 5 },
+    105: { id: 105, name: "发条装置", icon: "⚙️", rarity: "common", effect: "fireRateMult", value: 0.05, desc: "攻速+5%", price: 50, unlockFloor: 1 },
+    106: { id: 106, name: "涡轮引擎", icon: "⚙️", rarity: "rare", effect: "fireRateMult", value: 0.1, desc: "攻速+10%", price: 110, unlockFloor: 2 },
+    107: { id: 107, name: "时间加速器", icon: "⚙️", rarity: "epic", effect: "fireRateMult", value: 0.16, desc: "攻速+16%", price: 220, unlockFloor: 4 },
+    108: { id: 108, name: "无限齿轮", icon: "⚙️", rarity: "legendary", effect: "fireRateMult", value: 0.24, desc: "攻速+24%", price: 360, unlockFloor: 5 },
+    109: { id: 109, name: "草鞋", icon: "👢", rarity: "common", effect: "speedMult", value: 0.04, desc: "移速+4%", price: 50, unlockFloor: 1 },
+    110: { id: 110, name: "皮靴", icon: "👢", rarity: "rare", effect: "speedMult", value: 0.08, desc: "移速+8%", price: 110, unlockFloor: 2 },
+    111: { id: 111, name: "羽靴", icon: "👢", rarity: "epic", effect: "speedMult", value: 0.12, desc: "移速+12%", price: 220, unlockFloor: 4 },
+    112: { id: 112, name: "赫尔墨斯之靴", icon: "👢", rarity: "legendary", effect: "speedMult", value: 0.18, desc: "移速+18%", price: 360, unlockFloor: 5 },
+    113: { id: 113, name: "幸运币", icon: "🎯", rarity: "common", effect: "critAdd", value: 0.03, desc: "暴击率+3%", price: 50, unlockFloor: 1 },
+    114: { id: 114, name: "四叶草", icon: "🎯", rarity: "rare", effect: "critAdd", value: 0.06, desc: "暴击率+6%", price: 110, unlockFloor: 2 },
+    115: { id: 115, name: "鹰眼透镜", icon: "🎯", rarity: "epic", effect: "critAdd", value: 0.1, desc: "暴击率+10%", price: 220, unlockFloor: 4 },
+    116: { id: 116, name: "命运之眼", icon: "🎯", rarity: "legendary", effect: "critAdd", value: 0.15, desc: "暴击率+15%", price: 360, unlockFloor: 5 },
+    117: { id: 117, name: "野果", icon: "❤️", rarity: "common", effect: "maxHpAdd", value: 1, desc: "生命上限+1", price: 50, unlockFloor: 1 },
+    118: { id: 118, name: "肉干", icon: "❤️", rarity: "rare", effect: "maxHpAdd", value: 2, desc: "生命上限+2", price: 110, unlockFloor: 2 },
+    119: { id: 119, name: "生命药水", icon: "❤️", rarity: "epic", effect: "maxHpAdd", value: 3, desc: "生命上限+3", price: 220, unlockFloor: 4 },
+    120: { id: 120, name: "凤凰之血", icon: "❤️", rarity: "legendary", effect: "maxHpAdd", value: 4, desc: "生命上限+4", price: 360, unlockFloor: 5 },
+    121: { id: 121, name: "破布甲", icon: "🛡️", rarity: "common", effect: "armorAdd", value: 1, desc: "护甲+1", price: 50, unlockFloor: 1 },
+    122: { id: 122, name: "铁片甲", icon: "🛡️", rarity: "rare", effect: "armorAdd", value: 2, desc: "护甲+2", price: 110, unlockFloor: 2 },
+    123: { id: 123, name: "精钢甲", icon: "🛡️", rarity: "epic", effect: "armorAdd", value: 3, desc: "护甲+3", price: 220, unlockFloor: 4 },
+    124: { id: 124, name: "龙鳞甲", icon: "🛡️", rarity: "legendary", effect: "armorAdd", value: 4, desc: "护甲+4", price: 360, unlockFloor: 5 },
+    125: { id: 125, name: "裂羽", icon: "🪶", rarity: "common", effect: "projCountAdd", value: 1, desc: "子弹数量+1", price: 50, unlockFloor: 1 },
+    126: { id: 126, name: "分叉箭", icon: "🪶", rarity: "rare", effect: "projCountAdd", value: 1, desc: "子弹数量+1", price: 110, unlockFloor: 2 },
+    127: { id: 127, name: "散射核心", icon: "🪶", rarity: "epic", effect: "projCountAdd", value: 2, desc: "子弹数量+2", price: 220, unlockFloor: 4 },
+    128: { id: 128, name: "风暴之眼", icon: "🪶", rarity: "legendary", effect: "projCountAdd", value: 3, desc: "子弹数量+3", price: 360, unlockFloor: 5 },
+    129: { id: 129, name: "铜钱袋", icon: "💰", rarity: "common", effect: "goldBonusMult", value: 0.1, desc: "金币获取+10%", price: 50, unlockFloor: 1 },
+    130: { id: 130, name: "金币袋", icon: "💰", rarity: "rare", effect: "goldBonusMult", value: 0.2, desc: "金币获取+20%", price: 110, unlockFloor: 2 },
+    131: { id: 131, name: "贪婪之手", icon: "💰", rarity: "epic", effect: "goldBonusMult", value: 0.35, desc: "金币获取+35%", price: 220, unlockFloor: 4 },
+    132: { id: 132, name: "金库契约", icon: "💰", rarity: "legendary", effect: "goldBonusMult", value: 0.5, desc: "金币获取+50%", price: 360, unlockFloor: 5 },
+    133: { id: 133, name: "学徒手册", icon: "📘", rarity: "common", effect: "expBonusAdd", value: 0.08, desc: "经验获取+8%", price: 50, unlockFloor: 1 },
+    134: { id: 134, name: "经验书", icon: "📘", rarity: "rare", effect: "expBonusAdd", value: 0.16, desc: "经验获取+16%", price: 110, unlockFloor: 2 },
+    135: { id: 135, name: "贤者墨卷", icon: "📘", rarity: "epic", effect: "expBonusAdd", value: 0.28, desc: "经验获取+28%", price: 220, unlockFloor: 4 },
+    136: { id: 136, name: "启示圣典", icon: "📘", rarity: "legendary", effect: "expBonusAdd", value: 0.4, desc: "经验获取+40%", price: 360, unlockFloor: 5 },
+    137: { id: 137, name: "三叶草", icon: "🍀", rarity: "common", effect: "luckAdd", value: 1, desc: "幸运+1", price: 50, unlockFloor: 1 },
+    138: { id: 138, name: "承运签", icon: "🍀", rarity: "rare", effect: "luckAdd", value: 1, desc: "幸运+1", price: 110, unlockFloor: 2 },
+    139: { id: 139, name: "命途香囊", icon: "🍀", rarity: "epic", effect: "luckAdd", value: 2, desc: "幸运+2", price: 220, unlockFloor: 4 },
+    140: { id: 140, name: "天赐福印", icon: "🍀", rarity: "legendary", effect: "luckAdd", value: 3, desc: "幸运+3", price: 360, unlockFloor: 5 },
+
+    // ========== 成长类（每500击杀成长，当前只做5系） ==========
+    201: { id: 201, name: "猎杀刻痕", icon: "🩸", rarity: "common", effect: "growthAttack", value: 0.03, desc: "每层+3%攻击", price: 57, unlockFloor: 1, growthEveryKills: 500 },
+    202: { id: 202, name: "屠戮纹章", icon: "🩸", rarity: "rare", effect: "growthAttack", value: 0.06, desc: "每层+6%攻击", price: 126, unlockFloor: 2, growthEveryKills: 500 },
+    203: { id: 203, name: "战意蜕壳", icon: "🩸", rarity: "epic", effect: "growthAttack", value: 0.1, desc: "每层+10%攻击", price: 252, unlockFloor: 4, growthEveryKills: 500 },
+    204: { id: 204, name: "王狩圣痕", icon: "🩸", rarity: "legendary", effect: "growthAttack", value: 0.15, desc: "每层+15%攻击", price: 413, unlockFloor: 5, growthEveryKills: 500 },
+    205: { id: 205, name: "急鸣簧片", icon: "⏱️", rarity: "common", effect: "growthFireRate", value: 0.025, desc: "每层+2.5%攻速", price: 57, unlockFloor: 1, growthEveryKills: 500 },
+    206: { id: 206, name: "连机芯", icon: "⏱️", rarity: "rare", effect: "growthFireRate", value: 0.05, desc: "每层+5%攻速", price: 126, unlockFloor: 2, growthEveryKills: 500 },
+    207: { id: 207, name: "时轮副瓣", icon: "⏱️", rarity: "epic", effect: "growthFireRate", value: 0.08, desc: "每层+8%攻速", price: 252, unlockFloor: 4, growthEveryKills: 500 },
+    208: { id: 208, name: "永动刻轮", icon: "⏱️", rarity: "legendary", effect: "growthFireRate", value: 0.12, desc: "每层+12%攻速", price: 413, unlockFloor: 5, growthEveryKills: 500 },
+    209: { id: 209, name: "轻步草结", icon: "💨", rarity: "common", effect: "growthSpeed", value: 0.02, desc: "每层+2%移速", price: 57, unlockFloor: 1, growthEveryKills: 500 },
+    210: { id: 210, name: "踏风皮扣", icon: "💨", rarity: "rare", effect: "growthSpeed", value: 0.04, desc: "每层+4%移速", price: 126, unlockFloor: 2, growthEveryKills: 500 },
+    211: { id: 211, name: "逐影羽片", icon: "💨", rarity: "epic", effect: "growthSpeed", value: 0.06, desc: "每层+6%移速", price: 252, unlockFloor: 4, growthEveryKills: 500 },
+    212: { id: 212, name: "越界足印", icon: "💨", rarity: "legendary", effect: "growthSpeed", value: 0.09, desc: "每层+9%移速", price: 413, unlockFloor: 5, growthEveryKills: 500 },
+    213: { id: 213, name: "裂心瞳", icon: "👁️", rarity: "common", effect: "growthCrit", value: 0.015, desc: "每层+1.5%暴击率", price: 57, unlockFloor: 1, growthEveryKills: 500 },
+    214: { id: 214, name: "猎命镜", icon: "👁️", rarity: "rare", effect: "growthCrit", value: 0.03, desc: "每层+3%暴击率", price: 126, unlockFloor: 2, growthEveryKills: 500 },
+    215: { id: 215, name: "鹰魂镜片", icon: "👁️", rarity: "epic", effect: "growthCrit", value: 0.05, desc: "每层+5%暴击率", price: 252, unlockFloor: 4, growthEveryKills: 500 },
+    216: { id: 216, name: "终局之瞳", icon: "👁️", rarity: "legendary", effect: "growthCrit", value: 0.075, desc: "每层+7.5%暴击率", price: 413, unlockFloor: 5, growthEveryKills: 500 },
+    217: { id: 217, name: "铜契残页", icon: "🪙", rarity: "common", effect: "growthGold", value: 0.05, desc: "每层+5%金币获取", price: 57, unlockFloor: 1, growthEveryKills: 500 },
+    218: { id: 218, name: "财袋纹纸", icon: "🪙", rarity: "rare", effect: "growthGold", value: 0.1, desc: "每层+10%金币获取", price: 126, unlockFloor: 2, growthEveryKills: 500 },
+    219: { id: 219, name: "贪欲契纸", icon: "🪙", rarity: "epic", effect: "growthGold", value: 0.175, desc: "每层+17.5%金币获取", price: 252, unlockFloor: 4, growthEveryKills: 500 },
+    220: { id: 220, name: "金库母契", icon: "🪙", rarity: "legendary", effect: "growthGold", value: 0.25, desc: "每层+25%金币获取", price: 413, unlockFloor: 5, growthEveryKills: 500 },
+
+    // ========== 功能独特（按导出结果接入） ==========
+    301: { id: 301, name: "豆浆", icon: "🥛", rarity: "epic", effect: "soyMilk", value: 1, desc: "攻速+120%，最终伤害×0.35，暴伤-50%", price: 275, unlockFloor: 4 },
+    302: { id: 302, name: "双生镜", icon: "🪞", rarity: "rare", effect: "twinsMirror", value: 1, desc: "子弹+1，但每发最终伤害×0.7", price: 137, unlockFloor: 2 },
+    303: { id: 303, name: "裂响鼓", icon: "🥁", rarity: "rare", effect: "riftDrum", value: 1, desc: "每第4次攻击追加一轮弱散射", price: 137, unlockFloor: 2 },
+    304: { id: 304, name: "余震锤印", icon: "🔨", rarity: "rare", effect: "aftershockHammer", value: 1, desc: "命中附带小范围震波，本体伤害-20%", price: 137, unlockFloor: 2 },
+    305: { id: 305, name: "回声音叉", icon: "🎵", rarity: "rare", effect: "echoFork", value: 1, desc: "命中后短延迟追加一次35%回响伤害", price: 137, unlockFloor: 2 },
+    306: { id: 306, name: "玻璃大炮", icon: "🔮", rarity: "epic", effect: "glassCannon", value: 1, desc: "攻击+50%，最大生命-50%，护甲-50%", price: 275, unlockFloor: 4 },
+    307: { id: 307, name: "傲慢王冠", icon: "👑", rarity: "legendary", effect: "prideCrown", value: 1, desc: "满血时攻击+60%，非满血时攻击-40%", price: 450, unlockFloor: 5 },
+    308: { id: 308, name: "断骨契约", icon: "🦴", rarity: "rare", effect: "brittleBonePact", value: 1, desc: "暴击率+12%，最大生命-1", price: 137, unlockFloor: 2 },
+    309: { id: 309, name: "饥渴誓言", icon: "🪙", rarity: "rare", effect: "hungerOath", value: 1, desc: "金币获取+50%，商店价格+30%", price: 137, unlockFloor: 2 },
+    310: { id: 310, name: "命薄灯芯", icon: "🕯️", rarity: "rare", effect: "thinWick", value: 1, desc: "生命≤50%时，攻速+30%，暴击率+10%", price: 137, unlockFloor: 2 },
+    311: { id: 311, name: "黑色契纸", icon: "📜", rarity: "epic", effect: "blackContract", value: 1, desc: "清房奖励×2，但25%概率该房无奖励", price: 275, unlockFloor: 4 },
+    312: { id: 312, name: "旧债回执", icon: "🧾", rarity: "rare", effect: "debtReceipt", value: 1, desc: "经验获取+30%，金币获取-30%", price: 137, unlockFloor: 2 },
+    313: { id: 313, name: "零元购", icon: "🛒", rarity: "rare", effect: "freebie", value: 1, desc: "商店首件商品免费", price: 137, unlockFloor: 2 },
+    314: { id: 314, name: "半价券", icon: "🎫", rarity: "legendary", effect: "halfCoupon", value: 1, desc: "商店购买半价", price: 450, unlockFloor: 5 },
+    315: { id: 315, name: "全图卷轴", icon: "🗺️", rarity: "rare", effect: "fullMapScroll", value: 1, desc: "显示当前层完整地图", price: 137, unlockFloor: 2 },
+
 };
+
+window.ITEMS = ITEMS;

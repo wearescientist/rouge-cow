@@ -1,0 +1,1147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>场景美术工作台</title>
+<style>
+    :root {
+        --bg: #0c1117;
+        --panel: #141b24;
+        --panel-soft: #182230;
+        --line: rgba(129, 186, 255, 0.16);
+        --line-strong: rgba(129, 186, 255, 0.34);
+        --text: #ecf4ff;
+        --muted: #91a2ba;
+        --accent: #74c8ff;
+        --accent-strong: #409eec;
+        --gold: #e3c277;
+        --danger: #ff8d8d;
+        --ok: #8ad7a5;
+        --shadow: 0 18px 60px rgba(0, 0, 0, 0.32);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--text);
+        font: 14px/1.5 "Microsoft YaHei", "Segoe UI", sans-serif;
+        background:
+            radial-gradient(circle at top left, rgba(79, 155, 236, 0.18), transparent 24%),
+            radial-gradient(circle at top right, rgba(55, 104, 170, 0.18), transparent 26%),
+            linear-gradient(180deg, #121925 0%, #0b1017 100%);
+    }
+
+    button, input, textarea, select { font: inherit; }
+
+    .page {
+        width: min(1920px, calc(100vw - 20px));
+        margin: 0 auto;
+        padding: 10px 0 18px;
+    }
+
+    .shell {
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        overflow: hidden;
+        background: rgba(14, 19, 27, 0.96);
+        box-shadow: var(--shadow);
+    }
+
+    .topbar {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 16px;
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--line);
+        background:
+            linear-gradient(135deg, rgba(116, 200, 255, 0.12), transparent 32%),
+            linear-gradient(180deg, rgba(22, 30, 42, 0.98), rgba(16, 22, 31, 0.98));
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: 26px; line-height: 1.1; }
+    .lead { margin-top: 6px; color: var(--muted); max-width: 820px; }
+
+    .top-actions,
+    .tool-row,
+    .status-row,
+    .hint-row,
+    .layer-actions,
+    .export-actions,
+    .property-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .btn {
+        padding: 9px 12px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 11px;
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.04);
+        cursor: pointer;
+    }
+
+    .btn:hover { border-color: var(--line-strong); }
+
+    .btn.primary,
+    .toolbar-btn.active,
+    .sidebar-tab.active,
+    .guide-chip.active {
+        color: #08131d;
+        border-color: transparent;
+        background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+    }
+
+    .btn.warn {
+        color: #271607;
+        border-color: transparent;
+        background: linear-gradient(180deg, #ffd894, #e7b863);
+    }
+
+    .shell-slot-shell_far {
+        border-color: rgba(104, 145, 201, 0.4);
+        background: linear-gradient(180deg, rgba(54, 78, 115, 0.28), rgba(24, 32, 44, 0.6));
+    }
+
+    .shell-slot-shell_mid {
+        border-color: rgba(116, 200, 255, 0.42);
+        background: linear-gradient(180deg, rgba(52, 102, 124, 0.22), rgba(21, 33, 42, 0.62));
+    }
+
+    .shell-slot-shell_primary {
+        border-color: rgba(255, 216, 148, 0.42);
+        background: linear-gradient(180deg, rgba(118, 92, 48, 0.24), rgba(33, 26, 18, 0.62));
+    }
+
+    .shell-slot-shell_fragments {
+        border-color: rgba(167, 231, 168, 0.35);
+        background: linear-gradient(180deg, rgba(54, 94, 58, 0.22), rgba(20, 34, 23, 0.62));
+    }
+
+    .workspace {
+        display: grid;
+        grid-template-columns: 320px minmax(0, 1fr) 340px;
+        gap: 0;
+        min-height: calc(100vh - 84px);
+    }
+
+    .sidebar,
+    .inspector {
+        background: var(--panel);
+    }
+
+    .sidebar {
+        border-right: 1px solid var(--line);
+        display: grid;
+        grid-template-rows: auto minmax(0, 1fr) auto;
+    }
+
+    .inspector {
+        border-left: 1px solid var(--line);
+        display: grid;
+        grid-template-rows: auto auto minmax(0, 1fr);
+    }
+
+    .page.shell-focus .workspace {
+        grid-template-columns: minmax(0, 1fr) 360px;
+    }
+
+    .page.shell-focus .sidebar {
+        display: none;
+    }
+
+    .page.shell-focus .inspector .status-card:not(.shell-card):not(.sticky-card),
+    .page.shell-focus .inspector .property-actions:not(.shell-inline-actions) {
+        display: none;
+    }
+
+    .page.shell-focus .scene-root {
+        margin: 16px auto;
+    }
+
+    .canvas-area {
+        background:
+            radial-gradient(circle at 50% 10%, rgba(116, 200, 255, 0.08), transparent 28%),
+            linear-gradient(180deg, #0d141e 0%, #0a1017 100%);
+        display: grid;
+        grid-template-rows: auto auto auto minmax(0, 1fr) auto;
+        min-width: 0;
+    }
+
+    .section {
+        padding: 14px;
+        min-width: 0;
+    }
+
+    .sidebar-tabs {
+        display: flex;
+        gap: 8px;
+        padding: 14px;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .sidebar-tab {
+        padding: 8px 11px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        cursor: pointer;
+    }
+
+    .sidebar-panel,
+    .inspector-scroll {
+        min-height: 0;
+        overflow: auto;
+    }
+
+    .inspector-switcher {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 0 14px 14px;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .inspector-switcher .btn {
+        flex: 0 0 auto;
+        min-height: 42px;
+        white-space: nowrap;
+    }
+
+    .inspector-switcher .btn.active {
+        color: #08131d;
+        border-color: transparent;
+        background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+    }
+
+    .inspector-card-hidden {
+        display: none !important;
+    }
+
+    .sidebar-panel.hidden { display: none; }
+
+    .search-row {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+    }
+
+    .input,
+    .number,
+    .select,
+    textarea {
+        width: 100%;
+        padding: 9px 10px;
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: 10px;
+        color: var(--text);
+        background: rgba(7, 11, 18, 0.42);
+        outline: none;
+    }
+
+    .chip-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .guide-chip {
+        padding: 7px 10px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.03);
+        cursor: pointer;
+    }
+
+    .asset-list,
+    .layer-list,
+    .used-list,
+    .wizard-list {
+        display: grid;
+        gap: 10px;
+    }
+
+    .asset-card,
+    .layer-item,
+    .used-item,
+    .property-block,
+    .status-card,
+    .wizard-card {
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+    }
+
+    .wizard-card {
+        padding: 12px;
+    }
+
+    .wizard-card.good {
+        border-color: rgba(138, 215, 165, 0.34);
+        background: rgba(138, 215, 165, 0.08);
+    }
+
+    .wizard-card.warn {
+        border-color: rgba(255, 173, 92, 0.36);
+        background: rgba(255, 173, 92, 0.08);
+    }
+
+    .wizard-card.danger {
+        border-color: rgba(255, 141, 141, 0.36);
+        background: rgba(255, 141, 141, 0.08);
+    }
+
+    .wizard-title {
+        font-weight: 700;
+    }
+
+    .wizard-text {
+        margin-top: 4px;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    .asset-card {
+        display: grid;
+        grid-template-columns: 64px minmax(0, 1fr);
+        gap: 10px;
+        padding: 10px;
+        cursor: pointer;
+    }
+
+    .asset-thumb {
+        width: 64px;
+        height: 64px;
+        border-radius: 10px;
+        background: #0a1017;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .asset-thumb img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        image-rendering: pixelated;
+    }
+
+    .asset-name,
+    .layer-name {
+        font-weight: 700;
+    }
+
+    .mini,
+    .asset-path {
+        color: var(--muted);
+        font-size: 11px;
+    }
+
+    .asset-path { word-break: break-all; margin-top: 4px; }
+
+    .canvas-toolbar {
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .canvas-switcher {
+        display: flex;
+        gap: 8px;
+        padding: 0 14px 12px;
+        border-bottom: 1px solid var(--line);
+    }
+
+    .canvas-switcher .btn.active {
+        color: #08131d;
+        border-color: transparent;
+        background: linear-gradient(180deg, var(--accent), var(--accent-strong));
+    }
+
+    .canvas-card-hidden {
+        display: none !important;
+    }
+
+    .canvas-toolbar .tool-row + .tool-row {
+        margin-top: 8px;
+    }
+
+    .shell-quickbar {
+        position: sticky;
+        top: 0;
+        z-index: 25;
+        padding: 12px 14px;
+        border-bottom: 1px solid var(--line);
+        background:
+            linear-gradient(180deg, rgba(13, 20, 30, 0.98), rgba(11, 17, 25, 0.94));
+        backdrop-filter: blur(10px);
+    }
+
+    .shell-quickbar-title {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 8px;
+    }
+
+    .shell-quickbar-title .mini {
+        max-width: 520px;
+    }
+
+    .shell-quickbar .tool-row + .tool-row {
+        margin-top: 8px;
+    }
+
+    .btn.ghost {
+        color: var(--muted);
+        background: rgba(255, 255, 255, 0.025);
+    }
+
+    .hint-row {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        align-content: flex-start;
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--line);
+        color: var(--muted);
+        gap: 8px 14px;
+    }
+
+    .hotkey {
+        display: inline-flex;
+        align-items: center;
+        flex: 0 0 auto;
+        white-space: nowrap;
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.06);
+        font-size: 11px;
+    }
+
+    .viewport {
+        position: relative;
+        overflow: auto;
+        min-height: 0;
+    }
+
+    .scene-root {
+        position: relative;
+        width: 960px;
+        height: 960px;
+        margin: 28px auto;
+        transform-origin: top left;
+        touch-action: none;
+        background:
+            radial-gradient(circle at 50% 14%, rgba(116, 200, 255, 0.07), transparent 30%),
+            linear-gradient(180deg, #111927 0%, #0a1018 100%);
+        box-shadow: 0 28px 80px rgba(0, 0, 0, 0.42);
+    }
+
+    .scene-grid,
+    .room-frame,
+    .layout-frame,
+    .hud-frame,
+    .center-frame,
+    .play-area-frame,
+    .wall-frame,
+    .safe-frame,
+    .door-guide,
+    .selection-box,
+    .align-line {
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .scene-grid {
+        inset: 0;
+        background-image:
+            linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+        background-size: 80px 80px;
+        opacity: 0.35;
+    }
+
+    .room-frame { border: 2px solid rgba(187, 208, 235, 0.35); }
+    .play-area-frame {
+        z-index: 2400;
+        border: 3px dashed rgba(116, 200, 255, 0.96);
+        box-shadow: 0 0 0 1px rgba(116, 200, 255, 0.18);
+    }
+    .wall-frame { border: 1px dashed rgba(255, 143, 143, 0.6); }
+    .safe-frame { border: 2px solid rgba(227, 194, 119, 0.74); }
+    .door-guide.top,
+    .door-guide.bottom { border-top: 8px solid rgba(138, 215, 165, 0.84); height: 0; }
+    .door-guide.left,
+    .door-guide.right { border-left: 8px solid rgba(138, 215, 165, 0.84); width: 0; }
+    .layout-frame {
+        z-index: 2401;
+        border: 3px solid rgba(255, 216, 148, 0.92);
+        box-shadow:
+            inset 0 0 0 1px rgba(255, 255, 255, 0.04),
+            0 0 0 1px rgba(255, 216, 148, 0.14);
+    }
+    .hud-frame {
+        z-index: 7;
+        border: 1px solid rgba(205, 192, 171, 0.2);
+        background: rgba(205, 192, 171, 0.04);
+    }
+    .center-frame {
+        z-index: 7;
+        border: 1px dashed rgba(116, 200, 255, 0.34);
+        background: rgba(116, 200, 255, 0.03);
+    }
+    .selection-box { border: 1px dashed rgba(116, 200, 255, 0.96); background: rgba(116, 200, 255, 0.08); }
+    .align-line { background: rgba(227, 194, 119, 0.94); z-index: 2000; }
+
+    .guide-label {
+        position: absolute;
+        left: 10px;
+        top: -28px;
+        padding: 3px 8px;
+        border-radius: 999px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+        color: #07131d;
+        white-space: nowrap;
+        pointer-events: none;
+    }
+
+    .layout-frame .guide-label {
+        background: rgba(255, 216, 148, 0.96);
+    }
+
+    .play-area-frame .guide-label {
+        background: rgba(116, 200, 255, 0.96);
+    }
+
+    .scene-item {
+        position: absolute;
+        min-width: 6px;
+        min-height: 6px;
+        border: 1px solid transparent;
+        transform-origin: center center;
+        cursor: move;
+        touch-action: none;
+    }
+
+    .scene-item.is-selected {
+        border-color: rgba(116, 200, 255, 0.95);
+        box-shadow: 0 0 0 1px rgba(116, 200, 255, 0.26);
+    }
+
+    .scene-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: fill;
+        display: block;
+        image-rendering: pixelated;
+        pointer-events: none;
+    }
+
+    .scene-item .tint {
+        position: absolute;
+        inset: 0;
+        mix-blend-mode: multiply;
+        pointer-events: none;
+    }
+
+    .scene-item .cut-guide,
+    .scene-item .shell-role-badge,
+    .scene-item .shell-segment {
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .scene-item .shell-segment {
+        overflow: hidden;
+    }
+
+    .scene-item .shell-segment img {
+        position: absolute;
+        display: block;
+        image-rendering: pixelated;
+        pointer-events: none;
+    }
+
+    .scene-item .cut-guide {
+        border: 1px dashed rgba(255, 138, 138, 0.85);
+        box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.06);
+    }
+
+    .scene-item .shell-role-badge {
+        left: 8px;
+        top: 8px;
+        padding: 2px 8px;
+        border-radius: 999px;
+        background: rgba(4, 9, 14, 0.66);
+        color: #ffd894;
+        font-size: 11px;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+    }
+
+    .resize-handle,
+    .rotate-handle {
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        border: 2px solid #07131d;
+    }
+
+    .resize-handle {
+        right: -7px;
+        bottom: -7px;
+        background: var(--accent);
+        cursor: nwse-resize;
+    }
+
+    .rotate-handle {
+        left: 50%;
+        top: -22px;
+        transform: translateX(-50%);
+        background: var(--gold);
+        cursor: grab;
+    }
+
+    .player-reference {
+        position: absolute;
+        z-index: 999;
+        pointer-events: none;
+    }
+
+    .player-reference img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        image-rendering: pixelated;
+    }
+
+    .player-reference .badge {
+        position: absolute;
+        left: 50%;
+        bottom: -18px;
+        transform: translateX(-50%);
+        padding: 2px 7px;
+        border-radius: 999px;
+        background: rgba(0, 0, 0, 0.52);
+        color: #fff;
+        font-size: 11px;
+        white-space: nowrap;
+    }
+
+    .statusbar {
+        padding: 10px 14px;
+        border-top: 1px solid var(--line);
+    }
+
+    .status-card {
+        padding: 10px 12px;
+    }
+
+    .status-card.sticky-card {
+        position: sticky;
+        top: 0;
+        z-index: 12;
+        background:
+            linear-gradient(180deg, rgba(21, 29, 40, 0.98), rgba(19, 27, 37, 0.96));
+        backdrop-filter: blur(10px);
+    }
+
+    .property-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .property-block {
+        padding: 12px;
+    }
+
+    .property-block label {
+        display: grid;
+        gap: 6px;
+        color: var(--muted);
+        font-size: 12px;
+    }
+
+    .door-light-node {
+        position: absolute;
+        pointer-events: none;
+        z-index: 2602;
+        mix-blend-mode: screen;
+    }
+
+    .door-light-beam,
+    .door-light-lip {
+        position: absolute;
+        pointer-events: none;
+    }
+
+    .door-light-beam {
+        inset: 0;
+    }
+
+    textarea {
+        min-height: 180px;
+        resize: vertical;
+    }
+
+    .hidden { display: none !important; }
+
+    .runtime-probe-frame {
+        position: fixed;
+        right: -10000px;
+        top: -10000px;
+        width: 1600px;
+        height: 900px;
+        opacity: 0;
+        pointer-events: none;
+        border: 0;
+    }
+
+    @media (max-width: 1560px) {
+        .workspace {
+            grid-template-columns: 280px minmax(0, 1fr) 320px;
+        }
+    }
+
+    @media (max-width: 1220px) {
+        .workspace {
+            grid-template-columns: 1fr;
+        }
+        .sidebar, .inspector {
+            border: 0;
+            border-bottom: 1px solid var(--line);
+        }
+        .inspector {
+            border-top: 1px solid var(--line);
+        }
+    }
+</style>
+</head>
+<body>
+<div class="page">
+    <div class="shell">
+        <header class="topbar">
+            <div>
+                <h1>场景美术工作台</h1>
+                <p class="lead">按真实游戏数据工作：16:9 视口 + 2000x2000 房间。当前重构版优先提升编辑效率，加入侧栏切换、多选、框选、吸附、对齐线、图层锁定/隐藏、快捷键。~Meow</p>
+            </div>
+            <div class="top-actions">
+                <button id="addPlaygroundBtn" class="btn primary" type="button">插入基础舞台</button>
+                <button id="toggleShellFocusBtn" class="btn warn" type="button">专注壳调色</button>
+                <button id="safeBootBtn" class="btn" type="button">安全启动</button>
+                <button id="resetSceneBtn" class="btn" type="button">清空场景</button>
+                <button id="openWorkbenchBtn" class="btn" type="button">返回总工作台</button>
+            </div>
+        </header>
+
+        <main class="workspace">
+            <aside id="leftSidebarPane" class="sidebar">
+                <div class="sidebar-tabs">
+                    <button class="sidebar-tab active" data-sidebar="assets" type="button">资源</button>
+                    <button class="sidebar-tab" data-sidebar="layers" type="button">图层</button>
+                    <button class="sidebar-tab" data-sidebar="used" type="button">已用</button>
+                </div>
+
+                <div class="sidebar-panel" data-sidebar-panel="assets">
+                    <div class="section stack">
+                        <div>
+                            <h2>傻瓜流程</h2>
+                            <div class="wizard-list" style="margin-top: 10px;">
+                                <article class="wizard-card">
+                                    <div class="wizard-title">1. 插入主壳</div>
+                                    <div class="wizard-text">先点“插入 F1 主壳”，不用拖素材找图。~Meow</div>
+                                    <div class="layer-actions" style="margin-top: 10px;">
+                                        <button id="insertShellBaseBtn" class="btn primary" type="button">插入 F1 主壳</button>
+                                    </div>
+                                </article>
+                                <article class="wizard-card">
+                                    <div class="wizard-title">2. 一键叠三层</div>
+                                    <div class="wizard-text">自动生成主层 / 中层 / 深层，不用自己复制三次。~Meow</div>
+                                    <div class="layer-actions" style="margin-top: 10px;">
+                                        <button id="wizardBuildStackBtn" class="btn" type="button">一键叠三层</button>
+                                        <button id="wizardAutoFixBtn" class="btn" type="button">一键扣中间</button>
+                                    </div>
+                                </article>
+                                <article class="wizard-card">
+                                    <div class="wizard-title">3. 看结果</div>
+                                    <div id="wizardHealth" class="wizard-text">还没有壳层。先插入主壳。~Meow</div>
+                                </article>
+                                <article class="wizard-card">
+                                    <div class="wizard-title">4. 导出运行时配置</div>
+                                    <div class="wizard-text">调满意后，直接点“导出壳配置”。~Meow</div>
+                                    <div class="layer-actions" style="margin-top: 10px;">
+                                        <button id="wizardExportShellBtn" class="btn" type="button">导出壳配置</button>
+                                    </div>
+                                </article>
+                            </div>
+                        </div>
+                        <div>
+                            <h2>四层壳栈</h2>
+                            <div class="wizard-card" style="margin-top: 10px; padding: 12px;">
+                                <div class="wizard-title">楼层壳主题</div>
+                                <div class="wizard-text">先点“全选三壳”，再一键套楼层基调；之后你直接在右侧统一拖颜色即可。~Meow</div>
+                                <div class="layer-actions" style="margin-top: 10px;">
+                                    <button class="btn primary" data-shell-select-trio="core" type="button">全选三壳</button>
+                                    <button class="btn" data-shell-theme="greenhouse" type="button">L2 黄绿腐殖</button>
+                                    <button class="btn" data-shell-theme="nerve" type="button">L3 紫红肉膜</button>
+                                    <button class="btn" data-shell-theme="furnace" type="button">L4 黑曜熔浆</button>
+                                    <button class="btn" data-shell-theme="courtyard" type="button">L5 暗红虫巢</button>
+                                    <button class="btn" data-shell-theme="core" type="button">L6 深紫旧金</button>
+                                </div>
+                            </div>
+                            <div id="shellStackList" class="wizard-list" style="margin-top: 10px;"></div>
+                        </div>
+                        <div>
+                            <h2>资源库</h2>
+                            <div class="search-row" style="margin-top: 10px;">
+                                <input id="assetSearchInput" class="input" type="text" placeholder="搜索 door / floor / shell ...">
+                                <button id="clearAssetSearchBtn" class="btn" type="button">清空</button>
+                            </div>
+                            <div class="layer-actions" style="margin-top: 10px;">
+                                <button id="pickLocalAssetsBtn" class="btn" type="button">添加本地素材</button>
+                                <button id="duplicateShellLayerBtn" class="btn" type="button">再加一层壳</button>
+                                <input id="localAssetInput" type="file" accept="image/*" multiple class="hidden">
+                            </div>
+                        </div>
+                        <div id="assetCategoryRow" class="chip-row"></div>
+                        <div id="assetGrid" class="asset-list"></div>
+                    </div>
+                </div>
+
+                <div class="sidebar-panel hidden" data-sidebar-panel="layers">
+                    <div class="section stack">
+                        <div>
+                            <h2>图层栈</h2>
+                            <p class="lead" style="max-width: none;">当前图层决定新素材插入位置，也可以直接锁定或隐藏图层。~Meow</p>
+                        </div>
+                        <div id="layerList" class="layer-list"></div>
+                    </div>
+                </div>
+
+                <div class="sidebar-panel hidden" data-sidebar-panel="used">
+                    <div class="section stack">
+                        <div>
+                            <h2>当前场景素材</h2>
+                            <p class="lead" style="max-width: none;">这里列出当前布局里已经用到的资源，方便快速重复使用。~Meow</p>
+                        </div>
+                        <div id="usedAssetList" class="used-list"></div>
+                    </div>
+                </div>
+            </aside>
+
+            <section class="canvas-area">
+                <div class="canvas-switcher">
+                    <button class="btn active" data-canvas-card-button="tools" type="button">画布工具</button>
+                    <button class="btn" data-canvas-card-button="shell" type="button">壳调色</button>
+                </div>
+
+                <div class="canvas-toolbar" data-canvas-card="tools">
+                    <div class="tool-row">
+                        <button class="btn toolbar-btn active" data-tool="select" type="button">选择</button>
+                        <button class="btn toolbar-btn" data-tool="pan" type="button">平移</button>
+                        <button id="syncRuntimeLayoutBtn" class="btn" type="button">同步游戏布局</button>
+                        <button id="buildShellStackBtn" class="btn primary" type="button">生成三层壳</button>
+                        <button id="explodeShellFragmentsBtn" class="btn" type="button">生成前景碎层</button>
+                        <button id="duplicateBtn" class="btn" type="button">复制</button>
+                        <button id="duplicateInPlaceBtn" class="btn" type="button">原位复制</button>
+                        <button id="undoBtn" class="btn" type="button">撤销</button>
+                        <button id="redoBtn" class="btn" type="button">重做</button>
+                        <button id="rotateLeftBtn" class="btn" type="button">左转 15°</button>
+                        <button id="rotateRightBtn" class="btn" type="button">右转 15°</button>
+                        <button id="bringForwardBtn" class="btn" type="button">前移</button>
+                        <button id="sendBackwardBtn" class="btn" type="button">后移</button>
+                        <button id="deleteItemBtn" class="btn warn" type="button">删除</button>
+                    </div>
+                    <div class="tool-row">
+                        <button id="zoomOutBtn" class="btn" type="button">-</button>
+                        <button id="zoomResetBtn" class="btn" type="button">100%</button>
+                        <button id="zoomInBtn" class="btn" type="button">+</button>
+                        <button class="guide-chip active" data-guide="grid" type="button">网格</button>
+                        <button class="guide-chip active" data-guide="safeFrame" type="button">房间外框</button>
+                        <button class="guide-chip active" data-guide="walls" type="button">墙厚区</button>
+                        <button class="guide-chip active" data-guide="playArea" type="button">地板有效区</button>
+                        <button class="guide-chip active" data-guide="doors" type="button">门逻辑区</button>
+                        <button class="guide-chip active" data-guide="doorVisuals" type="button">门贴图区</button>
+                        <button class="guide-chip active" data-guide="player" type="button">玩家参照</button>
+                        <button class="guide-chip active" data-guide="snap" type="button">吸附</button>
+                    </div>
+                </div>
+
+                <div class="shell-quickbar" data-canvas-card="shell">
+                    <div class="shell-quickbar-title">
+                        <div>
+                            <h3>壳快捷控制</h3>
+                            <div class="mini">壳主题、全选三壳、跳到颜色区都固定在这里，不用再翻到底。~Meow</div>
+                        </div>
+                        <div class="property-actions">
+                            <button class="btn ghost" data-scroll-target="shellColorCard" type="button">跳到颜色区</button>
+                            <button class="btn ghost" data-scroll-target="advancedShellCard" type="button">跳到高级参数</button>
+                        </div>
+                    </div>
+                    <div class="tool-row">
+                        <button class="btn primary" data-shell-select-trio="core" type="button">全选三壳</button>
+                        <button id="quickBuildShellStackBtn" class="btn" type="button">生成三层壳</button>
+                        <button id="quickExportShellBtn" class="btn" type="button">导出壳配置</button>
+                    </div>
+                    <div class="tool-row">
+                        <button class="btn" data-shell-theme="greenhouse" type="button">L2 黄绿腐殖</button>
+                        <button class="btn" data-shell-theme="nerve" type="button">L3 紫红肉膜</button>
+                        <button class="btn" data-shell-theme="furnace" type="button">L4 黑曜熔浆</button>
+                        <button class="btn" data-shell-theme="courtyard" type="button">L5 暗红虫巢</button>
+                        <button class="btn" data-shell-theme="core" type="button">L6 深紫旧金</button>
+                    </div>
+                </div>
+
+                <div class="hint-row mini">
+                    <span id="runtimeLayoutStatus" class="hotkey">布局来源：等待同步游戏真实布局</span>
+                    <span class="hotkey">拖对象=移动</span>
+                    <span class="hotkey">右下圆点=拉伸</span>
+                    <span class="hotkey">上方金点=旋转</span>
+                    <span class="hotkey">Shift+拖拽=框选</span>
+                    <span class="hotkey">Alt+拖拽=复制并移动</span>
+                    <span class="hotkey">Ctrl+Z=撤销</span>
+                    <span class="hotkey">Ctrl+Y=重做</span>
+                    <span class="hotkey">Ctrl+D=复制</span>
+                    <span class="hotkey">Delete=删除</span>
+                    <span class="hotkey">[ / ] = 旋转</span>
+                    <span class="hotkey">方向键=微调</span>
+                </div>
+
+                <div class="viewport">
+                    <div id="sceneRoot" class="scene-root">
+                        <div id="guideGrid" class="scene-grid"></div>
+                        <div id="layoutFrame" class="layout-frame"><div class="guide-label">16:9 游戏画布边界</div></div>
+                        <div id="leftHudFrame" class="hud-frame"></div>
+                        <div id="centerFrame" class="center-frame"></div>
+                        <div id="rightHudFrame" class="hud-frame"></div>
+                        <div id="roomFrame" class="room-frame"></div>
+                        <div id="guidePlayArea" class="play-area-frame"><div class="guide-label">地板移动边界</div></div>
+                        <div id="guideWall" class="wall-frame"></div>
+                        <div id="guideSafeFrame" class="safe-frame"></div>
+                        <div id="guideDoorTop" class="door-guide top"></div>
+                        <div id="guideDoorBottom" class="door-guide bottom"></div>
+                        <div id="guideDoorLeft" class="door-guide left"></div>
+                        <div id="guideDoorRight" class="door-guide right"></div>
+                        <div id="alignLineX" class="align-line hidden"></div>
+                        <div id="alignLineY" class="align-line hidden"></div>
+                        <div id="selectionBox" class="selection-box hidden"></div>
+                        <div id="sceneLayerHost"></div>
+                    </div>
+                </div>
+
+                <div class="statusbar">
+                    <div id="statusRow" class="status-row"></div>
+                </div>
+            </section>
+
+            <aside id="rightInspectorPane" class="inspector">
+                <div class="section">
+                    <h2>属性检查器</h2>
+                    <p class="lead" style="max-width: none;">这里默认编辑“主选中对象”；多选时只显示集合状态和批量操作。~Meow</p>
+                </div>
+                <div class="inspector-switcher">
+                    <button class="btn active" data-inspector-card-button="quick" type="button">快捷</button>
+                    <button class="btn" data-inspector-card-button="selection" type="button">选择</button>
+                    <button class="btn" data-inspector-card-button="ops" type="button">操作</button>
+                    <button class="btn" data-inspector-card-button="smart" type="button">单层</button>
+                    <button class="btn" data-inspector-card-button="color" type="button">颜色</button>
+                    <button class="btn" data-inspector-card-button="advanced" type="button">高级</button>
+                    <button class="btn" data-inspector-card-button="export" type="button">导出</button>
+                    <button class="btn" data-inspector-card-button="door" type="button">门光</button>
+                </div>
+                <div class="inspector-scroll section stack">
+                    <div class="status-card sticky-card shell-card" data-inspector-card="quick">
+                        <h3>壳调色快捷区</h3>
+                        <div class="wizard-text">你调壳时优先用这里：先全选三壳，再套楼层主题，再跳去颜色区拖参数。~Meow</div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button class="btn primary" data-shell-select-trio="core" type="button">全选三壳</button>
+                            <button class="btn" data-shell-theme="greenhouse" type="button">L2</button>
+                            <button class="btn" data-shell-theme="nerve" type="button">L3</button>
+                            <button class="btn" data-shell-theme="furnace" type="button">L4</button>
+                            <button class="btn" data-shell-theme="courtyard" type="button">L5</button>
+                            <button class="btn" data-shell-theme="core" type="button">L6</button>
+                        </div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button class="btn ghost" data-scroll-target="shellColorCard" type="button">去颜色区</button>
+                            <button class="btn ghost" data-scroll-target="advancedShellCard" type="button">去高级参数</button>
+                            <button id="quickCopyShellConfigBtn" class="btn" type="button">复制壳配置</button>
+                        </div>
+                    </div>
+
+                    <div class="status-card support-card" data-inspector-card="door">
+                        <h3>门光实验室</h3>
+                        <div class="wizard-text">这里专门调门缝泄光，四个门同步预览。调完直接复制 JSON 给运行时。~Meow</div>
+                        <div class="property-grid" style="margin-top: 10px;">
+                            <div class="property-block"><label>颜色<input id="doorLightColor" class="input" type="color" value="#ffffff"></label></div>
+                            <div class="property-block"><label>亮度<input id="doorLightIntensity" class="number" type="number" min="0" max="12" step="0.05" value="8"></label></div>
+                            <div class="property-block"><label>整体透明度<input id="doorLightOpacity" class="number" type="number" min="0" max="1" step="0.05" value="0.9"></label></div>
+                            <div class="property-block"><label>投射长度<input id="doorLightLength" class="number" type="number" min="8" max="260" step="1" value="194"></label></div>
+                            <div class="property-block"><label>发射角度(倍率)<input id="doorLightSpread" class="number" type="number" min="1" max="2.2" step="0.02" value="2.2"></label></div>
+                            <div class="property-block"><label>柔和程度(px)<input id="doorLightSoftness" class="number" type="number" min="0" max="60" step="1" value="11"></label></div>
+                            <div class="property-block"><label>门口亮边<input id="doorLightLip" class="number" type="number" min="0" max="2" step="0.05" value="2"></label></div>
+                        </div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button id="copyDoorLightBtn" class="btn primary" type="button">复制门光参数</button>
+                            <button id="resetDoorLightBtn" class="btn" type="button">恢复默认</button>
+                        </div>
+                        <div id="doorLightMeta" class="mini" style="margin-top: 8px;">预览：四门同步泄光。~Meow</div>
+                    </div>
+
+                    <div class="status-card shell-card" data-inspector-card="selection">
+                        <h3>当前选择</h3>
+                        <div id="selectedMeta" class="mini" style="margin-top: 6px;">未选中对象。~Meow</div>
+                        <div id="spaceMeta" class="mini" style="margin-top: 4px;">坐标空间：- ~Meow</div>
+                        <div id="shellMeta" class="mini" style="margin-top: 4px;">壳层状态：- ~Meow</div>
+                    </div>
+
+                    <div class="status-card shell-card" data-inspector-card="ops">
+                        <h3>壳层主操作</h3>
+                        <div class="wizard-text">先选中某一层壳，再点下面按钮；不懂参数时优先点“推荐参数”和“自动清中间”。~Meow</div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button id="applyRecommendedShellBtn" class="btn primary" type="button">推荐参数</button>
+                            <button id="autoCutSelectedBtn" class="btn" type="button">当前层一键扣中间</button>
+                            <button id="autoCutAllBtn" class="btn" type="button">全部壳一键扣中间</button>
+                        </div>
+                        <div id="shellRiskHint" class="mini" style="margin-top: 8px;">风险提示：- ~Meow</div>
+                    </div>
+
+                    <div class="status-card shell-card" data-inspector-card="smart">
+                        <h3>单层智能操作</h3>
+                        <div class="wizard-text">选中一层后，优先用这里。缩放、擦除、微转都做成傻瓜操作了。~Meow</div>
+                        <div class="property-grid" style="margin-top: 10px;">
+                            <div class="property-block">
+                                <label>整体缩放
+                                    <input id="smartScaleRange" class="number" type="range" min="60" max="140" step="1" value="100">
+                                </label>
+                                <div id="smartScaleMeta" class="mini" style="margin-top: 6px;">当前 100% ~Meow</div>
+                            </div>
+                            <div class="property-block">
+                                <label>精细旋转
+                                    <input id="smartRotateRange" class="number" type="range" min="-180" max="180" step="1" value="0">
+                                </label>
+                                <div id="smartRotateMeta" class="mini" style="margin-top: 6px;">当前 0° ~Meow</div>
+                            </div>
+                        </div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button id="smartScaleDownBtn" class="btn" type="button">小一点</button>
+                            <button id="smartScaleUpBtn" class="btn" type="button">大一点</button>
+                            <button id="smartFillViewportBtn" class="btn" type="button">铺满主画面</button>
+                        </div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button id="smartStretchHeightDownBtn" class="btn" type="button">压高</button>
+                            <button id="smartStretchHeightUpBtn" class="btn" type="button">拉高</button>
+                            <button id="smartStretchWidthDownBtn" class="btn" type="button">收宽</button>
+                            <button id="smartStretchWidthUpBtn" class="btn" type="button">拉宽</button>
+                        </div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button id="smartRotateLeft1Btn" class="btn" type="button">左 1°</button>
+                            <button id="smartRotateRight1Btn" class="btn" type="button">右 1°</button>
+                            <button id="smartRotateLeft5Btn" class="btn" type="button">左 5°</button>
+                            <button id="smartRotateRight5Btn" class="btn" type="button">右 5°</button>
+                            <button id="smartRotateResetBtn" class="btn" type="button">转正</button>
+                        </div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button id="smartEraseLightBtn" class="btn" type="button">轻扣中间</button>
+                            <button id="smartEraseMediumBtn" class="btn" type="button">中扣中间</button>
+                            <button id="smartEraseHeavyBtn" class="btn" type="button">重扣中间</button>
+                        </div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button id="smartExpand1Btn" class="btn" type="button">内边 +1px</button>
+                            <button id="smartExpand2Btn" class="btn" type="button">内边 +2px</button>
+                            <button id="smartExpand4Btn" class="btn" type="button">内边 +4px</button>
+                            <button id="smartExpandResetBtn" class="btn" type="button">恢复原口</button>
+                        </div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button id="smartOpenForBelowBtn" class="btn" type="button">给下层留空间</button>
+                            <button id="smartTopBottomOpenBtn" class="btn" type="button">多扣上下</button>
+                            <button id="smartForegroundCoverBtn" class="btn" type="button">压玩家一点</button>
+                        </div>
+                        <div id="smartEditHint" class="mini" style="margin-top: 8px;">操作提示：先选中一层壳。~Meow</div>
+                    </div>
+
+                    <div class="property-actions shell-inline-actions" data-inspector-card="smart">
+                        <button id="alignCenterRoomBtn" class="btn" type="button">居中到房间</button>
+                        <button id="alignCenterFloorBtn" class="btn" type="button">居中到地板</button>
+                        <button id="focusSelectionBtn" class="btn" type="button">聚焦选中</button>
+                    </div>
+
+                    <details id="advancedShellCard" class="status-card shell-card" data-inspector-card="advanced">
+                        <summary style="cursor:pointer; font-weight:700;">高级参数</summary>
+                        <div class="wizard-text" style="margin-top: 10px;">只有需要精调时再展开，平时优先用上面的智能按钮。~Meow</div>
+                        <div class="property-grid" style="margin-top: 10px;">
+                            <div class="property-block"><label>X<input id="propX" class="number" type="number"></label></div>
+                            <div class="property-block"><label>Y<input id="propY" class="number" type="number"></label></div>
+                            <div class="property-block"><label>宽度<input id="propWidth" class="number" type="number" min="8"></label></div>
+                            <div class="property-block"><label>高度<input id="propHeight" class="number" type="number" min="8"></label></div>
+                            <div class="property-block"><label>旋转<input id="propRotation" class="number" type="number" step="1"></label></div>
+                            <div class="property-block"><label>透明度<input id="propOpacity" class="number" type="number" min="0" max="1" step="0.05"></label></div>
+                            <div class="property-block"><label>明暗<input id="propBrightness" class="number" type="number" step="0.05"></label></div>
+                            <div class="property-block"><label>清晰度<input id="propContrast" class="number" type="number" step="0.05"></label></div>
+                            <div class="property-block"><label>颜色浓度<input id="propSaturation" class="number" type="number" step="0.05"></label></div>
+                            <div class="property-block"><label>高级色相<input id="propHue" class="number" type="number" step="1"></label></div>
+                            <div class="property-block"><label>Tint<input id="propTint" class="input" type="color" value="#ffffff"></label></div>
+                            <div class="property-block"><label>Tint 强度<input id="propTintOpacity" class="number" type="number" min="0" max="1" step="0.05"></label></div>
+                            <div class="property-block"><label>混合模式<select id="propBlendMode" class="select"><option value="normal">normal</option><option value="multiply">multiply</option><option value="screen">screen</option><option value="overlay">overlay</option><option value="lighten">lighten</option><option value="darken">darken</option></select></label></div>
+                            <div class="property-block"><label>壳层视差<input id="propParallax" class="number" type="number" step="0.05"></label></div>
+                            <div class="property-block"><label>内圈裁切<input id="propInnerCut" class="number" type="number" min="0" max="0.48" step="0.01"></label></div>
+                            <div class="property-block"><label>裁切羽化<input id="propInnerFeather" class="number" type="number" min="0" max="0.16" step="0.01"></label></div>
+                            <div class="property-block"><label>上偏置<input id="propCutBiasTop" class="number" type="number" min="-0.24" max="0.24" step="0.01"></label></div>
+                            <div class="property-block"><label>右偏置<input id="propCutBiasRight" class="number" type="number" min="-0.24" max="0.24" step="0.01"></label></div>
+                            <div class="property-block"><label>下偏置<input id="propCutBiasBottom" class="number" type="number" min="-0.24" max="0.24" step="0.01"></label></div>
+                            <div class="property-block"><label>左偏置<input id="propCutBiasLeft" class="number" type="number" min="-0.24" max="0.24" step="0.01"></label></div>
+                            <div class="property-block"><label>壳层角色<select id="propShellRole" class="select"><option value="none">none</option><option value="far">far</option><option value="mid">mid</option><option value="primary">primary</option><option value="fragment">fragment</option></select></label></div>
+                        </div>
+                    </details>
+
+                    <div id="shellColorCard" class="status-card shell-card" data-inspector-card="color">
+                        <h3>颜色直觉按钮</h3>
+                        <div class="wizard-text">优先用下面的颜色按钮和选色器，不需要理解色相。~Meow</div>
+                        <div class="property-actions" style="margin-top: 10px;">
+                            <button class="btn" data-color-preset="none" type="button">原色</button>
+                            <button class="btn" data-color-preset="bone" type="button">骨灰灰</button>
+                            <button class="btn" data-color-preset="cold" type="button">冷蓝灰</button>
+                            <button class="btn" data-color-preset="moss" type="button">菌绿</button>
+                            <button class="btn" data-color-preset="warm" type="button">暖棕</button>
+                            <button class="btn" data-color-preset="danger" type="button">危险红</button>
+                        </div>
+                        <div class="property-grid" style="margin-top: 10px;">
+                            <div class="property-block"><label>直接选颜色<input id="directTintColor" class="input" type="color" value="#ffffff"></label></div>
+                            <div class="property-block"><label>颜色强度<input id="directTintStrength" class="number" type="number" min="0" max="1" step="0.05" value="0.35"></label></div>
+                        </div>
+                    </div>
+
+                    <div class="status-card shell-card" data-inspector-card="export">
+                        <h3>导出 / 导入</h3>
+                        <textarea id="exportOutput" placeholder="这里会生成布局 JSON；也可以粘贴 JSON 再点导入。~Meow"></textarea>
+                        <div class="export-actions" style="margin-top: 10px;">
+                            <button id="exportBtn" class="btn primary" type="button">导出 JSON</button>
+                            <button id="exportShellBtn" class="btn" type="button">导出壳配置</button>
+                            <button id="copyBtn" class="btn" type="button">复制</button>
+                            <button id="importBtn" class="btn" type="button">导入 JSON</button>
+                        </div>
+                        <div id="exportStatus" class="mini" style="margin-top: 8px;">- ~Meow</div>
+                    </div>
+                </div>
+            </aside>
+        </main>
+    </div>
+</div>
+<iframe id="runtimeProbeFrame" class="runtime-probe-frame" title="runtime layout probe"></iframe>
+<script src="../floor-data.js"></script>
+<script src="./scene_art_workbench.js"></script>
+</body>
+</html>

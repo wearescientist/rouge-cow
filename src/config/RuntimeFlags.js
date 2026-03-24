@@ -8,7 +8,6 @@
     const search = new URLSearchParams(global.location.search);
 
     const RuntimeFlags = Object.freeze({
-        useNewEnemySystem: search.get('enemySystem') === 'new',
         diagnostics: search.get('diag') === '1' || search.get('debug') === '1',
         logServiceRegistration: search.get('services') === '1'
     });

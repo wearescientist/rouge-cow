@@ -1,4 +1,4 @@
-﻿class HordeManager {
+class HordeManager {
 
     constructor(room) {
 
@@ -48,6 +48,19 @@
 
     // 根据房间类型配置
 
+    getRoomModeConfig() {
+        return this.room?.roomModeConfig || null;
+    }
+
+    isSingleEnemyMode() {
+        const mode = this.getRoomModeConfig();
+        return !!(mode && mode.kind === 'single_t1' && mode.enemyBaseId);
+    }
+    resolveSingleModeEnemyKey(baseId, buildTypeKey, t1Pool) {
+        const direct = t1Pool.find(monster => monster.baseId === baseId);
+        return direct ? buildTypeKey(direct) : null;
+    }
+
     setupRoomType() {
 
         const type = this.room.type;
@@ -69,6 +82,9 @@
                 this.waveCount = 3 + Math.floor(Math.random() * 3); // 3-5波
 
                 this.baseEnemyCount = Math.floor(10 * spawnMultiplier); // 基础×楼层倍率
+                if (this.isSingleEnemyMode()) {
+                    this.baseEnemyCount = Math.max(6, Math.floor(this.baseEnemyCount * (this.getRoomModeConfig().spawnMultiplier || 2)));
+                }
 
                 this.bossRoom = false;
 
@@ -327,18 +343,10 @@
 
         
 
-        // v0.20.0: 割草模式 - 只增加血量，不增加伤害（玩家太脆）
-        const floor = window.game?.currentFloor || 1;
-        // 楼层倍率: 1层=1x, 2层=2.8x, 3层=5.2x, 4层=8x, 5层=11.2x, 6层=15x
-        const floorMultiplier = Math.pow(floor, 1.5);
-
-        // 波数倍率 - 只影响血量
-        const waveMultiplier = 1 + (this.wave - 1) * 0.2; // HP每波+20%
-
-        // 总倍率 = 楼层倍率 × 波数倍率（仅血量）
-        const totalHpMultiplier = floorMultiplier * waveMultiplier;
-
-        enemy.hp = Math.floor(enemy.hp * totalHpMultiplier);
+        // 小怪血量已经在 enemy-types-new 里按楼层做过一次缩放。
+        // 这里不再重复叠加楼层指数，只保留很轻的波次递增，避免二层开始就刮痧。
+        const waveMultiplier = 1 + (this.wave - 1) * 0.08; // 每波仅+8% HP
+        enemy.hp = Math.floor(enemy.hp * waveMultiplier);
         enemy.maxHp = enemy.hp;
         // 伤害保持原版，不受楼层影响
 
@@ -368,6 +376,14 @@
         const t1Pool = floorData.monsters.filter(m => m.tier === 1);
         const t2Pool = floorData.monsters.filter(m => m.tier === 2);
         const t3Pool = floorData.monsters.filter(m => m.tier === 3);
+
+        if (this.room?.type === 'normal' && this.isSingleEnemyMode()) {
+            const baseId = this.getRoomModeConfig().enemyBaseId;
+            const typeKey = this.resolveSingleModeEnemyKey(baseId, buildTypeKey, t1Pool);
+            if (typeKey) {
+                return { typeKey, tier: 1, isSwarmMode: true };
+            }
+        }
         
         // Boss房
         if (this.bossRoom && this.wave === 1) {
