@@ -24,8 +24,8 @@ window.FLOOR_DATA = {
         {"id": "panther_v1", "baseId": "panther", "version": "v1", "name": "幼豹", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 25, "speed": 260, "dmg": 2}},
         {"id": "pigeon_v1", "baseId": "pigeon", "version": "v1", "name": "变异鸽子", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 15, "speed": 130, "dmg": 1}},
         {"id": "snail_v4", "baseId": "snail", "version": "v4", "name": "铁壳蜗牛", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 40, "speed": 40, "dmg": 2}},
-        {"id": "mother_v2", "baseId": "mother", "version": "v2", "name": "母虫幼体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 3000, "speed": 50, "dmg": 15}},
-        {"id": "rabbit2_v4", "baseId": "rabbit2", "version": "v4", "name": "暴徒兔", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 30, "speed": 260, "dmg": 4}}
+        {"id": "mother_v2", "baseId": "mother", "version": "v2", "name": "母虫幼体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 50, "dmg": 15}},
+        {"id": "rabbit2_v4", "baseId": "rabbit2", "version": "v4", "name": "暴徒兔", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 260, "dmg": 4}}
       ]
     },
     "floor2": {
@@ -46,11 +46,11 @@ window.FLOOR_DATA = {
         {"id": "snail_v7", "baseId": "snail", "version": "v7", "name": "蜗牛王", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 70, "speed": 38, "dmg": 3}},
         {"id": "snake_v7", "baseId": "snake", "version": "v7", "name": "蟒蛇", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 35, "speed": 100, "dmg": 3}},
         {"id": "fox_v7", "baseId": "fox", "version": "v7", "name": "妖狐", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 70, "speed": 200, "dmg": 4}},
-        {"id": "mimic_v7", "baseId": "mimic", "version": "v7", "name": "宝箱守护者", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 150, "speed": 60, "dmg": 5}},
-        {"id": "yinya_v7", "baseId": "yinya", "version": "v7", "name": "狼王银牙", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 150, "speed": 210, "dmg": 7}},
+        {"id": "mimic_v7", "baseId": "mimic", "version": "v7", "name": "宝箱守护者", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 70, "speed": 60, "dmg": 5}},
+        {"id": "yinya_v7", "baseId": "yinya", "version": "v7", "name": "狼王银牙", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 60, "speed": 210, "dmg": 7}},
         {"id": "crab_spr", "baseId": "crab", "version": "spr", "name": "小螃蟹", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 20, "speed": 70, "dmg": 1}},
-        {"id": "mother_v7", "baseId": "mother", "version": "v7", "name": "深渊母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 5500, "speed": 42, "dmg": 22}},
-        {"id": "pigeon_v8", "baseId": "pigeon", "version": "v8", "name": "鸽王", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 50, "speed": 150, "dmg": 4}}
+        {"id": "mother_v7", "baseId": "mother", "version": "v7", "name": "深渊母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 42, "dmg": 22}},
+        {"id": "pigeon_v8", "baseId": "pigeon", "version": "v8", "name": "鸽王", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 150, "dmg": 4}}
       ]
     },
     "floor3": {
@@ -75,8 +75,8 @@ window.FLOOR_DATA = {
         {"id": "nibei_v8", "baseId": "nibei", "version": "v8", "name": "巨泥龟", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 100, "speed": 35, "dmg": 5}},
         {"id": "snail_v8", "baseId": "snail", "version": "v8", "name": "传说蜗牛", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 100, "speed": 30, "dmg": 4}},
         {"id": "snake_v8", "baseId": "snake", "version": "v8", "name": "巨蛇", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 55, "speed": 105, "dmg": 4}},
-        {"id": "mother_v8", "baseId": "mother", "version": "v8", "name": "千根母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 6000, "speed": 38, "dmg": 25}},
-        {"id": "nibei_v6", "baseId": "nibei", "version": "v6", "name": "泥背", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 2000, "speed": 50, "dmg": 8}}
+        {"id": "mother_v8", "baseId": "mother", "version": "v8", "name": "千根母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 38, "dmg": 25}},
+        {"id": "nibei_v6", "baseId": "nibei", "version": "v6", "name": "泥背", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 50, "dmg": 8}}
       ]
     },
     "floor4": {
@@ -98,8 +98,8 @@ window.FLOOR_DATA = {
         {"id": "pigeon_v10", "baseId": "pigeon", "version": "v10", "name": "传说鸽", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 60, "speed": 155, "dmg": 5}},
         {"id": "snail_v10", "baseId": "snail", "version": "v10", "name": "神蜗牛", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 120, "speed": 32, "dmg": 5}},
         {"id": "snake_v10", "baseId": "snake", "version": "v10", "name": "蛇王", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 80, "speed": 110, "dmg": 6}},
-        {"id": "mother_v3", "baseId": "mother", "version": "v3", "name": "深渊母体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 5000, "speed": 40, "dmg": 20}},
-        {"id": "panther_v10", "baseId": "panther", "version": "v10", "name": "豹王", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 80, "speed": 270, "dmg": 6}}
+        {"id": "mother_v3", "baseId": "mother", "version": "v3", "name": "深渊母体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 40, "dmg": 20}},
+        {"id": "panther_v10", "baseId": "panther", "version": "v10", "name": "豹王", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 270, "dmg": 6}}
       ]
     },
     "floor5": {
@@ -126,8 +126,8 @@ window.FLOOR_DATA = {
         {"id": "ghost_v6", "baseId": "ghost", "version": "v6", "name": "凶灵", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 60, "speed": 200, "dmg": 4}},
         {"id": "mimic_v6", "baseId": "mimic", "version": "v6", "name": "精英宝箱怪", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 120, "speed": 90, "dmg": 6}},
         {"id": "pigeon_v2", "baseId": "pigeon", "version": "v2", "name": "腐化鸽", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 18, "speed": 135, "dmg": 1}},
-        {"id": "mother_v6", "baseId": "mother", "version": "v6", "name": "母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 4000, "speed": 45, "dmg": 18}},
-        {"id": "ghost_spr", "baseId": "ghost", "version": "spr", "name": "幽灵", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 20, "speed": 160, "dmg": 2}}
+        {"id": "mother_v6", "baseId": "mother", "version": "v6", "name": "母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 45, "dmg": 18}},
+        {"id": "ghost_spr", "baseId": "ghost", "version": "spr", "name": "幽灵", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 160, "dmg": 2}}
       ]
     },
     "floor6": {
@@ -148,17 +148,24 @@ window.FLOOR_DATA = {
         {"id": "fox_v10", "baseId": "fox", "version": "v10", "name": "天狐", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 120, "speed": 190, "dmg": 7}},
         {"id": "bat_v9", "baseId": "bat", "version": "v9", "name": "蝙蝠王", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 40, "speed": 190, "dmg": 4}},
         {"id": "snail_v2", "baseId": "snail", "version": "v2", "name": "硬壳蜗牛", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 35, "speed": 42, "dmg": 1}},
-        {"id": "mother_v2", "baseId": "mother", "version": "v2", "name": "母虫幼体", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 3000, "speed": 50, "dmg": 15}},
-        {"id": "mother_v8", "baseId": "mother", "version": "v8", "name": "千根母虫", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 6000, "speed": 38, "dmg": 25}},
-        {"id": "mother_v7", "baseId": "mother", "version": "v7", "name": "深渊母虫", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 5500, "speed": 42, "dmg": 22}},
-        {"id": "mother_v6", "baseId": "mother", "version": "v6", "name": "母虫", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 4000, "speed": 45, "dmg": 18}},
-        {"id": "mother_v3", "baseId": "mother", "version": "v3", "name": "深渊母体", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 5000, "speed": 40, "dmg": 20}},
-        {"id": "mother_v3", "baseId": "mother", "version": "v3", "name": "深渊母体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 5000, "speed": 40, "dmg": 20}},
-        {"id": "mother_v2", "baseId": "mother", "version": "v2", "name": "母虫幼体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 3000, "speed": 50, "dmg": 15}},
-        {"id": "mother_v8", "baseId": "mother", "version": "v8", "name": "千根母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 6000, "speed": 38, "dmg": 25}},
-        {"id": "mother_v6", "baseId": "mother", "version": "v6", "name": "母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 4000, "speed": 45, "dmg": 18}},
-        {"id": "mother_v7", "baseId": "mother", "version": "v7", "name": "深渊母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 5500, "speed": 42, "dmg": 22}},
-        {"id": "mother_v10", "baseId": "mother", "version": "v10", "name": "群星母体", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 8000, "speed": 35, "dmg": 30}}
+        {"id": "mother_v2", "baseId": "mother", "version": "v2", "name": "母虫幼体", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 35, "speed": 50, "dmg": 15}},
+        {"id": "mother_v8", "baseId": "mother", "version": "v8", "name": "千根母虫", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 80, "speed": 38, "dmg": 25}},
+        {"id": "mother_v7", "baseId": "mother", "version": "v7", "name": "深渊母虫", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 65, "speed": 42, "dmg": 22}},
+        {"id": "mother_v6", "baseId": "mother", "version": "v6", "name": "母虫", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 45, "speed": 45, "dmg": 18}},
+        {"id": "mother_v3", "baseId": "mother", "version": "v3", "name": "深渊母体", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 55, "speed": 40, "dmg": 20}},
+        {"id": "mother_v3", "baseId": "mother", "version": "v3", "name": "深渊母体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 40, "dmg": 20}},
+        {"id": "mother_v2", "baseId": "mother", "version": "v2", "name": "母虫幼体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 50, "dmg": 15}},
+        {"id": "mother_v8", "baseId": "mother", "version": "v8", "name": "千根母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 38, "dmg": 25}},
+        {"id": "mother_v6", "baseId": "mother", "version": "v6", "name": "母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 45, "dmg": 18}},
+        {"id": "mother_v7", "baseId": "mother", "version": "v7", "name": "深渊母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 42, "dmg": 22}},
+        {"id": "mother_v10", "baseId": "mother", "version": "v10", "name": "群星母体", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 35, "dmg": 30}}
+      ]
+    },
+    "floor7": {
+      "name": "真相回廊",
+      "theme": "觉醒终层 - 师傅与图腾纠缠的终局",
+      "monsters": [
+        {"id": "blind_master_v7", "baseId": "mother", "version": "v10", "name": "盲眼师傅", "tier": 4, "type": "boss", "size": 120, "stats": {"hp": 1000, "speed": 120, "dmg": 6}}
       ]
     }
   }
