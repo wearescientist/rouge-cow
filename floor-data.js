@@ -1,0 +1,172 @@
+// v0.35 - 用户整理配置
+window.FLOOR_DATA = {
+  "version": "1.1.0",
+  "exportedAt": "2026-03-10T17:30:00.000Z",
+  "floors": {
+    "floor1": {
+      "name": "菌丝区",
+      "theme": "基础怪物 - 菌丝感染的初级生物",
+      "monsters": [
+        {"id": "bat_v2", "baseId": "bat", "version": "v2", "name": "小蝙蝠", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 10, "speed": 180, "dmg": 1}},
+        {"id": "chick_spr", "baseId": "chick", "version": "spr", "name": "变异小鸡", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 12, "speed": 140, "dmg": 1}},
+        {"id": "fox_v1", "baseId": "fox", "version": "v1", "name": "幼狐", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 15, "speed": 150, "dmg": 1}},
+        {"id": "snail_v1", "baseId": "snail", "version": "v1", "name": "蜗牛", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 30, "speed": 45, "dmg": 1}},
+        {"id": "crab_v4", "baseId": "crab", "version": "v4", "name": "铁甲蟹", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 45, "speed": 60, "dmg": 2}},
+        {"id": "ghost_v3", "baseId": "ghost", "version": "v3", "name": "怨灵", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 30, "speed": 165, "dmg": 3}},
+        {"id": "mimic_v1", "baseId": "mimic", "version": "v1", "name": "宝箱怪", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 50, "speed": 80, "dmg": 3}},
+        {"id": "pigeon_v4", "baseId": "pigeon", "version": "v4", "name": "毒鸽", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 22, "speed": 140, "dmg": 2}},
+        {"id": "rabbit2_v2", "baseId": "rabbit2", "version": "v2", "name": "疯兔", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 22, "speed": 290, "dmg": 2}},
+        {"id": "snake_v4", "baseId": "snake", "version": "v4", "name": "毒蛇", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 20, "speed": 120, "dmg": 2}},
+        {"id": "bat_v3", "baseId": "bat", "version": "v3", "name": "吸血蝙蝠", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 15, "speed": 220, "dmg": 2}},
+        {"id": "fox_v3", "baseId": "fox", "version": "v3", "name": "狡猾狐狸", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 30, "speed": 190, "dmg": 3}},
+        {"id": "ghost_v4", "baseId": "ghost", "version": "v4", "name": "恶灵", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 40, "speed": 180, "dmg": 3}},
+        {"id": "mimic_v5", "baseId": "mimic", "version": "v5", "name": "守卫宝箱怪", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 90, "speed": 70, "dmg": 5}},
+        {"id": "panther_v1", "baseId": "panther", "version": "v1", "name": "幼豹", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 25, "speed": 260, "dmg": 2}},
+        {"id": "pigeon_v1", "baseId": "pigeon", "version": "v1", "name": "变异鸽子", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 15, "speed": 130, "dmg": 1}},
+        {"id": "snail_v4", "baseId": "snail", "version": "v4", "name": "铁壳蜗牛", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 40, "speed": 40, "dmg": 2}},
+        {"id": "mother_v2", "baseId": "mother", "version": "v2", "name": "母虫幼体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 50, "dmg": 15}},
+        {"id": "rabbit2_v4", "baseId": "rabbit2", "version": "v4", "name": "暴徒兔", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 260, "dmg": 4}}
+      ]
+    },
+    "floor2": {
+      "name": "洞穴区",
+      "theme": "洞穴怪物 - 适应黑暗环境的生物",
+      "monsters": [
+        {"id": "bat_v2", "baseId": "bat", "version": "v2", "name": "小蝙蝠", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 10, "speed": 180, "dmg": 1}},
+        {"id": "chick_spr", "baseId": "chick", "version": "spr", "name": "变异小鸡", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 12, "speed": 140, "dmg": 1}},
+        {"id": "fox_v1", "baseId": "fox", "version": "v1", "name": "幼狐", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 15, "speed": 150, "dmg": 1}},
+        {"id": "snail_v1", "baseId": "snail", "version": "v1", "name": "蜗牛", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 30, "speed": 45, "dmg": 1}},
+        {"id": "crab_v4", "baseId": "crab", "version": "v4", "name": "铁甲蟹", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 45, "speed": 60, "dmg": 2}},
+        {"id": "ghost_v3", "baseId": "ghost", "version": "v3", "name": "怨灵", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 30, "speed": 165, "dmg": 3}},
+        {"id": "mimic_v1", "baseId": "mimic", "version": "v1", "name": "宝箱怪", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 50, "speed": 80, "dmg": 3}},
+        {"id": "pigeon_v4", "baseId": "pigeon", "version": "v4", "name": "毒鸽", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 22, "speed": 140, "dmg": 2}},
+        {"id": "rabbit2_v2", "baseId": "rabbit2", "version": "v2", "name": "疯兔", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 22, "speed": 290, "dmg": 2}},
+        {"id": "snake_v4", "baseId": "snake", "version": "v4", "name": "毒蛇", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 20, "speed": 120, "dmg": 2}},
+        {"id": "pigeon_v7", "baseId": "pigeon", "version": "v7", "name": "飞鸽", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 28, "speed": 160, "dmg": 2}},
+        {"id": "snail_v7", "baseId": "snail", "version": "v7", "name": "蜗牛王", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 70, "speed": 38, "dmg": 3}},
+        {"id": "snake_v7", "baseId": "snake", "version": "v7", "name": "蟒蛇", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 35, "speed": 100, "dmg": 3}},
+        {"id": "fox_v7", "baseId": "fox", "version": "v7", "name": "妖狐", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 70, "speed": 200, "dmg": 4}},
+        {"id": "mimic_v7", "baseId": "mimic", "version": "v7", "name": "宝箱守护者", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 70, "speed": 60, "dmg": 5}},
+        {"id": "yinya_v7", "baseId": "yinya", "version": "v7", "name": "狼王银牙", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 60, "speed": 210, "dmg": 7}},
+        {"id": "crab_spr", "baseId": "crab", "version": "spr", "name": "小螃蟹", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 20, "speed": 70, "dmg": 1}},
+        {"id": "mother_v7", "baseId": "mother", "version": "v7", "name": "深渊母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 42, "dmg": 22}},
+        {"id": "pigeon_v8", "baseId": "pigeon", "version": "v8", "name": "鸽王", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 150, "dmg": 4}}
+      ]
+    },
+    "floor3": {
+      "name": "地下水脉",
+      "theme": "水生怪物 - 地下水脉中的生物",
+      "monsters": [
+        {"id": "bat_v2", "baseId": "bat", "version": "v2", "name": "小蝙蝠", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 10, "speed": 180, "dmg": 1}},
+        {"id": "chick_spr", "baseId": "chick", "version": "spr", "name": "变异小鸡", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 12, "speed": 140, "dmg": 1}},
+        {"id": "fox_v1", "baseId": "fox", "version": "v1", "name": "幼狐", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 15, "speed": 150, "dmg": 1}},
+        {"id": "snail_v1", "baseId": "snail", "version": "v1", "name": "蜗牛", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 30, "speed": 45, "dmg": 1}},
+        {"id": "crab_v4", "baseId": "crab", "version": "v4", "name": "铁甲蟹", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 45, "speed": 60, "dmg": 2}},
+        {"id": "ghost_v3", "baseId": "ghost", "version": "v3", "name": "怨灵", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 30, "speed": 165, "dmg": 3}},
+        {"id": "mimic_v1", "baseId": "mimic", "version": "v1", "name": "宝箱怪", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 50, "speed": 80, "dmg": 3}},
+        {"id": "pigeon_v4", "baseId": "pigeon", "version": "v4", "name": "毒鸽", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 22, "speed": 140, "dmg": 2}},
+        {"id": "rabbit2_v2", "baseId": "rabbit2", "version": "v2", "name": "疯兔", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 22, "speed": 290, "dmg": 2}},
+        {"id": "snake_v4", "baseId": "snake", "version": "v4", "name": "毒蛇", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 20, "speed": 120, "dmg": 2}},
+        {"id": "bat_v8", "baseId": "bat", "version": "v8", "name": "巨蝙蝠", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 25, "speed": 200, "dmg": 3}},
+        {"id": "crab_v8", "baseId": "crab", "version": "v8", "name": "蟹王", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 90, "speed": 45, "dmg": 5}},
+        {"id": "fox_v8", "baseId": "fox", "version": "v8", "name": "九尾狐", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 100, "speed": 180, "dmg": 6}},
+        {"id": "ghost_v8", "baseId": "ghost", "version": "v8", "name": "盲眼", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 120, "speed": 160, "dmg": 6}},
+        {"id": "mimic_v8", "baseId": "mimic", "version": "v8", "name": "宝箱王", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 200, "speed": 80, "dmg": 8}},
+        {"id": "nibei_v8", "baseId": "nibei", "version": "v8", "name": "巨泥龟", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 100, "speed": 35, "dmg": 5}},
+        {"id": "snail_v8", "baseId": "snail", "version": "v8", "name": "传说蜗牛", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 100, "speed": 30, "dmg": 4}},
+        {"id": "snake_v8", "baseId": "snake", "version": "v8", "name": "巨蛇", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 55, "speed": 105, "dmg": 4}},
+        {"id": "mother_v8", "baseId": "mother", "version": "v8", "name": "千根母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 38, "dmg": 25}},
+        {"id": "nibei_v6", "baseId": "nibei", "version": "v6", "name": "泥背", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 50, "dmg": 8}}
+      ]
+    },
+    "floor4": {
+      "name": "古老遗迹",
+      "theme": "古代怪物 - 遗迹中的守护者",
+      "monsters": [
+        {"id": "bat_v2", "baseId": "bat", "version": "v2", "name": "小蝙蝠", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 10, "speed": 180, "dmg": 1}},
+        {"id": "chick_spr", "baseId": "chick", "version": "spr", "name": "变异小鸡", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 12, "speed": 140, "dmg": 1}},
+        {"id": "fox_v1", "baseId": "fox", "version": "v1", "name": "幼狐", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 15, "speed": 150, "dmg": 1}},
+        {"id": "snail_v1", "baseId": "snail", "version": "v1", "name": "蜗牛", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 30, "speed": 45, "dmg": 1}},
+        {"id": "crab_v4", "baseId": "crab", "version": "v4", "name": "铁甲蟹", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 45, "speed": 60, "dmg": 2}},
+        {"id": "ghost_v3", "baseId": "ghost", "version": "v3", "name": "怨灵", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 30, "speed": 165, "dmg": 3}},
+        {"id": "mimic_v1", "baseId": "mimic", "version": "v1", "name": "宝箱怪", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 50, "speed": 80, "dmg": 3}},
+        {"id": "pigeon_v4", "baseId": "pigeon", "version": "v4", "name": "毒鸽", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 22, "speed": 140, "dmg": 2}},
+        {"id": "rabbit2_v2", "baseId": "rabbit2", "version": "v2", "name": "疯兔", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 22, "speed": 290, "dmg": 2}},
+        {"id": "snake_v4", "baseId": "snake", "version": "v4", "name": "毒蛇", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 20, "speed": 120, "dmg": 2}},
+        {"id": "ghost_v2", "baseId": "ghost", "version": "v2", "name": "游荡幽灵", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 25, "speed": 170, "dmg": 2}},
+        {"id": "ghost_v10", "baseId": "ghost", "version": "v10", "name": "幽灵王", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 100, "speed": 220, "dmg": 6}},
+        {"id": "pigeon_v10", "baseId": "pigeon", "version": "v10", "name": "传说鸽", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 60, "speed": 155, "dmg": 5}},
+        {"id": "snail_v10", "baseId": "snail", "version": "v10", "name": "神蜗牛", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 120, "speed": 32, "dmg": 5}},
+        {"id": "snake_v10", "baseId": "snake", "version": "v10", "name": "蛇王", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 80, "speed": 110, "dmg": 6}},
+        {"id": "mother_v3", "baseId": "mother", "version": "v3", "name": "深渊母体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 40, "dmg": 20}},
+        {"id": "panther_v10", "baseId": "panther", "version": "v10", "name": "豹王", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 270, "dmg": 6}}
+      ]
+    },
+    "floor5": {
+      "name": "深渊入口",
+      "theme": "深渊怪物 - 被深度感染的强大生物",
+      "monsters": [
+        {"id": "bat_v2", "baseId": "bat", "version": "v2", "name": "小蝙蝠", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 10, "speed": 180, "dmg": 1}},
+        {"id": "chick_spr", "baseId": "chick", "version": "spr", "name": "变异小鸡", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 12, "speed": 140, "dmg": 1}},
+        {"id": "fox_v1", "baseId": "fox", "version": "v1", "name": "幼狐", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 15, "speed": 150, "dmg": 1}},
+        {"id": "snail_v1", "baseId": "snail", "version": "v1", "name": "蜗牛", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 30, "speed": 45, "dmg": 1}},
+        {"id": "crab_v4", "baseId": "crab", "version": "v4", "name": "铁甲蟹", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 45, "speed": 60, "dmg": 2}},
+        {"id": "ghost_v3", "baseId": "ghost", "version": "v3", "name": "怨灵", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 30, "speed": 165, "dmg": 3}},
+        {"id": "mimic_v1", "baseId": "mimic", "version": "v1", "name": "宝箱怪", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 50, "speed": 80, "dmg": 3}},
+        {"id": "pigeon_v4", "baseId": "pigeon", "version": "v4", "name": "毒鸽", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 22, "speed": 140, "dmg": 2}},
+        {"id": "rabbit2_v2", "baseId": "rabbit2", "version": "v2", "name": "疯兔", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 22, "speed": 290, "dmg": 2}},
+        {"id": "snake_v4", "baseId": "snake", "version": "v4", "name": "毒蛇", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 20, "speed": 120, "dmg": 2}},
+        {"id": "bee_v6", "baseId": "bee", "version": "v6", "name": "毒蜂", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 12, "speed": 300, "dmg": 1}},
+        {"id": "goose_v6", "baseId": "goose", "version": "v6", "name": "守卫鹅", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 30, "speed": 110, "dmg": 2}},
+        {"id": "pigeon_v6", "baseId": "pigeon", "version": "v6", "name": "巨鸽", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 30, "speed": 145, "dmg": 2}},
+        {"id": "snail_v6", "baseId": "snail", "version": "v6", "name": "巨蜗牛", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 55, "speed": 35, "dmg": 2}},
+        {"id": "crab_v2", "baseId": "crab", "version": "v2", "name": "螃蟹", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 25, "speed": 65, "dmg": 1}},
+        {"id": "crab_v6", "baseId": "crab", "version": "v6", "name": "巨钳蟹", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 70, "speed": 50, "dmg": 4}},
+        {"id": "fox_v6", "baseId": "fox", "version": "v6", "name": "狐王", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 80, "speed": 170, "dmg": 5}},
+        {"id": "ghost_v6", "baseId": "ghost", "version": "v6", "name": "凶灵", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 60, "speed": 200, "dmg": 4}},
+        {"id": "mimic_v6", "baseId": "mimic", "version": "v6", "name": "精英宝箱怪", "tier": 2, "type": "elite", "size": 56, "stats": {"hp": 120, "speed": 90, "dmg": 6}},
+        {"id": "pigeon_v2", "baseId": "pigeon", "version": "v2", "name": "腐化鸽", "tier": 2, "type": "elite", "size": 40, "stats": {"hp": 18, "speed": 135, "dmg": 1}},
+        {"id": "mother_v6", "baseId": "mother", "version": "v6", "name": "母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 45, "dmg": 18}},
+        {"id": "ghost_spr", "baseId": "ghost", "version": "spr", "name": "幽灵", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 160, "dmg": 2}}
+      ]
+    },
+    "floor6": {
+      "name": "母虫巢穴",
+      "theme": "母虫领域 - 核心区域的终极生物",
+      "monsters": [
+        {"id": "bat_v2", "baseId": "bat", "version": "v2", "name": "小蝙蝠", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 10, "speed": 180, "dmg": 1}},
+        {"id": "chick_spr", "baseId": "chick", "version": "spr", "name": "变异小鸡", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 12, "speed": 140, "dmg": 1}},
+        {"id": "fox_v1", "baseId": "fox", "version": "v1", "name": "幼狐", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 15, "speed": 150, "dmg": 1}},
+        {"id": "snail_v1", "baseId": "snail", "version": "v1", "name": "蜗牛", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 30, "speed": 45, "dmg": 1}},
+        {"id": "crab_v4", "baseId": "crab", "version": "v4", "name": "铁甲蟹", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 45, "speed": 60, "dmg": 2}},
+        {"id": "ghost_v3", "baseId": "ghost", "version": "v3", "name": "怨灵", "tier": 1, "type": "common", "size": 44, "stats": {"hp": 30, "speed": 165, "dmg": 3}},
+        {"id": "mimic_v1", "baseId": "mimic", "version": "v1", "name": "宝箱怪", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 50, "speed": 80, "dmg": 3}},
+        {"id": "pigeon_v4", "baseId": "pigeon", "version": "v4", "name": "毒鸽", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 22, "speed": 140, "dmg": 2}},
+        {"id": "rabbit2_v2", "baseId": "rabbit2", "version": "v2", "name": "疯兔", "tier": 1, "type": "common", "size": 36, "stats": {"hp": 22, "speed": 290, "dmg": 2}},
+        {"id": "snake_v4", "baseId": "snake", "version": "v4", "name": "毒蛇", "tier": 1, "type": "common", "size": 28, "stats": {"hp": 20, "speed": 120, "dmg": 2}},
+        {"id": "mimic_spr", "baseId": "mimic", "version": "spr", "name": "小宝箱怪", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 30, "speed": 80, "dmg": 2}},
+        {"id": "fox_v10", "baseId": "fox", "version": "v10", "name": "天狐", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 120, "speed": 190, "dmg": 7}},
+        {"id": "bat_v9", "baseId": "bat", "version": "v9", "name": "蝙蝠王", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 40, "speed": 190, "dmg": 4}},
+        {"id": "snail_v2", "baseId": "snail", "version": "v2", "name": "硬壳蜗牛", "tier": 2, "type": "elite", "size": 48, "stats": {"hp": 35, "speed": 42, "dmg": 1}},
+        {"id": "mother_v2", "baseId": "mother", "version": "v2", "name": "母虫幼体", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 35, "speed": 50, "dmg": 15}},
+        {"id": "mother_v8", "baseId": "mother", "version": "v8", "name": "千根母虫", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 80, "speed": 38, "dmg": 25}},
+        {"id": "mother_v7", "baseId": "mother", "version": "v7", "name": "深渊母虫", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 65, "speed": 42, "dmg": 22}},
+        {"id": "mother_v6", "baseId": "mother", "version": "v6", "name": "母虫", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 45, "speed": 45, "dmg": 18}},
+        {"id": "mother_v3", "baseId": "mother", "version": "v3", "name": "深渊母体", "tier": 2, "type": "elite", "size": 64, "stats": {"hp": 55, "speed": 40, "dmg": 20}},
+        {"id": "mother_v3", "baseId": "mother", "version": "v3", "name": "深渊母体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 40, "dmg": 20}},
+        {"id": "mother_v2", "baseId": "mother", "version": "v2", "name": "母虫幼体", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 50, "dmg": 15}},
+        {"id": "mother_v8", "baseId": "mother", "version": "v8", "name": "千根母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 38, "dmg": 25}},
+        {"id": "mother_v6", "baseId": "mother", "version": "v6", "name": "母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 45, "dmg": 18}},
+        {"id": "mother_v7", "baseId": "mother", "version": "v7", "name": "深渊母虫", "tier": 3, "type": "elite", "size": 64, "stats": {"hp": 200, "speed": 42, "dmg": 22}},
+        {"id": "mother_v10", "baseId": "mother", "version": "v10", "name": "群星母体", "tier": 4, "type": "boss", "size": 100, "stats": {"hp": 1000, "speed": 35, "dmg": 30}}
+      ]
+    },
+    "floor7": {
+      "name": "真相回廊",
+      "theme": "觉醒终层 - 师傅与图腾纠缠的终局",
+      "monsters": [
+        {"id": "blind_master_v7", "baseId": "mother", "version": "v10", "name": "盲眼师傅", "tier": 4, "type": "boss", "size": 120, "stats": {"hp": 1000, "speed": 120, "dmg": 6}}
+      ]
+    }
+  }
+};
