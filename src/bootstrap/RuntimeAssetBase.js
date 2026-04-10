@@ -28,6 +28,19 @@
         return `${alias}${query}${hash}`;
     }
 
+    function applyWebpPreference(input) {
+        const value = String(input || '');
+        if (!value || !/\.png([?#]|$)/i.test(value)) return value;
+        if (!global.WebpAssetManifest?.has?.(value)) return value;
+        const hashIndex = value.indexOf('#');
+        const hash = hashIndex >= 0 ? value.slice(hashIndex) : '';
+        const withoutHash = hashIndex >= 0 ? value.slice(0, hashIndex) : value;
+        const queryIndex = withoutHash.indexOf('?');
+        const query = queryIndex >= 0 ? withoutHash.slice(queryIndex) : '';
+        const base = queryIndex >= 0 ? withoutHash.slice(0, queryIndex) : withoutHash;
+        return `${base.replace(/\.png$/i, '.webp')}${query}${hash}`;
+    }
+
     function resolveLocalRuntimeBase() {
         const rawBase = global.__RUNTIME_ASSET_LOCAL_BASE__ || './assets/runtime/';
         const baseRef = global.document?.baseURI || global.location?.href || 'http://localhost/';
@@ -50,7 +63,7 @@
     } catch (err) {}
 
     function normalizeRuntimeAssetUrl(input) {
-        const value = applyLegacyAssetAlias(input);
+        const value = applyWebpPreference(applyLegacyAssetAlias(input));
         if (!value) return value;
         if (/^(data:|blob:|file:|about:|javascript:|#)/i.test(value)) return value;
         if (/^https?:/i.test(value)) {

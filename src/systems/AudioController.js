@@ -10,6 +10,8 @@ class AudioController {
         this.game = game;
         this.audio = game.audio;
         this.basePath = window.RuntimeAssetBase?.audioBase || new URL('./assets/runtime/audio/', document.baseURI || location.href).href;
+        this.fileProtocolMode = typeof window !== 'undefined' && window.location?.protocol === 'file:';
+        this.fileProtocolWarned = false;
         
         // 音频缓存
         this.cache = new Map();
@@ -224,6 +226,13 @@ class AudioController {
      * 播放单个文件
      */
     _playFile(file, volume, options = null, bus = 'ui') {
+        if (this.fileProtocolMode) {
+            if (!this.fileProtocolWarned) {
+                console.warn('[AudioController] file:// mode detected, external audio fetch disabled');
+                this.fileProtocolWarned = true;
+            }
+            return;
+        }
         const fullPath = this.basePath + file;
         
         // 检查缓存
@@ -365,6 +374,9 @@ class AudioController {
      * 预加载关键音效
      */
     preload() {
+        if (this.fileProtocolMode) {
+            return;
+        }
         const criticalSounds = [
             'weapons/whip_crack_Sharp_lea_3-1772638713348.mp3',
             'weapons/Heavy_scythe_slash_2-1772638772954.mp3',

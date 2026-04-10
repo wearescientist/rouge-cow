@@ -15,6 +15,13 @@ class SpriteDataRegistry {
      * @param {string} url - metadata.json 路径
      */
     async load(url = window.RuntimeAssetBase?.resolveSprite?.('metadata.json') || 'assets/runtime/sprites/metadata.json') {
+        const isFileProtocol = typeof window !== 'undefined' && window.location?.protocol === 'file:';
+        if (isFileProtocol) {
+            console.warn('[SpriteDataRegistry] file:// mode detected, using default sprite data');
+            this._setupDefaults();
+            this.loaded = true;
+            return;
+        }
         try {
             const response = await fetch(url);
             if (!response.ok) {

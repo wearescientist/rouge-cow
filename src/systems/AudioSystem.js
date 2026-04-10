@@ -68,6 +68,8 @@ class AudioSystem {
         this.bgmSource = null;
         this.bgmBuffer = null;
         this.basePath = window.RuntimeAssetBase?.audioBase || new URL('./assets/runtime/audio/', document.baseURI || location.href).href;
+        this.fileProtocolMode = typeof window !== 'undefined' && window.location?.protocol === 'file:';
+        this.fileProtocolWarned = false;
     }
 
     init() {
@@ -147,6 +149,14 @@ class AudioSystem {
      * 加载并播放BGM文件
      */
     _loadAndPlayBGM(filePath, type) {
+        if (this.fileProtocolMode) {
+            if (!this.fileProtocolWarned) {
+                console.warn('[Audio] file:// mode detected, BGM fetch disabled');
+                this.fileProtocolWarned = true;
+            }
+            this.currentBGM = null;
+            return;
+        }
         const fullPath = this.basePath + filePath;
         
         fetch(fullPath)
